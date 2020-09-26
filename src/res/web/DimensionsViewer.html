@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@5"></script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script type="text/javascript" src="HistogramViewer.js"></script>
+</head>
+	<body>
+		<div id="view"></div>
+		<script>
+			var onBinsChanged = function (bins) {
+				let changeset = vega.changeset().remove(() => true).insert(JSON.parse(bins));
+				view.change('counts', changeset).run()
+			}
+
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var histogramViewer = channel.objects.histogramViewer;
+					//window.foo = webobj;
+					histogramViewer.binsChanged.connect(onBinsChanged);
+				});
+
+			vegaEmbed('#view', design).then(p => window.view = p.view);
+		</script>
+	</body>
+</html>

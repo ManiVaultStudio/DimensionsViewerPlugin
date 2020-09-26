@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/web/DimensionsViewer.html</file>
+        <file>res/web/DimensionsViewer.js</file>
+    </qresource>
+</RCC>
