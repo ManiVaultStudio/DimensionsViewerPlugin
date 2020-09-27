@@ -41,6 +41,9 @@ private:
 
 public:
 	
+	/** Get dimensions */
+	Dimensions& getDimensions() { return _dimensions; };
+
 	/** Returns the datasets model (string list with names of the datasets) */
 	QStringListModel& getDatasetsModel() { return _datasetsModel; }
 

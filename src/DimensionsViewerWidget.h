@@ -11,10 +11,7 @@ class DimensionsViewerWidget : public QWebEngineView
 	Q_OBJECT
 
 public:
-	DimensionsViewerWidget(DimensionsViewerPlugin* histogramViewerPlugin);
-
-private:
-	//void onBinsChanged(const QString& bins);
+	DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
 private:
 	DimensionsViewerPlugin*		_dimensionsViewerPlugin;

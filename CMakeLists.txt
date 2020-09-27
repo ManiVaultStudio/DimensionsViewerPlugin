@@ -24,7 +24,7 @@ find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 file(GLOB H src/*.h)
 file(GLOB CPP src/*.cpp)
 file(GLOB UIS src/*.ui)
-file(GLOB WEB src/*.html src/*.js)
+file(GLOB WEB src/res/web/*.html src/res/web/*.js)
 file(GLOB JSON src/*.json)
 file(GLOB QRC src/*.qrc)
 
@@ -57,7 +57,6 @@ endif()
 
 target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}HDPS_Public${LIB_SUFFIX}")
 target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}PointData${LIB_SUFFIX}")
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}qtadvanceddocking${LIB_SUFFIX}")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different

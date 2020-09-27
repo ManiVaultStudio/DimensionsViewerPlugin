@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>res/web/DimensionsViewer.html</file>
-        <file>res/web/DimensionsViewer.js</file>
+        <file alias="DimensionsViewer.html">res/web/DimensionsViewer.html</file>
+        <file alias="DimensionsViewer.js">res/web/DimensionsViewer.js</file>
+		<file alias="Vega.js">res/web/Vega.js</file>
+		<file alias="VegaEmbed.js">res/web/VegaEmbed.js</file>
     </qresource>
 </RCC>

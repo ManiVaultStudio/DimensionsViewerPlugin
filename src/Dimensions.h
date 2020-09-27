@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QVector>
 
 class Points;
 
@@ -14,6 +15,8 @@ class DimensionsViewerPlugin;
 class Dimensions : public QObject
 {
 	Q_OBJECT
+
+	using Values = QVector<float>;
 
 public: // Construction/destruction
 

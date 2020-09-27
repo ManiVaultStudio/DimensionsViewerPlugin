@@ -7,68 +7,51 @@ let design = {
 
     "data": [
       {
-          "name": "counts"
+          "name": "dimensions"
       }
     ],
 
     "scales": [
-      {
-          "name": "yscale",
-          "type": "linear",
-          "range": "height",
-          "domain": {
-              "data": "counts",
-              "field": "count"
-          }
-      },
-      {
-          "name": "xscale",
-          "type": "band",
-          "domain": {
-              "data": "counts",
-              "field": "bin0"
-          },
-          "range": "width",
-          "round": true,
-          "nice": true
-      }
+        {
+            "name": "xscale",
+            "type": "band",
+            "domain": { "data": "dimensions", "field": "name" },
+            "range": "width",
+            "padding": 0.05,
+            "round": true
+        },
+        {
+            "name": "yscale",
+            "domain": { "data": "dimensions", "field": "avg" },
+            "nice": true,
+            "range": "height"
+        }
     ],
 
     "axes": [
-        {
-            "orient": "left",
-            "scale": "yscale",
-            "grid": true,
-            "tickCount": 5,
-            "format": "s",
-            "title": "Count"
-        },
-        {
-            "orient": "bottom",
-            "scale": "xscale",
-            "tickCount": 1,
-            "labelOverlap": "parity",
-            "round": true
-        }
+        { "orient": "bottom", "scale": "xscale" },
+        { "orient": "left", "scale": "yscale" }
     ],
 
 
     "marks": [
-      {
-          "type": "rect",
-          "from": { "data": "counts" },
-          "encode": {
-              "update": {
-                  "x": { "scale": "xscale", "field": "bin0", "offset": 1 },
-                  "x2": { "scale": "xscale", "field": "bin1" },
-                  "y": { "scale": "yscale", "field": "count" },
-                  "y2": { "scale": "yscale", "value": 0 },
-                  "fill": { "value": "steelblue" }
-              },
-              "hover": {
-                  "fill": { "value": "firebrick" }
-              }
-          }
-      }
+        {
+            "type": "rect",
+            "from": { "data": "dimensions" },
+            "encode": {
+                "enter": {
+                    "x": { "scale": "xscale", "field": "name" },
+                    "width": { "scale": "xscale", "band": 1 },
+                    "y": { "scale": "yscale", "field": "avg" },
+                    "y2": { "scale": "yscale", "value": 0 }
+                },
+                "update": {
+                    "fill": { "value": "steelblue" }
+                },
+                "hover": {
+                    "fill": { "value": "red" }
+                }
+            }
+        }
     ]
 }

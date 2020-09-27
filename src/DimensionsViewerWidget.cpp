@@ -4,31 +4,17 @@
 #include <QFileInfo>
 #include <QWebChannel>
 
-DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* histogramViewerPlugin) :
+DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	QWebEngineView(),
-	_dimensionsViewerPlugin(histogramViewerPlugin)
+	_dimensionsViewerPlugin(dimensionsViewerPlugin)
 {
-	/*
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-	//connect(&_histogramViewerPlugin->histogram(), &Histogram::binsChanged, this, &HistogramViewerWidget::onBinsChanged);
-
-	auto url = QUrl::fromLocalFile(QFileInfo("HistogramViewer.html").absoluteFilePath());
-
-	load(url);
+	load(QUrl("qrc:DimensionsViewer.html"));
 
 	QWebChannel* webChannel = new QWebChannel(this);
 
-	webChannel->registerObject("histogramViewer", &_histogramViewerPlugin->histogram());
+	webChannel->registerObject("dimensionsViewer", &_dimensionsViewerPlugin->getDimensions());
 
 	page()->setWebChannel(webChannel);
-
-	//_histogramViewerPlugin->histogram().setData();
-	*/
 }
-
-/*
-void HistogramViewerWidget::onBinsChanged(const QString& bins)
-{
-}
-*/
