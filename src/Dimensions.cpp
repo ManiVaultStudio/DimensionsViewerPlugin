@@ -29,8 +29,10 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		pointIndices = selectedIndices;
 	}
 	else {
+		/*
 		pointIndices.resize(points->getNumPoints());
 		std::iota(pointIndices.begin(), pointIndices.end(), 0);
+		*/
 	}
 
 	std::vector<std::uint32_t> dimensionIndices;

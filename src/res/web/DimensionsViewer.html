@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html style="padding: 0; margin: 0; width: 100%; height: 100%;">
 <head>
     <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@5"></script>
     <!--
     <script type="text/javascript" src="qrc:///Vega5.js"></script>
     <script type="text/javascript" src="qrc:///VegaEmbed5.js"></script>
@@ -14,8 +14,8 @@
     <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>
 
 </head>
-	<body>
-		<div id="view"></div>
+	<body style="padding: 0; margin: 0; width: 100%; height: 100%;">
+		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
 		<script>
             var onDimensionsChanged = function (dimensions) {
                 let changeset = vega.changeset().remove(() => true).insert(JSON.parse(dimensions));
@@ -28,13 +28,36 @@
                     dimensionsViewer.changed.connect(onDimensionsChanged);
 				});
 
-            vegaEmbed('#view', design).then(p => window.view = p.view);
+            var options = {
+                actions: {
+                    export: false,
+                    source: false,
+                    compiled: false,
+                    editor: false
+                },
+                renderer: "svg",
+                defaultStyle: false
+                //padding: 100
+            };
 
+            vegaEmbed('#view', design, options).then(p => {
+                
+
+                element = document.getElementsByTagName("details");
+
+                for (index = 0; index < element.length; index++) {
+                    element[index].parentNode.removeChild(element[index]);
+                }
+
+                window.view = p.view
+            });
+            /*
             window.onresize = function (event) {
-                view.signal('width', event.target.innerWidth - 100)
-                    .signal('height', event.target.innerHeight - 40)
+                view.signal('width', window.innerWidth)
+                    .signal('height', window.innerHeight)
                     .run('enter');
             }
+            */
 		</script>
 	</body>
 </html>

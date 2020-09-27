@@ -1,9 +1,21 @@
 let design = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "width": "container",
+    "height": "container",
+    "autosize":
+    {
+        "type": "fit",
+        "resize": true,
+        //"contains": "padding"
+    },
+    /*
     "autosize": {
         "type": "fit",
-        "resize": true
+        "resize": true,
+        "contains": "padding"
     },
+    */
+    "padding": 20,
     "data": {
         "name": "dimensions"
     },
@@ -24,7 +36,7 @@ let design = {
                 "y": {
                     "field": "max",
                     "type": "quantitative",
-                    "scale": { "zero": false },
+                    //"scale": { "zero": false },
                     "title": "Point value"
                 },
                 "y2": { "field": "min" },
@@ -55,7 +67,7 @@ let design = {
                     { "field": "avg", "type": "quantitative", "title": "Average" },
                 ]
             }
-        },
+        }/*,
         {
             "mark": {
                 "type": "line",
@@ -65,7 +77,7 @@ let design = {
             "encoding": {
                 "x": {
                     "field": "id",
-                    "type": "ordinal",
+                    "type": "quantitative",
                     "title": "Dimension"
                 },
                 "y": {
@@ -75,6 +87,6 @@ let design = {
                     { "field": "mean", "type": "quantitative", "title": "Mean" },
                 ]
             }
-        }
+        }*/
     ]
 }
