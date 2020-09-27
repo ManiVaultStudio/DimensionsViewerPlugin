@@ -19,9 +19,16 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* histogramViewerPlugin) :
 	QObject::connect(_ui->datasetsComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
 		emit datasetChanged(currentText);
 	});
+
+	/*
+	QObject::connect(&_dimensionsViewerPlugin->getDatasetsModel(), &QAbstractItemModel::rowsInserted, [this](const QModelIndex& parent, int first, int last) {
+		if (_dimensionsViewerPlugin->getDatasetsModel().rowCount() == 1)
+			_ui->datasetsComboBox->setCurrentIndex(0);
+	});
+	*/
 }
 
-QString SettingsWidget::getCurrentDataset() const
+QString SettingsWidget::getCurrentDatasetName() const
 {
 	return _ui->datasetsComboBox->currentText();
 }

@@ -21,7 +21,7 @@ public:
 
 public:
 
-	QString getCurrentDataset() const;
+	QString getCurrentDatasetName() const;
 
 signals:
 	void datasetChanged(const QString& dataset);

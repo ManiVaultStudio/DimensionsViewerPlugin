@@ -2,7 +2,8 @@
     <qresource prefix="/">
         <file alias="DimensionsViewer.html">res/web/DimensionsViewer.html</file>
         <file alias="DimensionsViewer.js">res/web/DimensionsViewer.js</file>
-		<file alias="Vega.js">res/web/Vega.js</file>
-		<file alias="VegaEmbed.js">res/web/VegaEmbed.js</file>
+		<file alias="Vega5.js">res/web/Vega5.js</file>
+		<file alias="VegaEmbed5.js">res/web/VegaEmbed5.js</file>
+		<file alias="VegaLite4.js">res/web/VegaLite4.js</file>
     </qresource>
 </RCC>

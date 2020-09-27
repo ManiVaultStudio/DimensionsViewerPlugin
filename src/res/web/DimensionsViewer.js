@@ -1,55 +1,50 @@
-let design = {
-    "$schema": "https://vega.github.io/schema/vega/v5.json",
-    "width": 400,
-    "height": 200,
-    "padding": 5,
-    "autosize": { "type": "fit", "resize": true },
-
-    "data": [
-      {
-          "name": "dimensions"
-      }
-    ],
-
-    "scales": [
+let design =
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "data": {
+        "name": "dimensions"
+    },
+    "layer": [
         {
-            "name": "xscale",
-            "type": "band",
-            "domain": { "data": "dimensions", "field": "name" },
-            "range": "width",
-            "padding": 0.05,
-            "round": true
+            "mark": {
+                "type": "errorband",
+                "borders": {
+                    "opacity": 0.5,
+                    "strokeDash": [6, 4]
+                }
+            },
+            "encoding": {
+                "y": {
+                    "field": "max",
+                    "type": "quantitative",
+                    //"scale": { "zero": false },
+                    "title": "Point value"
+                },
+                "y2": { "field": "min" },
+                "x": {
+                    "field": "id",
+                    
+                },
+                "tooltip": [
+                    { "field": "min", "type": "quantitative", "title": "Minimum" },
+                    { "field": "max", "type": "quantitative", "title": "Maximum" },
+                    { "field": "avg", "type": "quantitative", "title": "Average" },
+                    { "field": "name", "type": "quantitative", "title": "Dimension name" },
+                ]
+            }
         },
         {
-            "name": "yscale",
-            "domain": { "data": "dimensions", "field": "avg" },
-            "nice": true,
-            "range": "height"
-        }
-    ],
-
-    "axes": [
-        { "orient": "bottom", "scale": "xscale" },
-        { "orient": "left", "scale": "yscale" }
-    ],
-
-
-    "marks": [
-        {
-            "type": "rect",
-            "from": { "data": "dimensions" },
-            "encode": {
-                "enter": {
-                    "x": { "scale": "xscale", "field": "name" },
-                    "width": { "scale": "xscale", "band": 1 },
-                    "y": { "scale": "yscale", "field": "avg" },
-                    "y2": { "scale": "yscale", "value": 0 }
+            "mark": {
+                "type": "line",
+                "point": true
+            },
+            "encoding": {
+                "y": {
+                    "field": "avg",
+                    "type": "quantitative"
                 },
-                "update": {
-                    "fill": { "value": "steelblue" }
-                },
-                "hover": {
-                    "fill": { "value": "red" }
+                "x": {
+                    "field": "id",
                 }
             }
         }

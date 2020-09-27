@@ -39,6 +39,12 @@ private:
 	/** Returns the indices of the selected points */
 	std::vector<std::uint32_t> selectedIndices() const;
 
+	/**
+	 * Sets the current dataset name
+	 * @param currentDatasetName Current dataset name
+	 */
+	void setCurrentDatasetName(const QString& currentDatasetName);
+
 public:
 	
 	/** Get dimensions */

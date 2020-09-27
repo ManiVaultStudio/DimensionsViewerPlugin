@@ -19,9 +19,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 	//setIcon(hdps::Application::getIconFont("FontAwesome").getIcon("chart-line"));
 
 	QObject::connect(_settingsWidget, &SettingsWidget::datasetChanged, [this](const QString& dataset) {
-		_points = &dynamic_cast<Points&>(_core->requestData(dataset));
-
-		_dimensions.update(_points, selectedIndices());
+		setCurrentDatasetName(dataset);
 	});
 }
 
@@ -41,6 +39,13 @@ std::vector<std::uint32_t> DimensionsViewerPlugin::selectedIndices() const
 	return selection.indices;
 }
 
+void DimensionsViewerPlugin::setCurrentDatasetName(const QString& currentDatasetName)
+{
+	_points = &dynamic_cast<Points&>(_core->requestData(currentDatasetName));
+
+	_dimensions.update(_points, selectedIndices());
+}
+
 QSize DimensionsViewerPlugin::sizeHint() const
 {
 	return QSize(100, 100);
@@ -55,8 +60,6 @@ void DimensionsViewerPlugin::dataAdded(const QString dataset)
 	datasets << dataset;
 
 	_datasetsModel.setStringList(datasets);
-
-	//_dimensions.update(dataset);
 }
 
 void DimensionsViewerPlugin::dataChanged(const QString dataset)
@@ -66,7 +69,7 @@ void DimensionsViewerPlugin::dataChanged(const QString dataset)
 	if (_points == nullptr)
 		return;
 
-	if (dataset != _settingsWidget->getCurrentDataset())
+	if (dataset != _settingsWidget->getCurrentDatasetName())
 		return;
 
 	_dimensions.update(_points, selectedIndices());
