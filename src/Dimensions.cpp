@@ -62,12 +62,16 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 
 	auto dimensionIndex = 0;
 
-	for (auto dimension : dimensions) {
-		const auto minMax	= std::minmax_element(dimension.begin(), dimension.end());
-		const auto min		= *minMax.first;
-		const auto max		= *minMax.second;
-		const auto sum		= std::accumulate(dimension.begin(), dimension.end(), 0);
-		const auto average	= sum / static_cast<float>(noPoints);
+	for (auto& dimension : dimensions) {
+		std::sort(dimension.begin(), dimension.end());
+
+		const auto minMax		= std::minmax_element(dimension.begin(), dimension.end());
+		const auto min			= *minMax.first;
+		const auto max			= *minMax.second;
+		const auto sum			= std::accumulate(dimension.begin(), dimension.end(), 0);
+		const auto average		= sum / static_cast<float>(noPoints);
+		const auto centerIndex	= static_cast<int>(floorf(dimension.size() / 2));
+		const auto mean			= dimension[centerIndex];
 
 		auto jsonObject = QJsonObject();
 
@@ -76,6 +80,7 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		jsonObject.insert("min", min);
 		jsonObject.insert("max", max);
 		jsonObject.insert("avg", average);
+		jsonObject.insert("mean", mean);
 
 		jsonValues.push_back(jsonObject);
 
