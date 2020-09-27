@@ -19,7 +19,7 @@
 		<script>
             var onDimensionsChanged = function (dimensions) {
                 let changeset = vega.changeset().remove(() => true).insert(JSON.parse(dimensions));
-                view.change('dimensions', changeset).run()
+                view.change('dimensions', changeset).run();
 			}
 
 			new QWebChannel(qt.webChannelTransport,
@@ -32,7 +32,7 @@
 
             window.onresize = function (event) {
                 view.signal('width', event.target.innerWidth - 100)
-                    .signal('height', event.target.innerHeight - 100)
+                    .signal('height', event.target.innerHeight - 40)
                     .run('enter');
             }
 		</script>

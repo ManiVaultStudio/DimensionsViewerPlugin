@@ -1,15 +1,11 @@
-let design =
-{
+let design = {
     "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
     "autosize": {
         "type": "fit",
-        "contains": "padding"
+        "resize": true
     },
     "data": {
         "name": "dimensions"
-    },
-    "config": {
-        "axis": { "grid": true, "tickBand": "extent" }
     },
     "layer": [
         {
@@ -21,6 +17,10 @@ let design =
                 }
             },
             "encoding": {
+                "x": {
+                    "field": "id",
+                    "type": "ordinal"
+                },
                 "y": {
                     "field": "max",
                     "type": "quantitative",
@@ -28,10 +28,6 @@ let design =
                     "title": "Point value"
                 },
                 "y2": { "field": "min" },
-                "x": {
-                    "field": "id",
-                    "type": "ordinal"
-                },
                 "tooltip": [
                     { "field": "min", "type": "quantitative", "title": "Minimum" },
                     { "field": "max", "type": "quantitative", "title": "Maximum" },
@@ -55,14 +51,11 @@ let design =
                     "field": "avg",
                     "type": "quantitative"
                 },
-                "color": {
-                    //"value": "red",
-                },
                 "tooltip": [
                     { "field": "avg", "type": "quantitative", "title": "Average" },
                 ]
             }
-        }/*,
+        },
         {
             "mark": {
                 "type": "line",
@@ -73,6 +66,7 @@ let design =
                 "x": {
                     "field": "id",
                     "type": "ordinal",
+                    "title": "Dimension"
                 },
                 "y": {
                     "field": "mean",
@@ -81,6 +75,6 @@ let design =
                     { "field": "mean", "type": "quantitative", "title": "Mean" },
                 ]
             }
-        }*/
+        }
     ]
 }
