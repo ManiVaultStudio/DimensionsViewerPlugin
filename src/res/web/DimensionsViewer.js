@@ -1,21 +1,15 @@
 let design =
 {
     "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "autosize": {
+        "type": "fit",
+        "contains": "padding"
+    },
     "data": {
         "name": "dimensions"
     },
     "config": {
         "axis": { "grid": true, "tickBand": "extent" }
-    },
-    "encoding": {
-        "x": {
-            "field": "id",
-            "title": "Mean of b",
-            "timeUnit": "year",
-            "axis": {
-                "title": "Mean of b",
-            }
-        }
     },
     "layer": [
         {
@@ -36,6 +30,7 @@ let design =
                 "y2": { "field": "min" },
                 "x": {
                     "field": "id",
+                    "type": "ordinal"
                 },
                 "tooltip": [
                     { "field": "min", "type": "quantitative", "title": "Minimum" },
@@ -54,7 +49,7 @@ let design =
             "encoding": {
                 "x": {
                     "field": "id",
-                    "type": "quantitative"
+                    "type": "ordinal"
                 },
                 "y": {
                     "field": "avg",
@@ -67,7 +62,7 @@ let design =
                     { "field": "avg", "type": "quantitative", "title": "Average" },
                 ]
             }
-        },
+        }/*,
         {
             "mark": {
                 "type": "line",
@@ -77,8 +72,7 @@ let design =
             "encoding": {
                 "x": {
                     "field": "id",
-                    "type": "quantitative",
-                    "title": "asddad"
+                    "type": "ordinal",
                 },
                 "y": {
                     "field": "mean",
@@ -87,6 +81,6 @@ let design =
                     { "field": "mean", "type": "quantitative", "title": "Mean" },
                 ]
             }
-        }
+        }*/
     ]
 }

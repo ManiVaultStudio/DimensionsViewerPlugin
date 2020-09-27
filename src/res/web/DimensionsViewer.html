@@ -9,6 +9,7 @@
     <script type="text/javascript" src="qrc:///Vega5.js"></script>
     <script type="text/javascript" src="qrc:///VegaEmbed5.js"></script>
     <script type="text/javascript" src="qrc:///VegaLite4.js"></script>
+        style="background-color:red; width: 300px; height: 300px;"
     -->
     <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>
 
@@ -27,7 +28,13 @@
                     dimensionsViewer.changed.connect(onDimensionsChanged);
 				});
 
-			vegaEmbed('#view', design).then(p => window.view = p.view);
+            vegaEmbed('#view', design).then(p => window.view = p.view);
+
+            window.onresize = function (event) {
+                view.signal('width', event.target.innerWidth - 100)
+                    .signal('height', event.target.innerHeight - 100)
+                    .run('enter');
+            }
 		</script>
 	</body>
 </html>
