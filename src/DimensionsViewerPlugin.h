@@ -8,9 +8,6 @@
 
 #include "PointData.h"
 
-#include <QStringListModel>
-#include <QItemSelectionModel>
-
 using hdps::plugin::ViewPluginFactory;
 using hdps::plugin::ViewPlugin;
 
@@ -50,17 +47,17 @@ public:
 	/** Get dimensions */
 	Dimensions& getDimensions() { return _dimensions; };
 
-	/** Returns the datasets model (string list with names of the datasets) */
-	QStringListModel& getDatasetsModel() { return _datasetsModel; }
+	/** Returns the datasets */
+	QStringList& getDatasets() { return _datasets; }
 
 public: // GUI
 
-	QSize sizeHint() const override;
-
 signals:
 
+	void datasetsChanged(const QStringList& datasets);
+
 private:
-	QStringListModel			_datasetsModel;
+	QStringList					_datasets;
 	DimensionsViewerWidget*		_dimensionsViewerWidget;
 	SettingsWidget*				_settingsWidget;
 	Dimensions					_dimensions;

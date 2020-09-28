@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLabel>
+#include <QStringListModel>
 
 SettingsWidget::SettingsWidget(DimensionsViewerPlugin* histogramViewerPlugin) :
 	_dimensionsViewerPlugin(histogramViewerPlugin),
@@ -14,18 +15,21 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* histogramViewerPlugin) :
 {
 	_ui->setupUi(this);
 	
-	_ui->datasetsComboBox->setModel(&_dimensionsViewerPlugin->getDatasetsModel());
+	QObject::connect(_dimensionsViewerPlugin, &DimensionsViewerPlugin::datasetsChanged, [this](const QStringList& datasets) {
+		const auto currentIndex = _ui->datasetsComboBox->currentIndex();
+
+		_ui->datasetsComboBox->blockSignals(true);
+		_ui->datasetsComboBox->setModel(new QStringListModel(datasets));
+		_ui->datasetsComboBox->setCurrentIndex(currentIndex);
+		_ui->datasetsComboBox->blockSignals(false);
+
+		if (datasets.size() == 1)
+			emit datasetChanged(datasets.first());
+	});
 
 	QObject::connect(_ui->datasetsComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
 		emit datasetChanged(currentText);
 	});
-
-	/*
-	QObject::connect(&_dimensionsViewerPlugin->getDatasetsModel(), &QAbstractItemModel::rowsInserted, [this](const QModelIndex& parent, int first, int last) {
-		if (_dimensionsViewerPlugin->getDatasetsModel().rowCount() == 1)
-			_ui->datasetsComboBox->setCurrentIndex(0);
-	});
-	*/
 }
 
 QString SettingsWidget::getCurrentDatasetName() const

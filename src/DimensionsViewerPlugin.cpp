@@ -10,13 +10,15 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.HistogramViewerPlugin")
 
 DimensionsViewerPlugin::DimensionsViewerPlugin() : 
 	ViewPlugin("Dimensions Viewer"),
-	_datasetsModel(),
+	_datasets(),
 	_dimensionsViewerWidget(new DimensionsViewerWidget(this)),
 	_settingsWidget(new SettingsWidget(this)),
 	_dimensions(this),
 	_points(nullptr)
 {
-	//setIcon(hdps::Application::getIconFont("FontAwesome").getIcon("chart-line"));
+	setIcon(hdps::Application::getIconFont("FontAwesome").getIcon("chart-line"));
+	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+	//setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
 	QObject::connect(_settingsWidget, &SettingsWidget::datasetChanged, [this](const QString& dataset) {
 		setCurrentDatasetName(dataset);
@@ -46,20 +48,13 @@ void DimensionsViewerPlugin::setCurrentDatasetName(const QString& currentDataset
 	_dimensions.update(_points, selectedIndices());
 }
 
-QSize DimensionsViewerPlugin::sizeHint() const
-{
-	return QSize(100, 100);
-}
-
 void DimensionsViewerPlugin::dataAdded(const QString dataset)
 {
 	//qDebug() << "Data added" << dataset;
 
-	auto datasets = _datasetsModel.stringList();
+	_datasets << dataset;
 
-	datasets << dataset;
-
-	_datasetsModel.setStringList(datasets);
+	emit datasetsChanged(_datasets);
 }
 
 void DimensionsViewerPlugin::dataChanged(const QString dataset)
@@ -79,11 +74,7 @@ void DimensionsViewerPlugin::dataRemoved(const QString dataset)
 {
 	//qDebug() << "Data removed" << dataset;
 	
-	auto datasets = _datasetsModel.stringList();
-
-	datasets.removeOne(dataset);
-
-	_datasetsModel.setStringList(datasets);
+	_datasets.removeOne(dataset);
 }
 
 void DimensionsViewerPlugin::selectionChanged(const QString dataset)
