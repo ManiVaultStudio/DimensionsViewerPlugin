@@ -20,6 +20,8 @@ let design = {
         "name": "dimensions"
     },
     "layer": [
+
+        // Point value range
         {
             "mark": {
                 "type": "errorband",
@@ -27,6 +29,128 @@ let design = {
                     "opacity": 0.3,
                     "strokeDash": [2, 2]
                 }
+            },
+            "encoding": {
+                "x": {
+                    "field": "name",
+                    "type": "ordinal"
+                },
+                "y": {
+                    "field": "max",
+                    "type": "quantitative",
+                    //"scale": { "zero": false },
+                    "title": "Point value"
+                },
+                "y2": { "field": "min" },
+                "tooltip": [
+                    { "field": "min", "type": "quantitative", "title": "Minimum" },
+                    { "field": "max", "type": "quantitative", "title": "Maximum" },
+                    { "field": "avg", "type": "quantitative", "title": "Average" },
+                    { "field": "mean", "type": "quantitative", "title": "Mean" },
+                    { "field": "name", "type": "nominal", "title": "Dimension" },
+                ]
+            }
+        },
+
+        // Average point value
+        {
+            "mark": {
+                "type": "line",
+            },
+            "encoding": {
+                "x": {
+                    "field": "name",
+                    "type": "ordinal",
+                },
+                "y": {
+                    "field": "avg",
+                    "type": "quantitative",
+                },
+                "tooltip": [
+                    { "field": "avg", "type": "quantitative", "title": "Average point value" },
+                ]
+            }
+        },
+
+        // Mean point value
+        {
+            "mark": {
+                "type": "line",
+                "strokeWidth": 0.5,
+                "strokeDash": [6, 4]
+            },
+            "encoding": {
+                "x": {
+                    "field": "name",
+                    "type": "ordinal",
+                    "title": "Dimension"
+                },
+                "y": {
+                    "field": "mean",
+                    "type": "quantitative",
+                },
+                "tooltip": [
+                    { "field": "mean", "type": "quantitative", "title": "Mean point value" },
+                ]
+            }
+        }
+
+
+        /*
+        
+        {
+            "mark": {
+                "type": "bar",
+                //"point": true
+            },
+            "encoding": {
+                "x": {
+                    "field": "id",
+                    "type": "ordinal"
+                },
+                "y": {
+                    "field": "avg",
+                    "type": "quantitative"
+                },
+                "tooltip": [
+                    { "field": "min", "type": "quantitative", "title": "Minimum" },
+                    { "field": "max", "type": "quantitative", "title": "Maximum" },
+                    { "field": "avg", "type": "quantitative", "title": "Average" },
+                    { "field": "mean", "type": "quantitative", "title": "Mean" },
+                    { "field": "name", "type": "nominal", "title": "Dimension" }
+                ]
+            }
+        },
+
+        {
+            "mark": {
+                "type": "point",
+                //"shape": "stroke",
+                //"filled": true,
+                //"color": "black",
+
+                "size": 50
+            },
+            "encoding": {
+                "x": {
+                    "field": "id",
+                    "type": "ordinal",
+                },
+                "y": {
+                    "field": "min",
+                    "type": "quantitative"
+                },
+                "tooltip": [
+                    { "field": "min", "type": "quantitative", "title": "Minimum point value" },
+                ]
+            }
+        }
+
+
+        /*,
+        {
+            "mark": {
+                "type": "errorbar",
             },
             "encoding": {
                 "x": {
@@ -51,42 +175,24 @@ let design = {
         },
         {
             "mark": {
-                "type": "line",
-                "point": true
+                "type": "point",
+                "filled": true,
             },
             "encoding": {
                 "x": {
                     "field": "id",
-                    "type": "ordinal"
+                    "type": "ordinal",
                 },
                 "y": {
-                    "field": "avg",
+                    "field": "max",
                     "type": "quantitative"
                 },
                 "tooltip": [
-                    { "field": "avg", "type": "quantitative", "title": "Average" },
+                    { "field": "max", "type": "quantitative", "title": "Maximum point value" },
                 ]
             }
-        }/*,
-        {
-            "mark": {
-                "type": "line",
-                "strokeWidth": 0.5,
-                "strokeDash": [6, 4]
-            },
-            "encoding": {
-                "x": {
-                    "field": "id",
-                    "type": "quantitative",
-                    "title": "Dimension"
-                },
-                "y": {
-                    "field": "mean",
-                },
-                "tooltip": [
-                    { "field": "mean", "type": "quantitative", "title": "Mean" },
-                ]
-            }
-        }*/
+        }
+        */
+        
     ]
 }

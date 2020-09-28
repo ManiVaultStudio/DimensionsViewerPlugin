@@ -5,12 +5,6 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@5"></script>
-    <!--
-    <script type="text/javascript" src="qrc:///Vega5.js"></script>
-    <script type="text/javascript" src="qrc:///VegaEmbed5.js"></script>
-    <script type="text/javascript" src="qrc:///VegaLite4.js"></script>
-        style="background-color:red; width: 300px; height: 300px;"
-    -->
     <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>
 
 </head>
@@ -35,14 +29,12 @@
                     compiled: false,
                     editor: false
                 },
-                renderer: "svg",
+                //renderer: "svg",
                 defaultStyle: false
                 //padding: 100
             };
 
             vegaEmbed('#view', design, options).then(p => {
-                
-
                 element = document.getElementsByTagName("details");
 
                 for (index = 0; index < element.length; index++) {
@@ -51,13 +43,6 @@
 
                 window.view = p.view
             });
-            /*
-            window.onresize = function (event) {
-                view.signal('width', window.innerWidth)
-                    .signal('height', window.innerHeight)
-                    .run('enter');
-            }
-            */
 		</script>
 	</body>
 </html>
