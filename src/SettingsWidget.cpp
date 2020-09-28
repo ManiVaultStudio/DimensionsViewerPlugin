@@ -16,15 +16,16 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* histogramViewerPlugin) :
 	_ui->setupUi(this);
 	
 	QObject::connect(_dimensionsViewerPlugin, &DimensionsViewerPlugin::datasetsChanged, [this](const QStringList& datasets) {
-		const auto currentIndex = _ui->datasetsComboBox->currentIndex();
+		const auto currentIndex	= _ui->datasetsComboBox->currentIndex();
+		const auto firstDataset	= datasets.size() == 1;
 
 		_ui->datasetsComboBox->blockSignals(true);
 		_ui->datasetsComboBox->setModel(new QStringListModel(datasets));
-		_ui->datasetsComboBox->setCurrentIndex(currentIndex);
+		_ui->datasetsComboBox->setCurrentIndex(firstDataset ? 0 : currentIndex);
 		_ui->datasetsComboBox->blockSignals(false);
 
-		if (datasets.size() == 1)
-			emit datasetChanged(datasets.first());
+		if (firstDataset)
+			emit datasetChanged(datasets.last());
 	});
 
 	QObject::connect(_ui->datasetsComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
