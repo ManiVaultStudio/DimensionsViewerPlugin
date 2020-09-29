@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QVariantMap>
 
 class Points;
 
@@ -39,7 +40,7 @@ signals:
 	/**
 	 * 
 	 */
-	void changed(const QString& data);
+	void changed(const QVariantList& dimensions);
 
 private:
 	DimensionsViewerPlugin*		_dimensionsViewerPlugin;

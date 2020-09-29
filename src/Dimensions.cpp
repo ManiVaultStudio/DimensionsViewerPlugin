@@ -2,12 +2,11 @@
 
 #include "PointData.h"
 
+#include "util/Timer.h"
+
 #include <QDebug>
 #include <QList>
-#include <QJsonDocument>
-#include <QJsonValue>
-#include <QJsonArray>
-#include <QJsonObject>
+#include <QVariantList>
 
 Dimensions::Dimensions(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	QObject(),
@@ -35,6 +34,10 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		*/
 	}
 
+#ifdef _DEBUG
+	Timer timer("Compute payload");
+#endif // DEBUG
+
 	std::vector<std::uint32_t> dimensionIndices;
 
 	dimensionIndices.resize(points->getNumDimensions());
@@ -60,7 +63,11 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		}
 	});
 
-	auto jsonValues = QJsonArray();
+	//auto jsonValues = QJsonArray();
+
+
+
+	QVariantList payload;
 
 	auto dimensionIndex = 0;
 
@@ -75,6 +82,18 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		const auto centerIndex	= static_cast<int>(floorf(dimension.size() / 2));
 		const auto mean			= dimension[centerIndex];
 
+		QVariantMap dimension;
+
+		dimension["id"]		= dimensionIndex;
+		dimension["name"]	= points->getDimensionNames().at(dimensionIndex);
+		dimension["min"]	= min;
+		dimension["max"]	= max;
+		dimension["avg"]	= average;
+		dimension["mean"]	= mean;
+
+		payload.append(dimension);
+
+		/*
 		auto jsonObject = QJsonObject();
 
 		jsonObject.insert("id", dimensionIndex);
@@ -85,13 +104,10 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		jsonObject.insert("mean", mean);
 
 		jsonValues.push_back(jsonObject);
+		*/
 
 		dimensionIndex++;
 	}
 
-	const auto data = QString(QJsonDocument(jsonValues).toJson(QJsonDocument::Indented));
-
-	//qDebug() << data;
-
-	emit changed(data);
+	emit changed(payload);
 }

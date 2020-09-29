@@ -12,13 +12,14 @@
 		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
 		<script>
             var onDimensionsChanged = function (dimensions) {
-                let changeset = vega.changeset().remove(() => true).insert(JSON.parse(dimensions));
+                let changeset = vega.changeset().remove(() => true).insert(dimensions);
                 view.change('dimensions', changeset).run();
 			}
 
 			new QWebChannel(qt.webChannelTransport,
 				function (channel) {
-					var dimensionsViewer = channel.objects.dimensionsViewer;
+                    var dimensionsViewer = channel.objects.dimensionsViewer;
+
                     dimensionsViewer.changed.connect(onDimensionsChanged);
 				});
 
@@ -29,7 +30,7 @@
                     compiled: false,
                     editor: false
                 },
-                //renderer: "svg",
+                renderer: "canvas",
                 defaultStyle: false
                 //padding: 100
             };
