@@ -72,32 +72,7 @@ let design = {
             }
         },
 
-        // Mean point value
-        {
-            "mark": {
-                "type": "line",
-                "strokeWidth": 0.5,
-                "strokeDash": [6, 4]
-            },
-            "encoding": {
-                "x": {
-                    "field": "name",
-                    "type": "ordinal",
-                    "title": "Dimension"
-                },
-                "y": {
-                    "field": "mean",
-                    "type": "quantitative",
-                },
-                "tooltip": [
-                    { "field": "mean", "type": "quantitative", "title": "Mean point value" },
-                ]
-            }
-        }
-
-
         /*
-        
         {
             "mark": {
                 "type": "bar",

@@ -1,4 +1,5 @@
 #include "Dimensions.h"
+#include "DimensionStatistics.h"
 
 #include "PointData.h"
 
@@ -18,10 +19,6 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 {
 	qDebug() << "Updating dimensions for" << points->getName() << "with selection" << selectedIndices.size();
 
-#ifdef _DEBUG
-	Timer timer("Update dimensions");
-
-#endif // DEBUG
 	const auto noSelectedPoints = selectedIndices.size();
 	const auto hasSelection		= noSelectedPoints > 0;
 	const auto noPoints			= hasSelection ? noSelectedPoints : points->getNumPoints();
@@ -43,20 +40,16 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 	dimensionIndices.resize(points->getNumDimensions());
 	std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
 
-	auto dimensions = QVector<Values>();
+	QVector<DimensionStatistics> statistics;
 
-	dimensions.resize(points->getNumDimensions());
-	
-	for (auto& dimension : dimensions) {
-		dimension.resize(noPoints);
-	}
+	statistics.resize(points->getNumDimensions());
 
-	points->visitData([this, &pointIndices, &dimensionIndices, &dimensions](auto pointData) {
+	points->visitData([this, &pointIndices, &dimensionIndices, &statistics](auto pointData) {
 		auto localPointIndex = 0;
 
 		for (const auto& pointIndex : pointIndices) {
 			for (const auto& dimensionIndex : dimensionIndices) {
-				dimensions[dimensionIndex][localPointIndex] = pointData[pointIndex][dimensionIndex];
+				statistics[dimensionIndex].addValue(pointData[pointIndex][dimensionIndex]);
 			}
 
 			localPointIndex++;
@@ -67,25 +60,14 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 
 	auto dimensionIndex = 0;
 
-	for (auto& dimension : dimensions) {
-		std::sort(dimension.begin(), dimension.end());
-
-		const auto minMax		= std::minmax_element(dimension.begin(), dimension.end());
-		const auto min			= *minMax.first;
-		const auto max			= *minMax.second;
-		const auto sum			= std::accumulate(dimension.begin(), dimension.end(), 0);
-		const auto average		= sum / static_cast<float>(noPoints);
-		const auto centerIndex	= static_cast<int>(floorf(dimension.size() / 2));
-		const auto mean			= dimension[centerIndex];
-
+	for (auto& statistic : statistics) {
 		QVariantMap dimension;
 
 		dimension["id"]		= dimensionIndex;
 		dimension["name"]	= points->getDimensionNames().at(dimensionIndex);
-		dimension["min"]	= min;
-		dimension["max"]	= max;
-		dimension["avg"]	= average;
-		dimension["mean"]	= mean;
+		dimension["min"]	= statistic.getMin();
+		dimension["max"]	= statistic.getMax();
+		dimension["avg"]	= statistic.getAverage();
 
 		payload.append(dimension);
 
