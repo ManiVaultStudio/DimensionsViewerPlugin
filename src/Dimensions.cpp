@@ -18,6 +18,10 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 {
 	qDebug() << "Updating dimensions for" << points->getName() << "with selection" << selectedIndices.size();
 
+#ifdef _DEBUG
+	Timer timer("Update dimensions");
+
+#endif // DEBUG
 	const auto noSelectedPoints = selectedIndices.size();
 	const auto hasSelection		= noSelectedPoints > 0;
 	const auto noPoints			= hasSelection ? noSelectedPoints : points->getNumPoints();
@@ -33,10 +37,6 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		std::iota(pointIndices.begin(), pointIndices.end(), 0);
 		*/
 	}
-
-#ifdef _DEBUG
-	Timer timer("Compute payload");
-#endif // DEBUG
 
 	std::vector<std::uint32_t> dimensionIndices;
 
@@ -63,10 +63,6 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		}
 	});
 
-	//auto jsonValues = QJsonArray();
-
-
-
 	QVariantList payload;
 
 	auto dimensionIndex = 0;
@@ -92,19 +88,6 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 		dimension["mean"]	= mean;
 
 		payload.append(dimension);
-
-		/*
-		auto jsonObject = QJsonObject();
-
-		jsonObject.insert("id", dimensionIndex);
-		jsonObject.insert("name", points->getDimensionNames().at(dimensionIndex));
-		jsonObject.insert("min", min);
-		jsonObject.insert("max", max);
-		jsonObject.insert("avg", average);
-		jsonObject.insert("mean", mean);
-
-		jsonValues.push_back(jsonObject);
-		*/
 
 		dimensionIndex++;
 	}
