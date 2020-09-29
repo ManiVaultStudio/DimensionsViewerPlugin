@@ -46,7 +46,6 @@ let design = {
                     { "field": "min", "type": "quantitative", "title": "Minimum" },
                     { "field": "max", "type": "quantitative", "title": "Maximum" },
                     { "field": "avg", "type": "quantitative", "title": "Average" },
-                    { "field": "mean", "type": "quantitative", "title": "Mean" },
                     { "field": "name", "type": "nominal", "title": "Dimension" },
                 ]
             }
@@ -91,7 +90,6 @@ let design = {
                     { "field": "min", "type": "quantitative", "title": "Minimum" },
                     { "field": "max", "type": "quantitative", "title": "Maximum" },
                     { "field": "avg", "type": "quantitative", "title": "Average" },
-                    { "field": "mean", "type": "quantitative", "title": "Mean" },
                     { "field": "name", "type": "nominal", "title": "Dimension" }
                 ]
             }
@@ -143,7 +141,6 @@ let design = {
                     { "field": "min", "type": "quantitative", "title": "Minimum" },
                     { "field": "max", "type": "quantitative", "title": "Maximum" },
                     { "field": "avg", "type": "quantitative", "title": "Average" },
-                    { "field": "mean", "type": "quantitative", "title": "Mean" },
                     { "field": "name", "type": "nominal", "title": "Dimension" },
                 ]
             }
