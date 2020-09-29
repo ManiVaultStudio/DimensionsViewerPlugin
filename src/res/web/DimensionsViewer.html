@@ -11,11 +11,14 @@
 	<body style="padding: 0; margin: 0; width: 100%; height: 100%;">
 		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
 		<script>
+
+            // Invoked when the Dimensions object (C++) sends the changed() signal 
             var onDimensionsChanged = function (dimensions) {
                 let changeset = vega.changeset().remove(() => true).insert(dimensions);
                 view.change('dimensions', changeset).run();
 			}
 
+            // Create new webchannel and connect to signals from C++
 			new QWebChannel(qt.webChannelTransport,
 				function (channel) {
                     var dimensionsViewer = channel.objects.dimensionsViewer;
@@ -23,25 +26,24 @@
                     dimensionsViewer.changed.connect(onDimensionsChanged);
 				});
 
+            // Vega visualization options
             var options = {
-                actions: {
-                    export: false,
-                    source: false,
-                    compiled: false,
-                    editor: false
-                },
                 renderer: "canvas",
                 defaultStyle: false
-                //padding: 100
             };
 
+            // Embed the Vega view
             vegaEmbed('#view', design, options).then(p => {
+
+                // Find elements with tag name details
                 element = document.getElementsByTagName("details");
 
+                // And remove them (they corrupt the layout)
                 for (index = 0; index < element.length; index++) {
                     element[index].parentNode.removeChild(element[index]);
                 }
 
+                // Attached the Vega view to the global window variable so that we can later use it
                 window.view = p.view
             });
 		</script>
