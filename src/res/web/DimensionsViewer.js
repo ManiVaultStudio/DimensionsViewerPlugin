@@ -17,7 +17,7 @@ let design = {
     */
     "padding": 20,
     "data": {
-        "name": "dimensions"
+        "name": "dataSet1"
     },
     "layer": [
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>649</width>
-    <height>122</height>
+    <height>110</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,119 +39,46 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="2" column="0" colspan="3">
-         <widget class="QWidget" name="dataset3Widget" native="true">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <layout class="QHBoxLayout" name="dataset3HorizontalLayout">
-             <item>
-              <widget class="QCheckBox" name="dataset3EnabledCheckBox">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Selection 2</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="dataset3ComboBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="pushButton_3">
-               <property name="text">
-                <string>PushButton</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <item row="1" column="0" colspan="2">
+         <layout class="QHBoxLayout" name="dataSet2HorizontalLayout">
+          <item>
+           <widget class="QCheckBox" name="dataSet2EnabledCheckBox">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Selection 1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="dataSet2ComboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>1</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="dataSetPushButton">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
-        <item row="1" column="0" colspan="3">
-         <widget class="QWidget" name="dataset2Widget" native="true">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <layout class="QHBoxLayout" name="dataset2HorizontalLayout">
-             <item>
-              <widget class="QCheckBox" name="dataset2EnabledCheckBox">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Selection 1</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="pushButton_4">
-               <property name="text">
-                <string>PushButton</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="3">
-         <widget class="QWidget" name="dataset1Widget" native="true">
+        <item row="0" column="0" colspan="2">
+         <widget class="QWidget" name="dataSet1Widget" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <property name="leftMargin">
             <number>0</number>
@@ -166,7 +93,7 @@
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="dataset2HorizontalLayout_2">
+            <layout class="QHBoxLayout" name="dataSet1HorizontalLayout_2">
              <item>
               <widget class="QLabel" name="label">
                <property name="minimumSize">
@@ -181,7 +108,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="datasetsComboBox">
+              <widget class="QComboBox" name="dataSet1ComboBox">
                <property name="enabled">
                 <bool>true</bool>
                </property>
@@ -197,7 +124,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_5">
+              <widget class="QPushButton" name="dataSetPushButton_3">
                <property name="text">
                 <string>PushButton</string>
                </property>
@@ -207,6 +134,40 @@
            </item>
           </layout>
          </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <layout class="QHBoxLayout" name="dataSet3HorizontalLayout">
+          <item>
+           <widget class="QCheckBox" name="dataSet3EnabledCheckBox">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Selection 2</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="dataSet3ComboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>1</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="dataSetPushButton_2">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>

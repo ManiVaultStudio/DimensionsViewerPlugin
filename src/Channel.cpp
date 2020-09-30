@@ -1,4 +1,5 @@
-#include "Dimensions.h"
+#include "Channel.h"
+#include "DimensionsViewerPlugin.h"
 #include "DimensionStatistics.h"
 
 #include "PointData.h"
@@ -9,13 +10,16 @@
 #include <QList>
 #include <QVariantList>
 
-Dimensions::Dimensions(DimensionsViewerPlugin* dimensionsViewerPlugin) :
-	QObject(),
-	_dimensionsViewerPlugin(dimensionsViewerPlugin)
+Channel::Channel(const QString& name, DimensionsViewerPlugin* dimensionsViewerPlugin) :
+	QObject(reinterpret_cast<QObject*>(dimensionsViewerPlugin)),
+	_name(name),
+	_dimensionsViewerPlugin(dimensionsViewerPlugin),
+	_dataSetName(),
+	_points(nullptr)
 {
 }
 
-void Dimensions::update(Points* points, const std::vector<std::uint32_t>& selectedIndices /*= std::vector<std::uint32_t>()*/)
+void Channel::update(Points* points, const std::vector<std::uint32_t>& selectedIndices /*= std::vector<std::uint32_t>()*/)
 {
 	qDebug() << "Updating dimensions for" << points->getName() << "with selection" << selectedIndices.size();
 
@@ -75,4 +79,28 @@ void Dimensions::update(Points* points, const std::vector<std::uint32_t>& select
 	}
 
 	emit changed(payload);
+}
+
+void Channel::setDataSetName(const QString& dataSetName)
+{
+	_dataSetName = dataSetName;
+
+	_points = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(dataSetName));
+
+	//_dimensions.update(_points, selectedIndices());
+}
+
+QString Channel::getDataSetName() const
+{
+	return _dataSetName;
+}
+
+std::vector<std::uint32_t> Channel::selectedIndices() const
+{
+	if (_points == nullptr)
+		return std::vector<std::uint32_t>();
+
+	const auto& selection = dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestSelection(_points->getDataName()));
+
+	return selection.indices;
 }

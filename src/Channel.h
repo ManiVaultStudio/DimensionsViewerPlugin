@@ -9,15 +9,10 @@ class Points;
 class DimensionsViewerPlugin;
 
 /**
- * Dimensions class
- *
- * Computes dimension statistics
  */
-class Dimensions : public QObject
+class Channel : public QObject
 {
 	Q_OBJECT
-
-	using Values = QVector<float>;
 
 public: // Construction/destruction
 
@@ -25,7 +20,7 @@ public: // Construction/destruction
 	 * Constructor
 	 * @param dimensionsViewerPlugin Pointer to the parent dimensions viewer plugin
 	 */
-	Dimensions(DimensionsViewerPlugin* dimensionsViewerPlugin);
+	Channel(const QString& name, DimensionsViewerPlugin* dimensionsViewerPlugin);
 
 public:
 
@@ -35,6 +30,16 @@ public:
 	 */
 	void update(Points* points, const std::vector<std::uint32_t>& selectedIndices = std::vector<std::uint32_t>());
 
+	void setDataSetName(const QString& name);
+	QString getDataSetName()const;
+
+	QString getName() { return _name; }
+
+private:
+
+	/** Returns the indices of the selected points */
+	std::vector<std::uint32_t> selectedIndices() const;
+
 signals:
 
 	/**
@@ -43,5 +48,9 @@ signals:
 	void changed(const QVariantList& dimensions);
 
 private:
+	QString						_name;
 	DimensionsViewerPlugin*		_dimensionsViewerPlugin;
+	QString						_dataSetName;
+	Points*						_points;
+	
 };

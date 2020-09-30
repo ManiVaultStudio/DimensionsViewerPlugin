@@ -1,6 +1,7 @@
 #include "DimensionsViewerPlugin.h"
 #include "DimensionsViewerWidget.h"
 #include "SettingsWidget.h"
+#include "Channel.h"
 
 #include "Application.h"
 
@@ -13,16 +14,21 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 	_datasets(),
 	_dimensionsViewerWidget(new DimensionsViewerWidget(this)),
 	_settingsWidget(new SettingsWidget(this)),
-	_dimensions(this),
-	_points(nullptr)
+	_channels()
 {
 	setIcon(hdps::Application::getIconFont("FontAwesome").getIcon("chart-line"));
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 	//setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
+	/*
 	QObject::connect(_settingsWidget, &SettingsWidget::datasetChanged, [this](const QString& dataset) {
 		setCurrentDatasetName(dataset);
 	});
+	*/
+
+	_channels.append(new Channel("Channel1", this));
+	_channels.append(new Channel("Channel2", this));
+	_channels.append(new Channel("Channel3", this));
 }
 
 void DimensionsViewerPlugin::init()
@@ -31,63 +37,70 @@ void DimensionsViewerPlugin::init()
 	addWidget(_settingsWidget);
 }
 
-std::vector<std::uint32_t> DimensionsViewerPlugin::selectedIndices() const
-{
-	if (_points == nullptr)
-		return std::vector<std::uint32_t>();
-
-	const auto& selection = dynamic_cast<Points&>(_core->requestSelection(_points->getDataName()));
-
-	return selection.indices;
-}
-
-void DimensionsViewerPlugin::setCurrentDatasetName(const QString& currentDatasetName)
-{
-	_points = &dynamic_cast<Points&>(_core->requestData(currentDatasetName));
-
-	_dimensions.update(_points, selectedIndices());
-}
-
 void DimensionsViewerPlugin::dataAdded(const QString dataset)
 {
 	//qDebug() << "Data added" << dataset;
 
-	_datasets << dataset;
+	/*
+	auto& points = dynamic_cast<Points&>(_core->requestData(dataset));
+
+	const auto dataName = points.getDataName();
+
+	auto isSubset = false;
+
+	QString sourceDataSetName;
+
+	for (const auto& datasetName : _datasets.keys()) {
+		auto& localPoints = dynamic_cast<Points&>(_core->requestData(datasetName));
+
+		const auto sourceDataName = localPoints.getDataName();
+
+		if (dataName == sourceDataName) {
+			isSubset = true;
+			sourceDataSetName = localPoints.getName();
+		}
+	}
+
+	if (isSubset) {
+		_datasets[sourceDataSetName] << dataset;
+	}
+	else {
+		_datasets[dataset] = QStringList();
+	}
 
 	emit datasetsChanged(_datasets);
+	*/
 }
 
 void DimensionsViewerPlugin::dataChanged(const QString dataset)
 {
 	//qDebug() << "Data changed" << dataset;
 
-	if (_points == nullptr)
-		return;
-
+	/*
 	if (dataset != _settingsWidget->getCurrentDatasetName())
 		return;
+	*/
 
-	_dimensions.update(_points, selectedIndices());
+	//_channels.update(_points, selectedIndices());
 }
 
 void DimensionsViewerPlugin::dataRemoved(const QString dataset)
 {
 	//qDebug() << "Data removed" << dataset;
 	
-	_datasets.removeOne(dataset);
+	_datasets.remove(dataset);
 }
 
 void DimensionsViewerPlugin::selectionChanged(const QString dataset)
 {
 	//qDebug() << "Selection changed" << dataset;
 
-	if (_points == nullptr)
-		return;
-
+	/*
 	if (dataset != _points->getDataName())
 		return;
+	*/
 
-	_dimensions.update(_points, selectedIndices());
+	//_channels.update(_points, selectedIndices());
 }
 
 hdps::DataTypes DimensionsViewerPlugin::supportedDataTypes() const

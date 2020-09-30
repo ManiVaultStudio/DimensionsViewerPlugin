@@ -4,9 +4,12 @@
 
 #include "Common.h"
 
-#include "Dimensions.h"
+#include "Channel.h"
 
 #include "PointData.h"
+
+#include <QMap>
+#include <QStringList>
 
 using hdps::plugin::ViewPluginFactory;
 using hdps::plugin::ViewPlugin;
@@ -17,6 +20,11 @@ class SettingsWidget;
 class DimensionsViewerPlugin : public ViewPlugin
 {
 	Q_OBJECT
+
+public: // Aliases 
+
+	using Datasets = QMap<QString, QStringList>;
+	using Channels = QVector<Channel*>;
 
 public:
 	DimensionsViewerPlugin();
@@ -33,35 +41,30 @@ public:
 
 private:
 
-	/** Returns the indices of the selected points */
-	std::vector<std::uint32_t> selectedIndices() const;
-
-	/**
-	 * Sets the current dataset name
-	 * @param currentDatasetName Current dataset name
-	 */
-	void setCurrentDatasetName(const QString& currentDatasetName);
+	
 
 public:
 	
 	/** Get dimensions */
-	Dimensions& getDimensions() { return _dimensions; };
+	Channels& getChannels() { return _channels; };
 
 	/** Returns the datasets */
-	QStringList& getDatasets() { return _datasets; }
+	Datasets& getDatasets() { return _datasets; }
+
+	/** Returns a pointer to the core interface */
+	hdps::CoreInterface* getCore() { return _core; }
 
 public: // GUI
 
 signals:
 
-	void datasetsChanged(const QStringList& datasets);
+	void datasetsChanged(const Datasets& datasets);
 
 private:
-	QStringList					_datasets;
+	Datasets					_datasets;
 	DimensionsViewerWidget*		_dimensionsViewerWidget;
 	SettingsWidget*				_settingsWidget;
-	Dimensions					_dimensions;
-	Points*						_points;
+	Channels					_channels;
 };
 
 class DimensionsViewerPluginFactory : public ViewPluginFactory
