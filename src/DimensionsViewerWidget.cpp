@@ -14,7 +14,7 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 
 	QWebChannel* webChannel = new QWebChannel(this);
 
-	for (auto& channel : _dimensionsViewerPlugin->getChannels()) {
+	for (auto channel : _dimensionsViewerPlugin->getChannels()) {
 		webChannel->registerObject(channel->getName(), channel);
 	}
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>649</width>
-    <height>110</height>
+    <width>461</width>
+    <height>120</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,18 +20,6 @@
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
     <widget class="QGroupBox" name="settingsGroupBox">
      <property name="title">
@@ -47,6 +35,9 @@
          <layout class="QHBoxLayout" name="dataSet2HorizontalLayout">
           <item>
            <widget class="QCheckBox" name="dataSet2EnabledCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -60,6 +51,9 @@
           </item>
           <item>
            <widget class="QComboBox" name="dataSet2ComboBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -70,6 +64,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="dataSetPushButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>PushButton</string>
             </property>
@@ -96,6 +93,9 @@
             <layout class="QHBoxLayout" name="dataSet1HorizontalLayout_2">
              <item>
               <widget class="QLabel" name="label">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>100</width>
@@ -110,7 +110,7 @@
              <item>
               <widget class="QComboBox" name="dataSet1ComboBox">
                <property name="enabled">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -125,6 +125,9 @@
              </item>
              <item>
               <widget class="QPushButton" name="dataSetPushButton_3">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>PushButton</string>
                </property>
@@ -139,6 +142,9 @@
          <layout class="QHBoxLayout" name="dataSet3HorizontalLayout">
           <item>
            <widget class="QCheckBox" name="dataSet3EnabledCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -152,6 +158,9 @@
           </item>
           <item>
            <widget class="QComboBox" name="dataSet3ComboBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -162,6 +171,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="dataSetPushButton_2">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>PushButton</string>
             </property>

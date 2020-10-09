@@ -4,6 +4,7 @@
 
 #include "Common.h"
 
+#include "ConfigurationsModel.h"
 #include "Channel.h"
 
 #include "PointData.h"
@@ -23,7 +24,6 @@ class DimensionsViewerPlugin : public ViewPlugin
 
 public: // Aliases 
 
-	using Datasets = QMap<QString, QStringList>;
 	using Channels = QVector<Channel*>;
 
 public:
@@ -36,35 +36,27 @@ public:
 	void dataRemoved(const QString name) Q_DECL_OVERRIDE;
 	void selectionChanged(const QString dataName) Q_DECL_OVERRIDE;
 
-	/** Determines which data types this the image viewer is compatible with */
+	/** Determines which data types this viewer is compatible with */
 	hdps::DataTypes supportedDataTypes() const Q_DECL_OVERRIDE;
-
-private:
-
-	
 
 public:
 	
-	/** Get dimensions */
-	Channels& getChannels() { return _channels; };
+	/** Returns the configurations model */
+	ConfigurationsModel& getConfigurationsModel() { return _configurationsModel; }
 
-	/** Returns the datasets */
-	Datasets& getDatasets() { return _datasets; }
+	/** Get visualization channels */
+	Channels& getChannels() { return _channels; };
 
 	/** Returns a pointer to the core interface */
 	hdps::CoreInterface* getCore() { return _core; }
 
-public: // GUI
-
-signals:
-
-	void datasetsChanged(const Datasets& datasets);
+	Points* getPoints(const QString& datasetName);
 
 private:
-	Datasets					_datasets;
+	ConfigurationsModel			_configurationsModel;
+	Channels					_channels;
 	DimensionsViewerWidget*		_dimensionsViewerWidget;
 	SettingsWidget*				_settingsWidget;
-	Channels					_channels;
 };
 
 class DimensionsViewerPluginFactory : public ViewPluginFactory

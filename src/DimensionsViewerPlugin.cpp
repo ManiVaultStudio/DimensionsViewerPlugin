@@ -7,24 +7,19 @@
 
 #include <QDebug>
 
-Q_PLUGIN_METADATA(IID "nl.tudelft.HistogramViewerPlugin")
+Q_PLUGIN_METADATA(IID "nl.tudelft.DimensionsViewerPlugin")
 
 DimensionsViewerPlugin::DimensionsViewerPlugin() : 
 	ViewPlugin("Dimensions Viewer"),
-	_datasets(),
-	_dimensionsViewerWidget(new DimensionsViewerWidget(this)),
-	_settingsWidget(new SettingsWidget(this)),
-	_channels()
+	_configurationsModel(this),
+	_channels(),
+	_dimensionsViewerWidget(),
+	_settingsWidget()
 {
-	setIcon(hdps::Application::getIconFont("FontAwesome").getIcon("chart-line"));
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-	//setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-	/*
-	QObject::connect(_settingsWidget, &SettingsWidget::datasetChanged, [this](const QString& dataset) {
-		setCurrentDatasetName(dataset);
-	});
-	*/
+	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
+	_settingsWidget = new SettingsWidget(this);
 
 	_channels.append(new Channel("Channel1", this));
 	_channels.append(new Channel("Channel2", this));
@@ -41,35 +36,7 @@ void DimensionsViewerPlugin::dataAdded(const QString dataset)
 {
 	//qDebug() << "Data added" << dataset;
 
-	/*
-	auto& points = dynamic_cast<Points&>(_core->requestData(dataset));
-
-	const auto dataName = points.getDataName();
-
-	auto isSubset = false;
-
-	QString sourceDataSetName;
-
-	for (const auto& datasetName : _datasets.keys()) {
-		auto& localPoints = dynamic_cast<Points&>(_core->requestData(datasetName));
-
-		const auto sourceDataName = localPoints.getDataName();
-
-		if (dataName == sourceDataName) {
-			isSubset = true;
-			sourceDataSetName = localPoints.getName();
-		}
-	}
-
-	if (isSubset) {
-		_datasets[sourceDataSetName] << dataset;
-	}
-	else {
-		_datasets[dataset] = QStringList();
-	}
-
-	emit datasetsChanged(_datasets);
-	*/
+	_configurationsModel.addDataset(dataset);
 }
 
 void DimensionsViewerPlugin::dataChanged(const QString dataset)
@@ -88,7 +55,7 @@ void DimensionsViewerPlugin::dataRemoved(const QString dataset)
 {
 	//qDebug() << "Data removed" << dataset;
 	
-	_datasets.remove(dataset);
+	//_dataSets.remove(dataset);
 }
 
 void DimensionsViewerPlugin::selectionChanged(const QString dataset)
@@ -110,6 +77,11 @@ hdps::DataTypes DimensionsViewerPlugin::supportedDataTypes() const
 	supportedTypes.append(PointType);
 
 	return supportedTypes;
+}
+
+Points* DimensionsViewerPlugin::getPoints(const QString& datasetName)
+{
+	return &_core->requestData<Points>(datasetName);
 }
 
 DimensionsViewerPlugin* DimensionsViewerPluginFactory::produce()
