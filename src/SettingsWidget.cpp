@@ -23,10 +23,10 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	const auto updateDataset1Combobox = [this]() {
 		auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-		_ui->dataSet1ComboBox->blockSignals(true);
-		_ui->dataSet1ComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
-		_ui->dataSet1ComboBox->setEnabled(configurationsModel.rowCount() > 0);
-		_ui->dataSet1ComboBox->blockSignals(false);
+		_ui->channel1DatasetNameComboBox->blockSignals(true);
+		_ui->channel1DatasetNameComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
+		_ui->channel1DatasetNameComboBox->setEnabled(configurationsModel.rowCount() > 0);
+		_ui->channel1DatasetNameComboBox->blockSignals(false);
 	};
 	
 	QObject::connect(&configurationsModel, &ConfigurationsModel::rowsInserted, [this, updateDataset1Combobox](const QModelIndex& parent, int first, int last) {
@@ -58,18 +58,52 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		}
 	});
 
-	QObject::connect(_ui->dataSet1ComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
-		_dimensionsViewerPlugin->getConfigurationsModel().selectRow(currentIndex);
+	_ui->channel1ColorPushButton->setShowText(false);
+	_ui->channel2ColorPushButton->setShowText(false);
+	_ui->channel3ColorPushButton->setShowText(false);
+
+	_ui->channel1ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
+	_ui->channel2ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
+	_ui->channel3ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
+
+	_ui->channel1BandTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getBandTypeNames()));
+	_ui->channel2BandTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getBandTypeNames()));
+	_ui->channel3BandTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getBandTypeNames()));
+
+	QObject::connect(_ui->globalRangeSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
+		configurationsModel.setData(Configuration::Column::GlobalRangeSettings, checked);
 	});
 
-	QObject::connect(_ui->dataSet2EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		const auto index = configurationsModel.index(_ui->dataSet1ComboBox->currentIndex(), static_cast<int>(Configuration::Column::Channel2Enabled));
-
-		configurationsModel.setData(index, state == Qt::Checked);
+	QObject::connect(_ui->channel1ProfileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+		configurationsModel.setData(Configuration::Column::Channel1ProfileType, currentIndex);
 	});
 
-	QObject::connect(_ui->dataSet3EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		const auto index = configurationsModel.index(_ui->dataSet1ComboBox->currentIndex(), static_cast<int>(Configuration::Column::Channel3Enabled));
+	QObject::connect(_ui->channel2ProfileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+		configurationsModel.setData(Configuration::Column::Channel2ProfileType, currentIndex);
+	});
+
+	QObject::connect(_ui->channel3ProfileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+		configurationsModel.setData(Configuration::Column::Channel3ProfileType, currentIndex);
+	});
+
+	QObject::connect(_ui->channel1BandTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+		configurationsModel.setData(Configuration::Column::Channel1BandType, currentIndex);
+	});
+
+	QObject::connect(_ui->channel2BandTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+		configurationsModel.setData(Configuration::Column::Channel2BandType, currentIndex);
+	});
+
+	QObject::connect(_ui->channel3BandTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+		configurationsModel.setData(Configuration::Column::Channel3BandType, currentIndex);
+	});
+
+	QObject::connect(_ui->channel2EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+		configurationsModel.setData(Configuration::Column::Channel2Enabled, state == Qt::Checked);
+	});
+
+	QObject::connect(_ui->channel3EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+		const auto index = configurationsModel.index(_ui->channel1DatasetNameComboBox->currentIndex(), static_cast<int>(Configuration::Column::Channel3Enabled));
 
 		configurationsModel.setData(index, state == Qt::Checked);
 	});
@@ -89,47 +123,120 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		const auto index = begin.siblingAtColumn(column);
 
 		if (column == static_cast<int>(Configuration::Column::Channel2Enabled)) {
-			_ui->dataSet2EnabledCheckBox->blockSignals(true);
-			_ui->dataSet2EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->dataSet2EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			_ui->dataSet2EnabledCheckBox->blockSignals(false);
+			_ui->channel2EnabledCheckBox->blockSignals(true);
+			_ui->channel2EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel2EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->channel2EnabledCheckBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel3Enabled)) {
-			_ui->dataSet3EnabledCheckBox->blockSignals(true);
-			_ui->dataSet3EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->dataSet3EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			_ui->dataSet3EnabledCheckBox->blockSignals(false);
+			_ui->channel3EnabledCheckBox->blockSignals(true);
+			_ui->channel3EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel3EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->channel3EnabledCheckBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel1DatasetName)) {
-			_ui->dataSet1ComboBox->blockSignals(true);
-			_ui->dataSet1ComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->dataSet1ComboBox->blockSignals(false);
+			_ui->channel1DatasetNameComboBox->blockSignals(true);
+			_ui->channel1DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel1DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel1DatasetNameComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel2DatasetName)) {
-			_ui->dataSet2ComboBox->blockSignals(true);
-			_ui->dataSet2ComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->dataSet2ComboBox->blockSignals(false);
+			_ui->channel2DatasetNameComboBox->blockSignals(true);
+			_ui->channel2DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel2DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel2DatasetNameComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel3DatasetName)) {
-			_ui->dataSet3ComboBox->blockSignals(true);
-			_ui->dataSet3ComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->dataSet3ComboBox->blockSignals(false);
+			_ui->channel3DatasetNameComboBox->blockSignals(true);
+			_ui->channel3DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel3DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel3DatasetNameComboBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel1Color)) {
+			_ui->channel1ColorPushButton->blockSignals(true);
+			_ui->channel1ColorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel1ColorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
+			_ui->channel1ColorPushButton->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel2Color)) {
+			_ui->channel2ColorPushButton->blockSignals(true);
+			_ui->channel2ColorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel2ColorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
+			_ui->channel2ColorPushButton->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel3Color)) {
+			_ui->channel3ColorPushButton->blockSignals(true);
+			_ui->channel3ColorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel3ColorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
+			_ui->channel3ColorPushButton->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel1ProfileType)) {
+			_ui->channel1ProfileTypeComboBox->blockSignals(true);
+			_ui->channel1ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel1ProfileTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel1ProfileTypeComboBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel2ProfileType)) {
+			_ui->channel2ProfileTypeComboBox->blockSignals(true);
+			_ui->channel2ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel2ProfileTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel2ProfileTypeComboBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel3ProfileType)) {
+			_ui->channel3ProfileTypeComboBox->blockSignals(true);
+			_ui->channel3ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel3ProfileTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel3ProfileTypeComboBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel1BandType)) {
+			_ui->channel1BandTypeComboBox->blockSignals(true);
+			_ui->channel1BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel1BandTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel1BandTypeComboBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel2BandType)) {
+			_ui->channel2BandTypeComboBox->blockSignals(true);
+			_ui->channel2BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel2BandTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel2BandTypeComboBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel3BandType)) {
+			_ui->channel3BandTypeComboBox->blockSignals(true);
+			_ui->channel3BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel3BandTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel3BandTypeComboBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::GlobalRangeSettings)) {
+			_ui->globalRangeSettingsPushButton->blockSignals(true);
+			_ui->globalRangeSettingsPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->globalRangeSettingsPushButton->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->globalRangeSettingsPushButton->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Subsets)) {
 			const auto subsets = index.data(Qt::EditRole).toStringList();
 
-			_ui->dataSet2ComboBox->blockSignals(true);
-			_ui->dataSet2ComboBox->setModel(new QStringListModel(subsets));
-			_ui->dataSet2ComboBox->blockSignals(false);
+			_ui->channel2DatasetNameComboBox->blockSignals(true);
+			_ui->channel2DatasetNameComboBox->setModel(new QStringListModel(subsets));
+			_ui->channel2DatasetNameComboBox->blockSignals(false);
 
-			_ui->dataSet3ComboBox->blockSignals(true);
-			_ui->dataSet3ComboBox->setModel(new QStringListModel(subsets));
-			_ui->dataSet3ComboBox->blockSignals(false);
+			_ui->channel3DatasetNameComboBox->blockSignals(true);
+			_ui->channel3DatasetNameComboBox->setModel(new QStringListModel(subsets));
+			_ui->channel3DatasetNameComboBox->blockSignals(false);
 		}
 	}
 }

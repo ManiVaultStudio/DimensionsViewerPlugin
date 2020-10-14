@@ -6,22 +6,101 @@
 
 class Configuration
 {
-protected:
+public:
 
 	/** Channel settings */
 	struct Channel {
+
+		/** Profile type (e.g. average and mean) */
+		enum class ProfileType {
+			None,
+			Average,
+			Mean,
+
+			End = Mean
+		};
+
+		/** Get string representation of profile type enumeration */
+		static QString getProfileTypeName(const ProfileType& profileType) {
+			switch (profileType) {
+				case ProfileType::None:
+					return "Profile: None";
+
+				case ProfileType::Average:
+					return "Profile: Average";
+
+				case ProfileType::Mean:
+					return "Profile: Mean";
+			}
+
+			return QString();
+		}
+
+		/** Get profile type names in a string list */
+		static QStringList getProfileTypeNames() {
+			QStringList profileTypeNames;
+
+			for (int i = 0; i <= static_cast<int>(ProfileType::End); ++i)
+				profileTypeNames << getProfileTypeName(static_cast<ProfileType>(i));
+
+			return profileTypeNames;
+		}
+
+		/** Band type (e.g. minimum/maximum and standard deviation) */
+		enum class BandType {
+			None,
+			MinMax,
+			StandardDeviation1,
+			StandardDeviation2,
+
+			End = StandardDeviation2
+		};
+
+		/** Get string representation of band type enumeration */
+		static QString getBandTypeName(const BandType& bandType) {
+			switch (bandType) {
+				case BandType::None:
+					return "Band: None";
+
+				case BandType::MinMax:
+					return "Band: Min/Max";
+
+				case BandType::StandardDeviation1:
+					return "Band: 1 SD";
+
+				case BandType::StandardDeviation2:
+					return "Band: 2 SD";
+			}
+
+			return QString();
+		}
+
+		/** Get band type names in a string list */
+		static QStringList getBandTypeNames() {
+			QStringList bandTypeNames;
+
+			for (int i = 0; i <= static_cast<int>(BandType::End); ++i)
+				bandTypeNames << getBandTypeName(static_cast<BandType>(i));
+
+			return bandTypeNames;
+		}
+
 		Channel(const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
 			_enabled(enabled),
 			_datasetName(datasetName),
 			_dataName(dataName),
-			_color(color)
+			_color(color),
+			_profileType(ProfileType::Average),
+			_bandType(BandType::MinMax)
 		{
 		}
 
-		bool		_enabled;		/** Whether the channel is enabled or not */
-		QString		_datasetName;	/** Channel dataset name */
-		QString		_dataName;		/** Channel data name */
-		QColor		_color;			/** Channel color */
+		bool			_enabled;			/** Whether the channel is enabled or not */
+		QString			_datasetName;		/** Channel dataset name */
+		QString			_dataName;			/** Channel data name */
+		QColor			_color;				/** Channel color */
+		ProfileType		_profileType;		/** The type of profile to visualize */
+		BandType		_bandType;			/** The type of band to visualize */
 	};
 
 	using Channels = QVector<Channel>;
@@ -42,6 +121,13 @@ public: // Columns
 		Channel1Color,					/** Color of the first channel */
 		Channel2Color,					/** Color of the second channel */
 		Channel3Color,					/** Color of the third channel */
+		Channel1ProfileType,			/** The profile type of the first channel */
+		Channel2ProfileType,			/** The profile type of the second channel */
+		Channel3ProfileType,			/** The profile type of the third channel */
+		Channel1BandType,				/** The band type of the first channel */
+		Channel2BandType,				/** The band type of the second channel */
+		Channel3BandType,				/** The band type of the third channel */
+		GlobalRangeSettings,			/** Whether range settings of the first channel determine the other channels */
 		Subsets,						/** The subset(s) of the first dataset */
 
 		Start = Channel1Enabled,		/** Column start */
@@ -86,6 +172,27 @@ public: // Columns
 
 			case Column::Channel3Color:
 				return "Channel 3: Color";
+
+			case Column::Channel1ProfileType:
+				return "Channel 1: Profile type";
+
+			case Column::Channel2ProfileType:
+				return "Channel 2: Profile type";
+
+			case Column::Channel3ProfileType:
+				return "Channel 3: Profile type";
+
+			case Column::Channel1BandType:
+				return "Channel 1: Band type";
+
+			case Column::Channel2BandType:
+				return "Channel 2: Band type";
+
+			case Column::Channel3BandType:
+				return "Channel 3: Band type";
+
+			case Column::GlobalRangeSettings:
+				return "Global range settings";
 
 			case Column::Subsets:
 				return "Subsets";
@@ -187,6 +294,49 @@ public: // Getters/setters
 	void setChannelColor(const std::int32_t& channelIndex, const QColor& color);
 
 	/**
+	 * Returns the profile type of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param role Data role
+	 * @return Profile type in variant form
+	 */
+	QVariant getChannelProfileType(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+	/**
+	 * Sets the profile type of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param profileType The profile type of channel with \p channelIndex
+	 */
+	void setChannelProfileType(const std::int32_t& channelIndex, const Channel::ProfileType& profileType);
+
+	/**
+	 * Returns the band type of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param role Data role
+	 * @return Band type in variant form
+	 */
+	QVariant getChannelBandType(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+	/**
+	 * Sets the band type of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param bandType The band type of channel with \p channelIndex
+	 */
+	void setChannelBandType(const std::int32_t& channelIndex, const Channel::BandType& bandType);
+
+	/**
+	 * Returns whether range settings are global or not
+	 * @param role Data role
+	 * @return Whether range settings are global or not in variant form
+	 */
+	QVariant getGlobalRangeSettings(const std::int32_t& role) const;
+
+	/**
+	 * Sets whether range settings are global or not
+	 * @param globalRangeSettings Whether range settings are global or not
+	 */
+	void setGlobalRangeSettings(const bool& globalRangeSettings);
+
+	/**
 	 * Returns the subset
 	 * @param role Data role
 	 * @return Subsets in variant form
@@ -200,6 +350,7 @@ public: // Getters/setters
 	void setSubsets(const QStringList& subsets);
 
 private:
-	Channels		_channels;		/** Channels */
-	QStringList		_subsets;		/** Subsets of the primary dataset (selected in the first channel) */
+	Channels		_channels;					/** Channels */
+	QStringList		_subsets;					/** Subsets of the primary dataset (selected in the first channel) */
+	bool			_globalRangeSettings;		/** Whether the range settings of the first channel determine the subsequent channel range settings */
 };

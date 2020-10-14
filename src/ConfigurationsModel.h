@@ -51,6 +51,15 @@ public: // Obligatory overrides
 	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
 	/**
+	 * Sets the data value for the selected index and data role
+	 * @param column Column
+	 * @param value Data value in variant form
+	 * @param role Data role
+	 * @return Whether the data was properly set or not
+	 */
+	bool setData(const Configuration::Column& column, const QVariant& value, int role = Qt::EditRole);
+
+	/**
 	 * Returns the item flags for the given model index
 	 * @param index Model index
 	 * @return Item flags for the index
