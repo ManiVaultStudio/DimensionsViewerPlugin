@@ -3,6 +3,8 @@
 
 #include "PointData.h"
 
+#include <QDebug>
+
 ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	QAbstractListModel(static_cast<QObject*>(dimensionsViewerPlugin)),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
@@ -16,18 +18,85 @@ int ConfigurationsModel::rowCount(const QModelIndex& parentIndex /*= QModelIndex
 	return _configurations.count();
 }
 
-QVariant ConfigurationsModel::data(const QModelIndex &index, int role /*= Qt::DisplayRole*/) const
+int ConfigurationsModel::columnCount(const QModelIndex& parentIndex /*= QModelIndex()*/) const
 {
+	return static_cast<int>(Configuration::Column::End) + 1;
+}
+
+QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole*/) const
+{
+	return getConfiguration(index)->getData(index, role);
+}
+
+bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
+{
+	auto configuration = getConfiguration(index);
+
+	const auto affectedIndices = configuration->setData(index, value, role);
+
+	for (auto affectedIndex : affectedIndices) {
+		emit dataChanged(affectedIndex, affectedIndex);
+	}
+
+	return true;
+}
+
+Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const
+{
+	return _configurations[index.row()]->getFlags(index);
+}
+
+QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
+{
+	if (orientation == Qt::Horizontal) {
+		switch (role)
+		{
+			case Qt::DecorationRole:
+				break;
+
+			case Qt::DisplayRole:
+				return Configuration::getColumnName(static_cast<Configuration::Column>(section));
+
+			case Qt::ToolTipRole:
+				break;
+
+			default:
+				break;
+		}
+	}
+
 	return QVariant();
 }
 
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
-	beginInsertRows(QModelIndex(), _configurations.size(), _configurations.size());
-	{
-		_configurations << new Configuration(datasetName);
+	auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
+
+	Configuration* parentConfiguration = false;
+
+	for (auto configuration : _configurations) {
+		if (dataName == configuration->getChannelDataName(0, Qt::EditRole).toString()) {
+			parentConfiguration = configuration;
+			break;
+		}
 	}
-	endInsertRows();
+
+	if (parentConfiguration) {
+		const auto configurationIndex	= _configurations.indexOf(parentConfiguration);
+		const auto subsetsIndex			= index(configurationIndex, static_cast<int>(Configuration::Column::Subsets));
+
+		setData(subsetsIndex, parentConfiguration->getSubsets(Qt::EditRole).toStringList() << datasetName);
+	}
+	else {
+		beginInsertRows(QModelIndex(), _configurations.size(), _configurations.size());
+		{
+			_configurations << new Configuration(datasetName, dataName);
+		}
+		endInsertRows();
+
+		if (_configurations.size() == 1)
+			selectRow(0);
+	}
 }
 
 QStringList ConfigurationsModel::getConfigurationNames()
@@ -40,19 +109,23 @@ QStringList ConfigurationsModel::getConfigurationNames()
 	return configurationNames;
 }
 
-/*
-void ConfigurationsModel::addDataset(const QString& datasetName)
+void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
 {
-	auto points = &_dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName);
+	_selectionModel.select(index(rowIndex), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+}
 
-	if (points->indices.empty()) {
-		_configurations << new Configuration(_dimensionsViewerPlugin, datasetName);
-	}
-	else {
-		for (auto configuration : _configurations) {
-			if (configuration->isSubset(datasetName))
-				configuration->addSubset(datasetName);
+Configuration* ConfigurationsModel::getConfiguration(const QModelIndex& index) const
+{
+	try
+	{
+		if (index.isValid()) {
+			return _configurations[index.row()];
 		}
 	}
+	catch (std::exception exception)
+	{
+		return nullptr;
+	}
+
+	return nullptr;
 }
-*/
