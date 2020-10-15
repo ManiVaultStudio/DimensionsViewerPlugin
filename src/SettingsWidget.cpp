@@ -70,9 +70,9 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
 	QFont font = QFont("Font Awesome 5 Free Solid", 8);
 
-	_ui->globalRangeSettingsPushButton->setFont(font);
-	_ui->globalRangeSettingsPushButton->setStyleSheet("text-align: center");
-	_ui->globalRangeSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("link"));
+	_ui->globalSettingsPushButton->setFont(font);
+	_ui->globalSettingsPushButton->setStyleSheet("text-align: center");
+	_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("link"));
 
 	QObject::connect(_ui->channel1DatasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
 		configurationsModel.selectRow(currentIndex);
@@ -94,6 +94,18 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		const auto index = configurationsModel.index(_ui->channel1DatasetNameComboBox->currentIndex(), static_cast<int>(Configuration::Column::Channel3Enabled));
 
 		configurationsModel.setData(index, state == Qt::Checked);
+	});
+
+	QObject::connect(_ui->channel1ColorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
+		configurationsModel.setData(Configuration::Column::Channel1Color, color);
+	});
+
+	QObject::connect(_ui->channel2ColorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
+		configurationsModel.setData(Configuration::Column::Channel2Color, color);
+	});
+
+	QObject::connect(_ui->channel3ColorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
+		configurationsModel.setData(Configuration::Column::Channel3Color, color);
 	});
 
 	QObject::connect(_ui->channel1ProfileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
@@ -120,8 +132,8 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		configurationsModel.setData(Configuration::Column::Channel3BandType, currentIndex);
 	});
 
-	QObject::connect(_ui->globalRangeSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
-		configurationsModel.setData(Configuration::Column::GlobalRangeSettings, checked);
+	QObject::connect(_ui->globalSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
+		configurationsModel.setData(Configuration::Column::GlobalSettings, checked);
 	});
 
 	updateData(QModelIndex(), QModelIndex());
@@ -144,7 +156,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		_ui->channel1BandTypeComboBox->setCurrentIndex(-1);
 		_ui->channel2BandTypeComboBox->setCurrentIndex(-1);
 		_ui->channel3BandTypeComboBox->setCurrentIndex(-1);
-		_ui->globalRangeSettingsPushButton->setChecked(false);
+		_ui->globalSettingsPushButton->setChecked(false);
 
 		return;
 	}
@@ -161,6 +173,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel2EnabledCheckBox->blockSignals(true);
 			_ui->channel2EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel2EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->channel2EnabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel2EnabledCheckBox->blockSignals(false);
 		}
 
@@ -168,13 +181,27 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3EnabledCheckBox->blockSignals(true);
 			_ui->channel3EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel3EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->channel3EnabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel3EnabledCheckBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Subsets)) {
+			const auto subsets = index.data(Qt::EditRole).toStringList();
+
+			_ui->channel2DatasetNameComboBox->blockSignals(true);
+			_ui->channel2DatasetNameComboBox->setModel(new QStringListModel(subsets));
+			_ui->channel2DatasetNameComboBox->blockSignals(false);
+
+			_ui->channel3DatasetNameComboBox->blockSignals(true);
+			_ui->channel3DatasetNameComboBox->setModel(new QStringListModel(subsets));
+			_ui->channel3DatasetNameComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel1DatasetName)) {
 			_ui->channel1DatasetNameComboBox->blockSignals(true);
 			_ui->channel1DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel1DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel1DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel1DatasetNameComboBox->blockSignals(false);
 		}
 
@@ -189,6 +216,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3DatasetNameComboBox->blockSignals(true);
 			_ui->channel3DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel3DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel3DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel3DatasetNameComboBox->blockSignals(false);
 		}
 
@@ -196,6 +224,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel1ColorPushButton->blockSignals(true);
 			_ui->channel1ColorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel1ColorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
+			_ui->channel1ColorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel1ColorPushButton->blockSignals(false);
 		}
 
@@ -203,6 +232,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel2ColorPushButton->blockSignals(true);
 			_ui->channel2ColorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel2ColorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
+			_ui->channel2ColorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel2ColorPushButton->blockSignals(false);
 		}
 
@@ -217,6 +247,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel1ProfileTypeComboBox->blockSignals(true);
 			_ui->channel1ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel1ProfileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+			_ui->channel1ProfileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel1ProfileTypeComboBox->blockSignals(false);
 		}
 
@@ -224,6 +255,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel2ProfileTypeComboBox->blockSignals(true);
 			_ui->channel2ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel2ProfileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+			_ui->channel2ProfileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel2ProfileTypeComboBox->blockSignals(false);
 		}
 
@@ -231,6 +263,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3ProfileTypeComboBox->blockSignals(true);
 			_ui->channel3ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel3ProfileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+			_ui->channel3ProfileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel3ProfileTypeComboBox->blockSignals(false);
 		}
 
@@ -238,6 +271,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel1BandTypeComboBox->blockSignals(true);
 			_ui->channel1BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel1BandTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+			_ui->channel1BandTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel1BandTypeComboBox->blockSignals(false);
 		}
 
@@ -245,6 +279,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel2BandTypeComboBox->blockSignals(true);
 			_ui->channel2BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel2BandTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+			_ui->channel2BandTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel2BandTypeComboBox->blockSignals(false);
 		}
 
@@ -252,29 +287,19 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3BandTypeComboBox->blockSignals(true);
 			_ui->channel3BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel3BandTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+			_ui->channel3BandTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel3BandTypeComboBox->blockSignals(false);
 		}
 
-		if (column == static_cast<int>(Configuration::Column::GlobalRangeSettings)) {
-			const auto globalRangeSettings = index.data(Qt::EditRole).toBool();
+		if (column == static_cast<int>(Configuration::Column::GlobalSettings)) {
+			const auto globalSettings = index.data(Qt::EditRole).toBool();
 
-			_ui->globalRangeSettingsPushButton->blockSignals(true);
-			_ui->globalRangeSettingsPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->globalRangeSettingsPushButton->setChecked(globalRangeSettings);
-			_ui->globalRangeSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(globalRangeSettings ? "link" : "unlink"));
-			_ui->globalRangeSettingsPushButton->blockSignals(false);
-		}
-
-		if (column == static_cast<int>(Configuration::Column::Subsets)) {
-			const auto subsets = index.data(Qt::EditRole).toStringList();
-
-			_ui->channel2DatasetNameComboBox->blockSignals(true);
-			_ui->channel2DatasetNameComboBox->setModel(new QStringListModel(subsets));
-			_ui->channel2DatasetNameComboBox->blockSignals(false);
-
-			_ui->channel3DatasetNameComboBox->blockSignals(true);
-			_ui->channel3DatasetNameComboBox->setModel(new QStringListModel(subsets));
-			_ui->channel3DatasetNameComboBox->blockSignals(false);
+			_ui->globalSettingsPushButton->blockSignals(true);
+			_ui->globalSettingsPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->globalSettingsPushButton->setChecked(globalSettings);
+			_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(globalSettings ? "link" : "unlink"));
+			_ui->globalSettingsPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->globalSettingsPushButton->blockSignals(false);
 		}
 	}
 }

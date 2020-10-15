@@ -128,10 +128,10 @@ public: // Columns
 		Channel1BandType,				/** The band type of the first channel */
 		Channel2BandType,				/** The band type of the second channel */
 		Channel3BandType,				/** The band type of the third channel */
-		GlobalRangeSettings,			/** Whether range settings of the first channel determine the other channels */
+		GlobalSettings,					/** Whether settings of the first channel are global settings */
 		
 		Start = Channel1Enabled,		/** Column start */
-		End = GlobalRangeSettings		/** Column End */
+		End = GlobalSettings			/** Column End */
 	};
 
 	/** Get string representation of layer column enumeration */
@@ -194,8 +194,8 @@ public: // Columns
 			case Column::Channel3BandType:
 				return "Channel 3: Band type";
 
-			case Column::GlobalRangeSettings:
-				return "Global range settings";
+			case Column::GlobalSettings:
+				return "Global settings";
 
 			default:
 				return QString();
@@ -337,20 +337,30 @@ public: // Getters/setters
 	void setChannelBandType(const std::int32_t& channelIndex, const Channel::BandType& bandType);
 
 	/**
-	 * Returns whether range settings are global or not
+	 * Returns whether the settings of the first channel are global or not
 	 * @param role Data role
-	 * @return Whether range settings are global or not in variant form
+	 * @return Whether settings of the first channel are global or not in variant form
 	 */
-	QVariant getGlobalRangeSettings(const std::int32_t& role) const;
+	QVariant getGlobalSettings(const std::int32_t& role) const;
 
 	/**
-	 * Sets whether range settings are global or not
-	 * @param globalRangeSettings Whether range settings are global or not
+	 * Sets whether the settings of the first channel are global or not
+	 * @param globalSettings Whether the settings of the first channel are global or not
 	 */
-	void setGlobalRangeSettings(const bool& globalRangeSettings);
+	void setGlobalSettings(const bool& globalSettings);
 
 private:
-	Channels		_channels;					/** Channels */
-	QStringList		_subsets;					/** Subsets of the primary dataset (selected in the first channel) */
-	bool			_globalRangeSettings;		/** Whether the range settings of the first channel determine the subsequent channel range settings */
+
+	/**
+	 * Returns an HTML tooltip
+	 * @param title Title of the tooltip
+	 * @param description Description of the tooltip
+	 * @return HTML tooltip
+	 */
+	QString htmlTooltip(const QString& title, const QString& description) const;
+
+private:
+	Channels		_channels;				/** Channels */
+	QStringList		_subsets;				/** Subsets of the primary dataset (selected in the first channel) */
+	bool			_globalSettings;		/** Whether the range settings of the first channel determine the subsequent channel range settings */
 };

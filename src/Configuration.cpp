@@ -6,7 +6,7 @@
 Configuration::Configuration(const QString& datasetName, const QString& dataName) :
 	_channels({ Channel(true, datasetName, dataName, Qt::black), Channel(false, "", dataName, QColor(249, 149, 0)), Channel(false, "", dataName, QColor(0, 112, 249)) }),
 	_subsets(),
-	_globalRangeSettings(true)
+	_globalSettings(true)
 {
 }
 
@@ -14,8 +14,8 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
 	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
-	const auto channel2Enabled = !_globalRangeSettings && _channels[1]._enabled && _subsets.size() >= 1;
-	const auto channel3Enabled = !_globalRangeSettings && _channels[2]._enabled && _subsets.size() >= 2;
+	const auto channel2Enabled = !_globalSettings && _channels[1]._enabled && _subsets.size() >= 1;
+	const auto channel3Enabled = !_globalSettings && _channels[2]._enabled && _subsets.size() >= 2;
 
 	switch (static_cast<Column>(index.column())) {
 		case Column::Channel1Enabled: {
@@ -118,7 +118,7 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 			break;
 		}
 
-		case Column::GlobalRangeSettings: {
+		case Column::GlobalSettings: {
 			if (!_subsets.isEmpty())
 				flags |= Qt::ItemIsEnabled;
 
@@ -192,8 +192,8 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 		case Column::Channel3BandType:
 			return getChannelBandType(2, role);
 
-		case Column::GlobalRangeSettings:
-			return getGlobalRangeSettings(role);
+		case Column::GlobalSettings:
+			return getGlobalSettings(role);
 
 		default:
 			break;
@@ -280,7 +280,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 							break;
 					}
 
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::GlobalRangeSettings));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::GlobalSettings));
 
 					break;
 				}
@@ -320,7 +320,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 					setChannelProfileType(0, profileType);
 
-					if (_globalRangeSettings) {
+					if (_globalSettings) {
 						setChannelProfileType(1, profileType);
 						setChannelProfileType(2, profileType);
 
@@ -346,7 +346,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 					setChannelBandType(0, bandType);
 
-					if (_globalRangeSettings) {
+					if (_globalSettings) {
 						setChannelBandType(1, bandType);
 						setChannelBandType(2, bandType);
 
@@ -367,8 +367,8 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 					break;
 				}
 
-				case Column::GlobalRangeSettings: {
-					setGlobalRangeSettings(value.toBool());
+				case Column::GlobalSettings: {
+					setGlobalSettings(value.toBool());
 					setChannelProfileType(1, _channels.first()._profileType);
 					setChannelProfileType(2, _channels.first()._profileType);
 					setChannelBandType(1, _channels.first()._bandType);
@@ -400,7 +400,7 @@ QVariant Configuration::getChannelEnabled(const std::int32_t& channelIndex, cons
 	try
 	{
 		const auto enabled			= _channels[channelIndex]._enabled;
-		const auto enabledString	= enabled ? "true" : "false";
+		const auto enabledString	= enabled ? "on" : "off";
 
 		switch (role)
 		{
@@ -411,7 +411,7 @@ QVariant Configuration::getChannelEnabled(const std::int32_t& channelIndex, cons
 				return enabled;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 enabled: %2").arg(QString::number(channelIndex), enabledString);
+				return htmlTooltip(QString("Channel %1 enabled").arg(QString::number(channelIndex)), enabledString);
 
 			default:
 				return QVariant();
@@ -450,7 +450,7 @@ QVariant Configuration::getSubsets(const std::int32_t& role) const
 			return _subsets;
 
 		case Qt::ToolTipRole:
-			return QString("Subsets: %1").arg(subsetsString);
+			return htmlTooltip("Subsets", subsetsString);
 
 		default:
 			return QVariant();
@@ -477,7 +477,7 @@ QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, 
 				return datasetName;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 dataset name: %2").arg(QString::number(channelIndex), datasetName);
+				return htmlTooltip(QString("Channel %1 dataset name").arg(QString::number(channelIndex)), datasetName);
 
 			default:
 				return QVariant();
@@ -518,7 +518,7 @@ QVariant Configuration::getChannelDataName(const std::int32_t& channelIndex, con
 				return dataName;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 data name: %2").arg(QString::number(channelIndex), dataName);
+				return htmlTooltip(QString("Channel %1 data name").arg(QString::number(channelIndex)), dataName);
 
 			default:
 				return QVariant();
@@ -548,7 +548,7 @@ QVariant Configuration::getChannelColor(const std::int32_t& channelIndex, const 
 				return color;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 color: %2").arg(QString::number(channelIndex), colorString);
+				return htmlTooltip(QString("Channel %1 color").arg(QString::number(channelIndex)), colorString);
 
 			default:
 				return QVariant();
@@ -590,7 +590,7 @@ QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, 
 				return static_cast<int>(profileType);
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 profile type: %2").arg(QString::number(channelIndex), profileTypeString);
+				return htmlTooltip(QString("Channel %1 profile type").arg(QString::number(channelIndex)), profileTypeString);
 
 			default:
 				return QVariant();
@@ -632,7 +632,7 @@ QVariant Configuration::getChannelBandType(const std::int32_t& channelIndex, con
 				return static_cast<int>(bandType);
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 band type: %2").arg(QString::number(channelIndex), bandTypeString);
+				return htmlTooltip(QString("Channel %1 band type").arg(QString::number(channelIndex)), bandTypeString);
 
 			default:
 				return QVariant();
@@ -658,20 +658,20 @@ void Configuration::setChannelBandType(const std::int32_t& channelIndex, const C
 	}
 }
 
-QVariant Configuration::getGlobalRangeSettings(const std::int32_t& role) const
+QVariant Configuration::getGlobalSettings(const std::int32_t& role) const
 {
-	const auto globalRangeSettingsString = _globalRangeSettings ? "true" : "false";
+	const auto globalSettingsString = _globalSettings ? "on" : "off";
 
 	switch (role)
 	{
 		case Qt::DisplayRole:
-			return globalRangeSettingsString;
+			return globalSettingsString;
 
 		case Qt::EditRole:
-			return _globalRangeSettings;
+			return _globalSettings;
 
 		case Qt::ToolTipRole:
-			return QString("Global range settings: %2").arg(globalRangeSettingsString);
+			return htmlTooltip("Global settings", globalSettingsString);
 
 		default:
 			return QVariant();
@@ -680,7 +680,12 @@ QVariant Configuration::getGlobalRangeSettings(const std::int32_t& role) const
 	return QVariant();
 }
 
-void Configuration::setGlobalRangeSettings(const bool& globalRangeSettings)
+void Configuration::setGlobalSettings(const bool& globalSettings)
 {
-	_globalRangeSettings = globalRangeSettings;
+	_globalSettings = globalSettings;
+}
+
+QString Configuration::htmlTooltip(const QString& title, const QString& description) const
+{
+	return QString("<html><head/><body><p><span style='font-weight:600;'>%1<br/></span>%2</p></body></html>").arg(title, description);
 }
