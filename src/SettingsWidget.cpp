@@ -1,5 +1,6 @@
 #include "SettingsWidget.h"
 #include "DimensionsViewerPlugin.h"
+#include "Application.h"
 
 #include "ui_SettingsWidget.h"
 
@@ -42,13 +43,6 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
 
-		/*
-		if (selectedRows.isEmpty())
-			_ui->dataSet1ComboBox->setCurrentIndex(-1);
-		else
-			_ui->dataSet1ComboBox->setCurrentIndex(selectedRows.first().row());
-		*/
-
 		if (selectedRows.isEmpty())
 			updateData(QModelIndex(), QModelIndex());
 		else {
@@ -62,6 +56,10 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_ui->channel2ColorPushButton->setShowText(false);
 	_ui->channel3ColorPushButton->setShowText(false);
 
+	_ui->channel1ColorPushButton->setColor(Qt::gray);
+	_ui->channel2ColorPushButton->setColor(Qt::gray);
+	_ui->channel3ColorPushButton->setColor(Qt::gray);
+
 	_ui->channel1ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
 	_ui->channel2ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
 	_ui->channel3ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
@@ -70,8 +68,32 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_ui->channel2BandTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getBandTypeNames()));
 	_ui->channel3BandTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getBandTypeNames()));
 
-	QObject::connect(_ui->globalRangeSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
-		configurationsModel.setData(Configuration::Column::GlobalRangeSettings, checked);
+	QFont font = QFont("Font Awesome 5 Free Solid", 8);
+
+	_ui->globalRangeSettingsPushButton->setFont(font);
+	_ui->globalRangeSettingsPushButton->setStyleSheet("text-align: center");
+	_ui->globalRangeSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("link"));
+
+	QObject::connect(_ui->channel1DatasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+		configurationsModel.selectRow(currentIndex);
+	});
+
+	QObject::connect(_ui->channel2DatasetNameComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](const QString& currentText) {
+		configurationsModel.setData(Configuration::Column::Channel2DatasetName, currentText);
+	});
+
+	QObject::connect(_ui->channel3DatasetNameComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](const QString& currentText) {
+		configurationsModel.setData(Configuration::Column::Channel3DatasetName, currentText);
+	});
+
+	QObject::connect(_ui->channel2EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+		configurationsModel.setData(Configuration::Column::Channel2Enabled, state == Qt::Checked);
+	});
+
+	QObject::connect(_ui->channel3EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+		const auto index = configurationsModel.index(_ui->channel1DatasetNameComboBox->currentIndex(), static_cast<int>(Configuration::Column::Channel3Enabled));
+
+		configurationsModel.setData(index, state == Qt::Checked);
 	});
 
 	QObject::connect(_ui->channel1ProfileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
@@ -98,26 +120,39 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		configurationsModel.setData(Configuration::Column::Channel3BandType, currentIndex);
 	});
 
-	QObject::connect(_ui->channel2EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		configurationsModel.setData(Configuration::Column::Channel2Enabled, state == Qt::Checked);
+	QObject::connect(_ui->globalRangeSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
+		configurationsModel.setData(Configuration::Column::GlobalRangeSettings, checked);
 	});
 
-	QObject::connect(_ui->channel3EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		const auto index = configurationsModel.index(_ui->channel1DatasetNameComboBox->currentIndex(), static_cast<int>(Configuration::Column::Channel3Enabled));
-
-		configurationsModel.setData(index, state == Qt::Checked);
-	});
+	updateData(QModelIndex(), QModelIndex());
 }
 
 void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
 	const auto selectedRows = _dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
-	if (selectedRows.isEmpty())
+	if (selectedRows.isEmpty()) {
+		_ui->settingsGroupBox->setEnabled(false);
+		_ui->channel2EnabledCheckBox->setChecked(false);
+		_ui->channel3EnabledCheckBox->setChecked(false);
+		_ui->channel1DatasetNameComboBox->setCurrentIndex(-1);
+		_ui->channel2DatasetNameComboBox->setCurrentIndex(-1);
+		_ui->channel3DatasetNameComboBox->setCurrentIndex(-1);
+		_ui->channel1ProfileTypeComboBox->setCurrentIndex(-1);
+		_ui->channel2ProfileTypeComboBox->setCurrentIndex(-1);
+		_ui->channel3ProfileTypeComboBox->setCurrentIndex(-1);
+		_ui->channel1BandTypeComboBox->setCurrentIndex(-1);
+		_ui->channel2BandTypeComboBox->setCurrentIndex(-1);
+		_ui->channel3BandTypeComboBox->setCurrentIndex(-1);
+		_ui->globalRangeSettingsPushButton->setChecked(false);
+
 		return;
+	}
 
 	if (begin.row() != selectedRows.first().row())
 		return;
+
+	_ui->settingsGroupBox->setEnabled(true);
 
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
@@ -181,49 +216,52 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		if (column == static_cast<int>(Configuration::Column::Channel1ProfileType)) {
 			_ui->channel1ProfileTypeComboBox->blockSignals(true);
 			_ui->channel1ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel1ProfileTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel1ProfileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
 			_ui->channel1ProfileTypeComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel2ProfileType)) {
 			_ui->channel2ProfileTypeComboBox->blockSignals(true);
 			_ui->channel2ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel2ProfileTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel2ProfileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
 			_ui->channel2ProfileTypeComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel3ProfileType)) {
 			_ui->channel3ProfileTypeComboBox->blockSignals(true);
 			_ui->channel3ProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel3ProfileTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel3ProfileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
 			_ui->channel3ProfileTypeComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel1BandType)) {
 			_ui->channel1BandTypeComboBox->blockSignals(true);
 			_ui->channel1BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel1BandTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel1BandTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
 			_ui->channel1BandTypeComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel2BandType)) {
 			_ui->channel2BandTypeComboBox->blockSignals(true);
 			_ui->channel2BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel2BandTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel2BandTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
 			_ui->channel2BandTypeComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel3BandType)) {
 			_ui->channel3BandTypeComboBox->blockSignals(true);
 			_ui->channel3BandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel3BandTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel3BandTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
 			_ui->channel3BandTypeComboBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::GlobalRangeSettings)) {
+			const auto globalRangeSettings = index.data(Qt::EditRole).toBool();
+
 			_ui->globalRangeSettingsPushButton->blockSignals(true);
 			_ui->globalRangeSettingsPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->globalRangeSettingsPushButton->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->globalRangeSettingsPushButton->setChecked(globalRangeSettings);
+			_ui->globalRangeSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(globalRangeSettings ? "link" : "unlink"));
 			_ui->globalRangeSettingsPushButton->blockSignals(false);
 		}
 

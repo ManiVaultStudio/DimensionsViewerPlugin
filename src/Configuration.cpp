@@ -4,9 +4,9 @@
 #include <QDebug>
 
 Configuration::Configuration(const QString& datasetName, const QString& dataName) :
-	_channels({ Channel(true, datasetName, dataName, Qt::cyan), Channel(false, "", dataName, Qt::red), Channel(false, "", dataName, Qt::yellow) }),
+	_channels({ Channel(true, datasetName, dataName, Qt::black), Channel(false, "", dataName, QColor(249, 149, 0)), Channel(false, "", dataName, QColor(0, 112, 249)) }),
 	_subsets(),
-	_globalRangeSettings(false)
+	_globalRangeSettings(true)
 {
 }
 
@@ -144,6 +144,9 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 		case Column::Channel3Enabled:
 			return getChannelEnabled(2, role);
 		
+		case Column::Subsets:
+			return getSubsets(role);
+
 		case Column::Channel1DatasetName:
 			return getChannelDatasetName(0, role);
 
@@ -192,9 +195,6 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 		case Column::GlobalRangeSettings:
 			return getGlobalRangeSettings(role);
 
-		case Column::Subsets:
-			return getSubsets(role);
-
 		default:
 			break;
 	}
@@ -236,6 +236,52 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Color));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
+					break;
+				}
+
+				case Column::Subsets: {
+					setSubsets(value.toStringList());
+
+					switch (_subsets.size())
+					{
+						case 1: {
+							setChannelDatasetName(1, _subsets[0]);
+							setChannelEnabled(1, true);
+
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Enabled));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
+							break;
+						}
+
+						case 2: {
+							setChannelDatasetName(1, _subsets[0]);
+							setChannelDatasetName(2, _subsets[1]);
+
+							setChannelEnabled(1, true);
+							setChannelEnabled(2, true);
+
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Enabled));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Enabled));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3DatasetName));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Color));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
+							break;
+						}
+
+						default:
+							break;
+					}
+
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::GlobalRangeSettings));
+
 					break;
 				}
 
@@ -285,6 +331,16 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 					break;
 				}
 				
+				case Column::Channel2ProfileType: {
+					setChannelProfileType(1, static_cast<Channel::ProfileType>(value.toInt()));
+					break;
+				}
+
+				case Column::Channel3ProfileType: {
+					setChannelProfileType(2, static_cast<Channel::ProfileType>(value.toInt()));
+					break;
+				}
+
 				case Column::Channel1BandType: {
 					const auto bandType = static_cast<Channel::BandType>(value.toInt());
 
@@ -322,51 +378,6 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
-					break;
-				}
-
-				case Column::Subsets: {
-					setSubsets(value.toStringList());
-
-					switch (_subsets.size())
-					{
-						case 1: {
-							setChannelDatasetName(1, _subsets[0]);
-							setChannelEnabled(1, true);
-
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Enabled));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
-							break;
-						}
-
-						case 2: {
-							setChannelDatasetName(1, _subsets[0]);
-							setChannelDatasetName(2, _subsets[1]);
-
-							setChannelEnabled(1, true);
-							setChannelEnabled(2, true);
-
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Enabled));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Enabled));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3DatasetName));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Color));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
-							break;
-						}
-
-						default:
-							break;
-					}
-
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::GlobalRangeSettings));
-
 					break;
 				}
 
@@ -424,6 +435,31 @@ void Configuration::setChannelEnabled(const std::int32_t& channelIndex, const bo
 	{
 		qDebug() << exception.what();
 	}
+}
+
+QVariant Configuration::getSubsets(const std::int32_t& role) const
+{
+	const auto subsetsString = QString("[%1]").arg(_subsets.join(", "));
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return subsetsString;
+
+		case Qt::EditRole:
+			return _subsets;
+
+		case Qt::ToolTipRole:
+			return QString("Subsets: %1").arg(subsetsString);
+
+		default:
+			return QVariant();
+	}
+}
+
+void Configuration::setSubsets(const QStringList& subsets)
+{
+	_subsets = subsets;
 }
 
 QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, const std::int32_t& role) const
@@ -647,29 +683,4 @@ QVariant Configuration::getGlobalRangeSettings(const std::int32_t& role) const
 void Configuration::setGlobalRangeSettings(const bool& globalRangeSettings)
 {
 	_globalRangeSettings = globalRangeSettings;
-}
-
-QVariant Configuration::getSubsets(const std::int32_t& role) const
-{
-	const auto subsetsString = QString("[%1]").arg(_subsets.join(", "));
-
-	switch (role)
-	{
-		case Qt::DisplayRole:
-			return subsetsString;
-
-		case Qt::EditRole:
-			return _subsets;
-
-		case Qt::ToolTipRole:
-			return QString("Subsets: %1").arg(subsetsString);
-
-		default:
-			return QVariant();
-	}
-}
-
-void Configuration::setSubsets(const QStringList& subsets)
-{
-	_subsets = subsets;
 }

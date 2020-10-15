@@ -112,6 +112,7 @@ public: // Columns
 		Channel1Enabled,				/** Whether the first subset is enabled */
 		Channel2Enabled,				/** Whether the second subset is enabled */
 		Channel3Enabled,				/** Whether the second subset is enabled */
+		Subsets,						/** The subset(s) of the first dataset */
 		Channel1DatasetName,			/** The dataset name of the first channel */
 		Channel2DatasetName,			/** The dataset name of the second channel */
 		Channel3DatasetName,			/** The dataset name of the third channel */
@@ -128,10 +129,9 @@ public: // Columns
 		Channel2BandType,				/** The band type of the second channel */
 		Channel3BandType,				/** The band type of the third channel */
 		GlobalRangeSettings,			/** Whether range settings of the first channel determine the other channels */
-		Subsets,						/** The subset(s) of the first dataset */
-
+		
 		Start = Channel1Enabled,		/** Column start */
-		End = Subsets					/** Column End */
+		End = GlobalRangeSettings		/** Column End */
 	};
 
 	/** Get string representation of layer column enumeration */
@@ -145,6 +145,9 @@ public: // Columns
 
 			case Column::Channel3Enabled:
 				return "Channel 3: Enabled";
+
+			case Column::Subsets:
+				return "Subsets";
 
 			case Column::Channel1DatasetName:
 				return "Channel 1: Dataset name";
@@ -193,9 +196,6 @@ public: // Columns
 
 			case Column::GlobalRangeSettings:
 				return "Global range settings";
-
-			case Column::Subsets:
-				return "Subsets";
 
 			default:
 				return QString();
@@ -254,6 +254,19 @@ public: // Getters/setters
 	 * @param enabled Whether channel with \p channelIndex is enabled
 	 */
 	void setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled);
+
+	/**
+	 * Returns the subset
+	 * @param role Data role
+	 * @return Subsets in variant form
+	 */
+	QVariant getSubsets(const std::int32_t& role) const;
+
+	/**
+	 * Sets the subsets
+	 * @param subsets The subsets
+	 */
+	void setSubsets(const QStringList& subsets);
 
 	/**
 	 * Returns the dataset name of channel with \p channelIndex
@@ -335,19 +348,6 @@ public: // Getters/setters
 	 * @param globalRangeSettings Whether range settings are global or not
 	 */
 	void setGlobalRangeSettings(const bool& globalRangeSettings);
-
-	/**
-	 * Returns the subset
-	 * @param role Data role
-	 * @return Subsets in variant form
-	 */
-	QVariant getSubsets(const std::int32_t& role) const;
-
-	/**
-	 * Sets the subsets
-	 * @param subsets The subsets
-	 */
-	void setSubsets(const QStringList& subsets);
 
 private:
 	Channels		_channels;					/** Channels */
