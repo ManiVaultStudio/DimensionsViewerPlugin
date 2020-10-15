@@ -85,7 +85,8 @@ public:
 			return bandTypeNames;
 		}
 
-		Channel(const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
+		Channel(const QString& name, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
+			_name(name),
 			_enabled(enabled),
 			_datasetName(datasetName),
 			_dataName(dataName),
@@ -95,6 +96,7 @@ public:
 		{
 		}
 
+		QString			_name;				/** Channel name (e.g. dataset, Subset1 and Subset 2) */
 		bool			_enabled;			/** Whether the channel is enabled or not */
 		QString			_datasetName;		/** Channel dataset name */
 		QString			_dataName;			/** Channel data name */

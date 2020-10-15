@@ -72,7 +72,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
 	_ui->globalSettingsPushButton->setFont(font);
 	_ui->globalSettingsPushButton->setStyleSheet("text-align: center");
-	_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("link"));
+	_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("lock"));
 
 	QObject::connect(_ui->channel1DatasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
 		configurationsModel.selectRow(currentIndex);
@@ -169,6 +169,13 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
 
+		if (column == static_cast<int>(Configuration::Column::Channel1Enabled)) {
+			_ui->channel1Label->blockSignals(true);
+			_ui->channel1Label->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel1Label->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->channel1Label->blockSignals(false);
+		}
+
 		if (column == static_cast<int>(Configuration::Column::Channel2Enabled)) {
 			_ui->channel2EnabledCheckBox->blockSignals(true);
 			_ui->channel2EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
@@ -209,6 +216,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel2DatasetNameComboBox->blockSignals(true);
 			_ui->channel2DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel2DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+			_ui->channel2DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel2DatasetNameComboBox->blockSignals(false);
 		}
 
@@ -240,6 +248,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3ColorPushButton->blockSignals(true);
 			_ui->channel3ColorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->channel3ColorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
+			_ui->channel3ColorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel3ColorPushButton->blockSignals(false);
 		}
 
@@ -297,7 +306,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->globalSettingsPushButton->blockSignals(true);
 			_ui->globalSettingsPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			_ui->globalSettingsPushButton->setChecked(globalSettings);
-			_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(globalSettings ? "link" : "unlink"));
+			_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(globalSettings ? "lock" : "unlock"));
 			_ui->globalSettingsPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->globalSettingsPushButton->blockSignals(false);
 		}
