@@ -9,7 +9,13 @@ class Points;
 
 class DimensionsViewerPlugin;
 
-/** Channel settings */
+/**
+ * Channel class
+ *
+ * Class for reading/writing channel visualization properties and for synchronization with the web view
+ * 
+ * @author T. Kroes
+ */
 class Channel : public QObject {
 
 	Q_OBJECT
@@ -201,6 +207,23 @@ signals:
 	 */
 	void bandTypeChanged(const BandType& bandType);
 
+	/**
+	 * Signals that the channel profile data has changed (used solely in the web viewer)
+	 * @param profile Profile data
+	 */
+	void profileChanged(const QVariantList& profile);
+
+	/**
+	 * Signals that the channel band data has changed (used solely in the web viewer)
+	 * @param band Band data
+	 */
+	void bandChanged(const QVariantList& band);
+
+private:
+	
+	/** Computes the profile and band data */
+	void computeStatistics();
+
 private:
 	QString			_name;				/** Channel name (e.g. dataset, Subset1 and Subset 2) */
 	bool			_enabled;			/** Whether the channel is enabled or not */
@@ -209,6 +232,9 @@ private:
 	QColor			_color;				/** Channel color */
 	ProfileType		_profileType;		/** The type of profile to visualize */
 	BandType		_bandType;			/** The type of band to visualize */
+	Points*			_points;			/** Pointer to points dataset */
+	QVariantList	_profile;			/** Profile data */
+	QVariantList	_band;				/** Band data */
 
 protected:
 	static DimensionsViewerPlugin* dimensionsViewerPlugin;
@@ -216,50 +242,3 @@ protected:
 	friend class DimensionsViewerPlugin;
 	friend class Configuration;
 };
-
-/**
- */
-//class Channel : public QObject
-//{
-//	Q_OBJECT
-//
-//public: // Construction/destruction
-//
-//	/**
-//	 * Constructor
-//	 * @param dimensionsViewerPlugin Pointer to the parent dimensions viewer plugin
-//	 */
-//	Channel(const QString& name, DimensionsViewerPlugin* dimensionsViewerPlugin);
-//
-//public:
-//
-//	/**
-//	 * Computes the dimension statistics on \p points
-//	 * @param points Pointer to points dataset
-//	 */
-//	void update(Points* points, const std::vector<std::uint32_t>& selectedIndices = std::vector<std::uint32_t>());
-//
-//	void setDataSetName(const QString& name);
-//	QString getDataSetName()const;
-//
-//	QString getName() { return _name; }
-//
-//private:
-//
-//	/** Returns the indices of the selected points */
-//	std::vector<std::uint32_t> selectedIndices() const;
-//
-//signals:
-//
-//	/**
-//	 * 
-//	 */
-//	void changed(const QVariantList& dimensions);
-//
-//private:
-//	QString						_name;
-//	DimensionsViewerPlugin*		_dimensionsViewerPlugin;
-//	QString						_dataSetName;
-//	Points*						_points;
-//	
-//};
