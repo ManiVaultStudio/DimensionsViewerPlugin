@@ -10,7 +10,7 @@ class DimensionsViewerPlugin;
 /**
  * Configurations model
  *
- * Class for storing configurations in a Qt list model.
+ * Class for storing configurations in a Qt abstract list model.
  */
 class ConfigurationsModel : public QAbstractListModel
 {
@@ -77,6 +77,10 @@ public: // Obligatory overrides
 
 public: // Dataset management
 
+	/**
+	 * Add a dataset to the model
+	 * @param datasetName Name of the dataset
+	 */
 	void addDataset(const QString& datasetName);
 
 public: // Miscellaneous
@@ -93,6 +97,12 @@ public: // Miscellaneous
 	 */
 	void selectRow(const std::int32_t& rowIndex);
 
+	/**
+	 * Returns the selected configuration (if any)
+	 * @return Configuration
+	 */
+	Configuration* getSelectedConfiguration() const;
+
 private:
 
 	/**
@@ -102,10 +112,8 @@ private:
 	 */
 	Configuration* getConfiguration(const QModelIndex& index) const;
 
-signals:
-
 private:
-	DimensionsViewerPlugin*		_dimensionsViewerPlugin;
-	QVector<Configuration*>		_configurations;
+	DimensionsViewerPlugin*		_dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
+	QVector<Configuration*>		_configurations;				/** Actual configurations data source */
 	QItemSelectionModel			_selectionModel;				/** Selection model */
 };

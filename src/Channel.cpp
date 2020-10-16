@@ -7,100 +7,161 @@
 #include "util/Timer.h"
 
 #include <QDebug>
-#include <QList>
 #include <QVariantList>
 
-Channel::Channel(const QString& name, DimensionsViewerPlugin* dimensionsViewerPlugin) :
-	QObject(reinterpret_cast<QObject*>(dimensionsViewerPlugin)),
+Channel::Channel(QObject* parent, const QString& name, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
+	QObject(parent),
 	_name(name),
-	_dimensionsViewerPlugin(dimensionsViewerPlugin),
-	_dataSetName(),
-	_points(nullptr)
+	_enabled(enabled),
+	_datasetName(datasetName),
+	_dataName(dataName),
+	_color(color),
+	_profileType(ProfileType::Average),
+	_bandType(BandType::MinMax)
 {
 }
 
-void Channel::update(Points* points, const std::vector<std::uint32_t>& selectedIndices /*= std::vector<std::uint32_t>()*/)
+void Channel::setEnabled(const bool& enabled)
 {
-	qDebug() << "Updating dimensions for" << points->getName() << "with selection" << selectedIndices.size();
+	if (enabled == _enabled)
+		return;
 
-	const auto noSelectedPoints = selectedIndices.size();
-	const auto hasSelection		= noSelectedPoints > 0;
-	const auto noPoints			= hasSelection ? noSelectedPoints : points->getNumPoints();
-	
-	std::vector<std::uint32_t> pointIndices;
-	
-	if (hasSelection) {
-		pointIndices = selectedIndices;
-	}
-	else {
-		/*
-		pointIndices.resize(points->getNumPoints());
-		std::iota(pointIndices.begin(), pointIndices.end(), 0);
-		*/
-	}
+	_enabled = enabled;
 
-	std::vector<std::uint32_t> dimensionIndices;
-
-	dimensionIndices.resize(points->getNumDimensions());
-	std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
-
-	QVector<DimensionStatistics> statistics;
-
-	statistics.resize(points->getNumDimensions());
-
-	points->visitData([this, &pointIndices, &dimensionIndices, &statistics](auto pointData) {
-		auto localPointIndex = 0;
-
-		for (const auto& pointIndex : pointIndices) {
-			for (const auto& dimensionIndex : dimensionIndices) {
-				statistics[dimensionIndex].addValue(pointData[pointIndex][dimensionIndex]);
-			}
-
-			localPointIndex++;
-		}
-	});
-
-	QVariantList payload;
-
-	auto dimensionIndex = 0;
-
-	for (auto& statistic : statistics) {
-		QVariantMap dimension;
-
-		dimension["id"]		= dimensionIndex;
-		dimension["name"]	= points->getDimensionNames().at(dimensionIndex);
-		dimension["min"]	= statistic.getMin();
-		dimension["max"]	= statistic.getMax();
-		dimension["avg"]	= statistic.getAverage();
-
-		payload.append(dimension);
-
-		dimensionIndex++;
-	}
-
-	emit changed(payload);
+	emit enabledChanged(_enabled);
 }
 
-void Channel::setDataSetName(const QString& dataSetName)
+void Channel::setDatasetName(const QString& datasetName)
 {
-	_dataSetName = dataSetName;
+	if (datasetName == _datasetName)
+		return;
 
-	_points = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(dataSetName));
+	_datasetName = datasetName;
 
-	//_dimensions.update(_points, selectedIndices());
+	emit datasetNameChanged(_datasetName);
 }
 
-QString Channel::getDataSetName() const
+void Channel::setColor(const QColor& color)
 {
-	return _dataSetName;
+	if (color == _color)
+		return;
+
+	_color = color;
+
+	emit colorChanged(_color);
 }
 
-std::vector<std::uint32_t> Channel::selectedIndices() const
+void Channel::setProfileType(const ProfileType& profileType)
 {
-	if (_points == nullptr)
-		return std::vector<std::uint32_t>();
+	if (profileType == _profileType)
+		return;
 
-	const auto& selection = dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestSelection(_points->getDataName()));
+	_profileType = profileType;
 
-	return selection.indices;
+	emit profileTypeChanged(_profileType);
 }
+
+void Channel::setBandType(const BandType& bandType)
+{
+	if (bandType == _bandType)
+		return;
+
+	_bandType = bandType;
+
+	emit bandTypeChanged(_bandType);
+}
+
+//Channel::Channel(const QString& name, DimensionsViewerPlugin* dimensionsViewerPlugin) :
+//	QObject(reinterpret_cast<QObject*>(dimensionsViewerPlugin)),
+//	_name(name),
+//	_dimensionsViewerPlugin(dimensionsViewerPlugin),
+//	_dataSetName(),
+//	_points(nullptr)
+//{
+//}
+//
+//void Channel::update(Points* points, const std::vector<std::uint32_t>& selectedIndices /*= std::vector<std::uint32_t>()*/)
+//{
+//	qDebug() << "Updating dimensions for" << points->getName() << "with selection" << selectedIndices.size();
+//
+//	const auto noSelectedPoints = selectedIndices.size();
+//	const auto hasSelection		= noSelectedPoints > 0;
+//	const auto noPoints			= hasSelection ? noSelectedPoints : points->getNumPoints();
+//	
+//	std::vector<std::uint32_t> pointIndices;
+//	
+//	if (hasSelection) {
+//		pointIndices = selectedIndices;
+//	}
+//	else {
+//		/*
+//		pointIndices.resize(points->getNumPoints());
+//		std::iota(pointIndices.begin(), pointIndices.end(), 0);
+//		*/
+//	}
+//
+//	std::vector<std::uint32_t> dimensionIndices;
+//
+//	dimensionIndices.resize(points->getNumDimensions());
+//	std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
+//
+//	QVector<DimensionStatistics> statistics;
+//
+//	statistics.resize(points->getNumDimensions());
+//
+//	points->visitData([this, &pointIndices, &dimensionIndices, &statistics](auto pointData) {
+//		auto localPointIndex = 0;
+//
+//		for (const auto& pointIndex : pointIndices) {
+//			for (const auto& dimensionIndex : dimensionIndices) {
+//				statistics[dimensionIndex].addValue(pointData[pointIndex][dimensionIndex]);
+//			}
+//
+//			localPointIndex++;
+//		}
+//	});
+//
+//	QVariantList payload;
+//
+//	auto dimensionIndex = 0;
+//
+//	for (auto& statistic : statistics) {
+//		QVariantMap dimension;
+//
+//		dimension["id"]		= dimensionIndex;
+//		dimension["name"]	= points->getDimensionNames().at(dimensionIndex);
+//		dimension["min"]	= statistic.getMin();
+//		dimension["max"]	= statistic.getMax();
+//		dimension["avg"]	= statistic.getAverage();
+//
+//		payload.append(dimension);
+//
+//		dimensionIndex++;
+//	}
+//
+//	emit changed(payload);
+//}
+//
+//void Channel::setDataSetName(const QString& dataSetName)
+//{
+//	_dataSetName = dataSetName;
+//
+//	_points = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(dataSetName));
+//
+//	//_dimensions.update(_points, selectedIndices());
+//}
+//
+//QString Channel::getDataSetName() const
+//{
+//	return _dataSetName;
+//}
+//
+//std::vector<std::uint32_t> Channel::selectedIndices() const
+//{
+//	if (_points == nullptr)
+//		return std::vector<std::uint32_t>();
+//
+//	const auto& selection = dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestSelection(_points->getDataName()));
+//
+//	return selection.indices;
+////////}

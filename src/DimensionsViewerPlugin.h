@@ -44,9 +44,6 @@ public:
 	/** Returns the configurations model */
 	ConfigurationsModel& getConfigurationsModel() { return _configurationsModel; }
 
-	/** Get visualization channels */
-	Channels& getChannels() { return _channels; };
-
 	/** Returns a pointer to the core interface */
 	hdps::CoreInterface* getCore() { return _core; }
 
@@ -54,7 +51,6 @@ public:
 
 private:
 	ConfigurationsModel			_configurationsModel;
-	Channels					_channels;
 	DimensionsViewerWidget*		_dimensionsViewerWidget;
 	SettingsWidget*				_settingsWidget;
 };

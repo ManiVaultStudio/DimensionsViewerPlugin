@@ -3,8 +3,13 @@
 
 #include <QDebug>
 
-Configuration::Configuration(const QString& datasetName, const QString& dataName) :
-	_channels({ Channel("Dataset", true, datasetName, dataName, Qt::black), Channel("Subset 1", false, "", dataName, QColor(249, 149, 0)), Channel("Subset 2", false, "", dataName, QColor(0, 112, 249)) }),
+Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
+	QObject(parent),
+	_channels({ 
+		new Channel(parent, "Dataset", true, datasetName, dataName, Qt::black),
+		new Channel(parent, "Subset 1", false, "", dataName, QColor(249, 149, 0)), 
+		new Channel(parent, "Subset 2", false, "", dataName, QColor(0, 112, 249))
+	}),
 	_subsets(),
 	_globalSettings(true)
 {
@@ -14,8 +19,8 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
 	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
-	const auto channel2Enabled = !_globalSettings && _channels[1]._enabled && _subsets.size() >= 1;
-	const auto channel3Enabled = !_globalSettings && _channels[2]._enabled && _subsets.size() >= 2;
+	const auto channel2Enabled = !_globalSettings && _channels[1]->isEnabled() && _subsets.size() >= 1;
+	const auto channel3Enabled = !_globalSettings && _channels[2]->isEnabled() && _subsets.size() >= 2;
 
 	switch (static_cast<Column>(index.column())) {
 		case Column::Channel1Enabled: {
@@ -45,14 +50,14 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 		}
 
 		case Column::Channel2DatasetName: {
-			if (_channels[1]._enabled && _subsets.size() >= 1)
+			if (_channels[1]->isEnabled() && _subsets.size() >= 1)
 				flags |= Qt::ItemIsEnabled;
 
 			break;
 		}
 		
 		case Column::Channel3DatasetName: {
-			if (_channels[2]._enabled && _subsets.size() >= 2)
+			if (_channels[2]->isEnabled() && _subsets.size() >= 2)
 				flags |= Qt::ItemIsEnabled;
 
 			break;
@@ -65,14 +70,14 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 		}
 
 		case Column::Channel2Color: {
-			if (_channels[1]._enabled && _subsets.size() >= 1)
+			if (_channels[1]->isEnabled() && _subsets.size() >= 1)
 				flags |= Qt::ItemIsEnabled;
 
 			break;
 		}
 
 		case Column::Channel3Color: {
-			if (_channels[2]._enabled && _subsets.size() >= 2)
+			if (_channels[2]->isEnabled() && _subsets.size() >= 2)
 				flags |= Qt::ItemIsEnabled;
 
 			break;
@@ -369,10 +374,10 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 				case Column::GlobalSettings: {
 					setGlobalSettings(value.toBool());
-					setChannelProfileType(1, _channels.first()._profileType);
-					setChannelProfileType(2, _channels.first()._profileType);
-					setChannelBandType(1, _channels.first()._bandType);
-					setChannelBandType(2, _channels.first()._bandType);
+					setChannelProfileType(1, _channels.first()->getProfileType());
+					setChannelProfileType(2, _channels.first()->getProfileType());
+					setChannelBandType(1, _channels.first()->getBandType());
+					setChannelBandType(2, _channels.first()->getBandType());
 
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
@@ -399,7 +404,7 @@ QVariant Configuration::getChannelEnabled(const std::int32_t& channelIndex, cons
 {
 	try
 	{
-		const auto enabled			= _channels[channelIndex]._enabled;
+		const auto enabled			= _channels[channelIndex]->isEnabled();
 		const auto enabledString	= enabled ? "on" : "off";
 
 		switch (role)
@@ -411,7 +416,7 @@ QVariant Configuration::getChannelEnabled(const std::int32_t& channelIndex, cons
 				return enabled;
 
 			case Qt::ToolTipRole:
-				return QString("%1 is %2").arg(_channels[channelIndex]._name, enabledString);
+				return QString("%1 is %2").arg(_channels[channelIndex]->getName(), enabledString);
 
 			default:
 				return QVariant();
@@ -429,7 +434,7 @@ void Configuration::setChannelEnabled(const std::int32_t& channelIndex, const bo
 {
 	try
 	{
-		_channels[channelIndex]._enabled = enabled;
+		_channels[channelIndex]->setEnabled(enabled);
 	}
 	catch (std::exception exception)
 	{
@@ -466,7 +471,7 @@ QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, 
 {
 	try
 	{
-		const auto datasetName = _channels[channelIndex]._datasetName;
+		const auto datasetName = _channels[channelIndex]->getDatasetName();
 
 		switch (role)
 		{
@@ -477,7 +482,7 @@ QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, 
 				return datasetName;
 
 			case Qt::ToolTipRole:
-				return QString("%1 dataset name: %2").arg(_channels[channelIndex]._name, datasetName);
+				return QString("%1 dataset name: %2").arg(_channels[channelIndex]->getName(), datasetName);
 
 			default:
 				return QVariant();
@@ -495,7 +500,7 @@ void Configuration::setChannelDatasetName(const std::int32_t& channelIndex, cons
 {
 	try
 	{
-		_channels[channelIndex]._datasetName = datasetName;
+		_channels[channelIndex]->setDatasetName(datasetName);
 	}
 	catch (std::exception exception)
 	{
@@ -507,7 +512,7 @@ QVariant Configuration::getChannelDataName(const std::int32_t& channelIndex, con
 {
 	try
 	{
-		const auto dataName = _channels[channelIndex]._dataName;
+		const auto dataName = _channels[channelIndex]->getDataName();
 
 		switch (role)
 		{
@@ -518,7 +523,7 @@ QVariant Configuration::getChannelDataName(const std::int32_t& channelIndex, con
 				return dataName;
 
 			case Qt::ToolTipRole:
-				return QString("%1 data name: %2").arg(_channels[channelIndex]._name, dataName);
+				return QString("%1 data name: %2").arg(_channels[channelIndex]->getName(), dataName);
 
 			default:
 				return QVariant();
@@ -536,7 +541,7 @@ QVariant Configuration::getChannelColor(const std::int32_t& channelIndex, const 
 {
 	try
 	{
-		const auto color		= _channels[channelIndex]._color;
+		const auto color		= _channels[channelIndex]->getColor();
 		const auto colorString	= QString("(%1, %2, %3)").arg(QString::number(color.red()), QString::number(color.green()), QString::number(color.blue()));
 
 		switch (role)
@@ -548,7 +553,7 @@ QVariant Configuration::getChannelColor(const std::int32_t& channelIndex, const 
 				return color;
 
 			case Qt::ToolTipRole:
-				return QString("%1 color: %2").arg(_channels[channelIndex]._name, colorString);
+				return QString("%1 color: %2").arg(_channels[channelIndex]->getName(), colorString);
 
 			default:
 				return QVariant();
@@ -566,7 +571,7 @@ void Configuration::setChannelColor(const std::int32_t& channelIndex, const QCol
 {
 	try
 	{
-		_channels[channelIndex]._color = color;
+		_channels[channelIndex]->setColor(color);
 	}
 	catch (std::exception exception)
 	{
@@ -578,7 +583,7 @@ QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, 
 {
 	try
 	{
-		const auto profileType			= _channels[channelIndex]._profileType;
+		const auto profileType			= _channels[channelIndex]->getProfileType();
 		const auto profileTypeString	= Channel::getProfileTypeName(profileType);
 
 		switch (role)
@@ -590,7 +595,7 @@ QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, 
 				return static_cast<int>(profileType);
 
 			case Qt::ToolTipRole:
-				return QString("%1 profile type: %2").arg(_channels[channelIndex]._name, profileTypeString);
+				return QString("%1 profile type: %2").arg(_channels[channelIndex]->getName(), profileTypeString);
 
 			default:
 				return QVariant();
@@ -608,7 +613,7 @@ void Configuration::setChannelProfileType(const std::int32_t& channelIndex, cons
 {
 	try
 	{
-		_channels[channelIndex]._profileType = profileType;
+		_channels[channelIndex]->setProfileType(profileType);
 	}
 	catch (std::exception exception)
 	{
@@ -620,7 +625,7 @@ QVariant Configuration::getChannelBandType(const std::int32_t& channelIndex, con
 {
 	try
 	{
-		const auto bandType			= _channels[channelIndex]._bandType;
+		const auto bandType			= _channels[channelIndex]->getBandType();
 		const auto bandTypeString	= Channel::getBandTypeName(bandType);
 
 		switch (role)
@@ -632,7 +637,7 @@ QVariant Configuration::getChannelBandType(const std::int32_t& channelIndex, con
 				return static_cast<int>(bandType);
 
 			case Qt::ToolTipRole:
-				return QString("%1 band type: %2").arg(_channels[channelIndex]._name, bandTypeString);
+				return QString("%1 band type: %2").arg(_channels[channelIndex]->getName(), bandTypeString);
 
 			default:
 				return QVariant();
@@ -650,7 +655,7 @@ void Configuration::setChannelBandType(const std::int32_t& channelIndex, const C
 {
 	try
 	{
-		_channels[channelIndex]._bandType = bandType;
+		_channels[channelIndex]->setBandType(bandType);
 	}
 	catch (std::exception exception)
 	{
@@ -683,6 +688,11 @@ QVariant Configuration::getGlobalSettings(const std::int32_t& role) const
 void Configuration::setGlobalSettings(const bool& globalSettings)
 {
 	_globalSettings = globalSettings;
+}
+
+Configuration::Channels& Configuration::getChannels()
+{
+	return _channels;
 }
 
 QString Configuration::htmlTooltip(const QString& title, const QString& description) const

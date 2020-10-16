@@ -102,7 +102,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 	else {
 		beginInsertRows(QModelIndex(), _configurations.size(), _configurations.size());
 		{
-			_configurations << new Configuration(datasetName, dataName);
+			_configurations << new Configuration(_dimensionsViewerPlugin, datasetName, dataName);
 		}
 		endInsertRows();
 
@@ -140,4 +140,14 @@ Configuration* ConfigurationsModel::getConfiguration(const QModelIndex& index) c
 	}
 
 	return nullptr;
+}
+
+Configuration* ConfigurationsModel::getSelectedConfiguration() const
+{
+	const auto selectedRows = _selectionModel.selectedRows();
+
+	if (selectedRows.isEmpty())
+		return nullptr;
+
+	return getConfiguration(selectedRows.first());
 }

@@ -60,13 +60,13 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_ui->channel2ColorPushButton->setColor(Qt::gray);
 	_ui->channel3ColorPushButton->setColor(Qt::gray);
 
-	_ui->channel1ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
-	_ui->channel2ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
-	_ui->channel3ProfileTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getProfileTypeNames()));
+	_ui->channel1ProfileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
+	_ui->channel2ProfileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
+	_ui->channel3ProfileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
 
-	_ui->channel1BandTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getBandTypeNames()));
-	_ui->channel2BandTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getBandTypeNames()));
-	_ui->channel3BandTypeComboBox->setModel(new QStringListModel(Configuration::Channel::getBandTypeNames()));
+	_ui->channel1BandTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
+	_ui->channel2BandTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
+	_ui->channel3BandTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
 
 	QFont font = QFont("Font Awesome 5 Free Solid", 8);
 

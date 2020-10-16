@@ -12,7 +12,6 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.DimensionsViewerPlugin")
 DimensionsViewerPlugin::DimensionsViewerPlugin() : 
 	ViewPlugin("Dimensions Viewer"),
 	_configurationsModel(this),
-	_channels(),
 	_dimensionsViewerWidget(),
 	_settingsWidget()
 {
@@ -20,10 +19,6 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
 	_settingsWidget = new SettingsWidget(this);
-
-	_channels.append(new Channel("Channel1", this));
-	_channels.append(new Channel("Channel2", this));
-	_channels.append(new Channel("Channel3", this));
 }
 
 void DimensionsViewerPlugin::init()

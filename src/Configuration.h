@@ -1,111 +1,18 @@
 #pragma once
 
+#include "Channel.h"
+
 #include <QStringList>
 #include <QColor>
 #include <QModelIndex>
 
-class Configuration
+class Configuration : public QObject
 {
+	Q_OBJECT
+
 public:
 
-	/** Channel settings */
-	struct Channel {
-
-		/** Profile type (e.g. average and mean) */
-		enum class ProfileType {
-			None,
-			Average,
-			Mean,
-
-			End = Mean
-		};
-
-		/** Get string representation of profile type enumeration */
-		static QString getProfileTypeName(const ProfileType& profileType) {
-			switch (profileType) {
-				case ProfileType::None:
-					return "Profile: None";
-
-				case ProfileType::Average:
-					return "Profile: Average";
-
-				case ProfileType::Mean:
-					return "Profile: Mean";
-			}
-
-			return QString();
-		}
-
-		/** Get profile type names in a string list */
-		static QStringList getProfileTypeNames() {
-			QStringList profileTypeNames;
-
-			for (int i = 0; i <= static_cast<int>(ProfileType::End); ++i)
-				profileTypeNames << getProfileTypeName(static_cast<ProfileType>(i));
-
-			return profileTypeNames;
-		}
-
-		/** Band type (e.g. minimum/maximum and standard deviation) */
-		enum class BandType {
-			None,
-			MinMax,
-			StandardDeviation1,
-			StandardDeviation2,
-
-			End = StandardDeviation2
-		};
-
-		/** Get string representation of band type enumeration */
-		static QString getBandTypeName(const BandType& bandType) {
-			switch (bandType) {
-				case BandType::None:
-					return "Band: None";
-
-				case BandType::MinMax:
-					return "Band: Min/Max";
-
-				case BandType::StandardDeviation1:
-					return "Band: 1 SD";
-
-				case BandType::StandardDeviation2:
-					return "Band: 2 SD";
-			}
-
-			return QString();
-		}
-
-		/** Get band type names in a string list */
-		static QStringList getBandTypeNames() {
-			QStringList bandTypeNames;
-
-			for (int i = 0; i <= static_cast<int>(BandType::End); ++i)
-				bandTypeNames << getBandTypeName(static_cast<BandType>(i));
-
-			return bandTypeNames;
-		}
-
-		Channel(const QString& name, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
-			_name(name),
-			_enabled(enabled),
-			_datasetName(datasetName),
-			_dataName(dataName),
-			_color(color),
-			_profileType(ProfileType::Average),
-			_bandType(BandType::MinMax)
-		{
-		}
-
-		QString			_name;				/** Channel name (e.g. dataset, Subset1 and Subset 2) */
-		bool			_enabled;			/** Whether the channel is enabled or not */
-		QString			_datasetName;		/** Channel dataset name */
-		QString			_dataName;			/** Channel data name */
-		QColor			_color;				/** Channel color */
-		ProfileType		_profileType;		/** The type of profile to visualize */
-		BandType		_bandType;			/** The type of band to visualize */
-	};
-
-	using Channels = QVector<Channel>;
+	using Channels = QVector<Channel*>;
 
 public: // Columns
 
@@ -208,8 +115,13 @@ public: // Columns
 
 public: // Construction
 
-	/** Default constructor */
-	Configuration(const QString& datasetName, const QString& dataName);
+	/**
+	 * Constructor
+	 * @param parent Parent object
+	 * @param datasetName Name of the primary dataset
+	 * @param dataName Name of the primary data
+	 */
+	Configuration(QObject* parent, const QString& datasetName, const QString& dataName);
 
 public: // MVC
 
@@ -350,6 +262,11 @@ public: // Getters/setters
 	 * @param globalSettings Whether the settings of the first channel are global or not
 	 */
 	void setGlobalSettings(const bool& globalSettings);
+
+public: // Miscellaneous
+
+	/** Get configuration channels */
+	Channels& getChannels();
 
 private:
 

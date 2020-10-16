@@ -14,9 +14,22 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 
 	QWebChannel* webChannel = new QWebChannel(this);
 
-	for (auto channel : _dimensionsViewerPlugin->getChannels()) {
-		webChannel->registerObject(channel->getName(), channel);
-	}
+	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+
+	QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel, webChannel](const QItemSelection& selected, const QItemSelection& deselected) {
+		const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
+
+		if (!selectedRows.isEmpty()) {
+			for (auto registeredObject : webChannel->registeredObjects())
+				webChannel->deregisterObject(registeredObject);
+
+			auto selectedConfiguration = configurationsModel.getSelectedConfiguration();
+
+			for (auto& channel : selectedConfiguration->getChannels()) {
+				webChannel->registerObject(channel->getName(), channel);
+			}
+		}
+	});
 
 	page()->setWebChannel(webChannel);
 }
