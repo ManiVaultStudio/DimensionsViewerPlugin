@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QVariantList>
 
+DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
+
 Channel::Channel(QObject* parent, const QString& name, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
 	QObject(parent),
 	_name(name),

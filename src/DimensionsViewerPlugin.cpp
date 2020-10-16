@@ -17,6 +17,8 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
+	Channel::dimensionsViewerPlugin = this;
+
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
 	_settingsWidget = new SettingsWidget(this);
 }

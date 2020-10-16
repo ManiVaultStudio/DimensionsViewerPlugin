@@ -210,6 +210,10 @@ private:
 	ProfileType		_profileType;		/** The type of profile to visualize */
 	BandType		_bandType;			/** The type of band to visualize */
 
+protected:
+	static DimensionsViewerPlugin* dimensionsViewerPlugin;
+
+	friend class DimensionsViewerPlugin;
 	friend class Configuration;
 };
 
