@@ -268,6 +268,18 @@ public: // Miscellaneous
 	/** Get configuration channels */
 	Channels& getChannels();
 
+	/**
+	 * Returns a channel by \p datasetName
+	 * @param datasetName Name of the dataset to search for
+	 */
+	Channel* getChannelByDatasetName(const QString& datasetName);
+
+	/**
+	 * Returns whether dataset with name \p datasetName exists in the configuration
+	 * @param datasetName Name of the dataset to search for
+	 */
+	bool hasDataset(const QString& datasetName) const;
+
 private:
 
 	/**

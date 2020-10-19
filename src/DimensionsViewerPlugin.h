@@ -49,6 +49,13 @@ public:
 
 	Points* getPoints(const QString& datasetName);
 
+signals:
+	/**
+	 * Signals that the selection of a points dataset has changed
+	 * @param dataName Name of the points data of which the selection changed
+	 */
+	void pointsSelectionChanged(const QString& dataName);
+
 private:
 	ConfigurationsModel			_configurationsModel;
 	DimensionsViewerWidget*		_dimensionsViewerWidget;

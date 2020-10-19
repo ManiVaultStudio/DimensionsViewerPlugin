@@ -11,19 +11,22 @@
 
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
-Channel::Channel(QObject* parent, const QString& name, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
+Channel::Channel(QObject* parent, const QString& internalName, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
 	QObject(parent),
-	_name(name),
+	_internalName(internalName),
+	_displayName(displayName),
 	_enabled(enabled),
-	_datasetName(datasetName),
+	_datasetName(),
 	_dataName(dataName),
 	_color(color),
-	_profileType(ProfileType::Average),
+	_profileType(ProfileType::Mean),
 	_bandType(BandType::MinMax),
 	_points(nullptr),
 	_profile(),
 	_band()
 {
+	setDatasetName(datasetName);
+
 	QObject::connect(this, &Channel::datasetNameChanged, [this]() {
 		computeStatistics();
 	});
@@ -34,6 +37,11 @@ Channel::Channel(QObject* parent, const QString& name, const bool& enabled, cons
 
 	QObject::connect(this, &Channel::bandTypeChanged, [this]() {
 		computeStatistics();
+	});
+
+	QObject::connect(dimensionsViewerPlugin, &DimensionsViewerPlugin::pointsSelectionChanged, [this](const QString& dataName) {
+		if (dataName == _dataName && !isSubset())
+			computeStatistics();
 	});
 }
 
@@ -98,20 +106,19 @@ void Channel::computeStatistics()
 
 	const auto& selection = dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestSelection(_points->getDataName()));
 	
-	const auto noselectedpoints = selection.indices.size();
-	const auto hasselection		= noselectedpoints > 0;
-	const auto nopoints			= hasselection ? noselectedpoints : _points->getNumPoints();
-	
 	std::vector<std::uint32_t> pointIndices;
 	
-	if (hasselection) {
-		pointIndices = selection.indices;
+	if (isSubset()) {
+		pointIndices = _points->indices;
 	}
 	else {
-		/*
-		pointindices.resize(points->getnumpoints());
-		std::iota(pointindices.begin(), pointindices.end(), 0);
-		*/
+		if (selection.indices.size() > 0) {
+			pointIndices = selection.indices;
+		}
+		else {
+			pointIndices.resize(_points->getNumPoints());
+			std::iota(pointIndices.begin(), pointIndices.end(), 0);
+		}
 	}
 
 	std::vector<std::uint32_t> dimensionIndices;
@@ -119,39 +126,68 @@ void Channel::computeStatistics()
 	dimensionIndices.resize(_points->getNumDimensions());
 	std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
 
-	QVector<DimensionStatistics> statistics;
-
-	statistics.resize(_points->getNumDimensions());
-
-	/*
-	_points->visitData([this, &pointIndices, &dimensionIndices, &statistics](auto pointData) {
-		auto localPointIndex = 0;
-
-		for (const auto& pointIndex : pointIndices) {
-			for (const auto& dimensionIndex : dimensionIndices) {
-				statistics[dimensionIndex].addValue(pointData[pointIndex][dimensionIndex]);
-			}
-
-			localPointIndex++;
-		}
-	});
-
 	QVariantList payload;
+	
+	if (!pointIndices.empty()) {
+		_points->visitSourceData([this, &pointIndices, &dimensionIndices, &payload](auto pointData) {
+			std::vector<float> dimensionValues;
 
-	auto dimensionIndex = 0;
+			dimensionValues.resize(pointIndices.size());
 
-	for (auto& statistic : statistics) {
-		QVariantMap dimension;
+			for (const auto& dimensionIndex : dimensionIndices) {
+				auto localPointIndex = 0;
 
-		dimension["id"]		= dimensionIndex;
-		dimension["name"]	= _points->getDimensionNames().at(dimensionIndex);
-		dimension["min"]	= statistic.getMin();
-		dimension["max"]	= statistic.getMax();
-		dimension["avg"]	= statistic.getAverage();
+				for (const auto& pointIndex : pointIndices) {
+					dimensionValues[localPointIndex] = pointData[dimensionIndex][pointIndex];
+					localPointIndex++;
+				}
 
-		payload.append(dimension);
+				/*for (const auto& pointValue : pointData[dimensionIndex]) {
+					dimensionValues[localPointIndex] = pointValue;
+					localPointIndex++;
+				}*/
 
-		dimensionIndex++;
+				QVariantMap dimension;
+
+				dimension["id"] = dimensionIndex;
+				dimension["name"] = _points->getDimensionNames().at(dimensionIndex);
+
+				const float sum = std::accumulate(dimensionValues.begin(), dimensionValues.end(), 0.0);
+				const float mean = sum / dimensionValues.size();
+
+				std::vector<float> diff(dimensionValues.size());
+
+				std::transform(dimensionValues.begin(), dimensionValues.end(), diff.begin(), [mean](double x) { return x - mean; });
+
+				switch (_profileType)
+				{
+					case ProfileType::Mean: {
+						dimension["mean"] = sum / dimensionValues.size();
+						break;
+					}
+
+					case ProfileType::Median: {
+						std::sort(dimensionValues.begin(), dimensionValues.end());
+						dimension["median"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
+						break;
+					}
+
+					default:
+						break;
+				}
+
+				payload.append(dimension);
+			}
+		});
 	}
-	*/
+	
+	emit dimensionsChanged(_internalName, payload);
+}
+
+bool Channel::isSubset() const
+{
+	if (_points == nullptr)
+		return false;
+
+	return !_points->indices.empty();
 }

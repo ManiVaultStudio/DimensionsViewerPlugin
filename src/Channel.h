@@ -25,10 +25,10 @@ public: // Enumerations
 	/** Profile type (e.g. average and mean) */
 	enum class ProfileType {
 		None,
-		Average,
 		Mean,
+		Median,
 
-		End = Mean
+		End = Median
 	};
 
 	/** Get string representation of profile type enumeration */
@@ -37,11 +37,11 @@ public: // Enumerations
 			case ProfileType::None:
 				return "Profile: None";
 
-			case ProfileType::Average:
-				return "Profile: Average";
-
 			case ProfileType::Mean:
 				return "Profile: Mean";
+
+			case ProfileType::Median:
+				return "Profile: Median";
 		}
 
 		return QString();
@@ -100,19 +100,25 @@ protected: // Construction
 
 	/**
 	 * Constructor
-	 * @param name Name of the channel
+	 * @param internalName Channel name for internal use
+	 * @param displayName Channel name in the user interface
 	 * @param enabled Whether the channel is enabled
 	 * @param datasetName The name of the channel dataset
 	 * @param dataName The data name of the channel
 	 * @param color The color of the channel
 	 */
-	Channel(QObject* parent, const QString& name, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color);
+	Channel(QObject* parent, const QString& internalName, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color);
 
 public: // Getters/setters
 
-	/** Returns the channel name */
-	QString getName() const {
-		return _name;
+	/** Returns the channel internal name */
+	QString getInternalName() const {
+		return _internalName;
+	};
+
+	/** Returns the channel display name */
+	QString getDisplayName() const {
+		return _displayName;
 	};
 
 	/** Returns whether the channel is enabled */
@@ -208,24 +214,22 @@ signals:
 	void bandTypeChanged(const BandType& bandType);
 
 	/**
-	 * Signals that the channel profile data has changed (used solely in the web viewer)
-	 * @param profile Profile data
+	 * Signals that the channel dimensions have changed (used solely in the web viewer)
+	 * @param dimensions Dimensions data
 	 */
-	void profileChanged(const QVariantList& profile);
-
-	/**
-	 * Signals that the channel band data has changed (used solely in the web viewer)
-	 * @param band Band data
-	 */
-	void bandChanged(const QVariantList& band);
+	void dimensionsChanged(const QString& channelName, const QVariantList& dimensions);
 
 private:
 	
 	/** Computes the profile and band data */
 	void computeStatistics();
 
+	/** Returns if the referenced dataset is a subset */
+	bool isSubset() const;
+
 private:
-	QString			_name;				/** Channel name (e.g. dataset, Subset1 and Subset 2) */
+	QString			_internalName;		/** Channel internal name (e.g. channel1, channel2) */
+	QString			_displayName;		/** Channel display name (e.g. dataset, Subset1 and Subset 2) */
 	bool			_enabled;			/** Whether the channel is enabled or not */
 	QString			_datasetName;		/** Channel dataset name */
 	QString			_dataName;			/** Channel data name */

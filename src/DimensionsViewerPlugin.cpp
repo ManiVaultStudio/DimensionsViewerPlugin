@@ -55,16 +55,9 @@ void DimensionsViewerPlugin::dataRemoved(const QString dataset)
 	//_dataSets.remove(dataset);
 }
 
-void DimensionsViewerPlugin::selectionChanged(const QString dataset)
+void DimensionsViewerPlugin::selectionChanged(const QString dataName)
 {
-	//qDebug() << "Selection changed" << dataset;
-
-	/*
-	if (dataset != _points->getDataName())
-		return;
-	*/
-
-	//_channels.update(_points, selectedIndices());
+	emit pointsSelectionChanged(dataName);
 }
 
 hdps::DataTypes DimensionsViewerPlugin::supportedDataTypes() const

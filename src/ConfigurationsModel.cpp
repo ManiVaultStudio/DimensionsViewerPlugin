@@ -115,7 +115,7 @@ QStringList ConfigurationsModel::getConfigurationNames()
 {
 	QStringList configurationNames;
 
-	for (const auto& configuration : _configurations)
+	for (auto configuration : _configurations)
 		configurationNames << configuration->getChannelDatasetName(0, Qt::EditRole).toString();
 	
 	return configurationNames;

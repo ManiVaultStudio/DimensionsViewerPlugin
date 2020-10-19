@@ -6,9 +6,9 @@
 Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
 	QObject(parent),
 	_channels({ 
-		new Channel(parent, "Dataset", true, datasetName, dataName, Qt::black),
-		new Channel(parent, "Subset 1", false, "", dataName, QColor(249, 149, 0)), 
-		new Channel(parent, "Subset 2", false, "", dataName, QColor(0, 112, 249))
+		new Channel(parent, "channel1", "Dataset", true, datasetName, dataName, Qt::black),
+		new Channel(parent, "channel2", "Subset 1", false, "", dataName, QColor(249, 149, 0)), 
+		new Channel(parent, "channel3", "Subset 2", false, "", dataName, QColor(0, 112, 249))
 	}),
 	_subsets(),
 	_globalSettings(true)
@@ -416,7 +416,7 @@ QVariant Configuration::getChannelEnabled(const std::int32_t& channelIndex, cons
 				return enabled;
 
 			case Qt::ToolTipRole:
-				return QString("%1 is %2").arg(_channels[channelIndex]->getName(), enabledString);
+				return QString("%1 is %2").arg(_channels[channelIndex]->getDisplayName(), enabledString);
 
 			default:
 				return QVariant();
@@ -482,7 +482,7 @@ QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, 
 				return datasetName;
 
 			case Qt::ToolTipRole:
-				return QString("%1 dataset name: %2").arg(_channels[channelIndex]->getName(), datasetName);
+				return QString("%1 dataset name: %2").arg(_channels[channelIndex]->getDisplayName(), datasetName);
 
 			default:
 				return QVariant();
@@ -523,7 +523,7 @@ QVariant Configuration::getChannelDataName(const std::int32_t& channelIndex, con
 				return dataName;
 
 			case Qt::ToolTipRole:
-				return QString("%1 data name: %2").arg(_channels[channelIndex]->getName(), dataName);
+				return QString("%1 data name: %2").arg(_channels[channelIndex]->getDisplayName(), dataName);
 
 			default:
 				return QVariant();
@@ -553,7 +553,7 @@ QVariant Configuration::getChannelColor(const std::int32_t& channelIndex, const 
 				return color;
 
 			case Qt::ToolTipRole:
-				return QString("%1 color: %2").arg(_channels[channelIndex]->getName(), colorString);
+				return QString("%1 color: %2").arg(_channels[channelIndex]->getDisplayName(), colorString);
 
 			default:
 				return QVariant();
@@ -595,7 +595,7 @@ QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, 
 				return static_cast<int>(profileType);
 
 			case Qt::ToolTipRole:
-				return QString("%1 profile type: %2").arg(_channels[channelIndex]->getName(), profileTypeString);
+				return QString("%1 profile type: %2").arg(_channels[channelIndex]->getDisplayName(), profileTypeString);
 
 			default:
 				return QVariant();
@@ -637,7 +637,7 @@ QVariant Configuration::getChannelBandType(const std::int32_t& channelIndex, con
 				return static_cast<int>(bandType);
 
 			case Qt::ToolTipRole:
-				return QString("%1 band type: %2").arg(_channels[channelIndex]->getName(), bandTypeString);
+				return QString("%1 band type: %2").arg(_channels[channelIndex]->getDisplayName(), bandTypeString);
 
 			default:
 				return QVariant();
@@ -693,6 +693,21 @@ void Configuration::setGlobalSettings(const bool& globalSettings)
 Configuration::Channels& Configuration::getChannels()
 {
 	return _channels;
+}
+
+Channel* Configuration::getChannelByDatasetName(const QString& datasetName)
+{
+	for (auto channel : _channels) {
+		if (datasetName == channel->getDatasetName())
+			return channel;
+	}
+
+	return nullptr;
+}
+
+bool Configuration::hasDataset(const QString& datasetName) const
+{
+	return const_cast<Configuration*>(this)->getChannelByDatasetName(datasetName) != nullptr;
 }
 
 QString Configuration::htmlTooltip(const QString& title, const QString& description) const

@@ -13,18 +13,18 @@
 		<script>
 
             // TODO: Add descripton
-            var onChannelChanged = function (channelName, channelData) {
-                let changeset = vega.changeset().remove(() => true).insert(channelData);
-                view.change('channelName', changeset).run();
-                console.log(channelName, channelData)
+            var onChannelDimensionsChanged = function (name, dimensionsData) {
+                //let changeset = vega.changeset().remove(() => true).insert(channelData);
+                //view.change('channelName', changeset).run();
+                console.log(name, dimensionsData);
 			}
 
             // Create new webchannel and connect to signals from C++
 			new QWebChannel(qt.webChannelTransport,
 				function (channel) {
-                    channel.objects.channel1.changed.connect(onChannelChanged);
-                    channel.objects.channel2.changed.connect(onChannelChanged);
-                    channel.objects.channel3.changed.connect(onChannelChanged);
+                    channel.objects.channel1.dimensionsChanged.connect(onChannelDimensionsChanged);
+                    channel.objects.channel2.dimensionsChanged.connect(onChannelDimensionsChanged);
+                    channel.objects.channel3.dimensionsChanged.connect(onChannelDimensionsChanged);
 				});
 
             // Vega visualization options

@@ -10,26 +10,28 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-	load(QUrl("qrc:DimensionsViewer.html"));
-
-	QWebChannel* webChannel = new QWebChannel(this);
-
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-	QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel, webChannel](const QItemSelection& selected, const QItemSelection& deselected) {
+	QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
 
 		if (!selectedRows.isEmpty()) {
-			for (auto registeredObject : webChannel->registeredObjects())
-				webChannel->deregisterObject(registeredObject);
+			QWebChannel* webChannel = new QWebChannel(this);
+
+			//for (auto registeredObject : webChannel->registeredObjects())
+			//	webChannel->deregisterObject(registeredObject);
 
 			auto selectedConfiguration = configurationsModel.getSelectedConfiguration();
 
-			for (auto& channel : selectedConfiguration->getChannels()) {
-				webChannel->registerObject(channel->getName(), channel);
+			auto& channels = selectedConfiguration->getChannels();
+
+			for (auto& channel : channels) {
+				webChannel->registerObject(channel->getInternalName(), channel);
 			}
+
+			page()->setWebChannel(webChannel);
+
+			load(QUrl("qrc:DimensionsViewer.html"));
 		}
 	});
-
-	page()->setWebChannel(webChannel);
 }
