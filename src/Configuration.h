@@ -37,6 +37,9 @@ public: // Columns
 		Channel1BandType,				/** The band type of the first channel */
 		Channel2BandType,				/** The band type of the second channel */
 		Channel3BandType,				/** The band type of the third channel */
+		Channel1ShowRange,				/** Whether to show the dimension range for the first channel*/
+		Channel2ShowRange,				/** Whether to show the dimension range for the first channel*/
+		Channel3ShowRange,				/** Whether to show the dimension range for the first channel*/
 		GlobalSettings,					/** Whether settings of the first channel are global settings */
 		
 		Start = Channel1Enabled,		/** Column start */
@@ -102,6 +105,15 @@ public: // Columns
 
 			case Column::Channel3BandType:
 				return "Channel 3: Band type";
+
+			case Column::Channel1ShowRange:
+				return "Channel 1: Show range";
+
+			case Column::Channel2ShowRange:
+				return "Channel 2: Show range";
+
+			case Column::Channel3ShowRange:
+				return "Channel 3: Show range";
 
 			case Column::GlobalSettings:
 				return "Global settings";
@@ -251,6 +263,21 @@ public: // Getters/setters
 	void setChannelBandType(const std::int32_t& channelIndex, const Channel::BandType& bandType);
 
 	/**
+	 * Returns the show range parameter of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param role Data role
+	 * @return Show range in variant form
+	 */
+	QVariant getChannelShowRange(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+	/**
+	 * Sets the show range parameter of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param showRange Show range parameter of channel with \p channelIndex
+	 */
+	void setChannelShowRange(const std::int32_t& channelIndex, const bool& showRange);
+
+	/**
 	 * Returns whether the settings of the first channel are global or not
 	 * @param role Data role
 	 * @return Whether settings of the first channel are global or not in variant form
@@ -290,8 +317,23 @@ private:
 	 */
 	QString htmlTooltip(const QString& title, const QString& description) const;
 
+signals:
+
+	/**
+	 * Signals that the dimensions have changed
+	 * @param dimensions Channel dimensions
+	 */
+	void dimensionsChanged(const QVariantList& dimensions);
+
+	/**
+	 * Signals that the settings have changed
+	 * @param settings Channel settings
+	 */
+	void settingsChanged(const QVariantMap& settings);
+
 private:
 	Channels		_channels;				/** Channels */
 	QStringList		_subsets;				/** Subsets of the primary dataset (selected in the first channel) */
 	bool			_globalSettings;		/** Whether the range settings of the first channel determine the subsequent channel range settings */
+	QVariantMap		_settings;				/** Settings for JS */
 };

@@ -132,6 +132,18 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		configurationsModel.setData(Configuration::Column::Channel3BandType, currentIndex);
 	});
 
+	QObject::connect(_ui->channel1ShowRangeCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+		configurationsModel.setData(Configuration::Column::Channel1ShowRange, state == Qt::Checked);
+	});
+
+	QObject::connect(_ui->channel2ShowRangeCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+		configurationsModel.setData(Configuration::Column::Channel2ShowRange, state == Qt::Checked);
+	});
+
+	QObject::connect(_ui->channel3ShowRangeCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+		configurationsModel.setData(Configuration::Column::Channel3ShowRange, state == Qt::Checked);
+	});
+
 	QObject::connect(_ui->globalSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
 		configurationsModel.setData(Configuration::Column::GlobalSettings, checked);
 	});
@@ -298,6 +310,30 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3BandTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
 			_ui->channel3BandTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel3BandTypeComboBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel1ShowRange)) {
+			_ui->channel1ShowRangeCheckBox->blockSignals(true);
+			_ui->channel1ShowRangeCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel1ShowRangeCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->channel1ShowRangeCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->channel1ShowRangeCheckBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel2ShowRange)) {
+			_ui->channel2ShowRangeCheckBox->blockSignals(true);
+			_ui->channel2ShowRangeCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel2ShowRangeCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->channel2ShowRangeCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->channel2ShowRangeCheckBox->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel3ShowRange)) {
+			_ui->channel3ShowRangeCheckBox->blockSignals(true);
+			_ui->channel3ShowRangeCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel3ShowRangeCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->channel3ShowRangeCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->channel3ShowRangeCheckBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::GlobalSettings)) {

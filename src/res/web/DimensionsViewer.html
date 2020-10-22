@@ -2,9 +2,11 @@
 <html style="padding: 0; margin: 0; width: 100%; height: 100%;">
 <head>
     <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@5"></script>
+
     <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>
 
 </head>
@@ -12,40 +14,53 @@
 		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
 		<script>
 
-            // TODO: Add descripton
-            var onChannelDimensionsChanged = function (name, dimensionsData) {
-                //let changeset = vega.changeset().remove(() => true).insert(channelData);
-                //view.change('channelName', changeset).run();
-                console.log(name, dimensionsData);
-			}
+            window.addEventListener("load", function () {
 
-            // Create new webchannel and connect to signals from C++
-			new QWebChannel(qt.webChannelTransport,
-				function (channel) {
-                    channel.objects.channel1.dimensionsChanged.connect(onChannelDimensionsChanged);
-                    channel.objects.channel2.dimensionsChanged.connect(onChannelDimensionsChanged);
-                    channel.objects.channel3.dimensionsChanged.connect(onChannelDimensionsChanged);
-				});
-
-            // Vega visualization options
-            var options = {
-                renderer: "canvas",
-                defaultStyle: false
-            };
-
-            // Embed the Vega view
-            vegaEmbed('#view', design, options).then(p => {
-
-                // Find elements with tag name details
-                element = document.getElementsByTagName("details");
-
-                // And remove them (they corrupt the layout)
-                for (index = 0; index < element.length; index++) {
-                    element[index].parentNode.removeChild(element[index]);
+                // Invoked when the dimensions have changed
+                var onDimensionsChanged = function (dimensions) {
+                    let changeset = vega.changeset().remove(() => true).insert(dimensions);
+                    view.change('dimensions', changeset).run();
                 }
 
-                // Attached the Vega view to the global window variable so that we can later use it
-                window.view = p.view
+                // Invoked when the settings have changed
+                var onSettingsChanged = function (settings) {
+                    view.signal('color0', settings.color0);
+                    view.signal('color1', settings.color1);
+                    view.signal('color2', settings.color2);
+                }
+
+                
+                // Create new webchannel and connect to signals from C++
+                new QWebChannel(qt.webChannelTransport,
+                    function (channel) {
+                        channel.objects.configuration.dimensionsChanged.connect(onDimensionsChanged);
+                        channel.objects.configuration.settingsChanged.connect(onSettingsChanged);
+                    });
+
+                // Vega visualization options
+                var options = {
+                    //renderer: "canvas",
+                    defaultStyle: false
+                };
+
+                for (channelIndex = 0; channelIndex < 3; channelIndex++) {
+                    addChannel(design, channelIndex);
+                }
+
+                // Embed the Vega view
+                vegaEmbed('#view', design, options).then(p => {
+
+                    // Find elements with tag name details
+                    element = document.getElementsByTagName("details");
+
+                    // And remove them (they corrupt the layout)
+                    for (index = 0; index < element.length; index++) {
+                        element[index].parentNode.removeChild(element[index]);
+                    }
+
+                    // Attached the Vega view to the global window variable so that we can later use it
+                    window.view = p.view
+                });
             });
 		</script>
 	</body>

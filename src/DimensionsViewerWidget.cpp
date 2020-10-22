@@ -18,20 +18,18 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 		if (!selectedRows.isEmpty()) {
 			QWebChannel* webChannel = new QWebChannel(this);
 
-			//for (auto registeredObject : webChannel->registeredObjects())
-			//	webChannel->deregisterObject(registeredObject);
-
-			auto selectedConfiguration = configurationsModel.getSelectedConfiguration();
-
-			auto& channels = selectedConfiguration->getChannels();
-
-			for (auto& channel : channels) {
-				webChannel->registerObject(channel->getInternalName(), channel);
-			}
+			webChannel->registerObject("configuration", configurationsModel.getSelectedConfiguration());
 
 			page()->setWebChannel(webChannel);
 
 			load(QUrl("qrc:DimensionsViewer.html"));
 		}
 	});
+
+	/*QWebChannel* webChannel = new QWebChannel(this);
+
+
+	load(QUrl("qrc:DimensionsViewer.html"));
+
+	page()->setWebChannel(webChannel);*/
 }

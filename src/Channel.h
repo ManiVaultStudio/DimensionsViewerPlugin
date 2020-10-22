@@ -60,7 +60,6 @@ public: // Enumerations
 	/** Band type (e.g. minimum/maximum and standard deviation) */
 	enum class BandType {
 		None,
-		MinMax,
 		StandardDeviation1,
 		StandardDeviation2,
 
@@ -72,9 +71,6 @@ public: // Enumerations
 		switch (bandType) {
 			case BandType::None:
 				return "Band: None";
-
-			case BandType::MinMax:
-				return "Band: Min/Max";
 
 			case BandType::StandardDeviation1:
 				return "Band: 1 SD";
@@ -100,6 +96,7 @@ protected: // Construction
 
 	/**
 	 * Constructor
+	 * @param index Channel index
 	 * @param internalName Channel name for internal use
 	 * @param displayName Channel name in the user interface
 	 * @param enabled Whether the channel is enabled
@@ -107,9 +104,14 @@ protected: // Construction
 	 * @param dataName The data name of the channel
 	 * @param color The color of the channel
 	 */
-	Channel(QObject* parent, const QString& internalName, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color);
+	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color);
 
 public: // Getters/setters
+
+	/** Returns the channel index */
+	std::uint32_t getIndex() const {
+		return _index;
+	};
 
 	/** Returns the channel internal name */
 	QString getInternalName() const {
@@ -181,6 +183,22 @@ public: // Getters/setters
 	 */
 	void setBandType(const BandType& bandType);
 
+	/** Returns the dimensions data */
+	QVariantList getDimensions() const {
+		return _dimensions;
+	};
+
+	/** Returns whether to show the dimension range */
+	bool getShowRange() const {
+		return _showRange;
+	};
+
+	/**
+	 * Sets whether to show the dimension range
+	 * @param showRange Profile type
+	 */
+	void setShowRange(const bool& showRange);
+
 signals:
 
 	/**
@@ -214,10 +232,16 @@ signals:
 	void bandTypeChanged(const BandType& bandType);
 
 	/**
-	 * Signals that the channel dimensions have changed (used solely in the web viewer)
-	 * @param dimensions Dimensions data
+	 * Signals that the dimension range visibility changed
+	 * @param showRange Whether to show the dimension range
 	 */
-	void dimensionsChanged(const QString& channelName, const QVariantList& dimensions);
+	void showRangeChanged(const bool& showRange);
+
+	/**
+	 * Signals that the channel dimensions have changed (used solely in the web viewer)
+	 * @param channel Channel
+	 */
+	void dimensionsChanged(Channel* channel);
 
 private:
 	
@@ -228,17 +252,18 @@ private:
 	bool isSubset() const;
 
 private:
-	QString			_internalName;		/** Channel internal name (e.g. channel1, channel2) */
-	QString			_displayName;		/** Channel display name (e.g. dataset, Subset1 and Subset 2) */
-	bool			_enabled;			/** Whether the channel is enabled or not */
-	QString			_datasetName;		/** Channel dataset name */
-	QString			_dataName;			/** Channel data name */
-	QColor			_color;				/** Channel color */
-	ProfileType		_profileType;		/** The type of profile to visualize */
-	BandType		_bandType;			/** The type of band to visualize */
-	Points*			_points;			/** Pointer to points dataset */
-	QVariantList	_profile;			/** Profile data */
-	QVariantList	_band;				/** Band data */
+	const std::uint32_t		_index;				/** Channel index */
+	const QString			_internalName;		/** Channel internal name (e.g. channel1, channel2) */
+	const QString			_displayName;		/** Channel display name (e.g. dataset, Subset1 and Subset 2) */
+	bool					_enabled;			/** Whether the channel is enabled or not */
+	QString					_datasetName;		/** Channel dataset name */
+	QString					_dataName;			/** Channel data name */
+	QColor					_color;				/** Channel color */
+	ProfileType				_profileType;		/** The type of profile to visualize */
+	BandType				_bandType;			/** The type of band to visualize */
+	bool					_showRange;			/** Show the dimensions ranges */
+	Points*					_points;			/** Pointer to points dataset */
+	QVariantList			_dimensions;		/** Dimensions data */
 
 protected:
 	static DimensionsViewerPlugin* dimensionsViewerPlugin;
