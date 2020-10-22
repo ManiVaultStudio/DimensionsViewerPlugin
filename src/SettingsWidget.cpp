@@ -86,14 +86,16 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		configurationsModel.setData(Configuration::Column::Channel3DatasetName, currentText);
 	});
 
+	QObject::connect(_ui->channel1EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+		configurationsModel.setData(Configuration::Column::Channel1Enabled, state == Qt::Checked);
+	});
+
 	QObject::connect(_ui->channel2EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
 		configurationsModel.setData(Configuration::Column::Channel2Enabled, state == Qt::Checked);
 	});
 
 	QObject::connect(_ui->channel3EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		const auto index = configurationsModel.index(_ui->channel1DatasetNameComboBox->currentIndex(), static_cast<int>(Configuration::Column::Channel3Enabled));
-
-		configurationsModel.setData(index, state == Qt::Checked);
+		configurationsModel.setData(Configuration::Column::Channel3Enabled, state == Qt::Checked);
 	});
 
 	QObject::connect(_ui->channel1ColorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
@@ -157,6 +159,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 
 	if (selectedRows.isEmpty()) {
 		_ui->settingsGroupBox->setEnabled(false);
+		_ui->channel1EnabledCheckBox->setChecked(false);
 		_ui->channel2EnabledCheckBox->setChecked(false);
 		_ui->channel3EnabledCheckBox->setChecked(false);
 		_ui->channel1DatasetNameComboBox->setCurrentIndex(-1);
@@ -182,10 +185,11 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		const auto index = begin.siblingAtColumn(column);
 
 		if (column == static_cast<int>(Configuration::Column::Channel1Enabled)) {
-			_ui->channel1Label->blockSignals(true);
-			_ui->channel1Label->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel1Label->setToolTip(index.data(Qt::ToolTipRole).toString());
-			_ui->channel1Label->blockSignals(false);
+			_ui->channel1EnabledCheckBox->blockSignals(true);
+			_ui->channel1EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel1EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+			_ui->channel1EnabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->channel1EnabledCheckBox->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel2Enabled)) {

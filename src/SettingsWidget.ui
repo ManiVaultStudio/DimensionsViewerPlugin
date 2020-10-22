@@ -44,16 +44,67 @@
         <property name="topMargin">
          <number>0</number>
         </property>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="channel2DatasetNameComboBox">
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="channel3EnabledCheckBox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Subset 2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="7">
+         <widget class="QComboBox" name="channel2BandTypeComboBox"/>
+        </item>
+        <item row="3" column="8">
+         <widget class="QCheckBox" name="channel3ShowRangeCheckBox">
+          <property name="text">
+           <string>Show range</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="4">
+         <widget class="ColorPickerPushButton" name="channel2ColorPushButton">
           <property name="enabled">
            <bool>true</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>1</horstretch>
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="7">
+         <widget class="QComboBox" name="channel3BandTypeComboBox"/>
+        </item>
+        <item row="0" column="8">
+         <widget class="QCheckBox" name="channel1ShowRangeCheckBox">
+          <property name="text">
+           <string>Show range</string>
           </property>
          </widget>
         </item>
@@ -85,8 +136,50 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="4">
-         <widget class="ColorPickerPushButton" name="channel2ColorPushButton">
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="channel2EnabledCheckBox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Subset 1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="channel3DatasetNameComboBox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="channel2DatasetNameComboBox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="4">
+         <widget class="ColorPickerPushButton" name="channel3ColorPushButton">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -112,9 +205,6 @@
            <string/>
           </property>
          </widget>
-        </item>
-        <item row="0" column="6">
-         <widget class="QComboBox" name="channel1ProfileTypeComboBox"/>
         </item>
         <item row="0" column="4">
          <widget class="ColorPickerPushButton" name="channel1ColorPushButton">
@@ -150,110 +240,6 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="channel2EnabledCheckBox">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Subset 1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="channel3EnabledCheckBox">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Subset 2</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="channel1Label">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Dataset</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="7">
-         <widget class="QComboBox" name="channel1BandTypeComboBox"/>
-        </item>
-        <item row="1" column="7">
-         <widget class="QComboBox" name="channel2BandTypeComboBox"/>
-        </item>
-        <item row="1" column="6">
-         <widget class="QComboBox" name="channel2ProfileTypeComboBox"/>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="channel3DatasetNameComboBox">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="4">
-         <widget class="ColorPickerPushButton" name="channel3ColorPushButton">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>22</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="7">
-         <widget class="QComboBox" name="channel3BandTypeComboBox"/>
-        </item>
-        <item row="2" column="6">
-         <widget class="QComboBox" name="channel3ProfileTypeComboBox"/>
-        </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="channel1DatasetNameComboBox">
           <property name="enabled">
@@ -270,24 +256,29 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="8">
-         <widget class="QCheckBox" name="channel1ShowRangeCheckBox">
-          <property name="text">
-           <string>Show range</string>
-          </property>
-         </widget>
+        <item row="2" column="6">
+         <widget class="QComboBox" name="channel2ProfileTypeComboBox"/>
         </item>
-        <item row="1" column="8">
+        <item row="0" column="7">
+         <widget class="QComboBox" name="channel1BandTypeComboBox"/>
+        </item>
+        <item row="3" column="6">
+         <widget class="QComboBox" name="channel3ProfileTypeComboBox"/>
+        </item>
+        <item row="2" column="8">
          <widget class="QCheckBox" name="channel2ShowRangeCheckBox">
           <property name="text">
            <string>Show range</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="8">
-         <widget class="QCheckBox" name="channel3ShowRangeCheckBox">
+        <item row="0" column="6">
+         <widget class="QComboBox" name="channel1ProfileTypeComboBox"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="channel1EnabledCheckBox">
           <property name="text">
-           <string>Show range</string>
+           <string>Dataset</string>
           </property>
          </widget>
         </item>

@@ -38,9 +38,9 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 		computeStatistics();
 	});
 
-	QObject::connect(this, &Channel::colorChanged, [this](const QColor& color) {
+	/*QObject::connect(this, &Channel::colorChanged, [this](const QColor& color) {
 		computeStatistics();
-	});
+	});*/
 
 	QObject::connect(this, &Channel::profileTypeChanged, [this](const ProfileType& profileType) {
 		computeStatistics();
@@ -50,9 +50,9 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 		computeStatistics();
 	});
 
-	QObject::connect(this, &Channel::showRangeChanged, [this](const bool& showRange) {
+	/*QObject::connect(this, &Channel::showRangeChanged, [this](const bool& showRange) {
 		computeStatistics();
-	});
+	});*/
 
 	QObject::connect(dimensionsViewerPlugin, &DimensionsViewerPlugin::pointsSelectionChanged, [this](const QString& dataName) {
 		if (dataName == _dataName && !isSubset())

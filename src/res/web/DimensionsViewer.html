@@ -27,6 +27,8 @@
                     view.signal('color0', settings.color0);
                     view.signal('color1', settings.color1);
                     view.signal('color2', settings.color2);
+
+                    view.runAsync();
                 }
 
                 
@@ -40,7 +42,22 @@
                 // Vega visualization options
                 var options = {
                     //renderer: "canvas",
-                    defaultStyle: false
+                    defaultStyle: false,
+                    patch: (spec) => {
+                        spec.signals.push({
+                            "name": "color0",
+                            "value": "#ffffff"
+                        })
+                        spec.signals.push({
+                            "name": "color1",
+                            "value": "#ffffff"
+                        })
+                        spec.signals.push({
+                            "name": "color2",
+                            "value": "#ffffff"
+                        })
+                        return spec;
+                    }
                 };
 
                 for (channelIndex = 0; channelIndex < 3; channelIndex++) {

@@ -8,13 +8,7 @@ let design = {
         "type": "fit",
         "resize": true,
     },
-    "signals": [
-        {
-            "name": "colourSelector",
-            "bind": { "input": "select", "options": ["black", "steelblue", "red"] },
-            "value": "red"
-        }
-    ],
+    "signals": [],
     "data": {
         "name": "dimensions",
     },
@@ -26,7 +20,7 @@ function getRangeBand(channelIndex) {
         "mark": {
             "type": "errorband",
             "borders": {
-                "opacity": 0.5,
+                "opacity": 0.3,
                 "strokeDash": [3, 3]
             }
         },
@@ -51,6 +45,11 @@ function getRangeBand(channelIndex) {
                 "field": "max",
                 "type": "quantitative"
             },
+            "color": {
+                "value": {
+                    "signal": `color${channelIndex}`
+                }
+            }
         }
     }
 }
@@ -81,9 +80,8 @@ function getLineMark(channelIndex, field, opacity, strokeWidth, strokeDash) {
                 "type": "quantitative",
             },
             "color": {
-                //"signal": `color${channelIndex}`
                 "value": {
-                    "signal": "colourSelector"
+                    "signal": `color${channelIndex}`
                 }
             }
         }
@@ -98,7 +96,6 @@ function getColorSignal(channelIndex) {
 }
 
 function addChannel(design, channelIndex) {
-    design.signals.push(getColorSignal(channelIndex));
     design.layer.push(getRangeBand(channelIndex));
     design.layer.push(getLineMark(channelIndex, "v0", 1, 1, []));
 }
