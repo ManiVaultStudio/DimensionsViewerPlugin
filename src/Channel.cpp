@@ -16,7 +16,7 @@ DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
 	QObject(parent),
 	_index(index),
-	_internalName(QString("channel1").arg(QString::number(index))),
+	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),
 	_enabled(enabled),
 	_datasetName(),
@@ -38,10 +38,6 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 		computeStatistics();
 	});
 
-	/*QObject::connect(this, &Channel::colorChanged, [this](const QColor& color) {
-		computeStatistics();
-	});*/
-
 	QObject::connect(this, &Channel::profileTypeChanged, [this](const ProfileType& profileType) {
 		computeStatistics();
 	});
@@ -49,10 +45,6 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	QObject::connect(this, &Channel::bandTypeChanged, [this](const BandType& bandType) {
 		computeStatistics();
 	});
-
-	/*QObject::connect(this, &Channel::showRangeChanged, [this](const bool& showRange) {
-		computeStatistics();
-	});*/
 
 	QObject::connect(dimensionsViewerPlugin, &DimensionsViewerPlugin::pointsSelectionChanged, [this](const QString& dataName) {
 		if (dataName == _dataName && !isSubset())
@@ -120,6 +112,11 @@ void Channel::setShowRange(const bool& showRange)
 	_showRange = showRange;
 
 	emit showRangeChanged(_showRange);
+}
+
+QString Channel::getColorName() const
+{
+	return _color.name();
 }
 
 void Channel::computeStatistics()
@@ -242,7 +239,7 @@ void Channel::computeStatistics()
 
 	//qDebug() << payload;
 	
-	emit dimensionsChanged(this);
+	emit dimensionsChanged(_dimensions);
 }
 
 bool Channel::isSubset() const

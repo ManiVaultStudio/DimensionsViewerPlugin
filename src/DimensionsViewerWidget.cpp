@@ -18,8 +18,15 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 		if (!selectedRows.isEmpty()) {
 			QWebChannel* webChannel = new QWebChannel(this);
 
-			webChannel->registerObject("configuration", configurationsModel.getSelectedConfiguration());
+			for (auto registeredObject : webChannel->registeredObjects())
+				webChannel->deregisterObject(registeredObject);
 
+			auto selectedConfiguration = configurationsModel.getSelectedConfiguration();
+
+			for (auto* channel : selectedConfiguration->getChannels()) {
+				webChannel->registerObject(channel->getInternalName(), channel);
+			}
+			
 			page()->setWebChannel(webChannel);
 
 			load(QUrl("qrc:DimensionsViewer.html"));

@@ -239,9 +239,17 @@ signals:
 
 	/**
 	 * Signals that the channel dimensions have changed (used solely in the web viewer)
-	 * @param channel Channel
+	 * @param dimensions Channel dimensions
 	 */
-	void dimensionsChanged(Channel* channel);
+	void dimensionsChanged(const QVariantList& dimensions);
+
+public slots: // Called from the JS side
+
+	/**
+	 * Returns the color name
+	 * @return Color in hexadecimal string form
+	 */
+	QString getColorName() const;
 
 private:
 	

@@ -14,6 +14,7 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
 	_globalSettings(true),
 	_settings()
 {
+	/*
 	for (auto channel : _channels) {
 		QObject::connect(channel, &Channel::dimensionsChanged, [this](Channel* channel) {
 			QVariantList dimensions;
@@ -32,6 +33,7 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
 			emit settingsChanged(_settings);
 		});
 	}
+	*/
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const

@@ -16,68 +16,60 @@
 
             window.addEventListener("load", function () {
 
-                // Invoked when the dimensions have changed
-                var onDimensionsChanged = function (dimensions) {
+                // Invoked when channel dimensions have changed
+                var onChannelDimensionsChanged = function (channelIndex, dimensions) {
                     let changeset = vega.changeset().remove(() => true).insert(dimensions);
                     view.change('dimensions', changeset).run();
                 }
 
-                // Invoked when the settings have changed
-                var onSettingsChanged = function (settings) {
-                    view.signal('color0', settings.color0);
-                    view.signal('color1', settings.color1);
-                    view.signal('color2', settings.color2);
-
+                // Invoked when the channel color has changed
+                var onChannelColorChanged = function (channelIndex, color) {
+                    view.signal(`color${channelIndex}`, color);
                     view.runAsync();
                 }
-
                 
                 // Create new webchannel and connect to signals from C++
                 new QWebChannel(qt.webChannelTransport,
                     function (channel) {
-                        channel.objects.configuration.dimensionsChanged.connect(onDimensionsChanged);
-                        channel.objects.configuration.settingsChanged.connect(onSettingsChanged);
+                        let numChannels = 3;
+
+                        // Vega visualization options
+                        var options = {
+                            renderer: "canvas",
+                            defaultStyle: false,
+                            patch: (spec) => {
+                                for (channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+                                    spec.signals.push({
+                                        "name": `color${channelIndex}`,
+                                        "value": channel.objects[`channel${channelIndex}`].getColorName()
+                                    })
+                                }
+                                return spec;
+                            }
+                        };
+
+                        for (channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+                            addChannel(design, channelIndex);
+
+                            channel.objects[`channel${channelIndex}`].dimensionsChanged.connect(onChannelDimensionsChanged.bind(null, channelIndex));
+                            channel.objects[`channel${channelIndex}`].colorChanged.connect(onChannelColorChanged.bind(null, channelIndex));
+                        }
+
+                        // Embed the Vega view
+                        vegaEmbed('#view', design, options).then(p => {
+
+                            // Find elements with tag name details
+                            element = document.getElementsByTagName("details");
+
+                            // And remove them (they corrupt the layout)
+                            for (index = 0; index < element.length; index++) {
+                                element[index].parentNode.removeChild(element[index]);
+                            }
+
+                            // Attached the Vega view to the global window variable so that we can later use it
+                            window.view = p.view
+                        });
                     });
-
-                // Vega visualization options
-                var options = {
-                    //renderer: "canvas",
-                    defaultStyle: false,
-                    patch: (spec) => {
-                        spec.signals.push({
-                            "name": "color0",
-                            "value": "#ffffff"
-                        })
-                        spec.signals.push({
-                            "name": "color1",
-                            "value": "#ffffff"
-                        })
-                        spec.signals.push({
-                            "name": "color2",
-                            "value": "#ffffff"
-                        })
-                        return spec;
-                    }
-                };
-
-                for (channelIndex = 0; channelIndex < 3; channelIndex++) {
-                    addChannel(design, channelIndex);
-                }
-
-                // Embed the Vega view
-                vegaEmbed('#view', design, options).then(p => {
-
-                    // Find elements with tag name details
-                    element = document.getElementsByTagName("details");
-
-                    // And remove them (they corrupt the layout)
-                    for (index = 0; index < element.length; index++) {
-                        element[index].parentNode.removeChild(element[index]);
-                    }
-
-                    // Attached the Vega view to the global window variable so that we can later use it
-                    window.view = p.view
-                });
             });
 		</script>
 	</body>
