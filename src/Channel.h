@@ -183,11 +183,6 @@ public: // Getters/setters
 	 */
 	void setBandType(const BandType& bandType);
 
-	/** Returns the dimensions data */
-	QVariantList getDimensions() const {
-		return _dimensions;
-	};
-
 	/** Returns whether to show the dimension range */
 	bool getShowRange() const {
 		return _showRange;
@@ -245,10 +240,10 @@ signals:
 
 public slots: // Called from the JS side
 
-	/**
-	 * Returns the color name
-	 * @return Color in hexadecimal string form
-	 */
+	/** Returns the channel dimensions */
+	QVariantList getDimensions();
+
+	/** Returns the color name in hexadecimal string form */
 	QString getColorName() const;
 
 private:

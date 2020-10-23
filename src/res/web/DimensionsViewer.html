@@ -13,12 +13,13 @@
 	<body style="padding: 0; margin: 0; width: 100%; height: 100%;">
 		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
 		<script>
-
             window.addEventListener("load", function () {
 
                 // Invoked when channel dimensions have changed
                 var onChannelDimensionsChanged = function (channelIndex, dimensions) {
-                    let changeset = vega.changeset().remove(() => true).insert(dimensions);
+                    view[`dimensions${channelIndex}`] = dimensions;
+
+                    let changeset = vega.changeset().remove(() => true).insert(view['dimensions0'].concat(view['dimensions1']).concat(view['dimensions2']));
                     view.change('dimensions', changeset).run();
                 }
 
@@ -39,20 +40,29 @@
                             defaultStyle: false,
                             patch: (spec) => {
                                 for (channelIndex = 0; channelIndex < numChannels; channelIndex++) {
+                                    
                                     spec.signals.push({
                                         "name": `color${channelIndex}`,
-                                        "value": channel.objects[`channel${channelIndex}`].getColorName()
                                     })
                                 }
                                 return spec;
                             }
                         };
 
+                        view.dimensions = [];
+
                         for (channelIndex = 0; channelIndex < numChannels; channelIndex++) {
                             addChannel(design, channelIndex);
 
+                            view[`dimensions${channelIndex}`] = [];
+
+                            // Callback
                             channel.objects[`channel${channelIndex}`].dimensionsChanged.connect(onChannelDimensionsChanged.bind(null, channelIndex));
                             channel.objects[`channel${channelIndex}`].colorChanged.connect(onChannelColorChanged.bind(null, channelIndex));
+
+                            // Initialize
+                            channel.objects[`channel${channelIndex}`].getDimensions(onChannelDimensionsChanged.bind(null, channelIndex))
+                            channel.objects[`channel${channelIndex}`].getColorName(onChannelColorChanged.bind(null, channelIndex))
                         }
 
                         // Embed the Vega view

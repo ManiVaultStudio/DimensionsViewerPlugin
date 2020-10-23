@@ -50,6 +50,8 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 		if (dataName == _dataName && !isSubset())
 			computeStatistics();
 	});
+
+	computeStatistics();
 }
 
 void Channel::setEnabled(const bool& enabled)
@@ -112,6 +114,13 @@ void Channel::setShowRange(const bool& showRange)
 	_showRange = showRange;
 
 	emit showRangeChanged(_showRange);
+}
+
+QVariantList Channel::getDimensions()
+{
+	computeStatistics();
+
+	return _dimensions;
 }
 
 QString Channel::getColorName() const
