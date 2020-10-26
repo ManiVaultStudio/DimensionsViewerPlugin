@@ -6,13 +6,34 @@
 Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
 	QObject(parent),
 	_channels({ 
-		new Channel(parent, "channel1", "Dataset", true, datasetName, dataName, Qt::black),
-		new Channel(parent, "channel2", "Subset 1", false, "", dataName, QColor(249, 149, 0)), 
-		new Channel(parent, "channel3", "Subset 2", false, "", dataName, QColor(0, 112, 249))
+		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black),
+		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0)),
+		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249))
 	}),
 	_subsets(),
-	_globalSettings(true)
+	_globalSettings(true),
+	_settings()
 {
+	/*
+	for (auto channel : _channels) {
+		QObject::connect(channel, &Channel::dimensionsChanged, [this](Channel* channel) {
+			QVariantList dimensions;
+
+			for (auto channel : _channels) {
+				for (auto dimension : channel->getDimensions())
+					dimensions.append(dimension);
+			}
+
+			emit dimensionsChanged(dimensions);
+		});
+
+		QObject::connect(channel, &Channel::colorChanged, [this, channel](const QColor& color) {
+			_settings[QString("color%1").arg(QString::number(channel->getIndex()))] = color;
+
+			emit settingsChanged(_settings);
+		});
+	}
+	*/
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
@@ -123,6 +144,26 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 			break;
 		}
 
+		case Column::Channel1ShowRange: {
+			flags |= Qt::ItemIsEnabled;
+
+			break;
+		}
+
+		case Column::Channel2ShowRange: {
+			if (channel2Enabled)
+				flags |= Qt::ItemIsEnabled;
+
+			break;
+		}
+
+		case Column::Channel3ShowRange: {
+			if (channel3Enabled)
+				flags |= Qt::ItemIsEnabled;
+
+			break;
+		}
+
 		case Column::GlobalSettings: {
 			if (!_subsets.isEmpty())
 				flags |= Qt::ItemIsEnabled;
@@ -196,6 +237,15 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 		case Column::Channel3BandType:
 			return getChannelBandType(2, role);
+
+		case Column::Channel1ShowRange:
+			return getChannelShowRange(0, role);
+
+		case Column::Channel2ShowRange:
+			return getChannelShowRange(1, role);
+
+		case Column::Channel3ShowRange:
+			return getChannelShowRange(2, role);
 
 		case Column::GlobalSettings:
 			return getGlobalSettings(role);
@@ -372,17 +422,47 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 					break;
 				}
 
+				case Column::Channel1ShowRange: {
+					const auto showRange = value.toBool();
+
+					setChannelShowRange(0, showRange);
+
+					if (_globalSettings) {
+						setChannelShowRange(1, showRange);
+						setChannelShowRange(2, showRange);
+
+						affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ShowRange));
+						affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ShowRange));
+					}
+
+					break;
+				}
+
+				case Column::Channel2ShowRange: {
+					setChannelShowRange(1, value.toBool());
+					break;
+				}
+
+				case Column::Channel3ShowRange: {
+					setChannelShowRange(2, value.toBool());
+					break;
+				}
+
 				case Column::GlobalSettings: {
 					setGlobalSettings(value.toBool());
 					setChannelProfileType(1, _channels.first()->getProfileType());
 					setChannelProfileType(2, _channels.first()->getProfileType());
 					setChannelBandType(1, _channels.first()->getBandType());
 					setChannelBandType(2, _channels.first()->getBandType());
+					setChannelShowRange(1, _channels.first()->getShowRange());
+					setChannelShowRange(2, _channels.first()->getShowRange());
 
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ShowRange));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ShowRange));
 					break;
 				}
 
@@ -656,6 +736,48 @@ void Configuration::setChannelBandType(const std::int32_t& channelIndex, const C
 	try
 	{
 		_channels[channelIndex]->setBandType(bandType);
+	}
+	catch (std::exception exception)
+	{
+		qDebug() << exception.what();
+	}
+}
+
+QVariant Configuration::getChannelShowRange(const std::int32_t& channelIndex, const std::int32_t& role) const
+{
+	try
+	{
+		const auto showRange		= _channels[channelIndex]->getShowRange();
+		const auto showRangeString	= showRange ? "on" : "off";
+
+		switch (role)
+		{
+			case Qt::DisplayRole:
+				return showRangeString;
+
+			case Qt::EditRole:
+				return showRange;
+
+			case Qt::ToolTipRole:
+				return QString("%1 show range: %2").arg(_channels[channelIndex]->getDisplayName(), showRangeString);
+
+			default:
+				return QVariant();
+		}
+	}
+	catch (std::exception exception)
+	{
+		qDebug() << exception.what();
+	}
+
+	return QVariant();
+}
+
+void Configuration::setChannelShowRange(const std::int32_t& channelIndex, const bool& showRange)
+{
+	try
+	{
+		_channels[channelIndex]->setShowRange(showRange);
 	}
 	catch (std::exception exception)
 	{

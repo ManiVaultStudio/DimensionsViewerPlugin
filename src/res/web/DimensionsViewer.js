@@ -1,3 +1,4 @@
+
 let design = {
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "width": "container",
@@ -6,165 +7,95 @@ let design = {
     {
         "type": "fit",
         "resize": true,
-        //"contains": "padding"
     },
-    /*
-    "autosize": {
-        "type": "fit",
-        "resize": true,
-        "contains": "padding"
-    },
-    */
-    "padding": 20,
+    "signals": [],
     "data": {
-        "name": "dataSet1"
+        "name": "dimensions",
     },
-    "layer": [
+    "layer": []
+}
 
-        // Point value range
-        {
-            "mark": {
-                "type": "errorband",
-                "borders": {
-                    "opacity": 0.3,
-                    "strokeDash": [2, 2]
+function getRangeBand(channelIndex) {
+    return {
+        "mark": {
+            "type": "errorband",
+            "borders": {
+                "opacity": 0.3,
+                "strokeDash": [3, 3]
+            }
+        },
+        "transform": [
+            {
+                "filter": {
+                    "field": "chn",
+                    "equal": channelIndex
                 }
-            },
-            "encoding": {
-                "x": {
-                    "field": "name",
-                    "type": "ordinal"
-                },
-                "y": {
-                    "field": "max",
-                    "type": "quantitative",
-                    //"scale": { "zero": false },
-                    "title": "Point value"
-                },
-                "y2": { "field": "min" },
-                "tooltip": [
-                    { "field": "min", "type": "quantitative", "title": "Minimum" },
-                    { "field": "max", "type": "quantitative", "title": "Maximum" },
-                    { "field": "avg", "type": "quantitative", "title": "Average" },
-                    { "field": "name", "type": "nominal", "title": "Dimension" },
-                ]
             }
-        },
-
-        // Average point value
-        {
-            "mark": {
-                "type": "line",
+        ],
+        "encoding": {
+            "x": {
+                "field": "dim",
+                "type": "ordinal"
             },
-            "encoding": {
-                "x": {
-                    "field": "name",
-                    "type": "ordinal",
-                },
-                "y": {
-                    "field": "avg",
-                    "type": "quantitative",
-                },
-                "tooltip": [
-                    { "field": "avg", "type": "quantitative", "title": "Average point value" },
-                ]
-            }
-        },
-
-        /*
-        {
-            "mark": {
-                "type": "bar",
-                //"point": true
+            "y": {
+                "field": "min",
+                "type": "quantitative"
             },
-            "encoding": {
-                "x": {
-                    "field": "id",
-                    "type": "ordinal"
-                },
-                "y": {
-                    "field": "avg",
-                    "type": "quantitative"
-                },
-                "tooltip": [
-                    { "field": "min", "type": "quantitative", "title": "Minimum" },
-                    { "field": "max", "type": "quantitative", "title": "Maximum" },
-                    { "field": "avg", "type": "quantitative", "title": "Average" },
-                    { "field": "name", "type": "nominal", "title": "Dimension" }
-                ]
-            }
-        },
-
-        {
-            "mark": {
-                "type": "point",
-                //"shape": "stroke",
-                //"filled": true,
-                //"color": "black",
-
-                "size": 50
+            "y2": {
+                "field": "max",
+                "type": "quantitative"
             },
-            "encoding": {
-                "x": {
-                    "field": "id",
-                    "type": "ordinal",
-                },
-                "y": {
-                    "field": "min",
-                    "type": "quantitative"
-                },
-                "tooltip": [
-                    { "field": "min", "type": "quantitative", "title": "Minimum point value" },
-                ]
+            "color": {
+                "value": {
+                    "signal": `color${channelIndex}`
+                }
             }
         }
+    }
+}
 
-
-        /*,
-        {
-            "mark": {
-                "type": "errorbar",
-            },
-            "encoding": {
-                "x": {
-                    "field": "id",
-                    "type": "ordinal"
-                },
-                "y": {
-                    "field": "max",
-                    "type": "quantitative",
-                    //"scale": { "zero": false },
-                    "title": "Point value"
-                },
-                "y2": { "field": "min" },
-                "tooltip": [
-                    { "field": "min", "type": "quantitative", "title": "Minimum" },
-                    { "field": "max", "type": "quantitative", "title": "Maximum" },
-                    { "field": "avg", "type": "quantitative", "title": "Average" },
-                    { "field": "name", "type": "nominal", "title": "Dimension" },
-                ]
-            }
+function getLineMark(channelIndex, field, opacity, strokeWidth, strokeDash) {
+    return {
+        "mark": {
+            "type": "line",
+            "strokeWidth": strokeWidth,
+            "strokeDash": strokeDash,
+            "opacity": opacity
         },
-        {
-            "mark": {
-                "type": "point",
-                "filled": true,
+        "transform": [
+            {
+                "filter": {
+                    "field": "chn",
+                    "equal": channelIndex
+                }
+            }
+        ],
+        "encoding": {
+            "x": {
+                "field": "dim",
+                "type": "nominal"
             },
-            "encoding": {
-                "x": {
-                    "field": "id",
-                    "type": "ordinal",
-                },
-                "y": {
-                    "field": "max",
-                    "type": "quantitative"
-                },
-                "tooltip": [
-                    { "field": "max", "type": "quantitative", "title": "Maximum point value" },
-                ]
+            "y": {
+                "field": field,
+                "type": "quantitative",
+            },
+            "color": {
+                "value": {
+                    "signal": `color${channelIndex}`
+                }
             }
         }
-        */
-        
-    ]
+    }
+}
+
+function getColorSignal(channelIndex) {
+    return {
+        "name": `color${channelIndex}`,
+        "value": "#ffffff",
+    }
+}
+
+function addChannel(design, channelIndex) {
+    design.layer.push(getRangeBand(channelIndex));
+    design.layer.push(getLineMark(channelIndex, "v0", 1, 1, []));
 }

@@ -9,33 +9,40 @@
 #include <QDebug>
 #include <QVariantList>
 
+#define NOMINMAX
+
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
-Channel::Channel(QObject* parent, const QString& internalName, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
+Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
 	QObject(parent),
-	_internalName(internalName),
+	_index(index),
+	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),
 	_enabled(enabled),
 	_datasetName(),
 	_dataName(dataName),
 	_color(color),
 	_profileType(ProfileType::Mean),
-	_bandType(BandType::MinMax),
+	_bandType(BandType::StandardDeviation1),
+	_showRange(true),
 	_points(nullptr),
-	_profile(),
-	_band()
+	_dimensions()
 {
 	setDatasetName(datasetName);
 
-	QObject::connect(this, &Channel::datasetNameChanged, [this]() {
+	QObject::connect(this, &Channel::enabledChanged, [this](const bool& enabled) {
 		computeStatistics();
 	});
 
-	QObject::connect(this, &Channel::profileTypeChanged, [this]() {
+	QObject::connect(this, &Channel::datasetNameChanged, [this](const QString& datasetName) {
 		computeStatistics();
 	});
 
-	QObject::connect(this, &Channel::bandTypeChanged, [this]() {
+	QObject::connect(this, &Channel::profileTypeChanged, [this](const ProfileType& profileType) {
+		computeStatistics();
+	});
+
+	QObject::connect(this, &Channel::bandTypeChanged, [this](const BandType& bandType) {
 		computeStatistics();
 	});
 
@@ -97,6 +104,21 @@ void Channel::setBandType(const BandType& bandType)
 	emit bandTypeChanged(_bandType);
 }
 
+void Channel::setShowRange(const bool& showRange)
+{
+	if (showRange == _showRange)
+		return;
+
+	_showRange = showRange;
+
+	emit showRangeChanged(_showRange);
+}
+
+QString Channel::getColorName() const
+{
+	return _color.name();
+}
+
 void Channel::computeStatistics()
 {
 	if (_points == nullptr)
@@ -126,10 +148,12 @@ void Channel::computeStatistics()
 	dimensionIndices.resize(_points->getNumDimensions());
 	std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
 
-	QVariantList payload;
+	_dimensions.clear();
 	
-	if (!pointIndices.empty()) {
-		_points->visitSourceData([this, &pointIndices, &dimensionIndices, &payload](auto pointData) {
+	if (_enabled && !pointIndices.empty()) {
+		const auto colorString = QString("rgb(%1, %2, %3)").arg(QString::number(_color.red()), QString::number(_color.green()), QString::number(_color.blue()));
+
+		_points->visitSourceData([this, &pointIndices, &dimensionIndices, colorString](auto pointData) {
 			std::vector<float> dimensionValues;
 
 			dimensionValues.resize(pointIndices.size());
@@ -149,8 +173,9 @@ void Channel::computeStatistics()
 
 				QVariantMap dimension;
 
-				dimension["id"] = dimensionIndex;
-				dimension["name"] = _points->getDimensionNames().at(dimensionIndex);
+				dimension["chn"]	= _index;
+				dimension["dim"]	= dimensionIndex;
+				//dimension["name"]	= _points->getDimensionNames().at(dimensionIndex);
 
 				const float sum = std::accumulate(dimensionValues.begin(), dimensionValues.end(), 0.0);
 				const float mean = sum / dimensionValues.size();
@@ -162,13 +187,13 @@ void Channel::computeStatistics()
 				switch (_profileType)
 				{
 					case ProfileType::Mean: {
-						dimension["mean"] = sum / dimensionValues.size();
+						dimension["v0"] = sum / dimensionValues.size();
 						break;
 					}
 
 					case ProfileType::Median: {
 						std::sort(dimensionValues.begin(), dimensionValues.end());
-						dimension["median"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
+						dimension["v0"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
 						break;
 					}
 
@@ -176,12 +201,45 @@ void Channel::computeStatistics()
 						break;
 				}
 
-				payload.append(dimension);
+				switch (_bandType)
+				{
+					case BandType::StandardDeviation1: {
+						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+						double stdDev1	= std::sqrt(sqSum / dimensionValues.size());
+
+						dimension["v1"] = mean - stdDev1;
+						dimension["v2"] = mean + stdDev1;
+						break;
+					}
+
+					case BandType::StandardDeviation2: {
+						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+						double stdDev2	= std::sqrt(sqSum / dimensionValues.size());
+
+						dimension["v1"] = mean - stdDev2;
+						dimension["v2"] = mean + stdDev2;
+						break;
+					}
+
+					default:
+						break;
+				}
+
+				if (_showRange) {
+					auto result = std::minmax_element(dimensionValues.begin(), dimensionValues.end());
+
+					dimension["min"] = *result.first;
+					dimension["max"] = *result.second;
+				}
+
+				_dimensions.append(dimension);
 			}
 		});
 	}
+
+	//qDebug() << payload;
 	
-	emit dimensionsChanged(_internalName, payload);
+	emit dimensionsChanged(_dimensions);
 }
 
 bool Channel::isSubset() const
