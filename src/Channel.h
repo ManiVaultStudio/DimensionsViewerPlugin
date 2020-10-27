@@ -119,7 +119,7 @@ protected: // Construction
 	 * @param dataName The data name of the channel
 	 * @param color The color of the channel
 	 */
-	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color);
+	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f);
 
 public: // Getters/setters
 
@@ -175,6 +175,17 @@ public: // Getters/setters
 	 * @param color Color
 	 */
 	void setColor(const QColor& color);
+
+	/** Returns the opacity */
+	float getOpacity() const {
+		return _opacity;
+	};
+
+	/**
+	 * Sets the opacity
+	 * @param opacity Opacity
+	 */
+	void setOpacity(const float& opacity);
 
 	/** Returns the profile type */
 	ProfileType getProfileType() const {
@@ -235,6 +246,7 @@ private:
 	QString					_datasetName;		/** Channel dataset name */
 	QString					_dataName;			/** Channel data name */
 	QColor					_color;				/** Channel color */
+	float					_opacity;			/** Channel opacity */
 	ProfileType				_profileType;		/** The type of profile to visualize */
 	BandType				_bandType;			/** The type of band to visualize */
 	bool					_showRange;			/** Show the dimensions ranges */

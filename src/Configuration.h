@@ -31,6 +31,9 @@ public: // Columns
 		Channel1Color,					/** Color of the first channel */
 		Channel2Color,					/** Color of the second channel */
 		Channel3Color,					/** Color of the third channel */
+		Channel1Opacity,				/** Opacity of the first channel */
+		Channel2Opacity,				/** Opacity of the second channel */
+		Channel3Opacity,				/** Opacity of the third channel */
 		Channel1ProfileType,			/** The profile type of the first channel */
 		Channel2ProfileType,			/** The profile type of the second channel */
 		Channel3ProfileType,			/** The profile type of the third channel */
@@ -87,6 +90,15 @@ public: // Columns
 
 			case Column::Channel3Color:
 				return "Channel 3: Color";
+
+			case Column::Channel1Opacity:
+				return "Channel 1: Opacity";
+
+			case Column::Channel2Opacity:
+				return "Channel 2: Opacity";
+
+			case Column::Channel3Opacity:
+				return "Channel 3: Opacity";
 
 			case Column::Channel1ProfileType:
 				return "Channel 1: Profile type";
@@ -231,6 +243,21 @@ public: // Getters/setters
 	 * @param color The color of channel with \p channelIndex
 	 */
 	void setChannelColor(const std::int32_t& channelIndex, const QColor& color);
+
+	/**
+	 * Returns the opacity of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param role Data role
+	 * @return Channel opacity in variant form
+	 */
+	QVariant getChannelOpacity(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+	/**
+	 * Sets the opacity of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param opacity The opacity of channel with \p channelIndex
+	 */
+	void setChannelOpacity(const std::int32_t& channelIndex, const float& opacity);
 
 	/**
 	 * Returns the profile type of channel with \p channelIndex

@@ -1,18 +1,20 @@
 
-function getRangeBand(channelIndex) {
+function getRangeMark(channel, strokeWidth) {
     return {
         "mark": {
             "type": "errorband",
-            "borders": {
-                "opacity": 0.3,
-                "strokeDash": [3, 3]
-            }
+            //"borders": {
+            //    "opacity": 0.5 * channel.opacity,
+            //    "strokeWidth": strokeWidth,
+            //    "strokeDash": [3, 3]
+            //},
+            "opacity": 0.2 * channel.opacity,
         },
         "transform": [
             {
                 "filter": {
                     "field": "chn",
-                    "equal": channelIndex
+                    "equal": channel.index
                 }
             }
         ],
@@ -30,21 +32,50 @@ function getRangeBand(channelIndex) {
                 "type": "quantitative"
             },
             "color": {
-                "value": {
-                    "signal": `color${channelIndex}`
-                }
+                "value": channel.color
             }
         }
     }
 }
 
-function getLineMark(channel, opacity, strokeWidth, strokeDash) {
+function getAggregateLineMark(channel, strokeWidth, strokeDash) {
     return {
         "mark": {
             "type": "line",
             "strokeWidth": strokeWidth,
             "strokeDash": strokeDash,
-            "opacity": opacity
+            "opacity": 1
+        },
+        "transform": [
+            {
+                "filter": {
+                    "field": "chn",
+                    "equal": channel.index
+                }
+            }
+        ],
+        "encoding": {
+            "x": {
+                "field": "dim",
+                "type": "nominal"
+            },
+            "y": {
+                "field": "agg",
+                "type": "quantitative",
+            },
+            "color": {
+                "value": channel.color
+            }
+        }
+    }
+}
+
+function getAggregatePointsMark(channel) {
+    return {
+        "mark": {
+            "type": "point",
+            "fill": channel.color,
+            "opacity": 1
         },
         "transform": [
             {
@@ -73,11 +104,13 @@ function getLineMark(channel, opacity, strokeWidth, strokeDash) {
 function addChannel(design, channel) {
     design.data.values = design.data.values.concat(channel.dimensions);
 
-    if (channel.profileType > 0)
-        design.layer.push(getLineMark(channel, 1, 1, []));
+    if (channel.profileType > 0) {
+        design.layer.push(getAggregateLineMark(channel, 2, []));
+        design.layer.push(getAggregatePointsMark(channel));
+    }
 
     if (channel.showRange)
-        design.layer.push(getRangeBand(channelIndex));
+        design.layer.push(getRangeMark(channel, 1));
 }
 
 function getDesign(configuration) {

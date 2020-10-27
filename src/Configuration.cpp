@@ -6,9 +6,9 @@
 Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
 	QObject(parent),
 	_channels({ 
-		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black),
-		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0)),
-		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249))
+		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.5f),
+		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.5f),
+		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.5f)
 	}),
 	_subsets(),
 	_globalSettings(true),
@@ -70,7 +70,8 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 		}
 
 		case Column::Channel1Color: {
-			flags |= Qt::ItemIsEnabled;
+			if (_channels[0]->isEnabled())
+				flags |= Qt::ItemIsEnabled;
 
 			break;
 		}
@@ -83,6 +84,27 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 		}
 
 		case Column::Channel3Color: {
+			if (_channels[2]->isEnabled() && _subsets.size() >= 2)
+				flags |= Qt::ItemIsEnabled;
+
+			break;
+		}
+
+		case Column::Channel1Opacity: {
+			if (_channels[0]->isEnabled())
+				flags |= Qt::ItemIsEnabled;
+
+			break;
+		}
+
+		case Column::Channel2Opacity: {
+			if (_channels[1]->isEnabled() && _subsets.size() >= 1)
+				flags |= Qt::ItemIsEnabled;
+
+			break;
+		}
+
+		case Column::Channel3Opacity: {
 			if (_channels[2]->isEnabled() && _subsets.size() >= 2)
 				flags |= Qt::ItemIsEnabled;
 
@@ -205,6 +227,15 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 		case Column::Channel3Color:
 			return getChannelColor(2, role);
 
+		case Column::Channel1Opacity:
+			return getChannelOpacity(0, role);
+
+		case Column::Channel2Opacity:
+			return getChannelOpacity(1, role);
+
+		case Column::Channel3Opacity:
+			return getChannelOpacity(2, role);
+
 		case Column::Channel1ProfileType:
 			return getChannelProfileType(0, role);
 
@@ -256,6 +287,10 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 				case Column::Channel1Enabled: {
 					setChannelEnabled(0, value.toBool());
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1DatasetName));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Opacity));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
 					break;
 				}
 
@@ -264,6 +299,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Opacity));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
 					break;
@@ -274,6 +310,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 					
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3DatasetName));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Color));
+					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Opacity));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
 					break;
@@ -291,6 +328,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Enabled));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Opacity));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
 							break;
@@ -306,11 +344,13 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Enabled));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Opacity));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Enabled));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3DatasetName));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Color));
+							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Opacity));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
 							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
 							break;
@@ -352,6 +392,21 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 				case Column::Channel3Color: {
 					setChannelColor(2, value.value<QColor>());
+					break;
+				}
+
+				case Column::Channel1Opacity: {
+					setChannelOpacity(0, value.toFloat());
+					break;
+				}
+
+				case Column::Channel2Opacity: {
+					setChannelOpacity(1, value.toFloat());
+					break;
+				}
+
+				case Column::Channel3Opacity: {
+					setChannelOpacity(2, value.toFloat());
 					break;
 				}
 
@@ -644,6 +699,46 @@ void Configuration::setChannelColor(const std::int32_t& channelIndex, const QCol
 	}
 }
 
+QVariant Configuration::getChannelOpacity(const std::int32_t& channelIndex, const std::int32_t& role) const
+{
+	try
+	{
+		const auto opacity			= _channels[channelIndex]->getOpacity();
+		const auto opacityString	= QString::number(opacity, 'f', 1);
+
+		switch (role)
+		{
+			case Qt::DisplayRole:
+				return opacityString;
+
+			case Qt::EditRole:
+				return opacity;
+
+			case Qt::ToolTipRole:
+				return QString("%1 opacity: %2").arg(_channels[channelIndex]->getDisplayName(), opacityString);
+
+			default:
+				return QVariant();
+		}
+	}
+	catch (std::exception exception)
+	{
+		qDebug() << exception.what();
+	}
+}
+
+void Configuration::setChannelOpacity(const std::int32_t& channelIndex, const float& opacity)
+{
+	try
+	{
+		_channels[channelIndex]->setOpacity(opacity);
+	}
+	catch (std::exception exception)
+	{
+		qDebug() << exception.what();
+	}
+}
+
 QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, const std::int32_t& role) const
 {
 	try
@@ -839,30 +934,3 @@ QString Configuration::htmlTooltip(const QString& title, const QString& descript
 {
 	return QString("<html><head/><body><p><span style='font-weight:600;'>%1<br/></span>%2</p></body></html>").arg(title, description);
 }
-
-//QVariantMap Channel::getSettings(const SynchronizationFlags& synchronizationFlags /*= SynchronizationFlag::All*/)
-//{
-//	QVariantMap settings;
-//
-//	if (synchronizationFlags.testFlag(SynchronizationFlag::Enabled) || synchronizationFlags.testFlag(SynchronizationFlag::ProfileType) || synchronizationFlags.testFlag(SynchronizationFlag::BandType) || synchronizationFlags.testFlag(SynchronizationFlag::ShowRange)) {
-//		settings["dimensions"] = _dimensions;
-//	}
-//
-//	if (synchronizationFlags.testFlag(SynchronizationFlag::Color)) {
-//		settings["color"] = _color;
-//	}
-//
-//	if (synchronizationFlags.testFlag(SynchronizationFlag::ProfileType)) {
-//		settings["profileType"] = getProfileTypeName(_profileType);
-//	}
-//
-//	if (synchronizationFlags.testFlag(SynchronizationFlag::BandType)) {
-//		settings["bandType"] = getBandTypeName(_bandType);
-//	}
-//
-//	if (synchronizationFlags.testFlag(SynchronizationFlag::ShowRange)) {
-//		settings["showRange"] = _showRange;
-//	}
-//
-//	return settings;
-//}

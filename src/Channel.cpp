@@ -10,7 +10,7 @@
 
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
-Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color) :
+Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
 	QObject(parent),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
@@ -19,6 +19,7 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_datasetName(),
 	_dataName(dataName),
 	_color(color),
+	_opacity(opacity),
 	_profileType(ProfileType::Mean),
 	_bandType(BandType::StandardDeviation1),
 	_showRange(true),
@@ -40,8 +41,6 @@ void Channel::setEnabled(const bool& enabled)
 
 	_enabled = enabled;
 
-	//_synchronize.setFlag(SynchronizationFlag::Enabled);
-
 	updateSpec();
 }
 
@@ -62,7 +61,15 @@ void Channel::setColor(const QColor& color)
 
 	_color = color;
 
-	//_synchronize.setFlag(SynchronizationFlag::Color);
+	updateSpec();
+}
+
+void Channel::setOpacity(const float& opacity)
+{
+	if (opacity == _opacity)
+		return;
+
+	_opacity = opacity;
 
 	updateSpec();
 }
@@ -74,8 +81,6 @@ void Channel::setProfileType(const ProfileType& profileType)
 
 	_profileType = profileType;
 	
-	//_synchronize.setFlag(SynchronizationFlag::ProfileType);
-
 	updateSpec();
 }
 
@@ -86,8 +91,6 @@ void Channel::setBandType(const BandType& bandType)
 
 	_bandType = bandType;
 
-	//_synchronize.setFlag(SynchronizationFlag::BandType);
-
 	updateSpec();
 }
 
@@ -97,8 +100,6 @@ void Channel::setShowRange(const bool& showRange)
 		return;
 
 	_showRange = showRange;
-
-	//_synchronize.setFlag(SynchronizationFlag::ShowRange);
 
 	updateSpec();
 }
@@ -123,7 +124,8 @@ void Channel::updateSpec()
 	std::vector<std::uint32_t> pointIndices;
 	
 	if (isSubset()) {
-		pointIndices = _points->indices;
+		pointIndices.resize(_points->indices.size());
+		std::iota(pointIndices.begin(), pointIndices.end(), 0);
 	}
 	else {
 		if (selection.indices.size() > 0) {
@@ -225,6 +227,7 @@ void Channel::updateSpec()
 	_spec["index"]			= _index;
 	_spec["dimensions"]		= dimensions;
 	_spec["color"]			= _color;
+	_spec["opacity"]		= _opacity;
 	_spec["profileType"]	= static_cast<int>(_profileType);
 	_spec["bandType"]		= static_cast<int>(_bandType);
 	_spec["showRange"]		= _showRange && pointIndices.size() > 1;

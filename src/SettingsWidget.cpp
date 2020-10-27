@@ -18,9 +18,6 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-	_ui->tableView->setModel(&configurationsModel);
-	_ui->tableView->setSelectionModel(&configurationsModel.getSelectionModel());
-
 	const auto updateDataset1Combobox = [this]() {
 		auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
@@ -59,6 +56,10 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_ui->channel1ColorPushButton->setColor(Qt::gray);
 	_ui->channel2ColorPushButton->setColor(Qt::gray);
 	_ui->channel3ColorPushButton->setColor(Qt::gray);
+
+	_ui->channel1OpacitySlider->setVisible(false);
+	_ui->channel2OpacitySlider->setVisible(false);
+	_ui->channel3OpacitySlider->setVisible(false);
 
 	_ui->channel1ProfileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
 	_ui->channel2ProfileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
@@ -108,6 +109,18 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
 	QObject::connect(_ui->channel3ColorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
 		configurationsModel.setData(Configuration::Column::Channel3Color, color);
+	});
+
+	QObject::connect(_ui->channel1OpacitySlider, &QSlider::valueChanged, [this, &configurationsModel](int value) {
+		configurationsModel.setData(Configuration::Column::Channel1Opacity, value / 100.0f);
+	});
+
+	QObject::connect(_ui->channel2OpacitySlider, &QSlider::valueChanged, [this, &configurationsModel](int value) {
+		configurationsModel.setData(Configuration::Column::Channel2Opacity, value / 100.0f);
+	});
+
+	QObject::connect(_ui->channel3OpacitySlider, &QSlider::valueChanged, [this, &configurationsModel](int value) {
+		configurationsModel.setData(Configuration::Column::Channel3Opacity, value / 100.0f);
 	});
 
 	QObject::connect(_ui->channel1ProfileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
@@ -266,6 +279,30 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3ColorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
 			_ui->channel3ColorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel3ColorPushButton->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel1Opacity)) {
+			_ui->channel1OpacitySlider->blockSignals(true);
+			_ui->channel1OpacitySlider->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel1OpacitySlider->setValue(static_cast<int>(100.0f * index.data(Qt::EditRole).toFloat()));
+			_ui->channel1OpacitySlider->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->channel1OpacitySlider->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel2Opacity)) {
+			_ui->channel2OpacitySlider->blockSignals(true);
+			_ui->channel2OpacitySlider->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel2OpacitySlider->setValue(static_cast<int>(100.0f * index.data(Qt::EditRole).toFloat()));
+			_ui->channel2OpacitySlider->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->channel2OpacitySlider->blockSignals(false);
+		}
+
+		if (column == static_cast<int>(Configuration::Column::Channel3Opacity)) {
+			_ui->channel3OpacitySlider->blockSignals(true);
+			_ui->channel3OpacitySlider->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			_ui->channel3OpacitySlider->setValue(static_cast<int>(100.0f * index.data(Qt::EditRole).toFloat()));
+			_ui->channel3OpacitySlider->setToolTip(index.data(Qt::ToolTipRole).toString());
+			_ui->channel3OpacitySlider->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Channel1ProfileType)) {
