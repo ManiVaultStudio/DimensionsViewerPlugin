@@ -71,7 +71,7 @@ runs:
 
           conan create . ${{ inputs.conan-reference }}  --profile action_build
 
-          conan upload --all --force --confirm -r %CONAN_LKEB_ARTIFACTORY% ${{ inputs.conan-reference }}
+          conan upload --all --force --confirm -r $CONAN_LKEB_ARTIFACTORY ${{ inputs.conan-reference }}
 
        shell: bash
        env:

@@ -33,10 +33,29 @@ class DimensionsViewerPlugin(ConanFile):
         "hdps-core/latest@lkeb/stable",
     )
 
+    # Remove runtime and use always default (MD/MDd)
+    def configure(self):
+        if self.settings.compiler == "Visual Studio":
+            del self.settings.compiler.runtime
+            
     def config_options(self):
         if self.settings.os == 'Windows':
             del self.options.fPIC
             
+    def _configure_cmake(self, build_type):
+        qtpath = pathlib.Path(self.deps_cpp_info["qt"].rootpath)
+        print("Qt5 rootpath ", qtpath)
+        qt_root = str(list(qtpath.glob('**/Qt5Config.cmake'))[0].parents[3])
+        
+        cmake = CMake(self, build_type=build_type)
+        # Default source_folder is current directory
+        cmake.definitions["CMAKE_PROJECT_DimensionsViewerPlugin_INCLUDE"] = os.path.join(self.build_folder, "conan_paths.cmake")
+        cmake.definitions["CMAKE_PREFIX_PATH"] = qt_root
+               
+        cmake.configure(source_folder = self.source_folder)
+        cmake.verbose = True
+        return cmake
+    
     def build(self):
         hdps_pkg_root= self.deps_cpp_info["hdps-core"].rootpath 
         print("HDPS core at ", hdps_pkg_root)
@@ -44,27 +63,21 @@ class DimensionsViewerPlugin(ConanFile):
         if not os.environ.get('HDPS_INSTALL_DIR', None):
             os.environ['HDPS_INSTALL_DIR'] = hdps_pkg_root
         self.install_dir = os.environ['HDPS_INSTALL_DIR']
-        
-        qtpath = pathlib.Path(self.deps_cpp_info["qt"].rootpath)
-        print("Qt5 rootpath ", qtpath)
-        qt_root = str(list(qtpath.glob('**/Qt5Config.cmake'))[0].parents[3])
 
-        cmake = CMake(self)
-        # Default source_folder is current directory
-        cmake.definitions["CMAKE_PROJECT_DimensionsViewerPlugin_INCLUDE"] = os.path.join(self.build_folder, "conan_paths.cmake")
-        cmake.definitions["CMAKE_PREFIX_PATH"] = qt_root
-               
-        cmake.configure(source_folder = self.source_folder)
-        cmake.verbose = True
-        cmake.build()
+        cmake_debug = self._configure_cmake('Debug')
+        cmake_debug.build()
+        
+        cmake_release = self._configure_cmake('Release')
+        cmake_release.build()
 
     def package(self):
-        self.copy("*.h", dst="include", src="hello")
-        self.copy("*.lib", dst="lib", keep_path=False)
-        self.copy("*.dll", dst="bin", keep_path=False)
-        self.copy("*.so", dst="lib", keep_path=False)
-        self.copy("*.dylib", dst="lib", keep_path=False)
-        self.copy("*.a", dst="lib", keep_path=False)
+        print('Packaging install dir: ', self.install_dir)
+        self.copy(pattern="*", src=self.install_dir)
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.debug.libdirs = ['Debug/lib']
+        self.cpp_info.debug.bindirs = ['Debug/Plugins', 'Debug']
+        self.cpp_info.debug.includedirs = ['Debug/include', 'Debug']
+        self.cpp_info.release.libdirs = ['Release/lib']
+        self.cpp_info.release.bindirs = ['Release/Plugins', 'Release']
+        self.cpp_info.release.includedirs = ['Release/include', 'Release']
