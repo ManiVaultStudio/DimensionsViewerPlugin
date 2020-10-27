@@ -69,6 +69,10 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_ui->channel2BandTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
 	_ui->channel3BandTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
 
+	_ui->channel1BandTypeComboBox->setVisible(false);
+	_ui->channel2BandTypeComboBox->setVisible(false);
+	_ui->channel3BandTypeComboBox->setVisible(false);
+
 	QFont font = QFont("Font Awesome 5 Free Solid", 8);
 
 	_ui->globalSettingsPushButton->setFont(font);

@@ -22,7 +22,7 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_opacity(opacity),
 	_profileType(ProfileType::Mean),
 	_bandType(BandType::StandardDeviation1),
-	_showRange(true),
+	_showRange(false),
 	_spec(),
 	_points(nullptr)
 {
