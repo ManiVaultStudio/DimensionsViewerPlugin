@@ -84,7 +84,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 {
 	auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
 
-	Configuration* parentConfiguration = false;
+	Configuration* parentConfiguration = nullptr;
 
 	for (auto configuration : _configurations) {
 		if (dataName == configuration->getChannelDataName(0, Qt::EditRole).toString()) {
