@@ -307,6 +307,11 @@ public: // Miscellaneous
 	 */
 	bool hasDataset(const QString& datasetName) const;
 
+public slots:
+
+	/** Convert the state of the configuration to a variant map  */
+	QVariantMap toVariantMap() const;
+
 private:
 
 	/**
@@ -320,16 +325,10 @@ private:
 signals:
 
 	/**
-	 * Signals that the dimensions have changed
-	 * @param dimensions Channel dimensions
+	 * Signals that the configuration has changed
+	 * @param configuration Configuration
 	 */
-	void dimensionsChanged(const QVariantList& dimensions);
-
-	/**
-	 * Signals that the settings have changed
-	 * @param settings Channel settings
-	 */
-	void settingsChanged(const QVariantMap& settings);
+	void changed(const QVariantMap& configuration);
 
 private:
 	Channels		_channels;				/** Channels */

@@ -21,6 +21,21 @@ class Channel : public QObject {
 	Q_OBJECT
 
 public: // Enumerations
+	
+	/** Synchronization flags enumeration (selective synchronization with the JS client) 
+	enum class SynchronizationFlag {
+		None			= 0x0000,
+		Dimensions		= 0x0001,
+		Enabled			= 0x0002,
+		Color			= 0x0004,
+		ProfileType		= 0x0008,
+		BandType		= 0x0010,
+		ShowRange		= 0x0020,
+		
+		All				= Dimensions | Enabled | Color | ProfileType | BandType | ShowRange
+	};
+	Q_DECLARE_FLAGS(SynchronizationFlags, SynchronizationFlag)
+	*/
 
 	/** Profile type (e.g. average and mean) */
 	enum class ProfileType {
@@ -35,13 +50,13 @@ public: // Enumerations
 	static QString getProfileTypeName(const ProfileType& profileType) {
 		switch (profileType) {
 			case ProfileType::None:
-				return "Profile: None";
+				return "None";
 
 			case ProfileType::Mean:
-				return "Profile: Mean";
+				return "Mean";
 
 			case ProfileType::Median:
-				return "Profile: Median";
+				return "Median";
 		}
 
 		return QString();
@@ -194,65 +209,23 @@ public: // Getters/setters
 	 */
 	void setShowRange(const bool& showRange);
 
-signals:
-
-	/**
-	 * Signals that the visibility changed
-	 * @param enabled Whether the channel is enabled
-	 */
-	void enabledChanged(const bool& enabled);
-
-	/**
-	 * Signals that the dataset name changed
-	 * @param datasetName Name of the dataset
-	 */
-	void datasetNameChanged(const QString& datasetName);
-
-	/**
-	 * Signals that the dataset name changed
-	 * @param datasetName Name of the dataset
-	 */
-	void colorChanged(const QColor& color);
-
-	/**
-	 * Signals that the profile type changed
-	 * @param profileType Profile type
-	 */
-	void profileTypeChanged(const ProfileType& profileType);
-
-	/**
-	 * Signals that the band type changed
-	 * @param bandType Band type
-	 */
-	void bandTypeChanged(const BandType& bandType);
-
-	/**
-	 * Signals that the dimension range visibility changed
-	 * @param showRange Whether to show the dimension range
-	 */
-	void showRangeChanged(const bool& showRange);
-
-	/**
-	 * Signals that the channel dimensions have changed (used solely in the web viewer)
-	 * @param dimensions Channel dimensions
-	 */
-	void dimensionsChanged(const QVariantList& dimensions);
-
-public slots: // Called from the JS side
-
-	/** Returns the channel dimensions */
-	QVariantList getDimensions();
-
-	/** Returns the color name in hexadecimal string form */
-	QString getColorName() const;
+	/** Returns the visualization specification */
+	QVariantMap getSpec() {
+		return _spec;
+	};
 
 private:
 	
-	/** Computes the profile and band data */
-	void computeStatistics();
-
 	/** Returns if the referenced dataset is a subset */
 	bool isSubset() const;
+
+	/** Updates the visualization specification */
+	void updateSpec();
+
+signals:
+
+	/** Signals that the visualization specification has changed */
+	void specChanged();
 
 private:
 	const std::uint32_t		_index;				/** Channel index */
@@ -265,8 +238,8 @@ private:
 	ProfileType				_profileType;		/** The type of profile to visualize */
 	BandType				_bandType;			/** The type of band to visualize */
 	bool					_showRange;			/** Show the dimensions ranges */
+	QVariantMap				_spec;				/** Specification for use in JS visualization client (Vega) */
 	Points*					_points;			/** Pointer to points dataset */
-	QVariantList			_dimensions;		/** Dimensions data */
 
 protected:
 	static DimensionsViewerPlugin* dimensionsViewerPlugin;

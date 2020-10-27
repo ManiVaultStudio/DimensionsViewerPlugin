@@ -23,20 +23,11 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 
 			auto selectedConfiguration = configurationsModel.getSelectedConfiguration();
 
-			for (auto* channel : selectedConfiguration->getChannels()) {
-				webChannel->registerObject(channel->getInternalName(), channel);
-			}
+			webChannel->registerObject("configuration", selectedConfiguration);
 			
 			page()->setWebChannel(webChannel);
 
 			load(QUrl("qrc:DimensionsViewer.html"));
 		}
 	});
-
-	/*QWebChannel* webChannel = new QWebChannel(this);
-
-
-	load(QUrl("qrc:DimensionsViewer.html"));
-
-	page()->setWebChannel(webChannel);*/
 }

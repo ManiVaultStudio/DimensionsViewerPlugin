@@ -1,6 +1,5 @@
 #include "Channel.h"
 #include "DimensionsViewerPlugin.h"
-#include "DimensionStatistics.h"
 
 #include "PointData.h"
 
@@ -8,8 +7,6 @@
 
 #include <QDebug>
 #include <QVariantList>
-
-#define NOMINMAX
 
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
@@ -25,33 +22,15 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_profileType(ProfileType::Mean),
 	_bandType(BandType::StandardDeviation1),
 	_showRange(true),
-	_points(nullptr),
-	_dimensions()
+	_spec(),
+	_points(nullptr)
 {
 	setDatasetName(datasetName);
 
-	QObject::connect(this, &Channel::enabledChanged, [this](const bool& enabled) {
-		computeStatistics();
-	});
-
-	QObject::connect(this, &Channel::datasetNameChanged, [this](const QString& datasetName) {
-		computeStatistics();
-	});
-
-	QObject::connect(this, &Channel::profileTypeChanged, [this](const ProfileType& profileType) {
-		computeStatistics();
-	});
-
-	QObject::connect(this, &Channel::bandTypeChanged, [this](const BandType& bandType) {
-		computeStatistics();
-	});
-
 	QObject::connect(dimensionsViewerPlugin, &DimensionsViewerPlugin::pointsSelectionChanged, [this](const QString& dataName) {
 		if (dataName == _dataName && !isSubset())
-			computeStatistics();
+			updateSpec();
 	});
-
-	computeStatistics();
 }
 
 void Channel::setEnabled(const bool& enabled)
@@ -61,7 +40,9 @@ void Channel::setEnabled(const bool& enabled)
 
 	_enabled = enabled;
 
-	emit enabledChanged(_enabled);
+	//_synchronize.setFlag(SynchronizationFlag::Enabled);
+
+	updateSpec();
 }
 
 void Channel::setDatasetName(const QString& datasetName)
@@ -72,8 +53,6 @@ void Channel::setDatasetName(const QString& datasetName)
 	_datasetName = datasetName;
 
 	_points = &dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestData(_datasetName));
-
-	emit datasetNameChanged(_datasetName);
 }
 
 void Channel::setColor(const QColor& color)
@@ -83,7 +62,9 @@ void Channel::setColor(const QColor& color)
 
 	_color = color;
 
-	emit colorChanged(_color);
+	//_synchronize.setFlag(SynchronizationFlag::Color);
+
+	updateSpec();
 }
 
 void Channel::setProfileType(const ProfileType& profileType)
@@ -92,8 +73,10 @@ void Channel::setProfileType(const ProfileType& profileType)
 		return;
 
 	_profileType = profileType;
+	
+	//_synchronize.setFlag(SynchronizationFlag::ProfileType);
 
-	emit profileTypeChanged(_profileType);
+	updateSpec();
 }
 
 void Channel::setBandType(const BandType& bandType)
@@ -103,7 +86,9 @@ void Channel::setBandType(const BandType& bandType)
 
 	_bandType = bandType;
 
-	emit bandTypeChanged(_bandType);
+	//_synchronize.setFlag(SynchronizationFlag::BandType);
+
+	updateSpec();
 }
 
 void Channel::setShowRange(const bool& showRange)
@@ -113,27 +98,25 @@ void Channel::setShowRange(const bool& showRange)
 
 	_showRange = showRange;
 
-	emit showRangeChanged(_showRange);
+	//_synchronize.setFlag(SynchronizationFlag::ShowRange);
+
+	updateSpec();
 }
 
-QVariantList Channel::getDimensions()
+bool Channel::isSubset() const
 {
-	computeStatistics();
+	if (_points == nullptr)
+		return false;
 
-	return _dimensions;
+	return !_points->indices.empty();
 }
 
-QString Channel::getColorName() const
-{
-	return _color.name();
-}
-
-void Channel::computeStatistics()
+void Channel::updateSpec()
 {
 	if (_points == nullptr)
 		return;
 
-	qDebug() << "Updating dimensions for" << _points->getName();
+	//qDebug() << "Updating dimensions for" << _points->getName();
 
 	const auto& selection = dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestSelection(_points->getDataName()));
 	
@@ -156,13 +139,11 @@ void Channel::computeStatistics()
 
 	dimensionIndices.resize(_points->getNumDimensions());
 	std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
-
-	_dimensions.clear();
 	
-	if (_enabled && !pointIndices.empty()) {
-		const auto colorString = QString("rgb(%1, %2, %3)").arg(QString::number(_color.red()), QString::number(_color.green()), QString::number(_color.blue()));
+	QVariantList dimensions;
 
-		_points->visitSourceData([this, &pointIndices, &dimensionIndices, colorString](auto pointData) {
+	if (_enabled && !pointIndices.empty()) {
+		_points->visitSourceData([this, &pointIndices, &dimensionIndices, &dimensions](auto pointData) {
 			std::vector<float> dimensionValues;
 
 			dimensionValues.resize(pointIndices.size());
@@ -171,14 +152,9 @@ void Channel::computeStatistics()
 				auto localPointIndex = 0;
 
 				for (const auto& pointIndex : pointIndices) {
-					dimensionValues[localPointIndex] = pointData[dimensionIndex][pointIndex];
+					dimensionValues[localPointIndex] = pointData[pointIndex][dimensionIndex];
 					localPointIndex++;
 				}
-
-				/*for (const auto& pointValue : pointData[dimensionIndex]) {
-					dimensionValues[localPointIndex] = pointValue;
-					localPointIndex++;
-				}*/
 
 				QVariantMap dimension;
 
@@ -196,13 +172,13 @@ void Channel::computeStatistics()
 				switch (_profileType)
 				{
 					case ProfileType::Mean: {
-						dimension["v0"] = sum / dimensionValues.size();
+						dimension["agg"] = sum / dimensionValues.size();
 						break;
 					}
 
 					case ProfileType::Median: {
 						std::sort(dimensionValues.begin(), dimensionValues.end());
-						dimension["v0"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
+						dimension["agg"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
 						break;
 					}
 
@@ -241,20 +217,17 @@ void Channel::computeStatistics()
 					dimension["max"] = *result.second;
 				}
 
-				_dimensions.append(dimension);
+				dimensions.append(dimension);
 			}
 		});
 	}
 
-	//qDebug() << payload;
-	
-	emit dimensionsChanged(_dimensions);
-}
+	_spec["index"]			= _index;
+	_spec["dimensions"]		= dimensions;
+	_spec["color"]			= _color;
+	_spec["profileType"]	= static_cast<int>(_profileType);
+	_spec["bandType"]		= static_cast<int>(_bandType);
+	_spec["showRange"]		= _showRange && pointIndices.size() > 1;
 
-bool Channel::isSubset() const
-{
-	if (_points == nullptr)
-		return false;
-
-	return !_points->indices.empty();
+	emit specChanged();
 }

@@ -1,20 +1,4 @@
 
-let design = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "width": "container",
-    "height": "container",
-    "autosize":
-    {
-        "type": "fit",
-        "resize": true,
-    },
-    "signals": [],
-    "data": {
-        "name": "dimensions",
-    },
-    "layer": []
-}
-
 function getRangeBand(channelIndex) {
     return {
         "mark": {
@@ -54,7 +38,7 @@ function getRangeBand(channelIndex) {
     }
 }
 
-function getLineMark(channelIndex, field, opacity, strokeWidth, strokeDash) {
+function getLineMark(channel, opacity, strokeWidth, strokeDash) {
     return {
         "mark": {
             "type": "line",
@@ -66,7 +50,7 @@ function getLineMark(channelIndex, field, opacity, strokeWidth, strokeDash) {
             {
                 "filter": {
                     "field": "chn",
-                    "equal": channelIndex
+                    "equal": channel.index
                 }
             }
         ],
@@ -76,26 +60,48 @@ function getLineMark(channelIndex, field, opacity, strokeWidth, strokeDash) {
                 "type": "nominal"
             },
             "y": {
-                "field": field,
+                "field": "agg",
                 "type": "quantitative",
             },
             "color": {
-                "value": {
-                    "signal": `color${channelIndex}`
-                }
+                "value": channel.color
             }
         }
     }
 }
 
-function getColorSignal(channelIndex) {
-    return {
-        "name": `color${channelIndex}`,
-        "value": "#ffffff",
-    }
+function addChannel(design, channel) {
+    design.data.values = design.data.values.concat(channel.dimensions);
+
+    if (channel.profileType > 0)
+        design.layer.push(getLineMark(channel, 1, 1, []));
+
+    if (channel.showRange)
+        design.layer.push(getRangeBand(channelIndex));
 }
 
-function addChannel(design, channelIndex) {
-    design.layer.push(getRangeBand(channelIndex));
-    design.layer.push(getLineMark(channelIndex, "v0", 1, 1, []));
+function getDesign(configuration) {
+
+    let design = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+        "width": "container",
+        "height": "container",
+        "autosize":
+        {
+            "type": "fit",
+            "resize": true,
+        },
+        "signals": [],
+        "data": {
+            "name": "dimensions",
+            "values": []
+        },
+        "layer": []
+    }
+
+    for (channelName in configuration.channels) {
+        addChannel(design, configuration.channels[channelName]);
+    }
+
+    return design;
 }
