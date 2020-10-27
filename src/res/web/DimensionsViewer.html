@@ -13,62 +13,27 @@
 	<body style="padding: 0; margin: 0; width: 100%; height: 100%;">
 		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
 		<script>
-
             window.addEventListener("load", function () {
+                var onConfigurationChanged = function (configuration) {
+                    vegaEmbed('#view', getDesign(configuration), {}).then(p => {
 
-                // Invoked when channel dimensions have changed
-                var onChannelDimensionsChanged = function (channelIndex, dimensions) {
-                    let changeset = vega.changeset().remove(() => true).insert(dimensions);
-                    view.change('dimensions', changeset).run();
-                }
+                        // Find elements with tag name details
+                        element = document.getElementsByTagName("details");
 
-                // Invoked when the channel color has changed
-                var onChannelColorChanged = function (channelIndex, color) {
-                    view.signal(`color${channelIndex}`, color);
-                    view.runAsync();
-                }
-                
-                // Create new webchannel and connect to signals from C++
-                new QWebChannel(qt.webChannelTransport,
-                    function (channel) {
-                        let numChannels = 3;
-
-                        // Vega visualization options
-                        var options = {
-                            renderer: "canvas",
-                            defaultStyle: false,
-                            patch: (spec) => {
-                                for (channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-                                    spec.signals.push({
-                                        "name": `color${channelIndex}`,
-                                        "value": channel.objects[`channel${channelIndex}`].getColorName()
-                                    })
-                                }
-                                return spec;
-                            }
-                        };
-
-                        for (channelIndex = 0; channelIndex < numChannels; channelIndex++) {
-                            addChannel(design, channelIndex);
-
-                            channel.objects[`channel${channelIndex}`].dimensionsChanged.connect(onChannelDimensionsChanged.bind(null, channelIndex));
-                            channel.objects[`channel${channelIndex}`].colorChanged.connect(onChannelColorChanged.bind(null, channelIndex));
+                        // And remove them (they corrupt the layout)
+                        for (index = 0; index < element.length; index++) {
+                            element[index].parentNode.removeChild(element[index]);
                         }
 
-                        // Embed the Vega view
-                        vegaEmbed('#view', design, options).then(p => {
+                        // Attached the Vega view to the global window variable so that we can later use it
+                        window.view = p.view
+                    });
+                }
 
-                            // Find elements with tag name details
-                            element = document.getElementsByTagName("details");
-
-                            // And remove them (they corrupt the layout)
-                            for (index = 0; index < element.length; index++) {
-                                element[index].parentNode.removeChild(element[index]);
-                            }
-
-                            // Attached the Vega view to the global window variable so that we can later use it
-                            window.view = p.view
-                        });
+                new QWebChannel(qt.webChannelTransport,
+                    function (webChannel) {
+                        webChannel.objects['configuration'].changed.connect(onConfigurationChanged);
+                        webChannel.objects['configuration'].toVariantMap(onConfigurationChanged);
                     });
             });
 		</script>

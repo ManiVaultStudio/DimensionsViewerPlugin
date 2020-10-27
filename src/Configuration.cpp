@@ -14,26 +14,11 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
 	_globalSettings(true),
 	_settings()
 {
-	/*
 	for (auto channel : _channels) {
-		QObject::connect(channel, &Channel::dimensionsChanged, [this](Channel* channel) {
-			QVariantList dimensions;
-
-			for (auto channel : _channels) {
-				for (auto dimension : channel->getDimensions())
-					dimensions.append(dimension);
-			}
-
-			emit dimensionsChanged(dimensions);
-		});
-
-		QObject::connect(channel, &Channel::colorChanged, [this, channel](const QColor& color) {
-			_settings[QString("color%1").arg(QString::number(channel->getIndex()))] = color;
-
-			emit settingsChanged(_settings);
+		QObject::connect(channel, &Channel::specChanged, [this]() {
+			emit changed(toVariantMap());
 		});
 	}
-	*/
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
@@ -832,7 +817,52 @@ bool Configuration::hasDataset(const QString& datasetName) const
 	return const_cast<Configuration*>(this)->getChannelByDatasetName(datasetName) != nullptr;
 }
 
+QVariantMap Configuration::toVariantMap() const
+{
+	QVariantMap configuration, channels;
+
+	for (auto channel : _channels) {
+		if (!channel->isEnabled())
+			continue;
+
+		channels[channel->getInternalName()] = channel->getSpec();
+	}
+
+	configuration["channels"] = channels;
+
+	//qDebug() << configuration;
+
+	return configuration;
+}
+
 QString Configuration::htmlTooltip(const QString& title, const QString& description) const
 {
 	return QString("<html><head/><body><p><span style='font-weight:600;'>%1<br/></span>%2</p></body></html>").arg(title, description);
 }
+
+//QVariantMap Channel::getSettings(const SynchronizationFlags& synchronizationFlags /*= SynchronizationFlag::All*/)
+//{
+//	QVariantMap settings;
+//
+//	if (synchronizationFlags.testFlag(SynchronizationFlag::Enabled) || synchronizationFlags.testFlag(SynchronizationFlag::ProfileType) || synchronizationFlags.testFlag(SynchronizationFlag::BandType) || synchronizationFlags.testFlag(SynchronizationFlag::ShowRange)) {
+//		settings["dimensions"] = _dimensions;
+//	}
+//
+//	if (synchronizationFlags.testFlag(SynchronizationFlag::Color)) {
+//		settings["color"] = _color;
+//	}
+//
+//	if (synchronizationFlags.testFlag(SynchronizationFlag::ProfileType)) {
+//		settings["profileType"] = getProfileTypeName(_profileType);
+//	}
+//
+//	if (synchronizationFlags.testFlag(SynchronizationFlag::BandType)) {
+//		settings["bandType"] = getBandTypeName(_bandType);
+//	}
+//
+//	if (synchronizationFlags.testFlag(SynchronizationFlag::ShowRange)) {
+//		settings["showRange"] = _showRange;
+//	}
+//
+//	return settings;
+//}
