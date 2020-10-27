@@ -15,7 +15,18 @@
 		<script>
             window.addEventListener("load", function () {
                 var onConfigurationChanged = function (configuration) {
-                    vegaEmbed('#view', getDesign(configuration), {}).then(p => {
+                    const myNode = document.getElementById("view");
+
+                    while (myNode.firstChild) {
+                        myNode.removeChild(myNode.lastChild);
+                    }
+
+                    var options = {
+                        //renderer: "canvas",
+                        defaultStyle: false
+                    };
+
+                    vegaEmbed('#view', getDesign(configuration), options).then(p => {
 
                         // Find elements with tag name details
                         element = document.getElementsByTagName("details");

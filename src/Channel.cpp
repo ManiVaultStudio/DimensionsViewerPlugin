@@ -52,6 +52,8 @@ void Channel::setDatasetName(const QString& datasetName)
 	_datasetName = datasetName;
 
 	_points = &dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestData(_datasetName));
+
+	updateSpec();
 }
 
 void Channel::setColor(const QColor& color)
@@ -160,9 +162,9 @@ void Channel::updateSpec()
 
 				QVariantMap dimension;
 
-				dimension["chn"]	= _index;
-				dimension["dim"]	= dimensionIndex;
-				//dimension["name"]	= _points->getDimensionNames().at(dimensionIndex);
+				dimension["chn"]		= _index;
+				dimension["dim"]		= dimensionIndex;
+				dimension["dimName"]	= _points->getDimensionNames().at(dimensionIndex);
 
 				const float sum = std::accumulate(dimensionValues.begin(), dimensionValues.end(), 0.0);
 				const float mean = sum / dimensionValues.size();

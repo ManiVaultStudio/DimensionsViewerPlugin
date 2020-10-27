@@ -20,16 +20,18 @@ function getRangeMark(channel, strokeWidth) {
         ],
         "encoding": {
             "x": {
-                "field": "dim",
+                "field": "dimName",
                 "type": "ordinal"
             },
             "y": {
                 "field": "min",
-                "type": "quantitative"
+                "type": "quantitative",
+                "title": "Point value"
             },
             "y2": {
                 "field": "max",
-                "type": "quantitative"
+                "type": "quantitative",
+                "title": "Point value"
             },
             "color": {
                 "value": channel.color
@@ -44,6 +46,7 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash) {
             "type": "line",
             "strokeWidth": strokeWidth,
             "strokeDash": strokeDash,
+            "strokeJoin": "round",
             "opacity": 1
         },
         "transform": [
@@ -56,12 +59,13 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash) {
         ],
         "encoding": {
             "x": {
-                "field": "dim",
-                "type": "nominal"
+                "field": "dimName",
+                "type": "ordinal"
             },
             "y": {
                 "field": "agg",
                 "type": "quantitative",
+                "title": "Point value"
             },
             "color": {
                 "value": channel.color
@@ -75,7 +79,8 @@ function getAggregatePointsMark(channel) {
         "mark": {
             "type": "point",
             "fill": channel.color,
-            "opacity": 1
+            "opacity": 1,
+            "size": 11
         },
         "transform": [
             {
@@ -87,12 +92,14 @@ function getAggregatePointsMark(channel) {
         ],
         "encoding": {
             "x": {
-                "field": "dim",
-                "type": "nominal"
+                "field": "dimName",
+                "type": "ordinal",
+                "title": "Dimension"
             },
             "y": {
                 "field": "agg",
                 "type": "quantitative",
+                "title": "Point value"
             },
             "color": {
                 "value": channel.color
@@ -119,6 +126,7 @@ function getDesign(configuration) {
         "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
         "width": "container",
         "height": "container",
+        "padding": 10,
         "autosize":
         {
             "type": "fit",
