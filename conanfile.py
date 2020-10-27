@@ -53,12 +53,7 @@ class DimensionsViewerPlugin(ConanFile):
         # Default source_folder is current directory
         cmake.definitions["CMAKE_PROJECT_DimensionsViewerPlugin_INCLUDE"] = os.path.join(self.build_folder, "conan_paths.cmake")
         cmake.definitions["CMAKE_PREFIX_PATH"] = qt_root
-        
-        # TODO - CI should package both Debug/Release then this is not needed
-        # The ImageViewerPlugin build expects the HDPS package to be in this install dir
-        print("Install dir type: ", os.path.join(self.install_dir, self.settings.get_safe("build_type")))
-        shutil.copytree(hdps_pkg_root, os.path.join(self.install_dir, self.settings.get_safe("build_type"))) 
-        
+               
         cmake.configure(source_folder = self.source_folder)
         cmake.verbose = True
         cmake.build()
