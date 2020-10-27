@@ -54,8 +54,6 @@ class DimensionsViewerPlugin(ConanFile):
         print("Qt5 rootpath ", qtpath)
         qt_root = str(list(qtpath.glob('**/Qt5Config.cmake'))[0].parents[3])
         
-        if self.settings.os == "Macos":
-            os.system("chown -R $(whoami) {0}".format(qt_root))
         cmake = CMake(self, build_type=build_type)
         # Default source_folder is current directory
         cmake.definitions["CMAKE_PROJECT_DimensionsViewerPlugin_INCLUDE"] = os.path.join(self.build_folder, "conan_paths.cmake")
