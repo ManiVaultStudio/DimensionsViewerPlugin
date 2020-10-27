@@ -18,6 +18,7 @@ class SettingsWidget : public QWidget
 
 public:
 	SettingsWidget(DimensionsViewerPlugin* histogramViewerPlugin);
+	~SettingsWidget();
 
 public:
 
