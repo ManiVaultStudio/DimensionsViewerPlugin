@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include <QStackedWidget.h>
+#include <QStackedWidget>
 
 class DimensionsViewerPlugin;
 
