@@ -126,6 +126,9 @@ function getDesign(configuration) {
         "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
         "width": "container",
         "height": "container",
+        "title": {
+            "text": []
+        },
         "padding": 10,
         "autosize":
         {
@@ -140,8 +143,12 @@ function getDesign(configuration) {
         "layer": []
     }
 
+    design.title.text.push(configuration.title);
+
     for (channelName in configuration.channels) {
-        addChannel(design, configuration.channels[channelName]);
+        let channel = configuration.channels[channelName];
+
+        addChannel(design, channel);
     }
 
     return design;

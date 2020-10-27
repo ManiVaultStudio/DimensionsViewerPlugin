@@ -227,6 +227,7 @@ void Channel::updateSpec()
 	}
 
 	_spec["index"]			= _index;
+	_spec["datasetName"]	= _datasetName;
 	_spec["dimensions"]		= dimensions;
 	_spec["color"]			= _color;
 	_spec["opacity"]		= _opacity;

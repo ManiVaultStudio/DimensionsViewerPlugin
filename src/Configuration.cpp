@@ -928,14 +928,19 @@ QVariantMap Configuration::toVariantMap() const
 {
 	QVariantMap configuration, channels;
 
+	QStringList datasets;
+
 	for (auto channel : _channels) {
 		if (!channel->isEnabled())
 			continue;
 
 		channels[channel->getInternalName()] = channel->getSpec();
+
+		datasets << channel->getDatasetName();
 	}
 
-	configuration["channels"] = channels;
+	configuration["title"]		= datasets.join(", ");
+	configuration["channels"]	= channels;
 
 	//qDebug() << configuration;
 
