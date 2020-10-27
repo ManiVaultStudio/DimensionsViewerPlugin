@@ -33,12 +33,12 @@ class DimensionsViewerPlugin(ConanFile):
         "hdps-core/latest@lkeb/stable",
     )
     
-    scm = {
-        "type": "git",
-        "subfolder": "hdps/DimensionsViewerPlugin",
-        "url": "auto",
-        "revision": "auto"
-    }
+    #scm = {
+    #    "type": "git",
+    #    "subfolder": "hdps/DimensionsViewerPlugin",
+    #    "url": "auto",
+    #    "revision": "auto"
+    #}
 
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
@@ -59,7 +59,7 @@ class DimensionsViewerPlugin(ConanFile):
         cmake.definitions["CMAKE_PROJECT_DimensionsViewerPlugin_INCLUDE"] = os.path.join(self.build_folder, "conan_paths.cmake")
         cmake.definitions["CMAKE_PREFIX_PATH"] = qt_root
                
-        cmake.configure(source_folder = hdps/DimensionsViewerPlugin)
+        cmake.configure()
         cmake.verbose = True
         return cmake
     
