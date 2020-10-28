@@ -9,6 +9,7 @@
 
 class DimensionsViewerPlugin;
 
+class QCheckBox;
 class QPushButton;
 
 namespace Ui {
@@ -38,5 +39,6 @@ signals:
 private:
 	DimensionsViewerPlugin*					_dimensionsViewerPlugin;
 	std::unique_ptr<Ui::SettingsWidget>		_ui;
-    QVector<QPushButton*>                   _lockedPushButtons;
+    QVector<QCheckBox*>                     _showRange;
+    QVector<QPushButton*>                   _locked;
 };

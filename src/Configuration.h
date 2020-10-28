@@ -20,36 +20,35 @@ public: // Columns
 
 	/** Data columns */
 	enum Column {
-		Channel1Enabled,				                        /** Whether the first subset is enabled */
-		Channel2Enabled,				                        /** Whether the second subset is enabled */
-		Channel3Enabled,				                        /** Whether the second subset is enabled */
-		Subsets,						                        /** The subset(s) of the first dataset */
-		Channel1DatasetName,			                        /** The dataset name of the first channel */
-		Channel2DatasetName,			                        /** The dataset name of the second channel */
-		Channel3DatasetName,			                        /** The dataset name of the third channel */
-		Channel1DataName,				                        /** The data name of the first channel */
-		Channel2DataName,				                        /** The data name of the second channel */
-		Channel3DataName,				                        /** The data name of the third channel */
-		Channel1Color,					                        /** Color of the first channel */
-		Channel2Color,					                        /** Color of the second channel */
-		Channel3Color,					                        /** Color of the third channel */
-		Channel1Opacity,				                        /** Opacity of the first channel */
-		Channel2Opacity,				                        /** Opacity of the second channel */
-		Channel3Opacity,				                        /** Opacity of the third channel */
-		Channel1ProfileType,			                        /** The profile type of the first channel */
-		Channel2ProfileType,			                        /** The profile type of the second channel */
-		Channel3ProfileType,			                        /** The profile type of the third channel */
-		Channel1BandType,				                        /** The band type of the first channel */
-		Channel2BandType,				                        /** The band type of the second channel */
-		Channel3BandType,				                        /** The band type of the third channel */
-		Channel1ShowRange,				                        /** Whether to show the dimension range for the first channel*/
-		Channel2ShowRange,				                        /** Whether to show the dimension range for the first channel*/
-		Channel3ShowRange,				                        /** Whether to show the dimension range for the first channel*/
-		ChannelLockedStart,                                     /** Channel locked first channel */
-		ChannelLockedEnd = ChannelLockedStart + noChannels,		/** Channel locked last channel */
+		Channel1Enabled,				                                /** Whether the first subset is enabled */
+		Channel2Enabled,				                                /** Whether the second subset is enabled */
+		Channel3Enabled,				                                /** Whether the second subset is enabled */
+		Subsets,						                                /** The subset(s) of the first dataset */
+		Channel1DatasetName,			                                /** The dataset name of the first channel */
+		Channel2DatasetName,			                                /** The dataset name of the second channel */
+		Channel3DatasetName,			                                /** The dataset name of the third channel */
+		Channel1DataName,				                                /** The data name of the first channel */
+		Channel2DataName,				                                /** The data name of the second channel */
+		Channel3DataName,				                                /** The data name of the third channel */
+		Channel1Color,					                                /** Color of the first channel */
+		Channel2Color,					                                /** Color of the second channel */
+		Channel3Color,					                                /** Color of the third channel */
+		Channel1Opacity,				                                /** Opacity of the first channel */
+		Channel2Opacity,				                                /** Opacity of the second channel */
+		Channel3Opacity,				                                /** Opacity of the third channel */
+		Channel1ProfileType,			                                /** The profile type of the first channel */
+		Channel2ProfileType,			                                /** The profile type of the second channel */
+		Channel3ProfileType,			                                /** The profile type of the third channel */
+		Channel1BandType,				                                /** The band type of the first channel */
+		Channel2BandType,				                                /** The band type of the second channel */
+		Channel3BandType,				                                /** The band type of the third channel */
+		ChannelShowRangeStart,				                            /** Channel show range for the first channel */
+		ChannelShowRangeEnd = ChannelShowRangeStart + noChannels,       /** Channel show range for the last channel */
+		ChannelLockedStart,                                             /** Channel locked for the first channel */
+		ChannelLockedEnd = ChannelLockedStart + noChannels,		        /** Channel locked for the last channel */
 		
-		Start = Channel1Enabled,		                        /** Column start */
-		End = ChannelLockedEnd                                  /** Column end */
+		Start = Channel1Enabled,		                                /** Column start */
+		End = ChannelLockedEnd                                          /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
@@ -121,18 +120,12 @@ public: // Columns
 			case Column::Channel3BandType:
 				return "Channel 3: Band type";
 
-			case Column::Channel1ShowRange:
-				return "Channel 1: Show range";
-
-			case Column::Channel2ShowRange:
-				return "Channel 2: Show range";
-
-			case Column::Channel3ShowRange:
-				return "Channel 3: Show range";
-
 			default:
 				return QString();
 		}
+
+		if (column >= Column::ChannelShowRangeStart && column < Column::ChannelShowRangeEnd)
+			return QString("Channel %1: Show range").arg(QString::number(column));
 
 		if (column >= Column::ChannelLockedStart && column < Column::ChannelLockedStart)
 			return QString("Channel %1: Locked").arg(QString::number(column));
@@ -306,6 +299,21 @@ public: // Getters/setters
 	 * @param showRange Show range parameter of channel with \p channelIndex
 	 */
 	void setChannelShowRange(const std::int32_t& channelIndex, const bool& showRange);
+
+	/**
+	 * Returns the locked parameter of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param role Data role
+	 * @return Locked in variant form
+	 */
+	QVariant getChannelLocked(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+	/**
+	 * Sets the locked parameter of channel with \p channelIndex
+	 * @param channelIndex Index of the channel
+	 * @param locked Locked parameter of channel with \p channelIndex
+	 */
+	void setChannelLocked(const std::int32_t& channelIndex, const bool& locked);
 
 public: // Miscellaneous
 

@@ -16,7 +16,8 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 {
 	_ui->setupUi(this);
 
-	_lockedPushButtons << _ui->channel1LockedPushButton << _ui->channel2LockedPushButton << _ui->channel3LockedPushButton;
+	_locked << _ui->channel1LockedPushButton << _ui->channel2LockedPushButton << _ui->channel3LockedPushButton;
+	_showRange << _ui->channel1ShowRangeCheckBox<< _ui->channel2ShowRangeCheckBox << _ui->channel3ShowRangeCheckBox;
 
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
@@ -149,25 +150,19 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		configurationsModel.setData(Configuration::Column::Channel3BandType, currentIndex);
 	});
 
-	QObject::connect(_ui->channel1ShowRangeCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		configurationsModel.setData(Configuration::Column::Channel1ShowRange, state == Qt::Checked);
-	});
+	for (auto showRange : _showRange) {
+		QObject::connect(showRange, &QCheckBox::stateChanged, [this, &configurationsModel, showRange](int state) {
+			configurationsModel.setData(Configuration::Column::ChannelShowRangeStart + _showRange.indexOf(showRange), state == Qt::Checked);
+		});
+	}
 
-	QObject::connect(_ui->channel2ShowRangeCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		configurationsModel.setData(Configuration::Column::Channel2ShowRange, state == Qt::Checked);
-	});
+	for (auto locked : _locked) {
+		locked->setFont(font);
+		locked->setStyleSheet("text-align: center");
+		locked->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("lock"));
 
-	QObject::connect(_ui->channel3ShowRangeCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		configurationsModel.setData(Configuration::Column::Channel3ShowRange, state == Qt::Checked);
-	});
-
-	for (auto lockedPushButton : _lockedPushButtons) {
-		lockedPushButton->setFont(font);
-		lockedPushButton->setStyleSheet("text-align: center");
-		lockedPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("lock"));
-
-		QObject::connect(lockedPushButton, &QPushButton::toggled, [this, &configurationsModel, lockedPushButton](bool checked) {
-			configurationsModel.setData(Configuration::Column::ChannelLockedStart + _lockedPushButtons.indexOf(lockedPushButton), checked);
+		QObject::connect(locked, &QPushButton::toggled, [this, &configurationsModel, locked](bool checked) {
+			configurationsModel.setData(Configuration::Column::ChannelLockedStart + _locked.indexOf(locked), checked);
 		});
 	}
 
@@ -193,9 +188,14 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		_ui->channel2BandTypeComboBox->setCurrentIndex(-1);
 		_ui->channel3BandTypeComboBox->setCurrentIndex(-1);
 		
-		for (auto lockedPushButton : _lockedPushButtons) {
-			lockedPushButton->setEnabled(false);
-			lockedPushButton->setChecked(false);
+		for (auto showRange : _showRange) {
+			showRange->setEnabled(false);
+			showRange->setChecked(false);
+		}
+
+		for (auto locked : _locked) {
+			locked->setEnabled(false);
+			locked->setChecked(false);
 		}
 
 		return;
@@ -365,51 +365,29 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3BandTypeComboBox->blockSignals(false);
 		}
 
-		if (column == static_cast<int>(Configuration::Column::Channel1ShowRange)) {
-			_ui->channel1ShowRangeCheckBox->blockSignals(true);
-			_ui->channel1ShowRangeCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel1ShowRangeCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			_ui->channel1ShowRangeCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			_ui->channel1ShowRangeCheckBox->blockSignals(false);
-		}
+		if (column >= Configuration::Column::ChannelShowRangeStart&& column < Configuration::Column::ChannelShowRangeEnd) {
+			const auto channelIndex = index.column() - Configuration::Column::ChannelShowRangeStart;
 
-		if (column == static_cast<int>(Configuration::Column::Channel2ShowRange)) {
-			_ui->channel2ShowRangeCheckBox->blockSignals(true);
-			_ui->channel2ShowRangeCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel2ShowRangeCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			_ui->channel2ShowRangeCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			_ui->channel2ShowRangeCheckBox->blockSignals(false);
-		}
+			auto showRange = _showRange[channelIndex];
 
-		if (column == static_cast<int>(Configuration::Column::Channel3ShowRange)) {
-			_ui->channel3ShowRangeCheckBox->blockSignals(true);
-			_ui->channel3ShowRangeCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel3ShowRangeCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			_ui->channel3ShowRangeCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			_ui->channel3ShowRangeCheckBox->blockSignals(false);
+			showRange->blockSignals(true);
+			showRange->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			showRange->setChecked(index.data(Qt::EditRole).toBool());
+			showRange->setToolTip(index.data(Qt::ToolTipRole).toString());
+			showRange->blockSignals(false);
 		}
 
 		if (column >= Configuration::Column::ChannelLockedStart && column < Configuration::Column::ChannelLockedEnd) {
-			for (int c = 0; c < 3; ++c) {
-				auto lockedPushButton = _lockedPushButtons[c];
+			const auto channelIndex = index.column() - Configuration::Column::ChannelLockedStart;
 
-				lockedPushButton->blockSignals(true);
-				lockedPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
-				lockedPushButton->setChecked(index.data(Qt::EditRole).toBool());
-				lockedPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-				lockedPushButton->blockSignals(false);
-			}
+			auto locked = _locked[channelIndex];
+
+			locked->blockSignals(true);
+			locked->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			locked->setChecked(index.data(Qt::EditRole).toBool());
+			locked->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(index.data(Qt::EditRole).toBool() ? "lock" : "unlock"));
+			locked->setToolTip(index.data(Qt::ToolTipRole).toString());
+			locked->blockSignals(false);
 		}
-
-		/*if (column == static_cast<int>(Configuration::Column::GlobalSettings)) {
-			const auto globalSettings = index.data(Qt::EditRole).toBool();
-
-			_ui->globalSettingsPushButton->blockSignals(true);
-			_ui->globalSettingsPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->globalSettingsPushButton->setChecked(globalSettings);
-			_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(globalSettings ? "lock" : "unlock"));
-			_ui->globalSettingsPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-			_ui->globalSettingsPushButton->blockSignals(false);
-		}*/
 	}
 }
