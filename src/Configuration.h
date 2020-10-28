@@ -25,9 +25,8 @@ public: // Columns
 		Subsets,						                                    /** The subset(s) of the first dataset */
 		ChannelDatasetNameStart,			                                /** Channel dataset name for the first channel */
 		ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name for the last channel */
-		Channel1DataName,				                                    /** The data name of the first channel */
-		Channel2DataName,				                                    /** The data name of the second channel */
-		Channel3DataName,				                                    /** The data name of the third channel */
+		ChannelDataNameStart,				                                /** Channel data name for the first channel */
+		ChannelDataNameEnd = ChannelDataNameStart + noChannels,             /** Channel data name for the last channel */
 		Channel1Color,					                                    /** Color of the first channel */
 		Channel2Color,					                                    /** Color of the second channel */
 		Channel3Color,					                                    /** Color of the third channel */
@@ -54,15 +53,6 @@ public: // Columns
 		switch (column) {
 			case Column::Subsets:
 				return "Subsets";
-
-			case Column::Channel1DataName:
-				return "Channel 1: Data name";
-
-			case Column::Channel2DataName:
-				return "Channel 2: Data name";
-
-			case Column::Channel3DataName:
-				return "Channel 3: Data name";
 
 			case Column::Channel1Color:
 				return "Channel 1: Color";
@@ -103,6 +93,9 @@ public: // Columns
 			default:
 				return QString();
 		}
+
+		if (column >= Column::ChannelDataNameStart && column < Column::ChannelDataNameEnd)
+			return QString("Channel %1: Data name").arg(QString::number(column));
 
 		if (column >= Column::ChannelDatasetNameStart && column < Column::ChannelDatasetNameEnd)
 			return QString("Channel %1: Dataset name").arg(QString::number(column));

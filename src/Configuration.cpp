@@ -29,8 +29,6 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 	const auto channel3Enabled = _channels[2]->isEnabled() && _subsets.size() >= 2;
 
 	switch (index.column()) {
-		
-
 		case Column::Channel1Color: {
 			if (_channels[0]->isEnabled())
 				flags |= Qt::ItemIsEnabled;
@@ -173,15 +171,6 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 		case Column::Subsets:
 			return getSubsets(role);
 
-		case Column::Channel1DataName:
-			return getChannelDataName(0, role);
-
-		case Column::Channel2DataName:
-			return getChannelDataName(1, role);
-
-		case Column::Channel3DataName:
-			return getChannelDataName(2, role);
-
 		case Column::Channel1Color:
 			return getChannelColor(0, role);
 
@@ -221,6 +210,9 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 		default:
 			break;
 	}
+
+	if (index.column() >= Column::ChannelDataNameStart && index.column() < Column::ChannelDataNameEnd)
+		return getChannelDataName(index.column() - Column::ChannelDataNameStart, role);
 
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd)
 		return getChannelDatasetName(index.column() - Column::ChannelDatasetNameStart, role);
