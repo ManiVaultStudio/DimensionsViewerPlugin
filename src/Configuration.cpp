@@ -726,6 +726,8 @@ QVariant Configuration::getChannelOpacity(const std::int32_t& channelIndex, cons
 	{
 		qDebug() << exception.what();
 	}
+
+	return QVariant();
 }
 
 void Configuration::setChannelOpacity(const std::int32_t& channelIndex, const float& opacity)

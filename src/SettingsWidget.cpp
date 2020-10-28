@@ -16,6 +16,8 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 {
 	_ui->setupUi(this);
 
+	_lockedPushButtons << _ui->channel1LockedPushButton << _ui->channel2LockedPushButton << _ui->channel3LockedPushButton;
+
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
 	const auto updateDataset1Combobox = [this]() {
@@ -74,10 +76,6 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_ui->channel3BandTypeComboBox->setVisible(false);
 
 	QFont font = QFont("Font Awesome 5 Free Solid", 8);
-
-	_ui->globalSettingsPushButton->setFont(font);
-	_ui->globalSettingsPushButton->setStyleSheet("text-align: center");
-	_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("lock"));
 
 	QObject::connect(_ui->channel1DatasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
 		configurationsModel.selectRow(currentIndex);
@@ -163,9 +161,15 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		configurationsModel.setData(Configuration::Column::Channel3ShowRange, state == Qt::Checked);
 	});
 
-	/*QObject::connect(_ui->globalSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
-		configurationsModel.setData(Configuration::Column::GlobalSettings, checked);
-	});*/
+	for (auto lockedPushButton : _lockedPushButtons) {
+		lockedPushButton->setFont(font);
+		lockedPushButton->setStyleSheet("text-align: center");
+		lockedPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("lock"));
+
+		QObject::connect(lockedPushButton, &QPushButton::toggled, [this, &configurationsModel, lockedPushButton](bool checked) {
+			configurationsModel.setData(Configuration::Column::ChannelLockedStart + _lockedPushButtons.indexOf(lockedPushButton), checked);
+		});
+	}
 
 	updateData(QModelIndex(), QModelIndex());
 }
@@ -188,7 +192,11 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		_ui->channel1BandTypeComboBox->setCurrentIndex(-1);
 		_ui->channel2BandTypeComboBox->setCurrentIndex(-1);
 		_ui->channel3BandTypeComboBox->setCurrentIndex(-1);
-		_ui->globalSettingsPushButton->setChecked(false);
+		
+		for (auto lockedPushButton : _lockedPushButtons) {
+			lockedPushButton->setEnabled(false);
+			lockedPushButton->setChecked(false);
+		}
 
 		return;
 	}
@@ -379,6 +387,18 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3ShowRangeCheckBox->setChecked(index.data(Qt::EditRole).toBool());
 			_ui->channel3ShowRangeCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->channel3ShowRangeCheckBox->blockSignals(false);
+		}
+
+		if (column >= Configuration::Column::ChannelLockedStart && column < Configuration::Column::ChannelLockedEnd) {
+			for (int c = 0; c < 3; ++c) {
+				auto lockedPushButton = _lockedPushButtons[c];
+
+				lockedPushButton->blockSignals(true);
+				lockedPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+				lockedPushButton->setChecked(index.data(Qt::EditRole).toBool());
+				lockedPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
+				lockedPushButton->blockSignals(false);
+			}
 		}
 
 		/*if (column == static_cast<int>(Configuration::Column::GlobalSettings)) {

@@ -14,127 +14,128 @@ public:
 
 	using Channels = QVector<Channel*>;
 
+	static const std::int32_t noChannels = 3;
+
 public: // Columns
 
 	/** Data columns */
-	enum class Column {
-		Channel1Enabled,				/** Whether the first subset is enabled */
-		Channel2Enabled,				/** Whether the second subset is enabled */
-		Channel3Enabled,				/** Whether the second subset is enabled */
-		Subsets,						/** The subset(s) of the first dataset */
-		Channel1DatasetName,			/** The dataset name of the first channel */
-		Channel2DatasetName,			/** The dataset name of the second channel */
-		Channel3DatasetName,			/** The dataset name of the third channel */
-		Channel1DataName,				/** The data name of the first channel */
-		Channel2DataName,				/** The data name of the second channel */
-		Channel3DataName,				/** The data name of the third channel */
-		Channel1Color,					/** Color of the first channel */
-		Channel2Color,					/** Color of the second channel */
-		Channel3Color,					/** Color of the third channel */
-		Channel1Opacity,				/** Opacity of the first channel */
-		Channel2Opacity,				/** Opacity of the second channel */
-		Channel3Opacity,				/** Opacity of the third channel */
-		Channel1ProfileType,			/** The profile type of the first channel */
-		Channel2ProfileType,			/** The profile type of the second channel */
-		Channel3ProfileType,			/** The profile type of the third channel */
-		Channel1BandType,				/** The band type of the first channel */
-		Channel2BandType,				/** The band type of the second channel */
-		Channel3BandType,				/** The band type of the third channel */
-		Channel1ShowRange,				/** Whether to show the dimension range for the first channel*/
-		Channel2ShowRange,				/** Whether to show the dimension range for the first channel*/
-		Channel3ShowRange,				/** Whether to show the dimension range for the first channel*/
-		ChannelLocked,				    /** Whether settings are locked for channel x */
-		End = ChannelLocked + 3,		/** Column end */
+	enum Column {
+		Channel1Enabled,				                        /** Whether the first subset is enabled */
+		Channel2Enabled,				                        /** Whether the second subset is enabled */
+		Channel3Enabled,				                        /** Whether the second subset is enabled */
+		Subsets,						                        /** The subset(s) of the first dataset */
+		Channel1DatasetName,			                        /** The dataset name of the first channel */
+		Channel2DatasetName,			                        /** The dataset name of the second channel */
+		Channel3DatasetName,			                        /** The dataset name of the third channel */
+		Channel1DataName,				                        /** The data name of the first channel */
+		Channel2DataName,				                        /** The data name of the second channel */
+		Channel3DataName,				                        /** The data name of the third channel */
+		Channel1Color,					                        /** Color of the first channel */
+		Channel2Color,					                        /** Color of the second channel */
+		Channel3Color,					                        /** Color of the third channel */
+		Channel1Opacity,				                        /** Opacity of the first channel */
+		Channel2Opacity,				                        /** Opacity of the second channel */
+		Channel3Opacity,				                        /** Opacity of the third channel */
+		Channel1ProfileType,			                        /** The profile type of the first channel */
+		Channel2ProfileType,			                        /** The profile type of the second channel */
+		Channel3ProfileType,			                        /** The profile type of the third channel */
+		Channel1BandType,				                        /** The band type of the first channel */
+		Channel2BandType,				                        /** The band type of the second channel */
+		Channel3BandType,				                        /** The band type of the third channel */
+		Channel1ShowRange,				                        /** Whether to show the dimension range for the first channel*/
+		Channel2ShowRange,				                        /** Whether to show the dimension range for the first channel*/
+		Channel3ShowRange,				                        /** Whether to show the dimension range for the first channel*/
+		ChannelLockedStart,                                     /** Channel locked first channel */
+		ChannelLockedEnd = ChannelLockedStart + noChannels,		/** Channel locked last channel */
 		
-		Start = Channel1Enabled,		/** Column start */
+		Start = Channel1Enabled,		                        /** Column start */
+		End = ChannelLockedEnd                                  /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
 	static QString getColumnName(const std::int32_t& column) {
 		switch (column) {
-			case static_cast<std::int32_t>(Column::Channel1Enabled):
+			case Column::Channel1Enabled:
 				return "Channel 1: Enabled";
 
-			case static_cast<std::int32_t>(Column::Channel2Enabled):
+			case Column::Channel2Enabled:
 				return "Channel 2: Enabled";
 
-			case static_cast<std::int32_t>(Column::Channel3Enabled):
+			case Column::Channel3Enabled:
 				return "Channel 3: Enabled";
 
-			case static_cast<std::int32_t>(Column::Subsets):
+			case Column::Subsets:
 				return "Subsets";
 
-			case static_cast<std::int32_t>(Column::Channel1DatasetName):
+			case Column::Channel1DatasetName:
 				return "Channel 1: Dataset name";
 
-			case static_cast<std::int32_t>(Column::Channel2DatasetName) :
+			case Column::Channel2DatasetName:
 				return "Channel 2: Dataset name";
 
-			case static_cast<std::int32_t>(Column::Channel3DatasetName) :
+			case Column::Channel3DatasetName:
 				return "Channel 3: Dataset name";
 
-			case static_cast<std::int32_t>(Column::Channel1DataName) :
+			case Column::Channel1DataName:
 				return "Channel 1: Data name";
 
-			case static_cast<std::int32_t>(Column::Channel2DataName) :
+			case Column::Channel2DataName:
 				return "Channel 2: Data name";
 
-			case static_cast<std::int32_t>(Column::Channel3DataName) :
+			case Column::Channel3DataName:
 				return "Channel 3: Data name";
 
-			case static_cast<std::int32_t>(Column::Channel1Color) :
+			case Column::Channel1Color:
 				return "Channel 1: Color";
 
-			case static_cast<std::int32_t>(Column::Channel2Color) :
+			case Column::Channel2Color:
 				return "Channel 2: Color";
 
-			case static_cast<std::int32_t>(Column::Channel3Color) :
+			case Column::Channel3Color:
 				return "Channel 3: Color";
 
-			case static_cast<std::int32_t>(Column::Channel1Opacity) :
+			case Column::Channel1Opacity:
 				return "Channel 1: Opacity";
 
-			case static_cast<std::int32_t>(Column::Channel2Opacity) :
+			case Column::Channel2Opacity:
 				return "Channel 2: Opacity";
 
-			case static_cast<std::int32_t>(Column::Channel3Opacity) :
+			case Column::Channel3Opacity:
 				return "Channel 3: Opacity";
 
-			case static_cast<std::int32_t>(Column::Channel1ProfileType) :
+			case Column::Channel1ProfileType:
 				return "Channel 1: Profile type";
 
-			case static_cast<std::int32_t>(Column::Channel2ProfileType) :
+			case Column::Channel2ProfileType:
 				return "Channel 2: Profile type";
 
-			case static_cast<std::int32_t>(Column::Channel3ProfileType) :
+			case Column::Channel3ProfileType:
 				return "Channel 3: Profile type";
 
-			case static_cast<std::int32_t>(Column::Channel1BandType) :
+			case Column::Channel1BandType:
 				return "Channel 1: Band type";
 
-			case static_cast<std::int32_t>(Column::Channel2BandType) :
+			case Column::Channel2BandType:
 				return "Channel 2: Band type";
 
-			case static_cast<std::int32_t>(Column::Channel3BandType) :
+			case Column::Channel3BandType:
 				return "Channel 3: Band type";
 
-			case static_cast<std::int32_t>(Column::Channel1ShowRange) :
+			case Column::Channel1ShowRange:
 				return "Channel 1: Show range";
 
-			case static_cast<std::int32_t>(Column::Channel2ShowRange) :
+			case Column::Channel2ShowRange:
 				return "Channel 2: Show range";
 
-			case static_cast<std::int32_t>(Column::Channel3ShowRange) :
+			case Column::Channel3ShowRange:
 				return "Channel 3: Show range";
-
-			case static_cast<std::int32_t>(Column::ChannelLocked) :
-			case static_cast<std::int32_t>(Column::ChannelLocked) + 1:
-			case static_cast<std::int32_t>(Column::ChannelLocked) + 2:
-				return QString("Channel %1: Show range").arg(QString::number(column));
 
 			default:
 				return QString();
 		}
+
+		if (column >= Column::ChannelLockedStart && column < Column::ChannelLockedStart)
+			return QString("Channel %1: Locked").arg(QString::number(column));
 
 		return QString();
 	}

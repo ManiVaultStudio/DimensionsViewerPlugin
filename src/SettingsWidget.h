@@ -4,9 +4,12 @@
 
 #include <memory>
 
-#include <QStackedWidget.h>
+#include <QWidget.h>
+#include <QVector.h>
 
 class DimensionsViewerPlugin;
+
+class QPushButton;
 
 namespace Ui {
 	class SettingsWidget;
@@ -35,4 +38,5 @@ signals:
 private:
 	DimensionsViewerPlugin*					_dimensionsViewerPlugin;
 	std::unique_ptr<Ui::SettingsWidget>		_ui;
+    QVector<QPushButton*>                   _lockedPushButtons;
 };

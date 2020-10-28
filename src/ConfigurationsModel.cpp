@@ -41,14 +41,14 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
 	return true;
 }
 
-bool ConfigurationsModel::setData(const Configuration::Column& column, const QVariant& value, int role /*= Qt::EditRole*/)
+bool ConfigurationsModel::setData(const std::int32_t& column, const QVariant& value, int role /*= Qt::EditRole*/)
 {
 	const auto selectedRows = _dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty())
 		return false;
 
-	setData(selectedRows.first().siblingAtColumn(static_cast<int>(column)), value, role);
+	setData(selectedRows.first().siblingAtColumn(column), value, role);
 
 	return true;
 }
