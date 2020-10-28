@@ -72,7 +72,7 @@ jobs:
           
       - name: Check common actions
         run: |
-          python -c "import glob; print(glob.glob('./github/common_actions/*'))" 
+          python -c "import glob; print(glob.glob('./.github/common_actions/*'))" 
       - name: Windows build
         if: startsWith(runner.os, 'Windows')
         uses: ./.github/actions/action-conan-windows-build
