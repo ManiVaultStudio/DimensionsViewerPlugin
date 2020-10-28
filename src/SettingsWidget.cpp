@@ -343,7 +343,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			datasetName->blockSignals(false);
 		}
 
-		if (column >= Configuration::Column::ChannelShowRangeStart&& column < Configuration::Column::ChannelShowRangeEnd) {
+		if (column >= Configuration::Column::ChannelShowRangeStart && column < Configuration::Column::ChannelShowRangeEnd) {
 			const auto channelIndex = index.column() - Configuration::Column::ChannelShowRangeStart;
 
 			auto showRange = _showRange[channelIndex];
