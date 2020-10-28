@@ -64,12 +64,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: hdps/common_actions
-          ref: refs/heads/master
           # GitHub's personal access token with read access to `hdps/common_actions`
           # Can be stored in organisation secrets
           token: ${{secrets.READONLY_TOKEN}}
           persist-credentials: false
-          path: ./github/common_actions
+          path: ./.github/common_actions
           
       - name: Check common actions
         run: |
