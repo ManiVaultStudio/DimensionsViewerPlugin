@@ -63,7 +63,7 @@ jobs:
       - name: Checkout hdps/common_actions
         uses: actions/checkout@v2
         with:
-          repository: ${{secrets.READONLY_USER}}/hdps/common_actions
+          repository: hdps/common_actions
           ref: refs/heads/master
           # GitHub's personal access token with read access to `hdps/common_actions`
           # Can be stored in organisation secrets
