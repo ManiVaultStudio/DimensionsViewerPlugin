@@ -6,13 +6,12 @@
 #include <QVariantMap>
 
 class Points;
-
 class DimensionsViewerPlugin;
 
 /**
  * Channel class
  *
- * Class for reading/writing channel visualization properties and for synchronization with the web view
+ * Class for reading/writing channel visualization properties and for synchronization with the JS Vega web view
  * 
  * @author T. Kroes
  */
@@ -111,15 +110,17 @@ protected: // Construction
 
 	/**
 	 * Constructor
+	 * @param parent Parent object
 	 * @param index Channel index
-	 * @param internalName Channel name for internal use
 	 * @param displayName Channel name in the user interface
 	 * @param enabled Whether the channel is enabled
 	 * @param datasetName The name of the channel dataset
 	 * @param dataName The data name of the channel
 	 * @param color The color of the channel
+	 * @param opacity Render opacity
+	 * @param lock Whether settings are locked
 	 */
-	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f);
+	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
 
 public: // Getters/setters
 
@@ -176,14 +177,14 @@ public: // Getters/setters
 	 */
 	void setColor(const QColor& color);
 
-	/** Returns the opacity */
+	/** Returns the render opacity */
 	float getOpacity() const {
 		return _opacity;
 	};
 
 	/**
-	 * Sets the opacity
-	 * @param opacity Opacity
+	 * Sets the render opacity
+	 * @param opacity Render opacity
 	 */
 	void setOpacity(const float& opacity);
 
@@ -216,9 +217,20 @@ public: // Getters/setters
 
 	/**
 	 * Sets whether to show the dimension range
-	 * @param showRange Profile type
+	 * @param showRange Whether to show the dimension range
 	 */
 	void setShowRange(const bool& showRange);
+
+	/** Returns whether settings are locked */
+	bool isLocked() const {
+		return _locked;
+	};
+
+	/**
+	 * Sets whether settings are locked
+	 * @param locked Whether settings are locked
+	 */
+	void setLocked(const bool& locked);
 
 	/** Returns the visualization specification */
 	QVariantMap getSpec() {
@@ -250,6 +262,7 @@ private:
 	ProfileType				_profileType;		/** The type of profile to visualize */
 	BandType				_bandType;			/** The type of band to visualize */
 	bool					_showRange;			/** Show the dimensions ranges */
+	bool					_locked;			/** Whether settings are locked (settings are linked to another channel) */
 	QVariantMap				_spec;				/** Specification for use in JS visualization client (Vega) */
 	Points*					_points;			/** Pointer to points dataset */
 

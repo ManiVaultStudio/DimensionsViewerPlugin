@@ -163,9 +163,9 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		configurationsModel.setData(Configuration::Column::Channel3ShowRange, state == Qt::Checked);
 	});
 
-	QObject::connect(_ui->globalSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
+	/*QObject::connect(_ui->globalSettingsPushButton, &QPushButton::toggled, [this, &configurationsModel](bool checked) {
 		configurationsModel.setData(Configuration::Column::GlobalSettings, checked);
-	});
+	});*/
 
 	updateData(QModelIndex(), QModelIndex());
 }
@@ -381,7 +381,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->channel3ShowRangeCheckBox->blockSignals(false);
 		}
 
-		if (column == static_cast<int>(Configuration::Column::GlobalSettings)) {
+		/*if (column == static_cast<int>(Configuration::Column::GlobalSettings)) {
 			const auto globalSettings = index.data(Qt::EditRole).toBool();
 
 			_ui->globalSettingsPushButton->blockSignals(true);
@@ -390,6 +390,6 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->globalSettingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(globalSettings ? "lock" : "unlock"));
 			_ui->globalSettingsPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->globalSettingsPushButton->blockSignals(false);
-		}
+		}*/
 	}
 }

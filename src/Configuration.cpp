@@ -6,12 +6,11 @@
 Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
 	QObject(parent),
 	_channels({ 
-		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.5f),
-		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.5f),
-		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.5f)
+		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.5f, false),
+		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.5f, true),
+		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.5f, true)
 	}),
 	_subsets(),
-	_globalSettings(true),
 	_settings()
 {
 	for (auto channel : _channels) {
@@ -25,9 +24,9 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
 	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
-	const auto channel1Enabled = _globalSettings && _channels[0]->isEnabled();
-	const auto channel2Enabled = !_globalSettings && _channels[1]->isEnabled() && _subsets.size() >= 1;
-	const auto channel3Enabled = !_globalSettings && _channels[2]->isEnabled() && _subsets.size() >= 2;
+	const auto channel1Enabled = _channels[0]->isEnabled();
+	const auto channel2Enabled = _channels[1]->isEnabled() && _subsets.size() >= 1;
+	const auto channel3Enabled = _channels[2]->isEnabled() && _subsets.size() >= 2;
 
 	switch (static_cast<Column>(index.column())) {
 		case Column::Channel1Enabled: {
@@ -175,13 +174,6 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 			break;
 		}
 
-		case Column::GlobalSettings: {
-			if (!_subsets.isEmpty())
-				flags |= Qt::ItemIsEnabled;
-
-			break;
-		}
-		
 		default:
 			break;
 	}
@@ -266,9 +258,6 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 		case Column::Channel3ShowRange:
 			return getChannelShowRange(2, role);
-
-		case Column::GlobalSettings:
-			return getGlobalSettings(role);
 
 		default:
 			break;
@@ -372,7 +361,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 							break;
 					}
 
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::GlobalSettings));
+					//affectedIndices << index.siblingAtColumn(static_cast<int>(Column::GlobalSettings));
 
 					break;
 				}
@@ -427,13 +416,13 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 					setChannelProfileType(0, profileType);
 
-					if (_globalSettings) {
+					/*if (_globalSettings) {
 						setChannelProfileType(1, profileType);
 						setChannelProfileType(2, profileType);
 
 						affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
 						affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
-					}
+					}*/
 
 					break;
 				}
@@ -453,13 +442,13 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 					setChannelBandType(0, bandType);
 
-					if (_globalSettings) {
+					/*if (_globalSettings) {
 						setChannelBandType(1, bandType);
 						setChannelBandType(2, bandType);
 
 						affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
 						affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
-					}
+					}*/
 
 					break;
 				}
@@ -479,13 +468,13 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 					setChannelShowRange(0, showRange);
 
-					if (_globalSettings) {
+					/*if (_globalSettings) {
 						setChannelShowRange(1, showRange);
 						setChannelShowRange(2, showRange);
 
 						affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ShowRange));
 						affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ShowRange));
-					}
+					}*/
 
 					break;
 				}
@@ -500,7 +489,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 					break;
 				}
 
-				case Column::GlobalSettings: {
+				/*case Column::GlobalSettings: {
 					setGlobalSettings(value.toBool());
 					setChannelProfileType(1, _channels.first()->getProfileType());
 					setChannelProfileType(2, _channels.first()->getProfileType());
@@ -516,7 +505,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
 					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ShowRange));
 					break;
-				}
+				}*/
 
 				default:
 					break;
@@ -875,33 +864,6 @@ void Configuration::setChannelShowRange(const std::int32_t& channelIndex, const 
 	{
 		qDebug() << exception.what();
 	}
-}
-
-QVariant Configuration::getGlobalSettings(const std::int32_t& role) const
-{
-	const auto globalSettingsString = _globalSettings ? "on" : "off";
-
-	switch (role)
-	{
-		case Qt::DisplayRole:
-			return globalSettingsString;
-
-		case Qt::EditRole:
-			return _globalSettings;
-
-		case Qt::ToolTipRole:
-			return QString("Global settings are %1").arg(globalSettingsString);
-
-		default:
-			return QVariant();
-	}
-
-	return QVariant();
-}
-
-void Configuration::setGlobalSettings(const bool& globalSettings)
-{
-	_globalSettings = globalSettings;
 }
 
 Configuration::Channels& Configuration::getChannels()

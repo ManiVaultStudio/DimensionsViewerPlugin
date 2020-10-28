@@ -67,7 +67,7 @@ QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientatio
 				break;
 
 			case Qt::DisplayRole:
-				return Configuration::getColumnName(static_cast<Configuration::Column>(section));
+				return Configuration::getColumnName(section);
 
 			case Qt::ToolTipRole:
 				break;

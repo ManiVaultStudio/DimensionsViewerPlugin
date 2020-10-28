@@ -10,7 +10,7 @@
 
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
-Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
+Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/, const bool& lock /*= false*/) :
 	QObject(parent),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
@@ -23,6 +23,7 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_profileType(ProfileType::Mean),
 	_bandType(BandType::StandardDeviation1),
 	_showRange(false),
+	_locked(lock),
 	_spec(),
 	_points(nullptr)
 {
@@ -104,6 +105,14 @@ void Channel::setShowRange(const bool& showRange)
 	_showRange = showRange;
 
 	updateSpec();
+}
+
+void Channel::setLocked(const bool& locked)
+{
+	if (locked == _locked)
+		return;
+
+	_locked = locked;
 }
 
 bool Channel::isSubset() const

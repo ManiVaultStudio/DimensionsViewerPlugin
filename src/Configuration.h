@@ -43,92 +43,94 @@ public: // Columns
 		Channel1ShowRange,				/** Whether to show the dimension range for the first channel*/
 		Channel2ShowRange,				/** Whether to show the dimension range for the first channel*/
 		Channel3ShowRange,				/** Whether to show the dimension range for the first channel*/
-		GlobalSettings,					/** Whether settings of the first channel are global settings */
+		ChannelLocked,				    /** Whether settings are locked for channel x */
+		End = ChannelLocked + 3,		/** Column end */
 		
 		Start = Channel1Enabled,		/** Column start */
-		End = GlobalSettings			/** Column End */
 	};
 
 	/** Get string representation of layer column enumeration */
-	static QString getColumnName(const Column& column) {
+	static QString getColumnName(const std::int32_t& column) {
 		switch (column) {
-			case Column::Channel1Enabled:
+			case static_cast<std::int32_t>(Column::Channel1Enabled):
 				return "Channel 1: Enabled";
 
-			case Column::Channel2Enabled:
+			case static_cast<std::int32_t>(Column::Channel2Enabled):
 				return "Channel 2: Enabled";
 
-			case Column::Channel3Enabled:
+			case static_cast<std::int32_t>(Column::Channel3Enabled):
 				return "Channel 3: Enabled";
 
-			case Column::Subsets:
+			case static_cast<std::int32_t>(Column::Subsets):
 				return "Subsets";
 
-			case Column::Channel1DatasetName:
+			case static_cast<std::int32_t>(Column::Channel1DatasetName):
 				return "Channel 1: Dataset name";
 
-			case Column::Channel2DatasetName:
+			case static_cast<std::int32_t>(Column::Channel2DatasetName) :
 				return "Channel 2: Dataset name";
 
-			case Column::Channel3DatasetName:
+			case static_cast<std::int32_t>(Column::Channel3DatasetName) :
 				return "Channel 3: Dataset name";
 
-			case Column::Channel1DataName:
+			case static_cast<std::int32_t>(Column::Channel1DataName) :
 				return "Channel 1: Data name";
 
-			case Column::Channel2DataName:
+			case static_cast<std::int32_t>(Column::Channel2DataName) :
 				return "Channel 2: Data name";
 
-			case Column::Channel3DataName:
+			case static_cast<std::int32_t>(Column::Channel3DataName) :
 				return "Channel 3: Data name";
 
-			case Column::Channel1Color:
+			case static_cast<std::int32_t>(Column::Channel1Color) :
 				return "Channel 1: Color";
 
-			case Column::Channel2Color:
+			case static_cast<std::int32_t>(Column::Channel2Color) :
 				return "Channel 2: Color";
 
-			case Column::Channel3Color:
+			case static_cast<std::int32_t>(Column::Channel3Color) :
 				return "Channel 3: Color";
 
-			case Column::Channel1Opacity:
+			case static_cast<std::int32_t>(Column::Channel1Opacity) :
 				return "Channel 1: Opacity";
 
-			case Column::Channel2Opacity:
+			case static_cast<std::int32_t>(Column::Channel2Opacity) :
 				return "Channel 2: Opacity";
 
-			case Column::Channel3Opacity:
+			case static_cast<std::int32_t>(Column::Channel3Opacity) :
 				return "Channel 3: Opacity";
 
-			case Column::Channel1ProfileType:
+			case static_cast<std::int32_t>(Column::Channel1ProfileType) :
 				return "Channel 1: Profile type";
 
-			case Column::Channel2ProfileType:
+			case static_cast<std::int32_t>(Column::Channel2ProfileType) :
 				return "Channel 2: Profile type";
 
-			case Column::Channel3ProfileType:
+			case static_cast<std::int32_t>(Column::Channel3ProfileType) :
 				return "Channel 3: Profile type";
 
-			case Column::Channel1BandType:
+			case static_cast<std::int32_t>(Column::Channel1BandType) :
 				return "Channel 1: Band type";
 
-			case Column::Channel2BandType:
+			case static_cast<std::int32_t>(Column::Channel2BandType) :
 				return "Channel 2: Band type";
 
-			case Column::Channel3BandType:
+			case static_cast<std::int32_t>(Column::Channel3BandType) :
 				return "Channel 3: Band type";
 
-			case Column::Channel1ShowRange:
+			case static_cast<std::int32_t>(Column::Channel1ShowRange) :
 				return "Channel 1: Show range";
 
-			case Column::Channel2ShowRange:
+			case static_cast<std::int32_t>(Column::Channel2ShowRange) :
 				return "Channel 2: Show range";
 
-			case Column::Channel3ShowRange:
+			case static_cast<std::int32_t>(Column::Channel3ShowRange) :
 				return "Channel 3: Show range";
 
-			case Column::GlobalSettings:
-				return "Global settings";
+			case static_cast<std::int32_t>(Column::ChannelLocked) :
+			case static_cast<std::int32_t>(Column::ChannelLocked) + 1:
+			case static_cast<std::int32_t>(Column::ChannelLocked) + 2:
+				return QString("Channel %1: Show range").arg(QString::number(column));
 
 			default:
 				return QString();
@@ -304,19 +306,6 @@ public: // Getters/setters
 	 */
 	void setChannelShowRange(const std::int32_t& channelIndex, const bool& showRange);
 
-	/**
-	 * Returns whether the settings of the first channel are global or not
-	 * @param role Data role
-	 * @return Whether settings of the first channel are global or not in variant form
-	 */
-	QVariant getGlobalSettings(const std::int32_t& role) const;
-
-	/**
-	 * Sets whether the settings of the first channel are global or not
-	 * @param globalSettings Whether the settings of the first channel are global or not
-	 */
-	void setGlobalSettings(const bool& globalSettings);
-
 public: // Miscellaneous
 
 	/** Get configuration channels */
@@ -360,6 +349,5 @@ signals:
 private:
 	Channels		_channels;				/** Channels */
 	QStringList		_subsets;				/** Subsets of the primary dataset (selected in the first channel) */
-	bool			_globalSettings;		/** Whether the range settings of the first channel determine the subsequent channel range settings */
 	QVariantMap		_settings;				/** Settings for JS */
 };
