@@ -29,26 +29,6 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 	const auto channel3Enabled = _channels[2]->isEnabled() && _subsets.size() >= 2;
 
 	switch (index.column()) {
-		case Column::Channel1Enabled: {
-			flags |= Qt::ItemIsEnabled;
-			
-			break;
-		}
-
-		case Column::Channel2Enabled: {
-			if (_subsets.size() >= 1)
-				flags |= Qt::ItemIsEnabled;
-
-			break;
-		}
-
-		case Column::Channel3Enabled: {
-			if (_subsets.size() >= 2)
-				flags |= Qt::ItemIsEnabled;
-
-			break;
-		}
-
 		case Column::Channel1DatasetName: {
 			flags |= Qt::ItemIsEnabled;
 
@@ -157,6 +137,18 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 			break;
 	}
 
+	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
+		const auto channelIndex = index.column() - Column::ChannelEnabledStart;
+
+		if (channelIndex == 0) {
+			flags |= Qt::ItemIsEnabled;
+		}
+		else {
+			if (_subsets.size() >= channelIndex)
+				flags |= Qt::ItemIsEnabled;
+		}
+	}
+
 	if (index.column() >= Column::ChannelShowRangeStart && index.column() < Column::ChannelShowRangeEnd) {
 		const auto channelIndex = index.column() - Column::ChannelShowRangeStart;
 
@@ -184,15 +176,6 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 {
 	switch (static_cast<Column>(index.column())) {
-		case Column::Channel1Enabled:
-			return getChannelEnabled(0, role);
-
-		case Column::Channel2Enabled:
-			return getChannelEnabled(1, role);
-
-		case Column::Channel3Enabled:
-			return getChannelEnabled(2, role);
-		
 		case Column::Subsets:
 			return getSubsets(role);
 
@@ -254,6 +237,9 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 			break;
 	}
 
+	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd)
+		return getChannelEnabled(index.column() - Column::ChannelEnabledStart, role);
+
 	if (index.column() >= Column::ChannelShowRangeStart && index.column() < Column::ChannelShowRangeEnd)
 		return getChannelShowRange(index.column() - Column::ChannelShowRangeStart, role);
 
@@ -274,46 +260,6 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		case Qt::EditRole:
 		{
 			switch (column) {
-				case Column::Channel1Enabled: {
-					setChannelEnabled(0, value.toBool());
-
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1DatasetName));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1Color));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1Opacity));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1ProfileType));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1BandType));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelLockedStart));
-					break;
-				}
-
-				case Column::Channel2Enabled: {
-					setChannelEnabled(1, value.toBool());
-
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1ProfileType));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1BandType));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Opacity));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
-					break;
-				}
-
-				case Column::Channel3Enabled: {
-					setChannelEnabled(2, value.toBool());
-					
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1ProfileType));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1BandType));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3DatasetName));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Color));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Opacity));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
-					break;
-				}
-
 				case Column::Subsets: {
 					setSubsets(value.toStringList());
 
@@ -323,12 +269,12 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 							setChannelDatasetName(1, _subsets[0]);
 							setChannelEnabled(1, true);
 
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Enabled));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Opacity));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
+							affectedIndices << index.siblingAtColumn(Column::ChannelEnabledStart + 1);
+							affectedIndices << index.siblingAtColumn(Column::Channel2DatasetName);
+							affectedIndices << index.siblingAtColumn(Column::Channel2Color);
+							affectedIndices << index.siblingAtColumn(Column::Channel2Opacity);
+							affectedIndices << index.siblingAtColumn(Column::Channel2ProfileType);
+							affectedIndices << index.siblingAtColumn(Column::Channel2BandType);
 							break;
 						}
 
@@ -339,18 +285,20 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 							setChannelEnabled(1, true);
 							setChannelEnabled(2, true);
 
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Enabled));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2DatasetName));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Color));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2Opacity));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2ProfileType));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel2BandType));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Enabled));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3DatasetName));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Color));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3Opacity));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3ProfileType));
-							affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel3BandType));
+							affectedIndices << index.siblingAtColumn(Column::ChannelEnabledStart);
+							
+							affectedIndices << index.siblingAtColumn(Column::Channel2DatasetName);
+							affectedIndices << index.siblingAtColumn(Column::Channel2Color);
+							affectedIndices << index.siblingAtColumn(Column::Channel2Opacity);
+							affectedIndices << index.siblingAtColumn(Column::Channel2ProfileType);
+							affectedIndices << index.siblingAtColumn(Column::Channel2BandType);
+							
+							affectedIndices << index.siblingAtColumn(Column::Channel3DatasetName);
+							affectedIndices << index.siblingAtColumn(Column::Channel3Color);
+							affectedIndices << index.siblingAtColumn(Column::Channel3Opacity);
+							affectedIndices << index.siblingAtColumn(Column::Channel3ProfileType);
+							affectedIndices << index.siblingAtColumn(Column::Channel3BandType);
+
 							break;
 						}
 
@@ -469,6 +417,19 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 		default:
 			break;
+	}
+
+	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
+		const auto channelIndex = index.column() - Column::ChannelShowRangeStart;
+
+		setChannelEnabled(channelIndex, value.toBool());
+
+		//affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1DatasetName));
+		//affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1Color));
+		//affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1Opacity));
+		//affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1ProfileType));
+		//affectedIndices << index.siblingAtColumn(static_cast<int>(Column::Channel1BandType));
+		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelLockedStart + channelIndex));
 	}
 
 	if (index.column() >= Column::ChannelShowRangeStart && index.column() < Column::ChannelShowRangeEnd) {

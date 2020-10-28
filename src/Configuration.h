@@ -20,9 +20,8 @@ public: // Columns
 
 	/** Data columns */
 	enum Column {
-		Channel1Enabled,				                                /** Whether the first subset is enabled */
-		Channel2Enabled,				                                /** Whether the second subset is enabled */
-		Channel3Enabled,				                                /** Whether the second subset is enabled */
+		ChannelEnabledStart,				                            /** Channel enabled for the first channel */
+		ChannelEnabledEnd = ChannelEnabledStart + noChannels,           /** Channel enabled for the last channel */
 		Subsets,						                                /** The subset(s) of the first dataset */
 		Channel1DatasetName,			                                /** The dataset name of the first channel */
 		Channel2DatasetName,			                                /** The dataset name of the second channel */
@@ -47,22 +46,13 @@ public: // Columns
 		ChannelLockedStart,                                             /** Channel locked for the first channel */
 		ChannelLockedEnd = ChannelLockedStart + noChannels,		        /** Channel locked for the last channel */
 		
-		Start = Channel1Enabled,		                                /** Column start */
+		Start = ChannelEnabledStart,                                    /** Column start */
 		End = ChannelLockedEnd                                          /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
 	static QString getColumnName(const std::int32_t& column) {
 		switch (column) {
-			case Column::Channel1Enabled:
-				return "Channel 1: Enabled";
-
-			case Column::Channel2Enabled:
-				return "Channel 2: Enabled";
-
-			case Column::Channel3Enabled:
-				return "Channel 3: Enabled";
-
 			case Column::Subsets:
 				return "Subsets";
 
@@ -123,6 +113,9 @@ public: // Columns
 			default:
 				return QString();
 		}
+
+		if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
+			return QString("Channel %1: Enabled").arg(QString::number(column));
 
 		if (column >= Column::ChannelShowRangeStart && column < Column::ChannelShowRangeEnd)
 			return QString("Channel %1: Show range").arg(QString::number(column));

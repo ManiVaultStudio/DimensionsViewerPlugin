@@ -16,6 +16,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 {
 	_ui->setupUi(this);
 
+	_enabled << _ui->channel1EnabledCheckBox<< _ui->channel2EnabledCheckBox << _ui->channel3EnabledCheckBox;
 	_locked << _ui->channel1LockedPushButton << _ui->channel2LockedPushButton << _ui->channel3LockedPushButton;
 	_showRange << _ui->channel1ShowRangeCheckBox<< _ui->channel2ShowRangeCheckBox << _ui->channel3ShowRangeCheckBox;
 
@@ -78,6 +79,12 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
 	QFont font = QFont("Font Awesome 5 Free Solid", 8);
 
+	for (auto enabled : _enabled) {
+		QObject::connect(enabled, &QCheckBox::stateChanged, [this, &configurationsModel, enabled](int state) {
+			configurationsModel.setData(Configuration::Column::ChannelEnabledStart + _enabled.indexOf(enabled), state == Qt::Checked);
+		});
+	}
+
 	QObject::connect(_ui->channel1DatasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
 		configurationsModel.selectRow(currentIndex);
 	});
@@ -90,17 +97,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		configurationsModel.setData(Configuration::Column::Channel3DatasetName, currentText);
 	});
 
-	QObject::connect(_ui->channel1EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		configurationsModel.setData(Configuration::Column::Channel1Enabled, state == Qt::Checked);
-	});
-
-	QObject::connect(_ui->channel2EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		configurationsModel.setData(Configuration::Column::Channel2Enabled, state == Qt::Checked);
-	});
-
-	QObject::connect(_ui->channel3EnabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-		configurationsModel.setData(Configuration::Column::Channel3Enabled, state == Qt::Checked);
-	});
+	
 
 	QObject::connect(_ui->channel1ColorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
 		configurationsModel.setData(Configuration::Column::Channel1Color, color);
@@ -160,6 +157,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		locked->setFont(font);
 		locked->setStyleSheet("text-align: center");
 		locked->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("lock"));
+		locked->setVisible(_locked.indexOf(locked) > 0);
 
 		QObject::connect(locked, &QPushButton::toggled, [this, &configurationsModel, locked](bool checked) {
 			configurationsModel.setData(Configuration::Column::ChannelLockedStart + _locked.indexOf(locked), checked);
@@ -175,9 +173,12 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 
 	if (selectedRows.isEmpty()) {
 		_ui->settingsGroupBox->setEnabled(false);
-		_ui->channel1EnabledCheckBox->setChecked(false);
-		_ui->channel2EnabledCheckBox->setChecked(false);
-		_ui->channel3EnabledCheckBox->setChecked(false);
+
+		for (auto enabled : _enabled) {
+			enabled->setEnabled(false);
+			enabled->setChecked(false);
+		}
+
 		_ui->channel1DatasetNameComboBox->setCurrentIndex(-1);
 		_ui->channel2DatasetNameComboBox->setCurrentIndex(-1);
 		_ui->channel3DatasetNameComboBox->setCurrentIndex(-1);
@@ -209,28 +210,16 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
 
-		if (column == static_cast<int>(Configuration::Column::Channel1Enabled)) {
-			_ui->channel1EnabledCheckBox->blockSignals(true);
-			_ui->channel1EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel1EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			_ui->channel1EnabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			_ui->channel1EnabledCheckBox->blockSignals(false);
-		}
+		if (column >= Configuration::Column::ChannelEnabledStart&& column < Configuration::Column::ChannelEnabledEnd) {
+			const auto channelIndex = index.column() - Configuration::Column::ChannelEnabledStart;
 
-		if (column == static_cast<int>(Configuration::Column::Channel2Enabled)) {
-			_ui->channel2EnabledCheckBox->blockSignals(true);
-			_ui->channel2EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel2EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			_ui->channel2EnabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			_ui->channel2EnabledCheckBox->blockSignals(false);
-		}
+			auto enabled = _enabled[channelIndex];
 
-		if (column == static_cast<int>(Configuration::Column::Channel3Enabled)) {
-			_ui->channel3EnabledCheckBox->blockSignals(true);
-			_ui->channel3EnabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			_ui->channel3EnabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			_ui->channel3EnabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			_ui->channel3EnabledCheckBox->blockSignals(false);
+			enabled->blockSignals(true);
+			enabled->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			enabled->setChecked(index.data(Qt::EditRole).toBool());
+			enabled->setToolTip(index.data(Qt::ToolTipRole).toString());
+			enabled->blockSignals(false);
 		}
 
 		if (column == static_cast<int>(Configuration::Column::Subsets)) {

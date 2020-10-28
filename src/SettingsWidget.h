@@ -39,6 +39,7 @@ signals:
 private:
 	DimensionsViewerPlugin*					_dimensionsViewerPlugin;
 	std::unique_ptr<Ui::SettingsWidget>		_ui;
+    QVector<QCheckBox*>                     _enabled;
     QVector<QCheckBox*>                     _showRange;
     QVector<QPushButton*>                   _locked;
 };
