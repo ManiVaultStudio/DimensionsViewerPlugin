@@ -10,6 +10,7 @@
 class DimensionsViewerPlugin;
 
 class QCheckBox;
+class QComboBox;
 class QPushButton;
 
 namespace Ui {
@@ -40,6 +41,7 @@ private:
 	DimensionsViewerPlugin*					_dimensionsViewerPlugin;
 	std::unique_ptr<Ui::SettingsWidget>		_ui;
     QVector<QCheckBox*>                     _enabled;
+    QVector<QComboBox*>                     _datasetName;
     QVector<QCheckBox*>                     _showRange;
     QVector<QPushButton*>                   _locked;
 };

@@ -20,34 +20,33 @@ public: // Columns
 
 	/** Data columns */
 	enum Column {
-		ChannelEnabledStart,				                            /** Channel enabled for the first channel */
-		ChannelEnabledEnd = ChannelEnabledStart + noChannels,           /** Channel enabled for the last channel */
-		Subsets,						                                /** The subset(s) of the first dataset */
-		Channel1DatasetName,			                                /** The dataset name of the first channel */
-		Channel2DatasetName,			                                /** The dataset name of the second channel */
-		Channel3DatasetName,			                                /** The dataset name of the third channel */
-		Channel1DataName,				                                /** The data name of the first channel */
-		Channel2DataName,				                                /** The data name of the second channel */
-		Channel3DataName,				                                /** The data name of the third channel */
-		Channel1Color,					                                /** Color of the first channel */
-		Channel2Color,					                                /** Color of the second channel */
-		Channel3Color,					                                /** Color of the third channel */
-		Channel1Opacity,				                                /** Opacity of the first channel */
-		Channel2Opacity,				                                /** Opacity of the second channel */
-		Channel3Opacity,				                                /** Opacity of the third channel */
-		Channel1ProfileType,			                                /** The profile type of the first channel */
-		Channel2ProfileType,			                                /** The profile type of the second channel */
-		Channel3ProfileType,			                                /** The profile type of the third channel */
-		Channel1BandType,				                                /** The band type of the first channel */
-		Channel2BandType,				                                /** The band type of the second channel */
-		Channel3BandType,				                                /** The band type of the third channel */
-		ChannelShowRangeStart,				                            /** Channel show range for the first channel */
-		ChannelShowRangeEnd = ChannelShowRangeStart + noChannels,       /** Channel show range for the last channel */
-		ChannelLockedStart,                                             /** Channel locked for the first channel */
-		ChannelLockedEnd = ChannelLockedStart + noChannels,		        /** Channel locked for the last channel */
+		ChannelEnabledStart,				                                /** Channel enabled for the first channel */
+		ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled for the last channel */
+		Subsets,						                                    /** The subset(s) of the first dataset */
+		ChannelDatasetNameStart,			                                /** Channel dataset name for the first channel */
+		ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name for the last channel */
+		Channel1DataName,				                                    /** The data name of the first channel */
+		Channel2DataName,				                                    /** The data name of the second channel */
+		Channel3DataName,				                                    /** The data name of the third channel */
+		Channel1Color,					                                    /** Color of the first channel */
+		Channel2Color,					                                    /** Color of the second channel */
+		Channel3Color,					                                    /** Color of the third channel */
+		Channel1Opacity,				                                    /** Opacity of the first channel */
+		Channel2Opacity,				                                    /** Opacity of the second channel */
+		Channel3Opacity,				                                    /** Opacity of the third channel */
+		Channel1ProfileType,			                                    /** The profile type of the first channel */
+		Channel2ProfileType,			                                    /** The profile type of the second channel */
+		Channel3ProfileType,			                                    /** The profile type of the third channel */
+		Channel1BandType,				                                    /** The band type of the first channel */
+		Channel2BandType,				                                    /** The band type of the second channel */
+		Channel3BandType,				                                    /** The band type of the third channel */
+		ChannelShowRangeStart,				                                /** Channel show range for the first channel */
+		ChannelShowRangeEnd = ChannelShowRangeStart + noChannels,           /** Channel show range for the last channel */
+		ChannelLockedStart,                                                 /** Channel locked for the first channel */
+		ChannelLockedEnd = ChannelLockedStart + noChannels,		            /** Channel locked for the last channel */
 		
-		Start = ChannelEnabledStart,                                    /** Column start */
-		End = ChannelLockedEnd                                          /** Column end */
+		Start = ChannelEnabledStart,                                        /** Column start */
+		End = ChannelLockedEnd                                              /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
@@ -55,15 +54,6 @@ public: // Columns
 		switch (column) {
 			case Column::Subsets:
 				return "Subsets";
-
-			case Column::Channel1DatasetName:
-				return "Channel 1: Dataset name";
-
-			case Column::Channel2DatasetName:
-				return "Channel 2: Dataset name";
-
-			case Column::Channel3DatasetName:
-				return "Channel 3: Dataset name";
 
 			case Column::Channel1DataName:
 				return "Channel 1: Data name";
@@ -113,6 +103,9 @@ public: // Columns
 			default:
 				return QString();
 		}
+
+		if (column >= Column::ChannelDatasetNameStart && column < Column::ChannelDatasetNameEnd)
+			return QString("Channel %1: Dataset name").arg(QString::number(column));
 
 		if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
 			return QString("Channel %1: Enabled").arg(QString::number(column));
