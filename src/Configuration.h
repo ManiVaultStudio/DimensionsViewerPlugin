@@ -6,6 +6,13 @@
 #include <QColor>
 #include <QModelIndex>
 
+/**
+ * Configuration class
+ *
+ * Provides an interface for multiple data channels
+ *
+ * @author T. Kroes
+ */
 class Configuration : public QObject
 {
 	Q_OBJECT
@@ -14,85 +21,53 @@ public:
 
 	using Channels = QVector<Channel*>;
 
+    /** The number of channels in the configuration */
 	static const std::int32_t noChannels = 3;
 
 public: // Columns
 
 	/** Data columns */
 	enum Column {
-		ChannelEnabledStart,				                                /** Channel enabled for the first channel */
-		ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled for the last channel */
-		Subsets,						                                    /** The subset(s) of the first dataset */
-		ChannelDatasetNameStart,			                                /** Channel dataset name for the first channel */
-		ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name for the last channel */
-		ChannelDataNameStart,				                                /** Channel data name for the first channel */
-		ChannelDataNameEnd = ChannelDataNameStart + noChannels,             /** Channel data name for the last channel */
-		Channel1Color,					                                    /** Color of the first channel */
-		Channel2Color,					                                    /** Color of the second channel */
-		Channel3Color,					                                    /** Color of the third channel */
-		Channel1Opacity,				                                    /** Opacity of the first channel */
-		Channel2Opacity,				                                    /** Opacity of the second channel */
-		Channel3Opacity,				                                    /** Opacity of the third channel */
-		Channel1ProfileType,			                                    /** The profile type of the first channel */
-		Channel2ProfileType,			                                    /** The profile type of the second channel */
-		Channel3ProfileType,			                                    /** The profile type of the third channel */
-		Channel1BandType,				                                    /** The band type of the first channel */
-		Channel2BandType,				                                    /** The band type of the second channel */
-		Channel3BandType,				                                    /** The band type of the third channel */
-		ChannelShowRangeStart,				                                /** Channel show range for the first channel */
-		ChannelShowRangeEnd = ChannelShowRangeStart + noChannels,           /** Channel show range for the last channel */
-		ChannelLockedStart,                                                 /** Channel locked for the first channel */
-		ChannelLockedEnd = ChannelLockedStart + noChannels,		            /** Channel locked for the last channel */
+		Subsets,						                                    /** The subset(s) parameter of the first dataset */
+		ChannelEnabledStart,				                                /** Channel enabled parameter of the first channel */
+		ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled parameter of the last channel */
+		ChannelDatasetNameStart,			                                /** Channel dataset name parameter of the first channel */
+		ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name parameter of the last channel */
+		ChannelDataNameStart,				                                /** Channel data name parameter of the first channel */
+		ChannelDataNameEnd = ChannelDataNameStart + noChannels,             /** Channel data name parameter of the last channel */
+		ChannelColorStart,					                                /** Channel color parameter of the first channel */
+		ChannelColorEnd = ChannelColorStart + noChannels,                   /** Channel color parameter of the last channel */
+		ChannelOpacityStart,				                                /** Channel opacity parameter of the first channel */
+		ChannelOpacityEnd = ChannelOpacityStart + noChannels,               /** Channel opacity parameter of the first channel */
+		ChannelProfileTypeStart,			                                /** Channel profile type parameter of the first channel */
+		ChannelProfileTypeEnd = ChannelProfileTypeStart + noChannels,       /** Channel profile type parameter of the second channel */
+		ChannelBandTypeStart,				                                /** Channel band type parameter of the first channel */
+		ChannelBandTypeEnd = ChannelBandTypeStart + noChannels,             /** Channel band type parameter of the second channel */
+		ChannelShowRangeStart,				                                /** Channel show range parameter of the first channel */
+		ChannelShowRangeEnd = ChannelShowRangeStart + noChannels,           /** Channel show range parameter of the last channel */
+		ChannelLockedStart,                                                 /** Channel locked parameter of the first channel */
+		ChannelLockedEnd = ChannelLockedStart + noChannels,		            /** Channel locked parameter of the last channel */
 		
-		Start = ChannelEnabledStart,                                        /** Column start */
+		Start = Subsets,                                                    /** Column start */
 		End = ChannelLockedEnd                                              /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
 	static QString getColumnName(const std::int32_t& column) {
-		switch (column) {
-			case Column::Subsets:
-				return "Subsets";
+		if (column == Column::Subsets)
+			return "Subsets";
 
-			case Column::Channel1Color:
-				return "Channel 1: Color";
+		if (column >= Column::ChannelColorStart && column < Column::ChannelColorEnd)
+			return QString("Channel %1: Color").arg(QString::number(column));
 
-			case Column::Channel2Color:
-				return "Channel 2: Color";
+		if (column >= Column::ChannelOpacityStart && column < Column::ChannelOpacityEnd)
+			return QString("Channel %1: Opacity").arg(QString::number(column));
 
-			case Column::Channel3Color:
-				return "Channel 3: Color";
+		if (column >= Column::ChannelProfileTypeStart && column < Column::ChannelProfileTypeEnd)
+			return QString("Channel %1: Profile type").arg(QString::number(column));
 
-			case Column::Channel1Opacity:
-				return "Channel 1: Opacity";
-
-			case Column::Channel2Opacity:
-				return "Channel 2: Opacity";
-
-			case Column::Channel3Opacity:
-				return "Channel 3: Opacity";
-
-			case Column::Channel1ProfileType:
-				return "Channel 1: Profile type";
-
-			case Column::Channel2ProfileType:
-				return "Channel 2: Profile type";
-
-			case Column::Channel3ProfileType:
-				return "Channel 3: Profile type";
-
-			case Column::Channel1BandType:
-				return "Channel 1: Band type";
-
-			case Column::Channel2BandType:
-				return "Channel 2: Band type";
-
-			case Column::Channel3BandType:
-				return "Channel 3: Band type";
-
-			default:
-				return QString();
-		}
+		if (column >= Column::ChannelBandTypeStart && column < Column::ChannelBandTypeEnd)
+			return QString("Channel %1: Band type").arg(QString::number(column));
 
 		if (column >= Column::ChannelDataNameStart && column < Column::ChannelDataNameEnd)
 			return QString("Channel %1: Data name").arg(QString::number(column));

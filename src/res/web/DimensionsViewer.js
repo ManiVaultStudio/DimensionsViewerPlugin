@@ -129,6 +129,12 @@ function getDesign(configuration) {
         "title": {
             "text": []
         },
+        "config": {
+            "axis": {
+                "grid": true,
+                "gridColor": "#dedede"
+            }
+        },
         "padding": 10,
         "autosize":
         {

@@ -8,21 +8,35 @@
 #include <QVector.h>
 
 class DimensionsViewerPlugin;
+class ColorPickerPushButton;
 
 class QCheckBox;
 class QComboBox;
 class QPushButton;
+class QSlider;
 
 namespace Ui {
 	class SettingsWidget;
 }
 
+/**
+ * Settings widget class
+ *
+ * UI widget class for interfacing with dataset configurations
+ *
+ * @author T. Kroes
+ */
 class SettingsWidget : public QWidget
 {
 	Q_OBJECT
 
-public:
-	SettingsWidget(DimensionsViewerPlugin* histogramViewerPlugin);
+public: // Construction
+
+    /**
+     * Constructor
+     * @param dimensionsViewerPlugin Pointer to an instance of the dimensions viewer plugin
+     */
+	SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
 public:
 
@@ -34,14 +48,15 @@ public:
 	 */
 	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>());
 
-signals:
-	void datasetChanged(const QString& dataset);
-
 private:
-	DimensionsViewerPlugin*					_dimensionsViewerPlugin;
-	std::unique_ptr<Ui::SettingsWidget>		_ui;
-    QVector<QCheckBox*>                     _enabled;
-    QVector<QComboBox*>                     _datasetName;
-    QVector<QCheckBox*>                     _showRange;
-    QVector<QPushButton*>                   _locked;
+	DimensionsViewerPlugin*					_dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
+	std::unique_ptr<Ui::SettingsWidget>		_ui;                            /** UI from creator */
+    QVector<QCheckBox*>                     _enabledCheckBoxes;             /** Enabled check boxes */
+    QVector<QComboBox*>                     _datasetNameComboBoxes;         /** Dataset name combo boxes */
+    QVector<ColorPickerPushButton*>         _colorPushButtons;              /** Color push buttons */
+    QVector<QSlider*>                       _opacitySliders;                /** Opacity sliders */
+    QVector<QComboBox*>                     _profileTypeComboBoxes;         /** Color push buttons */
+    QVector<QComboBox*>                     _bandTypeComboBoxes;            /** Profile type combo boxes */
+    QVector<QCheckBox*>                     _showRangeCheckBoxes;           /** Band type combo boxes */
+    QVector<QPushButton*>                   _lockedPushButtons;             /** Locked push buttons */
 };
