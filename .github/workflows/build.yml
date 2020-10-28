@@ -75,7 +75,7 @@ jobs:
           python -c "import glob; print(glob.glob('./.github/common_actions/*'))" 
       - name: Windows build
         if: startsWith(runner.os, 'Windows')
-        uses: ./.github/actions/action-conan-windows-build
+        uses: ./.github/common_actions/conan_windows_build
         with:
           conan-package: DimensionsViewerPlugin
           conan-reference: DimensionsViewerPlugin/latest@lkeb/stable
@@ -88,7 +88,7 @@ jobs:
             
       - name: Linux Mac build
         if: "!startsWith(runner.os, 'Windows')"
-        uses: ./.github/actions/action-conan-linux-build
+        uses: ./.github/common_actions/conan_linux_build
         with:
           conan-package: DimensionsViewerPlugin
           conan-reference: DimensionsViewerPlugin/latest@lkeb/stable
