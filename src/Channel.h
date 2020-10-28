@@ -69,13 +69,13 @@ public: // Enumerations
 	static QString getBandTypeName(const BandType& bandType) {
 		switch (bandType) {
 			case BandType::None:
-				return "Band: None";
+				return "None";
 
 			case BandType::StandardDeviation1:
-				return "Band: 1 SD";
+				return "1 SD";
 
 			case BandType::StandardDeviation2:
-				return "Band: 2 SD";
+				return "2 SD";
 		}
 
 		return QString();

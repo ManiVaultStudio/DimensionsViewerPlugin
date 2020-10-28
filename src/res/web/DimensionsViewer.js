@@ -108,12 +108,51 @@ function getAggregatePointsMark(channel) {
     }
 }
 
+function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
+    return {
+        "mark": {
+            "type": "line",
+            "strokeWidth": strokeWidth,
+            "strokeDash": strokeDash,
+            "strokeJoin": "round",
+            "opacity": 1
+        },
+        "transform": [
+            {
+                "filter": {
+                    "field": "chn",
+                    "equal": channel.index
+                }
+            }
+        ],
+        "encoding": {
+            "x": {
+                "field": "dimName",
+                "type": "ordinal"
+            },
+            "y": {
+                "field": field,
+                "type": "quantitative",
+                "title": "Point value"
+            },
+            "color": {
+                "value": channel.color
+            }
+        }
+    }
+}
+
 function addChannel(design, channel) {
     design.data.values = design.data.values.concat(channel.dimensions);
 
     if (channel.profileType > 0) {
         design.layer.push(getAggregateLineMark(channel, 2, []));
         design.layer.push(getAggregatePointsMark(channel));
+    }
+
+    if (channel.bandType > 0) {
+        design.layer.push(getStdDevLineMark(channel, "v1", 1, [2, 2]));
+        design.layer.push(getStdDevLineMark(channel, "v2", 1, [2, 2]));
     }
 
     if (channel.showRange)

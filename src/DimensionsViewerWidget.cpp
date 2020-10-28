@@ -9,31 +9,20 @@
 
 DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	QWebEngineView(),
-	_dimensionsViewerPlugin(dimensionsViewerPlugin)
+	_dimensionsViewerPlugin(dimensionsViewerPlugin),
+    _webChannel(new QWebChannel(this)),
+    _specSynchronizer(dimensionsViewerPlugin)
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 	setAcceptDrops(true);
 
-	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+    auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-	QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
-		const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
+    page()->setWebChannel(_webChannel);
 
-		if (!selectedRows.isEmpty()) {
-			QWebChannel* webChannel = new QWebChannel(this);
+    _webChannel->registerObject("specSynchronizer", &_specSynchronizer);
 
-			for (auto registeredObject : webChannel->registeredObjects())
-				webChannel->deregisterObject(registeredObject);
-
-			auto selectedConfiguration = configurationsModel.getSelectedConfiguration();
-
-			webChannel->registerObject("configuration", selectedConfiguration);
-			
-			page()->setWebChannel(webChannel);
-
-			load(QUrl("qrc:DimensionsViewer.html"));
-		}
-	});
+    load(QUrl("qrc:DimensionsViewer.html"));
 }
 
 void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)

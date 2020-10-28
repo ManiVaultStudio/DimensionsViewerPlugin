@@ -12,11 +12,6 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
 	}),
 	_subsets()
 {
-	for (auto channel : _channels) {
-		QObject::connect(channel, &Channel::specChanged, [this]() {
-			emit changed(toVariantMap());
-		});
-	}
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
@@ -292,6 +287,13 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart + channelIndex));
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart + channelIndex));
 	}
+
+    if (index.column() == Column::SelectionStamp) {
+        //for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
+        //    _channels[channelIndex]->updateSpec();
+
+        _channels[0]->updateSpec();
+    }
 
 	return affectedIndices;
 }
@@ -705,7 +707,7 @@ bool Configuration::hasDataset(const QString& datasetName) const
 	return const_cast<Configuration*>(this)->getChannelByDatasetName(datasetName) != nullptr;
 }
 
-QVariantMap Configuration::toVariantMap() const
+QVariantMap Configuration::getSpec() const
 {
 	QVariantMap configuration, channels;
 
@@ -726,9 +728,4 @@ QVariantMap Configuration::toVariantMap() const
 	//qDebug() << configuration;
 
 	return configuration;
-}
-
-QString Configuration::htmlTooltip(const QString& title, const QString& description) const
-{
-	return QString("<html><head/><body><p><span style='font-weight:600;'>%1<br/></span>%2</p></body></html>").arg(title, description);
 }

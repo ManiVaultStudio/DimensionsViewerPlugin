@@ -14,7 +14,14 @@
 		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
 		<script>
             window.addEventListener("load", function () {
-                var onConfigurationChanged = function (configuration) {
+                var onSpecChanged = function (spec) {
+                    if (JSON.stringify(spec) === JSON.stringify(window.spec))
+                        return;
+
+                    window.spec = spec;
+
+                    window.processingSpec = true;
+
                     const myNode = document.getElementById("view");
 
                     while (myNode.firstChild) {
@@ -22,11 +29,11 @@
                     }
 
                     var options = {
-                        //renderer: "canvas",
+                        renderer: "svg",
                         defaultStyle: false
                     };
 
-                    vegaEmbed('#view', getDesign(configuration), options).then(p => {
+                    vegaEmbed('#view', getDesign(spec), options).then(p => {
 
                         // Find elements with tag name details
                         element = document.getElementsByTagName("details");
@@ -38,13 +45,29 @@
 
                         // Attached the Vega view to the global window variable so that we can later use it
                         window.view = p.view
+
+                        window.processingSpec = false;
                     });
+                }
+
+                let checkForSpec = function () {
+                    if (window.processingSpec)
+                        return;
+
+                    webChannel.objects['specSynchronizer'].getSpec(onSpecChanged);
                 }
 
                 new QWebChannel(qt.webChannelTransport,
                     function (webChannel) {
-                        webChannel.objects['configuration'].changed.connect(onConfigurationChanged);
-                        webChannel.objects['configuration'].toVariantMap(onConfigurationChanged);
+                        window.webChannel = webChannel;
+
+                        window.spec = {};
+                        window.processingSpec = false;
+
+                        window.setInterval(checkForSpec, 100);
+
+                        //webChannel.objects['specSynchronizer'].specChanged.connect(onSpecChanged);
+                        //webChannel.objects['specSynchronizer'].getSpec(onSpecChanged);
                     });
             });
 		</script>

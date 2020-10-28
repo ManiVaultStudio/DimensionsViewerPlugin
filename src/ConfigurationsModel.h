@@ -109,8 +109,6 @@ public: // Miscellaneous
 	 */
 	Configuration* getSelectedConfiguration() const;
 
-private:
-
 	/**
 	 * Returns a configuration by model index
 	 * @param index Model index of the layer to obtain

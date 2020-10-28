@@ -28,11 +28,6 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_points(nullptr)
 {
 	setDatasetName(datasetName);
-
-	QObject::connect(dimensionsViewerPlugin, &DimensionsViewerPlugin::pointsSelectionChanged, [this](const QString& dataName) {
-		if (dataName == _dataName && !isSubset())
-			updateSpec();
-	});
 }
 
 void Channel::setEnabled(const bool& enabled)
@@ -155,12 +150,12 @@ void Channel::updateSpec()
 	
 	QVariantList dimensions;
 
+    std::vector<float> dimensionValues;
+
+    dimensionValues.resize(pointIndices.size());
+
 	if (_enabled && !pointIndices.empty()) {
-		_points->visitSourceData([this, &pointIndices, &dimensionIndices, &dimensions](auto pointData) {
-			std::vector<float> dimensionValues;
-
-			dimensionValues.resize(pointIndices.size());
-
+		_points->visitSourceData([this, &pointIndices, &dimensionIndices, &dimensions, &dimensionValues](auto& pointData) {
 			for (const auto& dimensionIndex : dimensionIndices) {
 				auto localPointIndex = 0;
 
@@ -175,8 +170,8 @@ void Channel::updateSpec()
 				dimension["dim"]		= dimensionIndex;
 				dimension["dimName"]	= _points->getDimensionNames().at(dimensionIndex);
 
-				const float sum = std::accumulate(dimensionValues.begin(), dimensionValues.end(), 0.0);
-				const float mean = sum / dimensionValues.size();
+                const float sum     = std::accumulate(dimensionValues.begin(), dimensionValues.end(), 0.0);
+				const float mean    = sum / dimensionValues.size();
 
 				std::vector<float> diff(dimensionValues.size());
 
@@ -185,7 +180,7 @@ void Channel::updateSpec()
 				switch (_profileType)
 				{
 					case ProfileType::Mean: {
-						dimension["agg"] = sum / dimensionValues.size();
+						dimension["agg"] = mean;
 						break;
 					}
 
@@ -212,7 +207,7 @@ void Channel::updateSpec()
 
 					case BandType::StandardDeviation2: {
 						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-						double stdDev2	= std::sqrt(sqSum / dimensionValues.size());
+						double stdDev2	= 2.0 * std::sqrt(sqSum / dimensionValues.size());
 
 						dimension["v1"] = mean - stdDev2;
 						dimension["v2"] = mean + stdDev2;
@@ -226,7 +221,7 @@ void Channel::updateSpec()
 				if (_showRange) {
 					auto result = std::minmax_element(dimensionValues.begin(), dimensionValues.end());
 
-					dimension["min"] = *result.first;
+                    dimension["min"] = *result.first;
 					dimension["max"] = *result.second;
 				}
 

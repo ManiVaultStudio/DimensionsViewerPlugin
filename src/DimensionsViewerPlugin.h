@@ -47,17 +47,10 @@ public:
 	/** Returns a pointer to the core interface */
 	hdps::CoreInterface* getCore() { return _core; }
 
-signals:
-	/**
-	 * Signals that the selection of a points dataset has changed
-	 * @param dataName Name of the points data of which the selection changed
-	 */
-	void pointsSelectionChanged(const QString& dataName);
-
 private:
-	ConfigurationsModel			_configurationsModel;
-	DimensionsViewerWidget*		_dimensionsViewerWidget;
-	SettingsWidget*				_settingsWidget;
+	ConfigurationsModel			_configurationsModel;           /** Configurations model */
+	DimensionsViewerWidget*		_dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
+	SettingsWidget*				_settingsWidget;                /** Settings widget */
 };
 
 class DimensionsViewerPluginFactory : public ViewPluginFactory

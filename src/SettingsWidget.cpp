@@ -112,10 +112,10 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
 	for (auto bandTypeComboBox : _bandTypeComboBoxes) {
 		bandTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
-		bandTypeComboBox->setVisible(false);
+		//bandTypeComboBox->setVisible(false);
 
 		QObject::connect(bandTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel, bandTypeComboBox](int currentIndex) {
-			configurationsModel.setData(Configuration::Column::ChannelBandTypeStart + _profileTypeComboBoxes.indexOf(bandTypeComboBox), currentIndex);
+			configurationsModel.setData(Configuration::Column::ChannelBandTypeStart + _bandTypeComboBoxes.indexOf(bandTypeComboBox), currentIndex);
 		});
 	}
 

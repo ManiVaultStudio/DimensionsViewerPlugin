@@ -47,9 +47,10 @@ public: // Columns
 		ChannelShowRangeEnd = ChannelShowRangeStart + noChannels,           /** Channel show range parameter of the last channel */
 		ChannelLockedStart,                                                 /** Channel locked parameter of the first channel */
 		ChannelLockedEnd = ChannelLockedStart + noChannels,		            /** Channel locked parameter of the last channel */
+		SelectionStamp,		                                                /** Auxiliary column for triggering synchronization */
 		
 		Start = Subsets,                                                    /** Column start */
-		End = ChannelLockedEnd                                              /** Column end */
+		End = SelectionStamp                                                /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
@@ -286,28 +287,8 @@ public: // Miscellaneous
 	 */
 	bool hasDataset(const QString& datasetName) const;
 
-public slots:
-
-	/** Convert the state of the configuration to a variant map  */
-	QVariantMap toVariantMap() const;
-
-private:
-
-	/**
-	 * Returns an HTML tooltip
-	 * @param title Title of the tooltip
-	 * @param description Description of the tooltip
-	 * @return HTML tooltip
-	 */
-	QString htmlTooltip(const QString& title, const QString& description) const;
-
-signals:
-
-	/**
-	 * Signals that the configuration has changed
-	 * @param configuration Configuration
-	 */
-	void changed(const QVariantMap& configuration);
+	/** Get configuration spec */
+	QVariantMap getSpec() const;
 
 private:
 	Channels		_channels;  /** Channels */

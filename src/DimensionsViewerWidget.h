@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWebEngineView>
+#include "SpecSynchronizer.h"
 
-#include "Common.h"
+#include <QWebEngineView>
 
 class DimensionsViewerPlugin;
 
@@ -44,4 +44,6 @@ private: // Drag and drop
 
 private:
 	DimensionsViewerPlugin*		_dimensionsViewerPlugin;    /** Pointer to an instance of the dimensions viewer plugin */
+    QWebChannel*                _webChannel;                /** Web channel (bridge between Qt and the Vega visualization JS client) */
+    SpecSynchronizer            _specSynchronizer;          /** Spec synchronizer */
 };

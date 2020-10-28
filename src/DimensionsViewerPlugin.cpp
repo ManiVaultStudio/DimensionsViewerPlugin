@@ -19,6 +19,8 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
 	_settingsWidget = new SettingsWidget(this);
+
+    //QObject::connect(_dimensionsViewerPlugin, &DimensionsViewerPlugin::selectionChanged, )
 }
 
 void DimensionsViewerPlugin::init()
@@ -42,7 +44,12 @@ void DimensionsViewerPlugin::dataRemoved(const QString dataset)
 
 void DimensionsViewerPlugin::selectionChanged(const QString dataName)
 {
-	emit pointsSelectionChanged(dataName);
+    const auto hits = _configurationsModel.match(_configurationsModel.index(0, Configuration::Column::ChannelDataNameStart), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
+
+    if (!hits.isEmpty()) {
+        //const auto selectionStamp = _configurationsModel.data(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp)).toInt();
+        _configurationsModel.setData(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp), 0);
+    }
 }
 
 hdps::DataTypes DimensionsViewerPlugin::supportedDataTypes() const
