@@ -47,8 +47,6 @@ public:
 	/** Returns a pointer to the core interface */
 	hdps::CoreInterface* getCore() { return _core; }
 
-	Points* getPoints(const QString& datasetName);
-
 signals:
 	/**
 	 * Signals that the selection of a points dataset has changed

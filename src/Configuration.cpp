@@ -10,8 +10,7 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
 		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.5f, true),
 		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.5f, true)
 	}),
-	_subsets(),
-	_settings()
+	_subsets()
 {
 	for (auto channel : _channels) {
 		QObject::connect(channel, &Channel::specChanged, [this]() {

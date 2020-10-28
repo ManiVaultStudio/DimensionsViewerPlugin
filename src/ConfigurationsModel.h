@@ -10,7 +10,9 @@ class DimensionsViewerPlugin;
 /**
  * Configurations model
  *
- * Class for storing configurations in a Qt abstract list model.
+ * Class for storing configurations in a Qt abstract list model
+ *
+ * @author T. Kroes
  */
 class ConfigurationsModel : public QAbstractListModel
 {
@@ -18,6 +20,10 @@ class ConfigurationsModel : public QAbstractListModel
 
 public: // Construction
 
+    /**
+     * Constructor
+     * @param dimensionsViewerPlugin Pointer to an instance of the dimensions viewer plugin
+     */
 	ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
 public: // Obligatory overrides

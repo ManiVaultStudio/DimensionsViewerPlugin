@@ -9,7 +9,7 @@
 /**
  * Configuration class
  *
- * Provides an interface for multiple data channels
+ * This class represents a row of the configurations model
  *
  * @author T. Kroes
  */
@@ -310,7 +310,6 @@ signals:
 	void changed(const QVariantMap& configuration);
 
 private:
-	Channels		_channels;				/** Channels */
-	QStringList		_subsets;				/** Subsets of the primary dataset (selected in the first channel) */
-	QVariantMap		_settings;				/** Settings for JS */
+	Channels		_channels;  /** Channels */
+	QStringList		_subsets;	/** Subsets of the primary dataset (selected in the first channel) */
 };

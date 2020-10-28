@@ -20,23 +20,8 @@ class Channel : public QObject {
 	Q_OBJECT
 
 public: // Enumerations
-	
-	/** Synchronization flags enumeration (selective synchronization with the JS client) 
-	enum class SynchronizationFlag {
-		None			= 0x0000,
-		Dimensions		= 0x0001,
-		Enabled			= 0x0002,
-		Color			= 0x0004,
-		ProfileType		= 0x0008,
-		BandType		= 0x0010,
-		ShowRange		= 0x0020,
-		
-		All				= Dimensions | Enabled | Color | ProfileType | BandType | ShowRange
-	};
-	Q_DECLARE_FLAGS(SynchronizationFlags, SynchronizationFlag)
-	*/
 
-	/** Profile type (e.g. average and mean) */
+	/** Profile type (e.g. mean and median) */
 	enum class ProfileType {
 		None,
 		Mean,
@@ -71,7 +56,7 @@ public: // Enumerations
 		return profileTypeNames;
 	}
 
-	/** Band type (e.g. minimum/maximum and standard deviation) */
+	/** Band type (e.g. standard deviation) */
 	enum class BandType {
 		None,
 		StandardDeviation1,
@@ -237,7 +222,7 @@ public: // Getters/setters
 		return _spec;
 	};
 
-private:
+private: // Miscellaneous
 	
 	/** Returns if the referenced dataset is a subset */
 	bool isSubset() const;
