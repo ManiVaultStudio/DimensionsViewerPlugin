@@ -10,7 +10,7 @@
     <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>
 </head>
 	<body style="padding: 0; margin: 0; width: 100%; height: 100%;">
-		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
+		<div id="view" style="width: 100%; height: 100%; display: flex; align-items:center; justify-content: center; overflow: hidden;"></div>
 		<script>
             window.addEventListener("load", function () {
                 let isValidSpec = function (spec) {
@@ -51,6 +51,14 @@
                     }
                 }
 
+                let emptyView = function () {
+                    const view = document.getElementById("view");
+
+                    while (view.firstChild) {
+                        view.removeChild(view.lastChild);
+                    }
+                }
+
                 var onSpecChanged = function (spec) {
                     if (!setSpec(spec))
                         return;
@@ -58,15 +66,11 @@
                     if (noChannelsForDisplay(spec) > 0) {
                         window.processingSpec = true;
 
-                        const myNode = document.getElementById("view");
-
-                        while (myNode.firstChild) {
-                            myNode.removeChild(myNode.lastChild);
-                        }
+                        emptyView();
 
                         var options = {
                             renderer: "svg",
-                            defaultStyle: true,
+                            defaultStyle: false,
                             actions: {
                                 export: false,
                                 source: false,
@@ -78,24 +82,19 @@
                         document.getElementById('view').innerHTML = '';
 
                         vegaEmbed('#view', getDesign(window.currentSpec), options).then(p => {
-                            //removeButtons();
+                            removeButtons();
                             window.processingSpec = false;
                         });
                     } else {
-                        let viewDiv = document.getElementById('view');
-                        
-                        viewDiv.innerHTML = "";
+                        emptyView();
 
-                        viewDiv.style.display = 'flex';
-                        //viewDiv.style.alignItems = 'center';
-                        //viewDiv.style.justifyContent = 'center';
                         let textDiv = document.createElement('div');
 
-                        textDiv.innerHTML = 'No channels to display...';
-                        textDiv.style.textAlign = 'center';
-                        textDiv.style.fontFamily = 'sans-serif';
-                        textDiv.style.fontSize = '8pt';
-                        textDiv.style.fontWeight = 'bold';
+                        textDiv.innerHTML           = 'No channels to display...';
+                        textDiv.style.textAlign     = 'center';
+                        textDiv.style.fontFamily    = 'sans-serif';
+                        textDiv.style.fontSize      = '8pt';
+                        textDiv.style.fontWeight    = 'bold';
                         textDiv.style.verticalAlign = 'middle';
 
                         document.getElementById('view').appendChild(textDiv);
