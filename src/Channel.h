@@ -217,6 +217,9 @@ public: // Getters/setters
 	 */
 	void setLocked(const bool& locked);
 
+    /** Returns whether the channel can be displayed in the viewer */
+    bool canDisplay() const;
+
 	/** Returns the visualization specification */
 	QVariantMap getSpec() {
 		return _spec;

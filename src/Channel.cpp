@@ -21,7 +21,7 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_color(color),
 	_opacity(opacity),
 	_profileType(ProfileType::Mean),
-	_bandType(BandType::StandardDeviation1),
+	_bandType(BandType::None),
 	_showRange(false),
 	_locked(lock),
 	_spec(),
@@ -110,6 +110,23 @@ void Channel::setLocked(const bool& locked)
 	_locked = locked;
 }
 
+bool Channel::canDisplay() const
+{
+    if (!_enabled)
+        return false;
+
+    if (_profileType != ProfileType::None)
+        return true;
+
+    if (_bandType != BandType::None)
+        return true;
+
+    if (_showRange)
+        return true;
+
+    return false;
+}
+
 bool Channel::isSubset() const
 {
 	if (_points == nullptr)
@@ -167,7 +184,7 @@ void Channel::updateSpec()
 				QVariantMap dimension;
 
 				dimension["chn"]		= _index;
-				dimension["dim"]		= dimensionIndex;
+				dimension["dimId"]		= dimensionIndex;
 				dimension["dimName"]	= _points->getDimensionNames().at(dimensionIndex);
 
                 const float sum     = std::accumulate(dimensionValues.begin(), dimensionValues.end(), 0.0);
@@ -232,6 +249,7 @@ void Channel::updateSpec()
 
 	_spec["enabled"]		= _enabled;
 	_spec["index"]			= _index;
+	_spec["displayName"]    = _displayName;
 	_spec["datasetName"]	= _datasetName;
 	_spec["dimensions"]		= dimensions;
 	_spec["color"]			= _color;
@@ -239,6 +257,7 @@ void Channel::updateSpec()
 	_spec["profileType"]	= static_cast<int>(_profileType);
 	_spec["bandType"]		= static_cast<int>(_bandType);
 	_spec["showRange"]		= _showRange && pointIndices.size() > 1;
+	_spec["canDisplay"]		= canDisplay();
 
     emit specChanged(this);
 }

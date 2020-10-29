@@ -48,9 +48,10 @@ public: // Columns
 		ChannelLockedStart,                                                 /** Channel locked parameter of the first channel */
 		ChannelLockedEnd = ChannelLockedStart + noChannels,		            /** Channel locked parameter of the last channel */
 		SelectionStamp,		                                                /** Auxiliary column for triggering synchronization */
+		ShowDimensionNames,		                                            /** Whether dimensions names are displayed in the viewer */
 		
 		Start = Subsets,                                                    /** Column start */
-		End = SelectionStamp                                                /** Column end */
+		End = ShowDimensionNames                                            /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
@@ -84,6 +85,12 @@ public: // Columns
 
 		if (column >= Column::ChannelLockedStart && column < Column::ChannelLockedStart)
 			return QString("Channel %1: Locked").arg(QString::number(column));
+
+        if (column == Column::SelectionStamp)
+            return "Selection stamp";
+
+        if (column == Column::ShowDimensionNames)
+            return "Show dimension names";
 
 		return QString();
 	}
@@ -270,6 +277,15 @@ public: // Getters/setters
 	 */
 	void setChannelLocked(const std::int32_t& channelIndex, const bool& locked);
 
+    /** Gets whether dimensions names are displayed in the viewer */
+    QVariant getShowDimensionNames(const std::int32_t& role) const;
+
+    /**
+     * Sets whether dimensions names are displayed in the viewer
+     * @param showDimensions Whether dimensions names are displayed in the viewer
+     */
+    void setShowDimensionNames(const bool& showDimensions);
+
 public: // Miscellaneous
 
 	/** Get configuration channels */
@@ -303,4 +319,9 @@ private:
 	Channels		_channels;      /** Channels */
 	QStringList		_subsets;       /** Subsets of the primary dataset (selected in the first channel) */
     QVariantMap     _spec;          /** Specification for use in JS visualization client (Vega) */
+
+protected:
+    static DimensionsViewerPlugin* dimensionsViewerPlugin;
+
+    friend class DimensionsViewerPlugin;
 };

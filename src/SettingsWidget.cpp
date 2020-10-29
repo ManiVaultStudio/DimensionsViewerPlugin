@@ -138,6 +138,10 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		});
 	}
 
+    QObject::connect(_ui->showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+        configurationsModel.setData(Configuration::Column::ShowDimensionNames, state == Qt::Checked);
+    });
+
 	updateData(QModelIndex(), QModelIndex());
 }
 
@@ -146,7 +150,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 	const auto selectedRows = _dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
-		_ui->settingsGroupBox->setEnabled(false);
+		_ui->channelsGroupBox->setEnabled(false);
 
 		for (auto enabledCheckBox : _enabledCheckBoxes) {
 			enabledCheckBox->setEnabled(false);
@@ -188,12 +192,16 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			lockedPushButton->setChecked(false);
 		}
 
+        _ui->settingsGroupBox->setEnabled(false);
+        _ui->showDimensionNamesCheckBox->setEnabled(false);
+
 		return;
 	}
 
 	if (begin.row() != selectedRows.first().row())
 		return;
 
+	_ui->channelsGroupBox->setEnabled(true);
 	_ui->settingsGroupBox->setEnabled(true);
 
 	for (int column = begin.column(); column <= end.column(); column++) {
@@ -307,5 +315,13 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			lockedPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 			lockedPushButton->blockSignals(false);
 		}
+
+        if (column == Configuration::Column::ShowDimensionNames) {
+            _ui->showDimensionNamesCheckBox->blockSignals(true);
+            _ui->showDimensionNamesCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->showDimensionNamesCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+            _ui->showDimensionNamesCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->showDimensionNamesCheckBox->blockSignals(false);
+        }
 	}
 }

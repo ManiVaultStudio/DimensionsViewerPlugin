@@ -1,14 +1,38 @@
+let design = {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "width": "container",
+    "height": "container",
+    "title": {
+        "text": []
+    },
+    "config": {
+        "axis": {
+            "grid": true,
+            "gridColor": "#dedede"
+        }
+    },
+    "padding": 10,
+    "autosize":
+    {
+        "type": "fit",
+        "resize": true,
+    },
+    "data": {
+        "name": "dimensions",
+        "values": []
+    },
+    "layer": []
+}
 
 function getRangeMark(channel, strokeWidth) {
     return {
         "mark": {
             "type": "errorband",
             //"borders": {
-            //    "opacity": 0.5 * channel.opacity,
+            //    "opacity": 0.5,
             //    "strokeWidth": strokeWidth,
-            //    "strokeDash": [3, 3]
             //},
-            "opacity": 0.2 * channel.opacity,
+            "opacity": channel.opacity,
         },
         "transform": [
             {
@@ -19,10 +43,7 @@ function getRangeMark(channel, strokeWidth) {
             }
         ],
         "encoding": {
-            "x": {
-                "field": "dimName",
-                "type": "ordinal"
-            },
+            "x": channel.encoding.x,
             "y": {
                 "field": "min",
                 "type": "quantitative",
@@ -58,10 +79,7 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash) {
             }
         ],
         "encoding": {
-            "x": {
-                "field": "dimName",
-                "type": "ordinal"
-            },
+            "x": channel.encoding.x,
             "y": {
                 "field": "agg",
                 "type": "quantitative",
@@ -91,11 +109,7 @@ function getAggregatePointsMark(channel) {
             }
         ],
         "encoding": {
-            "x": {
-                "field": "dimName",
-                "type": "ordinal",
-                "title": "Dimension"
-            },
+            "x": channel.encoding.x,
             "y": {
                 "field": "agg",
                 "type": "quantitative",
@@ -126,10 +140,7 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
             }
         ],
         "encoding": {
-            "x": {
-                "field": "dimName",
-                "type": "ordinal"
-            },
+            "x": channel.encoding.x,
             "y": {
                 "field": field,
                 "type": "quantitative",
@@ -143,6 +154,7 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
 }
 
 function addChannel(design, channel) {
+
     design.data.values = design.data.values.concat(channel.dimensions);
 
     if (channel.profileType > 0) {
@@ -161,38 +173,28 @@ function addChannel(design, channel) {
 
 function getDesign(spec) {
 
-    let design = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-        "width": "container",
-        "height": "container",
-        "title": {
-            "text": []
-        },
-        "config": {
-            "axis": {
-                "grid": true,
-                "gridColor": "#dedede"
-            }
-        },
-        "padding": 10,
-        "autosize":
-        {
-            "type": "fit",
-            "resize": true,
-        },
-        "signals": [],
-        "data": {
-            "name": "dimensions",
-            "values": []
-        },
-        "layer": []
-    }
+    design.data.values = [];
+    design.layer = [];
 
-    //design.title.text.push(configuration.title);
+    let titles = [];
 
     for (channelName in spec.channels) {
-        addChannel(design, spec.channels[channelName]);
+        let channel = spec.channels[channelName];
+
+        titles.push(channel.datasetName);
+
+        channel.encoding = {
+            x: {
+                field: spec.showDimensionNames ? 'dimName' : 'dimId',
+                type: spec.showDimensionNames ? 'ordinal' : 'nominal',
+                title: spec.showDimensionNames ? 'Dimension names' : 'Dimensions IDs'
+            }
+        }
+
+        addChannel(design, channel);
     }
+
+    design.title.text = `[${titles.join(', ')}]`;
 
     return design;
 }

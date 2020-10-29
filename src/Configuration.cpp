@@ -3,17 +3,20 @@
 
 #include <QDebug>
 
+DimensionsViewerPlugin* Configuration::dimensionsViewerPlugin = nullptr;
+
 Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
 	QObject(parent),
 	_channels({ 
-		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.5f, false),
-		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.5f, true),
-		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.5f, true)
+		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.25f, false),
+		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.25f, true),
+		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.25f, true)
 	}),
 	_subsets(),
     _spec()
 {
     _spec["modified"] = 0;
+    _spec["showDimensionNames"] = dimensionsViewerPlugin->getSetting("ShowDimensionNames").toBool();
 
     for (auto channel : _channels) {
         QObject::connect(channel, &Channel::specChanged, [this](Channel* channel) {
@@ -108,7 +111,9 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 		const auto channelIndex = index.column() - Column::ChannelShowRangeStart;
 		
 		if (channelIndex == 0) {
-			flags |= Qt::ItemIsEnabled;
+            for (int c = 0; c < noChannels; ++c)
+                if (_channels[c]->isEnabled())
+                    flags |= Qt::ItemIsEnabled;
 		}
 		else {
 			if (_channels[channelIndex]->isEnabled() && !_channels[channelIndex]->isLocked() && _subsets.size() >= channelIndex)
@@ -124,6 +129,18 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 				flags |= Qt::ItemIsEnabled;
 		}
 	}
+
+    if (index.column() == Column::ShowDimensionNames) {
+        auto noDisplayChannels = 0;
+
+        for (auto channel : _channels) {
+            if (channel->canDisplay())
+                noDisplayChannels++;
+        }
+
+        if (noDisplayChannels > 0)
+            flags |= Qt::ItemIsEnabled;
+    }
 
 	return flags;
 }
@@ -159,6 +176,9 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 	if (index.column() >= Column::ChannelLockedStart && index.column() < Column::ChannelLockedEnd)
 		return getChannelLocked(index.column() - Column::ChannelLockedStart, role);
+
+    if (index.column() == Column::ShowDimensionNames)
+        return getShowDimensionNames(role);
 
 	return QVariant();
 }
@@ -214,6 +234,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart + channelIndex));
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart + channelIndex));
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelLockedStart + channelIndex));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
 	}
 
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd) {
@@ -243,6 +264,8 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 				}
 			}
 		}
+
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
 	}
 
 	if (index.column() >= Column::ChannelBandTypeStart && index.column() < Column::ChannelBandTypeEnd) {
@@ -260,6 +283,8 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 				}
 			}
 		}
+
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
 	}
 
 	if (index.column() >= Column::ChannelShowRangeStart && index.column() < Column::ChannelShowRangeEnd) {
@@ -277,6 +302,8 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 				}
 			}
 		}
+
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
 	}
 
 	if (index.column() >= Column::ChannelLockedStart && index.column() < Column::ChannelLockedEnd) {
@@ -294,6 +321,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelProfileTypeStart + channelIndex));
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart + channelIndex));
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart + channelIndex));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
 	}
 
     if (index.column() == Column::SelectionStamp) {
@@ -301,6 +329,10 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         //    _channels[channelIndex]->updateSpec();
 
         _channels[0]->updateSpec();
+    }
+
+    if (index.column() == Column::ShowDimensionNames) {
+        setShowDimensionNames(value.toBool());
     }
 
 	return affectedIndices;
@@ -322,7 +354,7 @@ QVariant Configuration::getChannelEnabled(const std::int32_t& channelIndex, cons
 				return enabled;
 
 			case Qt::ToolTipRole:
-				return QString("%1 is %2").arg(_channels[channelIndex]->getDisplayName(), enabledString);
+				return QString("Channel %1 is %2").arg(QString::number(channelIndex + 1), enabledString);
 
 			default:
 				return QVariant();
@@ -388,7 +420,7 @@ QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, 
 				return datasetName;
 
 			case Qt::ToolTipRole:
-				return QString("%1 dataset name: %2").arg(_channels[channelIndex]->getDisplayName(), datasetName);
+				return QString("Channel %1 dataset name: %2").arg(QString::number(channelIndex + 1), datasetName);
 
 			default:
 				return QVariant();
@@ -429,7 +461,7 @@ QVariant Configuration::getChannelDataName(const std::int32_t& channelIndex, con
 				return dataName;
 
 			case Qt::ToolTipRole:
-				return QString("%1 data name: %2").arg(_channels[channelIndex]->getDisplayName(), dataName);
+				return QString("Channel %1 data name: %2").arg(QString::number(channelIndex + 1), dataName);
 
 			default:
 				return QVariant();
@@ -459,7 +491,7 @@ QVariant Configuration::getChannelColor(const std::int32_t& channelIndex, const 
 				return color;
 
 			case Qt::ToolTipRole:
-				return QString("%1 color: %2").arg(_channels[channelIndex]->getDisplayName(), colorString);
+				return QString("Channel %1 color: %2").arg(QString::number(channelIndex + 1), colorString);
 
 			default:
 				return QVariant();
@@ -501,7 +533,7 @@ QVariant Configuration::getChannelOpacity(const std::int32_t& channelIndex, cons
 				return opacity;
 
 			case Qt::ToolTipRole:
-				return QString("%1 opacity: %2").arg(_channels[channelIndex]->getDisplayName(), opacityString);
+				return QString("Channel %1 opacity: %2").arg(QString::number(channelIndex + 1), opacityString);
 
 			default:
 				return QVariant();
@@ -543,7 +575,7 @@ QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, 
 				return static_cast<int>(profileType);
 
 			case Qt::ToolTipRole:
-				return QString("%1 profile type: %2").arg(_channels[channelIndex]->getDisplayName(), profileTypeString);
+				return QString("Channel %1 profile type: %2").arg(QString::number(channelIndex + 1), profileTypeString);
 
 			default:
 				return QVariant();
@@ -585,7 +617,7 @@ QVariant Configuration::getChannelBandType(const std::int32_t& channelIndex, con
 				return static_cast<int>(bandType);
 
 			case Qt::ToolTipRole:
-				return QString("%1 band type: %2").arg(_channels[channelIndex]->getDisplayName(), bandTypeString);
+				return QString("Channel %1 band type: %2").arg(QString::number(channelIndex + 1), bandTypeString);
 
 			default:
 				return QVariant();
@@ -627,7 +659,7 @@ QVariant Configuration::getChannelShowRange(const std::int32_t& channelIndex, co
 				return showRange;
 
 			case Qt::ToolTipRole:
-				return QString("%1 show range: %2").arg(_channels[channelIndex]->getDisplayName(), showRangeString);
+				return QString("Channel %1 show range: %2").arg(QString::number(channelIndex + 1), showRangeString);
 
 			default:
 				return QVariant();
@@ -669,7 +701,7 @@ QVariant Configuration::getChannelLocked(const std::int32_t& channelIndex, const
 				return locked;
 
 			case Qt::ToolTipRole:
-				return QString("%1 locked: %2").arg(_channels[channelIndex]->getDisplayName(), lockedString);
+				return QString("Channel %1 locked: %2").arg(QString::number(channelIndex + 1), lockedString);
 
 			default:
 				return QVariant();
@@ -693,6 +725,37 @@ void Configuration::setChannelLocked(const std::int32_t& channelIndex, const boo
 	{
 		qDebug() << exception.what();
 	}
+}
+
+QVariant Configuration::getShowDimensionNames(const std::int32_t& role) const
+{
+    const auto showDimensionNames       = _spec["showDimensionNames"].toBool();
+    const auto showDimensionNamesString = showDimensionNames ? "on" : "off";
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return showDimensionNamesString;
+
+        case Qt::EditRole:
+            return showDimensionNames;
+
+        case Qt::ToolTipRole:
+            return QString("Show dimension names: %1").arg(showDimensionNamesString);
+
+        default:
+            return QVariant();
+    }
+
+    return QVariant();
+}
+
+void Configuration::setShowDimensionNames(const bool& showDimensions)
+{
+    _spec["showDimensionNames"] = showDimensions;
+    _spec["modified"] = _spec["modified"].toInt() + 1;
+
+    dimensionsViewerPlugin->setSetting("ShowDimensionNames", showDimensions);
 }
 
 Configuration::Channels& Configuration::getChannels()
