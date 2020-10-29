@@ -14,26 +14,28 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on:  ${{ matrix.os }}
+    runs-on:  
+      - self-hosted 
+      - ${{ matrix.os }}
     strategy:
       matrix:
         #os: [windows-2016]
         #compiler: [msvc-2017]
         include: 
-        - name: Windows-msvc2017
-          os: windows-2016
-          compiler: msvc-2017
-          build-cversion: 15
-          build-runtime: MD
-          build-config: Release
+        # - name: Windows-msvc2017
+          # os: windows-2016
+          # compiler: msvc-2017
+          # build-cversion: 15
+          # build-runtime: MD
+          # build-config: Release
           
-        - name: Linux_gcc9
-          os: ubuntu-18.04
-          build-compiler: gcc
-          build-cversion: 9
-          build-config: Release
-          build-os: Linux
-          build-libcxx: libstdc++
+        # - name: Linux_gcc9
+          # os: ubuntu-18.04
+          # build-compiler: gcc
+          # build-cversion: 9
+          # build-config: Release
+          # build-os: Linux
+          # build-libcxx: libstdc++
           
         - name: Macos_xcode10.3
           os: macos-10.14
@@ -73,6 +75,7 @@ jobs:
       - name: Check common actions
         run: |
           python -c "import glob; print(glob.glob('./.github/common_actions/*'))" 
+         
       - name: Windows build
         if: startsWith(runner.os, 'Windows')
         uses: ./.github/common_actions/conan_windows_build
