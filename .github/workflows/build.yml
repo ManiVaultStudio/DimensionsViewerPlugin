@@ -59,9 +59,9 @@ jobs:
           sudo xcode-select -switch /Applications/Xcode_${{matrix.build-xcode-version}}.app
 
       - name: Setup python version
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: '3.7'
 
       - name: Checkout hdps/common_actions
         uses: actions/checkout@v2
