@@ -4,9 +4,7 @@
 #include <QDebug>
 
 SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugin) :
-	_dimensionsViewerPlugin(dimensionsViewerPlugin),
-    _spec(),
-    _vegaIsBusy(false)
+	_dimensionsViewerPlugin(dimensionsViewerPlugin)
 {
     QObject::connect(&_dimensionsViewerPlugin->getConfigurationsModel(), &ConfigurationsModel::dataChanged, this, &SpecSynchronizer::updateData);
 }
@@ -23,36 +21,19 @@ void SpecSynchronizer::updateData(const QModelIndex& begin, const QModelIndex& e
     if (selectedRows.first().row() != begin.row())
         return;
 
-    configurationsModel.getSelectedConfiguration()->updateSpec();
+    //configurationsModel.getSelectedConfiguration()->updateSpec();
 
-
-    _spec = configurationsModel.getSelectedConfiguration()->getSpec();
+    //_spec = configurationsModel.getSelectedConfiguration()->getSpec();
 }
 
-QVariantMap SpecSynchronizer::getSpec()
+QVariantMap SpecSynchronizer::getSpec(const int& modified)
 {
     auto selectedConfiguration = _dimensionsViewerPlugin->getConfigurationsModel().getSelectedConfiguration();
 
-    if (selectedConfiguration != nullptr) {
+    if (selectedConfiguration != nullptr && selectedConfiguration->getModified() > modified) {
         selectedConfiguration->updateSpec();
-        _spec = selectedConfiguration->getSpec();
+        return selectedConfiguration->getSpec();
     }
 
-    return _spec;
-}
-
-void SpecSynchronizer::beginVegaEmbed()
-{
-    qDebug() << "beginVegaEmbed";
-
-    _vegaIsBusy = true;
-}
-
-void SpecSynchronizer::endVegaEmbed()
-{
-    qDebug() << "endVegaEmbed";
-
-    _vegaIsBusy = false;
-
-   // _spec = QVariantMap();
+    return QVariantMap();
 }

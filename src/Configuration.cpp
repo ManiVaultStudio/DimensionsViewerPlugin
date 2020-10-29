@@ -733,3 +733,8 @@ QVariantMap Configuration::getSpec() const
 {
 	return _spec;
 }
+
+std::int32_t Configuration::getModified() const
+{
+    return _spec["modified"].toInt();
+}

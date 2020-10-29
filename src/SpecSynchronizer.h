@@ -36,17 +36,12 @@ public:
 
 public slots: // Functions called from the Vega JS client
 
-    /** Get the spec of the selected configuration */
-    QVariantMap getSpec();
-
-    /** Invoked when the Vega JS client starts with the embedding process */
-    void beginVegaEmbed();
-
-    /** Invoked when the Vega JS client has finished the embedding process */
-    void endVegaEmbed();
+    /**
+     * Get the spec of the current configuration
+     * @param modified Modification time stamp
+     */
+    QVariantMap getSpec(const int& modified);
 
 private:
 	DimensionsViewerPlugin*     _dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
-    QVariantMap                 _spec;                          /** The current spec */
-    bool                        _vegaIsBusy;                    /** Determines whether the Vega JS client is busy or not */
 };

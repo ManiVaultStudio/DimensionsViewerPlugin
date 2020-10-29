@@ -296,6 +296,9 @@ public: // Spec
 	/** Get configuration spec */
 	QVariantMap getSpec() const;
 
+    /** Get modification time stamp */
+    std::int32_t getModified() const;
+
 private:
 	Channels		_channels;      /** Channels */
 	QStringList		_subsets;       /** Subsets of the primary dataset (selected in the first channel) */

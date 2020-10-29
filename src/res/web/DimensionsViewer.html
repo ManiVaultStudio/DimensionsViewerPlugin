@@ -59,9 +59,28 @@
                     }
                 }
 
+                let displayNoChannelsWarning = function () {
+                    emptyView();
+
+                    let textDiv = document.createElement('div');
+
+                    textDiv.innerHTML           = 'No channels to display...';
+                    textDiv.style.textAlign     = 'center';
+                    textDiv.style.fontFamily    = 'sans-serif';
+                    textDiv.style.fontSize      = '8pt';
+                    textDiv.style.fontWeight    = 'bold';
+                    textDiv.style.verticalAlign = 'middle';
+
+                    document.getElementById('view').appendChild(textDiv);
+                }
+
                 var onSpecChanged = function (spec) {
-                    if (!setSpec(spec))
+                    if (!setSpec(spec)) {
+                        if (window.currentSpec === null)
+                            displayNoChannelsWarning();
+
                         return;
+                    }
 
                     if (noChannelsForDisplay(spec) > 0) {
                         window.processingSpec = true;
@@ -86,18 +105,7 @@
                             window.processingSpec = false;
                         });
                     } else {
-                        emptyView();
-
-                        let textDiv = document.createElement('div');
-
-                        textDiv.innerHTML           = 'No channels to display...';
-                        textDiv.style.textAlign     = 'center';
-                        textDiv.style.fontFamily    = 'sans-serif';
-                        textDiv.style.fontSize      = '8pt';
-                        textDiv.style.fontWeight    = 'bold';
-                        textDiv.style.verticalAlign = 'middle';
-
-                        document.getElementById('view').appendChild(textDiv);
+                        displayNoChannelsWarning();
                     }
                 }
 
@@ -105,7 +113,9 @@
                     if (window.processingSpec === true)
                         return;
 
-                    webChannel.objects['specSynchronizer'].getSpec(onSpecChanged);
+                    const modified = window.currentSpec === null ? -1 : window.currentSpec.modified;
+
+                    webChannel.objects['specSynchronizer'].getSpec(modified, onSpecChanged);
                 }
 
                 new QWebChannel(qt.webChannelTransport,
