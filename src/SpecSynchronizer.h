@@ -45,14 +45,6 @@ public slots: // Functions called from the Vega JS client
     /** Invoked when the Vega JS client has finished the embedding process */
     void endVegaEmbed();
 
-signals: // Callbacks for the Vega JS client
-
-    /**
-     * Signals that the configuration spec has changed
-     * @param spec Configuration spec
-     */
-    void specChanged(const QVariantMap& spec);
-
 private:
 	DimensionsViewerPlugin*     _dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
     QVariantMap                 _spec;                          /** The current spec */

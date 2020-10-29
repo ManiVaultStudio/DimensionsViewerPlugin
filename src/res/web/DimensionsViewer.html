@@ -8,50 +8,102 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@5"></script>
 
     <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>
-
 </head>
 	<body style="padding: 0; margin: 0; width: 100%; height: 100%;">
 		<div id="view" style="width: 100%; height: 100%; overflow: hidden; "></div>
 		<script>
             window.addEventListener("load", function () {
-                var onSpecChanged = function (spec) {
-                    if (JSON.stringify(spec) === JSON.stringify(window.spec))
-                        return;
+                let isValidSpec = function (spec) {
+                    return (spec !== null) && ('modified' in spec);
+                }
 
-                    window.spec = spec;
+                let noChannelsForDisplay = function () {
+                    let noChannelsEnabled = 0;
 
-                    window.processingSpec = true;
+                    for (channelName in window.currentSpec.channels) {
+                        let channel = window.currentSpec.channels[channelName];
 
-                    const myNode = document.getElementById("view");
-
-                    while (myNode.firstChild) {
-                        myNode.removeChild(myNode.lastChild);
+                        if (channel.enabled === true)
+                            if (channel.profileType > 0 || channel.bandType > 0 || channel.showRange)
+                                noChannelsEnabled++;
                     }
 
-                    var options = {
-                        renderer: "svg",
-                        defaultStyle: false
-                    };
+                    return noChannelsEnabled;
+                }
 
-                    vegaEmbed('#view', getDesign(spec), options).then(p => {
+                let setSpec = function (spec) {
+                    if (!isValidSpec(spec))
+                        return false;
 
-                        // Find elements with tag name details
-                        element = document.getElementsByTagName("details");
+                    if (!isValidSpec(window.currentSpec) || spec.modified > window.currentSpec.modified) {
+                        window.currentSpec = spec;
+                        return true;
+                    }
 
-                        // And remove them (they corrupt the layout)
-                        for (index = 0; index < element.length; index++) {
-                            element[index].parentNode.removeChild(element[index]);
+                    return false;
+                }
+
+                let removeButtons = function () {
+                    element = document.getElementsByTagName("details");
+
+                    for (index = 0; index < element.length; index++) {
+                        element[index].parentNode.removeChild(element[index]);
+                    }
+                }
+
+                var onSpecChanged = function (spec) {
+                    if (!setSpec(spec))
+                        return;
+
+                    if (noChannelsForDisplay(spec) > 0) {
+                        window.processingSpec = true;
+
+                        const myNode = document.getElementById("view");
+
+                        while (myNode.firstChild) {
+                            myNode.removeChild(myNode.lastChild);
                         }
 
-                        // Attached the Vega view to the global window variable so that we can later use it
-                        window.view = p.view
+                        var options = {
+                            renderer: "svg",
+                            defaultStyle: true,
+                            actions: {
+                                export: false,
+                                source: false,
+                                compiled: false,
+                                editor: false,
+                            }
+                        };
 
-                        window.processingSpec = false;
-                    });
+                        document.getElementById('view').innerHTML = '';
+
+                        vegaEmbed('#view', getDesign(window.currentSpec), options).then(p => {
+                            //removeButtons();
+                            window.processingSpec = false;
+                        });
+                    } else {
+                        let viewDiv = document.getElementById('view');
+                        
+                        viewDiv.innerHTML = "";
+
+                        viewDiv.style.display = 'flex';
+                        //viewDiv.style.alignItems = 'center';
+                        //viewDiv.style.justifyContent = 'center';
+                        let textDiv = document.createElement('div');
+
+                        textDiv.innerHTML = 'No channels to display...';
+                        textDiv.style.textAlign = 'center';
+                        textDiv.style.fontFamily = 'sans-serif';
+                        textDiv.style.fontSize = '8pt';
+                        textDiv.style.fontWeight = 'bold';
+                        textDiv.style.verticalAlign = 'middle';
+
+                        document.getElementById('view').appendChild(textDiv);
+                    }
                 }
 
                 let checkForSpec = function () {
-                    if (window.processingSpec)
+                    if (window.processingSpec === true)
                         return;
 
                     webChannel.objects['specSynchronizer'].getSpec(onSpecChanged);
@@ -60,14 +112,9 @@
                 new QWebChannel(qt.webChannelTransport,
                     function (webChannel) {
                         window.webChannel = webChannel;
-
-                        window.spec = {};
+                        window.currentSpec = null;
                         window.processingSpec = false;
-
                         window.setInterval(checkForSpec, 100);
-
-                        //webChannel.objects['specSynchronizer'].specChanged.connect(onSpecChanged);
-                        //webChannel.objects['specSynchronizer'].getSpec(onSpecChanged);
                     });
             });
 		</script>

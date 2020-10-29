@@ -287,10 +287,17 @@ public: // Miscellaneous
 	 */
 	bool hasDataset(const QString& datasetName) const;
 
+
+public: // Spec
+
+    /** Update configuration spec */
+    void updateSpec();
+
 	/** Get configuration spec */
 	QVariantMap getSpec() const;
 
 private:
-	Channels		_channels;  /** Channels */
-	QStringList		_subsets;	/** Subsets of the primary dataset (selected in the first channel) */
+	Channels		_channels;      /** Channels */
+	QStringList		_subsets;       /** Subsets of the primary dataset (selected in the first channel) */
+    QVariantMap     _spec;          /** Specification for use in JS visualization client (Vega) */
 };

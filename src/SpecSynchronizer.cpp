@@ -23,14 +23,21 @@ void SpecSynchronizer::updateData(const QModelIndex& begin, const QModelIndex& e
     if (selectedRows.first().row() != begin.row())
         return;
 
-    qDebug() << "updateData";
-    _spec = configurationsModel.getSelectedConfiguration()->getSpec();
+    configurationsModel.getSelectedConfiguration()->updateSpec();
 
-    //emit specChanged(selectedConfigurationSpec);
+
+    _spec = configurationsModel.getSelectedConfiguration()->getSpec();
 }
 
 QVariantMap SpecSynchronizer::getSpec()
 {
+    auto selectedConfiguration = _dimensionsViewerPlugin->getConfigurationsModel().getSelectedConfiguration();
+
+    if (selectedConfiguration != nullptr) {
+        selectedConfiguration->updateSpec();
+        _spec = selectedConfiguration->getSpec();
+    }
+
     return _spec;
 }
 
@@ -47,5 +54,5 @@ void SpecSynchronizer::endVegaEmbed()
 
     _vegaIsBusy = false;
 
-    _spec = QVariantMap();
+   // _spec = QVariantMap();
 }

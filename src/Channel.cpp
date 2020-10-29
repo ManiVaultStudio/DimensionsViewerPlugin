@@ -25,7 +25,7 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_showRange(false),
 	_locked(lock),
 	_spec(),
-	_points(nullptr)
+    _points(nullptr)
 {
 	setDatasetName(datasetName);
 }
@@ -230,6 +230,7 @@ void Channel::updateSpec()
 		});
 	}
 
+	_spec["enabled"]		= _enabled;
 	_spec["index"]			= _index;
 	_spec["datasetName"]	= _datasetName;
 	_spec["dimensions"]		= dimensions;
@@ -239,5 +240,5 @@ void Channel::updateSpec()
 	_spec["bandType"]		= static_cast<int>(_bandType);
 	_spec["showRange"]		= _showRange && pointIndices.size() > 1;
 
-	emit specChanged();
+    emit specChanged(this);
 }

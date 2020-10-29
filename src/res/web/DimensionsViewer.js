@@ -159,7 +159,7 @@ function addChannel(design, channel) {
         design.layer.push(getRangeMark(channel, 1));
 }
 
-function getDesign(configuration) {
+function getDesign(spec) {
 
     let design = {
         "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
@@ -188,12 +188,10 @@ function getDesign(configuration) {
         "layer": []
     }
 
-    design.title.text.push(configuration.title);
+    //design.title.text.push(configuration.title);
 
-    for (channelName in configuration.channels) {
-        let channel = configuration.channels[channelName];
-
-        addChannel(design, channel);
+    for (channelName in spec.channels) {
+        addChannel(design, spec.channels[channelName]);
     }
 
     return design;

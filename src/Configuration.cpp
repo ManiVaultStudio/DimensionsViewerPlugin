@@ -10,8 +10,16 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
 		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.5f, true),
 		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.5f, true)
 	}),
-	_subsets()
+	_subsets(),
+    _spec()
 {
+    _spec["modified"] = 0;
+
+    for (auto channel : _channels) {
+        QObject::connect(channel, &Channel::specChanged, [this](Channel* channel) {
+            _spec["modified"] = _spec["modified"].toInt() + 1;
+        });
+    }
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
@@ -707,25 +715,21 @@ bool Configuration::hasDataset(const QString& datasetName) const
 	return const_cast<Configuration*>(this)->getChannelByDatasetName(datasetName) != nullptr;
 }
 
+void Configuration::updateSpec()
+{
+    QVariantMap channels;
+
+    for (auto channel : _channels) {
+        if (!channel->isEnabled())
+            continue;
+
+        channels[channel->getInternalName()] = channel->getSpec();
+    }
+
+    _spec["channels"] = channels;
+}
+
 QVariantMap Configuration::getSpec() const
 {
-	QVariantMap configuration, channels;
-
-	QStringList datasets;
-
-	for (auto channel : _channels) {
-		if (!channel->isEnabled())
-			continue;
-
-		channels[channel->getInternalName()] = channel->getSpec();
-
-		datasets << channel->getDatasetName();
-	}
-
-	configuration["title"]		= datasets.join(", ");
-	configuration["channels"]	= channels;
-
-	//qDebug() << configuration;
-
-	return configuration;
+	return _spec;
 }

@@ -232,8 +232,8 @@ private: // Miscellaneous
 
 signals:
 
-	/** Signals that the visualization specification has changed */
-	void specChanged();
+    /** Signals that the channel spec has changed */
+    void specChanged(Channel* channel);
 
 private:
 	const std::uint32_t		_index;				/** Channel index */
