@@ -56,7 +56,7 @@ jobs:
       - name: Select Xcode for Mac only
         if: startsWith(runner.os, 'macOS')
         run: |
-          sudo xcode-select -switch /Applications/Xcode_${{matrix.build-xcode-version}}.app/Contents/Developer
+          sudo xcode-select --switch /Applications/Xcode_${{matrix.build-xcode-version}}.app/Contents/Developer
 
       - name: Setup python version
         uses: actions/setup-python@v2
