@@ -62,7 +62,7 @@ jobs:
       - name: Setup python version
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7.7'
+          python-version: '3.7.9'
 
       - name: Checkout hdps/common_actions
         uses: actions/checkout@v2
