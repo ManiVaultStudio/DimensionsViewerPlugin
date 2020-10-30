@@ -225,6 +225,14 @@ public: // Getters/setters
 		return _spec;
 	};
 
+public: // Points wrapper functions
+
+    /** Returns the number of dimensions */
+    std::int32_t getNoDimensions() const;
+
+    /** Returns the number of points */
+    std::int32_t getNoPoints() const;
+
 private: // Miscellaneous
 	
 	/** Returns if the referenced dataset is a subset */

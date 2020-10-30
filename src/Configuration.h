@@ -322,6 +322,8 @@ private:
 
 protected:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;
+    static std::int32_t maxNoDimensions;
 
     friend class DimensionsViewerPlugin;
+    friend class ConfigurationsModel;
 };

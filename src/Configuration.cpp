@@ -4,6 +4,7 @@
 #include <QDebug>
 
 DimensionsViewerPlugin* Configuration::dimensionsViewerPlugin = nullptr;
+std::int32_t Configuration::maxNoDimensions = 250;
 
 Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
 	QObject(parent),

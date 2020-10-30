@@ -127,6 +127,16 @@ bool Channel::canDisplay() const
     return false;
 }
 
+std::int32_t Channel::getNoDimensions() const
+{
+    return _points->getNumDimensions();
+}
+
+std::int32_t Channel::getNoPoints() const
+{
+    return _points->getNumPoints();
+}
+
 bool Channel::isSubset() const
 {
 	if (_points == nullptr)

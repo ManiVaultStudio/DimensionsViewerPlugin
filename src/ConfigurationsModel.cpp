@@ -4,6 +4,7 @@
 #include "PointData.h"
 
 #include <QDebug>
+#include <QMessageBox>
 
 ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	QAbstractListModel(static_cast<QObject*>(dimensionsViewerPlugin)),
@@ -123,7 +124,30 @@ QStringList ConfigurationsModel::getConfigurationNames()
 
 void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
 {
-	_selectionModel.select(index(rowIndex), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    const auto presentWarning = [](const QString& reason) {
+        QMessageBox::warning(nullptr, "Unable to visualization dataset dimensions", reason);
+    };
+
+    try
+    {
+        auto configuration = _configurations[rowIndex];
+
+        const auto datasetName = configuration->getChannelDatasetName(0, Qt::EditRole).toString();
+
+        if (configuration->getChannels()[0]->getNoDimensions() > Configuration::maxNoDimensions) {
+            throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());
+        }
+        else {
+            _selectionModel.select(index(rowIndex), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        }
+    }
+    catch (std::exception e)
+    {
+        presentWarning(e.what());
+    }
+    catch (...) {
+        presentWarning("An unhandled exception occurred");
+    }
 }
 
 Configuration* ConfigurationsModel::getConfiguration(const QModelIndex& index) const

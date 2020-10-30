@@ -187,7 +187,7 @@ function getDesign(spec) {
             x: {
                 field: spec.showDimensionNames ? 'dimName' : 'dimId',
                 type: spec.showDimensionNames ? 'ordinal' : 'nominal',
-                title: spec.showDimensionNames ? 'Dimension names' : 'Dimensions IDs'
+                title: spec.showDimensionNames ? 'Dimension name' : 'Dimensions index'
             }
         }
 
