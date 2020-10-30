@@ -20,14 +20,16 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
 	_settingsWidget = new SettingsWidget(this);
-
-    //QObject::connect(_dimensionsViewerPlugin, &DimensionsViewerPlugin::selectionChanged, )
 }
 
 void DimensionsViewerPlugin::init()
 {
-	addWidget(_dimensionsViewerWidget);
-	addWidget(_settingsWidget);
+    auto mainLayout = new QVBoxLayout();
+
+    mainLayout->addWidget(_dimensionsViewerWidget, 1);
+    mainLayout->addWidget(_settingsWidget);
+
+    setMainLayout(mainLayout);
 }
 
 void DimensionsViewerPlugin::dataAdded(const QString dataset)

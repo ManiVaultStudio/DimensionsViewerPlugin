@@ -109,6 +109,11 @@
                     }
                 }
 
+                var onSelectionChanged = function () {
+                    window.currentSpec      = null;
+                    window.processingSpec   = false;
+                }
+
                 let checkForSpec = function () {
                     if (window.processingSpec === true)
                         return;
@@ -116,6 +121,7 @@
                     const modified = window.currentSpec === null ? -1 : window.currentSpec.modified;
 
                     webChannel.objects['specSynchronizer'].getSpec(modified, onSpecChanged);
+                    webChannel.objects['specSynchronizer'].selectionChanged.connect(onSelectionChanged);
                 }
 
                 new QWebChannel(qt.webChannelTransport,

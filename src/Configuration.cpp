@@ -233,7 +233,15 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelProfileTypeStart + channelIndex));
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart + channelIndex));
 		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart + channelIndex));
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelLockedStart + channelIndex));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelLockedStart + channelIndex));
+
+        if (channelIndex > 0) {
+            affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelProfileTypeStart));
+            affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart));
+            affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart));
+            affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelLockedStart));
+        }
+
         affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
 	}
 

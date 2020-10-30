@@ -6,24 +6,30 @@
 SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_dimensionsViewerPlugin(dimensionsViewerPlugin)
 {
-    QObject::connect(&_dimensionsViewerPlugin->getConfigurationsModel(), &ConfigurationsModel::dataChanged, this, &SpecSynchronizer::updateData);
-}
-
-void SpecSynchronizer::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
-{
     auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-    const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
+    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, [this, &configurationsModel](const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/) {
+        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
 
-    if (selectedRows.isEmpty())
-        return;
+        if (selectedRows.isEmpty())
+            return;
 
-    if (selectedRows.first().row() != begin.row())
-        return;
+        if (selectedRows.first().row() != begin.row())
+            return;
 
-    //configurationsModel.getSelectedConfiguration()->updateSpec();
+        //configurationsModel.getSelectedConfiguration()->updateSpec();
 
-    //_spec = configurationsModel.getSelectedConfiguration()->getSpec();
+        //_spec = configurationsModel.getSelectedConfiguration()->getSpec();
+    });
+
+    QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
+        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
+
+        if (selectedRows.isEmpty())
+            return;
+
+        emit selectionChanged();
+    });
 }
 
 QVariantMap SpecSynchronizer::getSpec(const int& modified)
