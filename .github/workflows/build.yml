@@ -58,6 +58,7 @@ jobs:
         run: |
           sudo xcode-select --switch /Applications/Xcode_${{matrix.build-xcode-version}}.app/Contents/Developer
           xcode-select -p
+          brew install sqlite
 
       - name: Setup python version
         uses: actions/setup-python@v2
