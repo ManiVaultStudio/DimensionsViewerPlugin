@@ -23,9 +23,9 @@ public: // Enumerations
 
 	/** Profile type (e.g. mean and median) */
 	enum class ProfileType {
-		None,
-		Mean,
-		Median,
+		None,               /** No profile is displayed */
+		Mean,               /** Display statistical mean */
+		Median,             /** Display statistical median */
 
 		End = Median
 	};
@@ -58,9 +58,9 @@ public: // Enumerations
 
 	/** Band type (e.g. standard deviation) */
 	enum class BandType {
-		None,
-		StandardDeviation1,
-		StandardDeviation2,
+		None,                   /** Do not display standard deviation */
+		StandardDeviation1,     /** Display one standard deviation */
+		StandardDeviation2,     /** Display two standard deviations */
 
 		End = StandardDeviation2
 	};
