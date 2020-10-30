@@ -2,8 +2,6 @@
 
 #include <ViewPlugin.h>
 
-#include "Common.h"
-
 #include "ConfigurationsModel.h"
 #include "Channel.h"
 
