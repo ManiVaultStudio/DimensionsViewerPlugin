@@ -142,6 +142,29 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
         configurationsModel.setData(Configuration::Column::ShowDimensionNames, state == Qt::Checked);
     });
 
+    _ui->advancedSettingsCheckBox->setChecked(_dimensionsViewerPlugin->getSetting("AdvancedSettings").toBool());
+
+    const auto onAdvancedSettingsChanged = [this]() {
+        const auto advancedSettings = _ui->advancedSettingsCheckBox->isChecked();
+
+        for (auto opacitySlider : _opacitySliders)
+            opacitySlider->setVisible(advancedSettings);
+
+        for (auto profileTypeComboBox : _profileTypeComboBoxes)
+            profileTypeComboBox->setVisible(advancedSettings);
+
+        for (auto bandTypeComboBox : _bandTypeComboBoxes)
+            bandTypeComboBox->setVisible(advancedSettings);
+    };
+
+    QObject::connect(_ui->advancedSettingsCheckBox, &QCheckBox::stateChanged, [this, onAdvancedSettingsChanged](int state) {
+        onAdvancedSettingsChanged();
+
+        _dimensionsViewerPlugin->setSetting("AdvancedSettings", state == Qt::Checked);
+    });
+
+    onAdvancedSettingsChanged();
+
 	updateData(QModelIndex(), QModelIndex());
 }
 
@@ -192,7 +215,6 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			lockedPushButton->setChecked(false);
 		}
 
-        _ui->settingsGroupBox->setEnabled(false);
         _ui->showDimensionNamesCheckBox->setEnabled(false);
 
 		return;
@@ -202,7 +224,6 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		return;
 
 	_ui->channelsGroupBox->setEnabled(true);
-	_ui->settingsGroupBox->setEnabled(true);
 
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);

@@ -45,7 +45,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="channelsGridLayout">
         <property name="topMargin">
          <number>0</number>
         </property>
@@ -382,16 +382,9 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="showDimensionNamesCheckBox">
-          <property name="text">
-           <string>Show dimension names</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <spacer name="verticalSpacer">
+       <layout class="QGridLayout" name="settingsGridLayout">
+        <item row="2" column="0">
+         <spacer name="settingsVerticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -405,6 +398,20 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="showDimensionNamesCheckBox">
+          <property name="text">
+           <string>Show dimension names</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="advancedSettingsCheckBox">
+          <property name="text">
+           <string>Advanced settings</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
