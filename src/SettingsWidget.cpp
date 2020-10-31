@@ -32,6 +32,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_bandTypeComboBoxes << _ui->channel1BandTypeComboBox<< _ui->channel2BandTypeComboBox << _ui->channel3BandTypeComboBox;
 	_lockedPushButtons << _ui->channel1LockedPushButton << _ui->channel2LockedPushButton << _ui->channel3LockedPushButton;
 	_showRangeCheckBoxes << _ui->channel1ShowRangeCheckBox<< _ui->channel2ShowRangeCheckBox << _ui->channel3ShowRangeCheckBox;
+    _differentialProfileWidgets << _ui->differentialProfileLabelWith << _ui->differentialProfileDataset1ComboBox << _ui->differentialProfileLabelWith << _ui->differentialProfileDataset2ComboBox << _ui->differentialProfileColorPushButton;
 
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
@@ -142,13 +143,17 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
         configurationsModel.setData(Configuration::Column::ShowDimensionNames, state == Qt::Checked);
     });
 
+    QObject::connect(_ui->differentialProfileGroupBox, &QGroupBox::toggled, [this, &configurationsModel](bool checked) {
+        configurationsModel.setData(Configuration::Column::ShowDifferentialProfile, checked);
+    });
+
     _ui->advancedSettingsCheckBox->setChecked(_dimensionsViewerPlugin->getSetting("AdvancedSettings").toBool());
 
     const auto onAdvancedSettingsChanged = [this]() {
         const auto advancedSettings = _ui->advancedSettingsCheckBox->isChecked();
 
-        for (auto opacitySlider : _opacitySliders)
-            opacitySlider->setVisible(advancedSettings);
+        //for (auto opacitySlider : _opacitySliders)
+        //    opacitySlider->setVisible(advancedSettings);
 
         for (auto profileTypeComboBox : _profileTypeComboBoxes)
             profileTypeComboBox->setVisible(advancedSettings);
@@ -216,6 +221,13 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		}
 
         _ui->showDimensionNamesCheckBox->setEnabled(false);
+
+        _ui->differentialProfileGroupBox->setEnabled(false);
+        _ui->differentialProfileGroupBox->setChecked(false);
+
+        for (auto differentialProfileWidget : _differentialProfileWidgets) {
+            differentialProfileWidget->setEnabled(false);
+        }
 
 		return;
 	}
@@ -343,6 +355,18 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
             _ui->showDimensionNamesCheckBox->setChecked(index.data(Qt::EditRole).toBool());
             _ui->showDimensionNamesCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->showDimensionNamesCheckBox->blockSignals(false);
+        }
+
+        if (column == Configuration::Column::ShowDifferentialProfile) {
+            _ui->differentialProfileGroupBox->blockSignals(true);
+            _ui->differentialProfileGroupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->differentialProfileGroupBox->setChecked(index.data(Qt::EditRole).toBool());
+            _ui->differentialProfileGroupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->differentialProfileGroupBox->blockSignals(false);
+
+            for (auto differentialProfileWidget : _differentialProfileWidgets) {
+                differentialProfileWidget->setEnabled(index.data(Qt::EditRole).toBool());
+            }
         }
 	}
 }

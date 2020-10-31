@@ -57,4 +57,5 @@ private:
     QVector<QComboBox*>                     _bandTypeComboBoxes;            /** Profile type combo boxes */
     QVector<QCheckBox*>                     _showRangeCheckBoxes;           /** Band type combo boxes */
     QVector<QPushButton*>                   _lockedPushButtons;             /** Locked push buttons */
+    QVector<QWidget*>                       _differentialProfileWidgets;    /** Widget for differential profile */
 };

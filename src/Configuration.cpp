@@ -17,7 +17,10 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
     _spec()
 {
     _spec["modified"] = 0;
-    _spec["showDimensionNames"] = dimensionsViewerPlugin->getSetting("ShowDimensionNames").toBool();
+    _spec["showDimensionNames"]                 = true;
+    _spec["showDifferentialProfile"]            = false;
+    _spec["differentialProfileDatasetName1"]    = "";
+    _spec["differentialProfileDatasetName2"]    = "";
 
     for (auto channel : _channels) {
         QObject::connect(channel, &Channel::specChanged, [this](Channel* channel) {
@@ -132,14 +135,22 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 	}
 
     if (index.column() == Column::ShowDimensionNames) {
-        auto noDisplayChannels = 0;
+        if (getNoDisplayChannels() > 0)
+            flags |= Qt::ItemIsEnabled;
+    }
+    
+    if (index.column() == Column::ShowDifferentialProfile) {
+        if (canShowDifferentialProfile())
+            flags |= Qt::ItemIsEnabled;
+    }
 
-        for (auto channel : _channels) {
-            if (channel->canDisplay())
-                noDisplayChannels++;
-        }
+    if (index.column() == Column::DifferentialProfileDatasetName1) {
+        if (canShowDifferentialProfile() && _spec["showDifferentialProfile"].toBool())
+            flags |= Qt::ItemIsEnabled;
+    }
 
-        if (noDisplayChannels > 0)
+    if (index.column() == Column::DifferentialProfileDatasetName2) {
+        if (canShowDifferentialProfile() && _spec["showDifferentialProfile"].toBool())
             flags |= Qt::ItemIsEnabled;
     }
 
@@ -181,6 +192,15 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
     if (index.column() == Column::ShowDimensionNames)
         return getShowDimensionNames(role);
 
+    if (index.column() == Column::ShowDifferentialProfile)
+        return getShowDifferentialProfile(role);
+
+    if (index.column() == Column::DifferentialProfileDatasetName1)
+        return _spec["differentialProfileDatasetName1"];
+
+    if (index.column() == Column::DifferentialProfileDatasetName2)
+        return _spec["differentialProfileDatasetName2"];
+
 	return QVariant();
 }
 
@@ -221,6 +241,11 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 			default:
 				break;
 		}
+
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDifferentialProfile));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::DifferentialProfileDatasetName1));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::DifferentialProfileDatasetName2));
 	}
 
 	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
@@ -244,6 +269,9 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         }
 
         affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDifferentialProfile));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::DifferentialProfileDatasetName1));
+        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::DifferentialProfileDatasetName2));
 	}
 
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd) {
@@ -342,6 +370,18 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
     if (index.column() == Column::ShowDimensionNames) {
         setShowDimensionNames(value.toBool());
+    }
+
+    if (index.column() == Column::ShowDifferentialProfile) {
+        setShowDifferentialProfile(value.toBool());
+    }
+
+    if (index.column() == Column::DifferentialProfileDatasetName1) {
+        _spec["differentialProfileDatasetName1"] = value.toBool();
+    }
+
+    if (index.column() == Column::DifferentialProfileDatasetName2) {
+        _spec["differentialProfileDatasetName2"] = value.toBool();
     }
 
 	return affectedIndices;
@@ -772,6 +812,34 @@ Configuration::Channels& Configuration::getChannels()
 	return _channels;
 }
 
+QVariant Configuration::getShowDifferentialProfile(const std::int32_t& role) const
+{
+    const auto showDifferentialProfile = _spec["showDifferentialProfile"].toBool();
+    const auto showDifferentialProfileString = showDifferentialProfile ? "on" : "off";
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return showDifferentialProfileString;
+
+        case Qt::EditRole:
+            return showDifferentialProfile;
+
+        case Qt::ToolTipRole:
+            return QString("Show differential profile: %1").arg(showDifferentialProfileString);
+
+        default:
+            return QVariant();
+    }
+
+    return QVariant();
+}
+
+void Configuration::setShowDifferentialProfile(const bool& showDifferentialProfile)
+{
+    _spec["showDifferentialProfile"] = showDifferentialProfile;
+}
+
 Channel* Configuration::getChannelByDatasetName(const QString& datasetName)
 {
 	for (auto channel : _channels) {
@@ -809,4 +877,21 @@ QVariantMap Configuration::getSpec() const
 std::int32_t Configuration::getModified() const
 {
     return _spec["modified"].toInt();
+}
+
+std::int32_t Configuration::getNoDisplayChannels() const
+{
+    auto noDisplayChannels = 0;
+
+    for (auto channel : _channels) {
+        if (channel->canDisplay())
+            noDisplayChannels++;
+    }
+
+    return noDisplayChannels;
+}
+
+bool Configuration::canShowDifferentialProfile() const
+{
+    return getNoDisplayChannels() >= 2;
 }

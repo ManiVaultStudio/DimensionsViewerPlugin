@@ -26,6 +26,7 @@ public: // Enumerations
 		None,               /** No profile is displayed */
 		Mean,               /** Display statistical mean */
 		Median,             /** Display statistical median */
+		Differential,       /** Display differential profile (difference between two profiles) */
 
 		End = Median
 	};
@@ -247,20 +248,21 @@ signals:
     void specChanged(Channel* channel);
 
 private:
-	const std::uint32_t		_index;				/** Channel index */
-	const QString			_internalName;		/** Channel internal name (e.g. channel1, channel2) */
-	const QString			_displayName;		/** Channel display name (e.g. dataset, Subset1 and Subset 2) */
-	bool					_enabled;			/** Whether the channel is enabled or not */
-	QString					_datasetName;		/** Channel dataset name */
-	QString					_dataName;			/** Channel data name */
-	QColor					_color;				/** Channel color */
-	float					_opacity;			/** Channel opacity */
-	ProfileType				_profileType;		/** The type of profile to visualize */
-	BandType				_bandType;			/** The type of band to visualize */
-	bool					_showRange;			/** Show the dimensions ranges */
-	bool					_locked;			/** Whether settings are locked (settings are linked to another channel) */
-	QVariantMap				_spec;				/** Specification for use in JS visualization client (Vega) */
-	Points*					_points;			/** Pointer to points dataset */
+	const std::uint32_t		    _index;				            /** Channel index */
+	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
+	const QString			    _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
+	bool					    _enabled;			            /** Whether the channel is enabled or not */
+	QString					    _datasetName;		            /** Channel dataset name */
+	QString					    _dataName;			            /** Channel data name */
+	QColor					    _color;				            /** Channel color */
+	float					    _opacity;			            /** Channel opacity */
+	ProfileType				    _profileType;		            /** The type of profile to visualize */
+	BandType				    _bandType;			            /** The type of band to visualize */
+	bool					    _showRange;			            /** Show the dimensions ranges */
+	bool					    _locked;			            /** Whether settings are locked (settings are linked to another channel) */
+    QPair<QString, QString>     _differentialDatasetNames;      /** Names of the datasets to compare */
+	QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
+	Points*					    _points;			            /** Pointer to points dataset */
 
 protected:
 	static DimensionsViewerPlugin* dimensionsViewerPlugin;

@@ -49,9 +49,12 @@ public: // Columns
 		ChannelLockedEnd = ChannelLockedStart + noChannels,		            /** Channel locked parameter of the last channel */
 		SelectionStamp,		                                                /** Auxiliary column for triggering synchronization */
 		ShowDimensionNames,		                                            /** Whether dimensions names are displayed in the viewer */
-		
+        ShowDifferentialProfile,                                            /** Whether to show the differential profile in the viewer */
+        DifferentialProfileDatasetName1,                                    /** Differential profile first dataset name */
+        DifferentialProfileDatasetName2,                                    /** Differential profile second dataset name */
+
 		Start = Subsets,                                                    /** Column start */
-		End = ShowDimensionNames                                            /** Column end */
+		End = DifferentialProfileDatasetName2                               /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
@@ -91,6 +94,15 @@ public: // Columns
 
         if (column == Column::ShowDimensionNames)
             return "Show dimension names";
+
+        if (column == Column::ShowDifferentialProfile)
+            return "Show differential profile";
+
+        if (column == Column::DifferentialProfileDatasetName1)
+            return "Differential profile dataset name 1";
+
+        if (column == Column::DifferentialProfileDatasetName2)
+            return "Differential profile dataset name 2";
 
 		return QString();
 	}
@@ -286,6 +298,15 @@ public: // Getters/setters
      */
     void setShowDimensionNames(const bool& showDimensions);
 
+    /** Gets whether to show a differential profile in the viewer */
+    QVariant getShowDifferentialProfile(const std::int32_t& role) const;
+
+    /**
+     * Sets whether to show a differential profile in the viewer
+     * @param showDifferentialProfile Whether to show a differential profile in the viewer
+     */
+    void setShowDifferentialProfile(const bool& showDifferentialProfile);
+
 public: // Miscellaneous
 
 	/** Get configuration channels */
@@ -303,7 +324,6 @@ public: // Miscellaneous
 	 */
 	bool hasDataset(const QString& datasetName) const;
 
-
 public: // Spec
 
     /** Update configuration spec */
@@ -314,6 +334,14 @@ public: // Spec
 
     /** Get modification time stamp */
     std::int32_t getModified() const;
+
+private: // Internal
+
+    /** Returns the number of displayable channels */
+    std::int32_t getNoDisplayChannels() const;
+
+    /** Returns whether a differential profile can be shown */
+    bool canShowDifferentialProfile() const;
 
 private:
 	Channels		_channels;      /** Channels */
