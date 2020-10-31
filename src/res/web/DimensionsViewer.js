@@ -153,6 +153,43 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
     }
 }
 
+//function getHistogramMark(channel) {
+//    return {
+//        "mark": {
+//            "type": "rect",
+//            "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3
+//        },
+//        "transform": [
+//            {
+//                "filter": {
+//                    "field": "chn",
+//                    "equal": channel.index
+//                }
+//            }
+//        ],
+//        "color": {
+//            "x1": 1,
+//            "y1": 1,
+//            "x2": 1,
+//            "y2": 0,
+//            "gradient": "linear",
+//            "stops": [
+//                { "offset": 0.0, "color": "red" },
+//                { "offset": 0.5, "color": "white" },
+//                { "offset": 1.0, "color": "blue" }
+//            ]
+//        },
+//        "encoding": {
+//            "row": 1,
+//            "x": channel.encoding.x,
+//            "y": {
+//                "value": 100
+//            },
+            
+//        }
+//    }
+//}
+
 function addChannel(design, channel) {
 
     design.data.values = design.data.values.concat(channel.dimensions);
@@ -169,6 +206,8 @@ function addChannel(design, channel) {
 
     if (channel.showRange)
         design.layer.push(getRangeMark(channel, 1));
+
+    //design.layer.push(getHistogramMark(channel));
 }
 
 function getDesign(spec) {
