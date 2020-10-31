@@ -32,7 +32,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_bandTypeComboBoxes << _ui->channel1BandTypeComboBox<< _ui->channel2BandTypeComboBox << _ui->channel3BandTypeComboBox;
 	_lockedPushButtons << _ui->channel1LockedPushButton << _ui->channel2LockedPushButton << _ui->channel3LockedPushButton;
 	_showRangeCheckBoxes << _ui->channel1ShowRangeCheckBox<< _ui->channel2ShowRangeCheckBox << _ui->channel3ShowRangeCheckBox;
-    _differentialProfileWidgets << _ui->differentialProfileLabelWith << _ui->differentialProfileDataset1ComboBox << _ui->differentialProfileLabelWith << _ui->differentialProfileDataset2ComboBox << _ui->differentialProfileColorPushButton;
+    _differentialProfileWidgets << _ui->differentialProfileLabelWith << _ui->profile1DatasetNameComboBox << _ui->differentialProfileLabelWith << _ui->profile2DatasetNameComboBox << _ui->differentialProfileColorPushButton;
 
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
@@ -367,6 +367,34 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
             for (auto differentialProfileWidget : _differentialProfileWidgets) {
                 differentialProfileWidget->setEnabled(index.data(Qt::EditRole).toBool());
             }
+        }
+
+        if (column == Configuration::Column::Profile1DatasetNames) {
+            _ui->profile1DatasetNameComboBox->blockSignals(true);
+            _ui->profile1DatasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->profile1DatasetNameComboBox->blockSignals(false);
+        }
+
+        if (column == Configuration::Column::Profile1DatasetName) {
+            _ui->profile1DatasetNameComboBox->blockSignals(true);
+            _ui->profile1DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->profile1DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+            _ui->profile1DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->profile1DatasetNameComboBox->blockSignals(false);
+        }
+
+        if (column == Configuration::Column::Profile2DatasetNames) {
+            _ui->profile2DatasetNameComboBox->blockSignals(true);
+            _ui->profile2DatasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->profile2DatasetNameComboBox->blockSignals(false);
+        }
+
+        if (column == Configuration::Column::Profile2DatasetName) {
+            _ui->profile2DatasetNameComboBox->blockSignals(true);
+            _ui->profile2DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->profile2DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+            _ui->profile2DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->profile2DatasetNameComboBox->blockSignals(false);
         }
 	}
 }

@@ -50,11 +50,13 @@ public: // Columns
 		SelectionStamp,		                                                /** Auxiliary column for triggering synchronization */
 		ShowDimensionNames,		                                            /** Whether dimensions names are displayed in the viewer */
         ShowDifferentialProfile,                                            /** Whether to show the differential profile in the viewer */
-        DifferentialProfileDatasetName1,                                    /** Differential profile first dataset name */
-        DifferentialProfileDatasetName2,                                    /** Differential profile second dataset name */
+        Profile1DatasetNames,                                               /** First profile available dataset names (for differential profile) */
+        Profile1DatasetName,                                                /** First profile selected dataset name (for differential profile) */
+        Profile2DatasetNames,                                               /** Second profile available dataset names (for differential profile) */
+        Profile2DatasetName,                                                /** Second profile selected dataset name (for differential profile) */
 
 		Start = Subsets,                                                    /** Column start */
-		End = DifferentialProfileDatasetName2                               /** Column end */
+		End = Profile2DatasetName                                           /** Column end */
 	};
 
 	/** Get string representation of layer column enumeration */
@@ -98,11 +100,17 @@ public: // Columns
         if (column == Column::ShowDifferentialProfile)
             return "Show differential profile";
 
-        if (column == Column::DifferentialProfileDatasetName1)
-            return "Differential profile dataset name 1";
+        if (column == Column::Profile1DatasetNames)
+            return "Profile 1 dataset names";
 
-        if (column == Column::DifferentialProfileDatasetName2)
-            return "Differential profile dataset name 2";
+        if (column == Column::Profile1DatasetName)
+            return "Profile 1 dataset name";
+
+        if (column == Column::Profile2DatasetNames)
+            return "Profile 2 dataset names";
+
+        if (column == Column::Profile2DatasetName)
+            return "Profile 2 dataset name";
 
 		return QString();
 	}
@@ -289,7 +297,11 @@ public: // Getters/setters
 	 */
 	void setChannelLocked(const std::int32_t& channelIndex, const bool& locked);
 
-    /** Gets whether dimensions names are displayed in the viewer */
+    /**
+     * Gets whether dimensions names are displayed in the viewer
+     * @param role Data role
+     * @return Whether dimensions names are displayed in the viewer in variant form
+     */
     QVariant getShowDimensionNames(const std::int32_t& role) const;
 
     /**
@@ -298,7 +310,10 @@ public: // Getters/setters
      */
     void setShowDimensionNames(const bool& showDimensions);
 
-    /** Gets whether to show a differential profile in the viewer */
+    /** Gets whether to show a differential profile in the viewer
+     * @param role Data role
+     * @return Whether to show a differential profile in the viewer in variant form
+     */
     QVariant getShowDifferentialProfile(const std::int32_t& role) const;
 
     /**
@@ -306,6 +321,34 @@ public: // Getters/setters
      * @param showDifferentialProfile Whether to show a differential profile in the viewer
      */
     void setShowDifferentialProfile(const bool& showDifferentialProfile);
+
+    /** Gets selectable dataset names for profile with \p profileIndex
+     * @param profileIndex Index of the profile
+     * @param role Data role
+     * @return Selectable dataset names for profile with \p profileIndex in variant form
+     */
+    QVariant getProfileDatasetNames(const std::int32_t& profileIndex, const std::int32_t& role) const;
+
+    /**
+     * Sets selectable dataset names for profile with \p profileIndex
+     * @param profileIndex Index of the profile
+     * @param datasetNames Selectable dataset names
+     */
+    void setProfileDatasetNames(const std::int32_t& profileIndex, const QStringList& datasetNames);
+
+    /** Gets selected dataset name for profile with \p profileIndex
+     * @param profileIndex Index of the profile
+     * @param role Data role
+     * @return Selected dataset name for profile with \p profileIndex in variant form
+     */
+    QVariant getProfileDatasetName(const std::int32_t& profileIndex, const std::int32_t& role) const;
+
+    /**
+     * Sets selectable dataset names for profile with \p profileIndex
+     * @param profileIndex Index of the profile
+     * @param datasetName Selectable dataset names
+     */
+    void setProfileDatasetName(const std::int32_t& profileIndex, const QString& datasetName);
 
 public: // Miscellaneous
 
@@ -344,9 +387,13 @@ private: // Internal
     bool canShowDifferentialProfile() const;
 
 private:
-	Channels		_channels;      /** Channels */
-	QStringList		_subsets;       /** Subsets of the primary dataset (selected in the first channel) */
-    QVariantMap     _spec;          /** Specification for use in JS visualization client (Vega) */
+    Channels		        _channels;                      /** Channels */
+    QStringList		        _subsets;                       /** Subsets of the primary dataset (selected in the first channel) */
+    bool		            _showDifferentialProfile;       /** Whether to show the differential profile in the viewer */
+    QStringList             _profileDatasetNames[2];        /** Profile 1-2 dataset names (for differential profile) */
+    QString                 _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
+    bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
+    QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;

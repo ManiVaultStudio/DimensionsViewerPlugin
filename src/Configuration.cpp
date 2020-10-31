@@ -14,13 +14,13 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
 		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.25f, true)
 	}),
 	_subsets(),
+    _showDifferentialProfile(false),
+    _profileDatasetNames(),
+    _profileDatasetName(),
+    _showDimensionNames(false),
     _spec()
 {
     _spec["modified"] = 0;
-    _spec["showDimensionNames"]                 = true;
-    _spec["showDifferentialProfile"]            = false;
-    _spec["differentialProfileDatasetName1"]    = "";
-    _spec["differentialProfileDatasetName2"]    = "";
 
     for (auto channel : _channels) {
         QObject::connect(channel, &Channel::specChanged, [this](Channel* channel) {
@@ -144,13 +144,13 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
             flags |= Qt::ItemIsEnabled;
     }
 
-    if (index.column() == Column::DifferentialProfileDatasetName1) {
-        if (canShowDifferentialProfile() && _spec["showDifferentialProfile"].toBool())
+    if (index.column() == Column::Profile1DatasetName) {
+        if (canShowDifferentialProfile() && _showDifferentialProfile)
             flags |= Qt::ItemIsEnabled;
     }
 
-    if (index.column() == Column::DifferentialProfileDatasetName2) {
-        if (canShowDifferentialProfile() && _spec["showDifferentialProfile"].toBool())
+    if (index.column() == Column::Profile2DatasetName) {
+        if (canShowDifferentialProfile() && _showDifferentialProfile)
             flags |= Qt::ItemIsEnabled;
     }
 
@@ -195,11 +195,17 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
     if (index.column() == Column::ShowDifferentialProfile)
         return getShowDifferentialProfile(role);
 
-    if (index.column() == Column::DifferentialProfileDatasetName1)
-        return _spec["differentialProfileDatasetName1"];
+    if (index.column() == Column::Profile1DatasetNames)
+        return _profileDatasetNames[0];
 
-    if (index.column() == Column::DifferentialProfileDatasetName2)
-        return _spec["differentialProfileDatasetName2"];
+    if (index.column() == Column::Profile1DatasetName)
+        return _profileDatasetName[0];
+
+    if (index.column() == Column::Profile2DatasetNames)
+        return _profileDatasetNames[1];
+
+    if (index.column() == Column::Profile2DatasetName)
+        return _profileDatasetName[1];
 
 	return QVariant();
 }
@@ -242,10 +248,10 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 				break;
 		}
 
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDifferentialProfile));
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::DifferentialProfileDatasetName1));
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::DifferentialProfileDatasetName2));
+        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
+        affectedIndices << index.siblingAtColumn(Column::ShowDifferentialProfile);
+        affectedIndices << index.siblingAtColumn(Column::Profile1DatasetName);
+        affectedIndices << index.siblingAtColumn(Column::Profile2DatasetName);
 	}
 
 	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
@@ -253,25 +259,25 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 		setChannelEnabled(channelIndex, value.toBool());
 
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelDatasetNameStart + channelIndex));
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelColorStart + channelIndex));
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelOpacityStart + channelIndex));
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelProfileTypeStart + channelIndex));
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart + channelIndex));
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart + channelIndex));
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelLockedStart + channelIndex));
+		affectedIndices << index.siblingAtColumn(Column::ChannelDatasetNameStart + channelIndex);
+		affectedIndices << index.siblingAtColumn(Column::ChannelColorStart + channelIndex);
+		affectedIndices << index.siblingAtColumn(Column::ChannelOpacityStart + channelIndex);
+		affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
+		affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
+		affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart + channelIndex);
+        affectedIndices << index.siblingAtColumn(Column::ChannelLockedStart + channelIndex);
 
         if (channelIndex > 0) {
-            affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelProfileTypeStart));
-            affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart));
-            affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart));
-            affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelLockedStart));
+            affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart);
+            affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart);
+            affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart);
+            affectedIndices << index.siblingAtColumn(Column::ChannelLockedStart);
         }
 
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDifferentialProfile));
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::DifferentialProfileDatasetName1));
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::DifferentialProfileDatasetName2));
+        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
+        affectedIndices << index.siblingAtColumn(Column::ShowDifferentialProfile);
+        affectedIndices << index.siblingAtColumn(Column::Profile1DatasetName);
+        affectedIndices << index.siblingAtColumn(Column::Profile2DatasetName);
 	}
 
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd) {
@@ -297,12 +303,12 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 				if (getChannelLocked(c, Qt::EditRole).toBool()) {
 					setChannelProfileType(c, static_cast<Channel::ProfileType>(profileType));
 
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelProfileTypeStart + c));
+					affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + c);
 				}
 			}
 		}
 
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
+        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
 	if (index.column() >= Column::ChannelBandTypeStart && index.column() < Column::ChannelBandTypeEnd) {
@@ -316,12 +322,12 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 				if (getChannelLocked(c, Qt::EditRole).toBool()) {
 					setChannelBandType(c, static_cast<Channel::BandType>(bandType));
 
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart + c));
+					affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + c);
 				}
 			}
 		}
 
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
+        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
 	if (index.column() >= Column::ChannelShowRangeStart && index.column() < Column::ChannelShowRangeEnd) {
@@ -335,12 +341,12 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 				if (getChannelLocked(c, Qt::EditRole).toBool()) {
 					setChannelShowRange(c, showRange);
 					
-					affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart + c));
+					affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart + c);
 				}
 			}
 		}
 
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
+        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
 	if (index.column() >= Column::ChannelLockedStart && index.column() < Column::ChannelLockedEnd) {
@@ -355,10 +361,10 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 			setChannelShowRange(channelIndex, getChannelShowRange(0, Qt::EditRole).toBool());
 		}
 
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelProfileTypeStart + channelIndex));
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelBandTypeStart + channelIndex));
-		affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ChannelShowRangeStart + channelIndex));
-        affectedIndices << index.siblingAtColumn(static_cast<int>(Column::ShowDimensionNames));
+		affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
+		affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
+		affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart + channelIndex);
+        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
     if (index.column() == Column::SelectionStamp) {
@@ -376,11 +382,15 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         setShowDifferentialProfile(value.toBool());
     }
 
-    if (index.column() == Column::DifferentialProfileDatasetName1) {
+    if (index.column() == Column::Profile1DatasetNames) {
         _spec["differentialProfileDatasetName1"] = value.toBool();
     }
 
-    if (index.column() == Column::DifferentialProfileDatasetName2) {
+    if (index.column() == Column::Profile1DatasetName) {
+        _spec["differentialProfileDatasetName1"] = value.toBool();
+    }
+
+    if (index.column() == Column::Profile2DatasetName) {
         _spec["differentialProfileDatasetName2"] = value.toBool();
     }
 
@@ -840,6 +850,89 @@ void Configuration::setShowDifferentialProfile(const bool& showDifferentialProfi
     _spec["showDifferentialProfile"] = showDifferentialProfile;
 }
 
+QVariant Configuration::getProfileDatasetNames(const std::int32_t& profileIndex, const std::int32_t& role) const
+{
+    try
+    {
+        const auto profileDatasetNames          = _profileDatasetNames[profileIndex];
+        const auto profileDatasetNamesString    = profileDatasetNames.join(", ");
+
+        switch (role)
+        {
+            case Qt::DisplayRole:
+                return profileDatasetNamesString;
+
+            case Qt::EditRole:
+                return profileDatasetNames;
+
+            case Qt::ToolTipRole:
+                return QString("Profile %1 selectable dataset names: %2").arg(QString::number(profileIndex), profileDatasetNamesString);
+
+            default:
+                return QVariant();
+        }
+    }
+    catch (std::exception exception)
+    {
+        qDebug() << exception.what();
+    }
+
+    return QVariant();
+}
+
+void Configuration::setProfileDatasetNames(const std::int32_t& profileIndex, const QStringList& datasetNames)
+{
+    try
+    {
+        _profileDatasetNames[profileIndex] = datasetNames;
+    }
+    catch (std::exception exception)
+    {
+        qDebug() << exception.what();
+    }
+}
+
+QVariant Configuration::getProfileDatasetName(const std::int32_t& profileIndex, const std::int32_t& role) const
+{
+    try
+    {
+        const auto profileDatasetName = _profileDatasetName[profileIndex];
+
+        switch (role)
+        {
+            case Qt::DisplayRole:
+                return profileDatasetName;
+
+            case Qt::EditRole:
+                return profileDatasetName;
+
+            case Qt::ToolTipRole:
+                return QString("Profile %1 selected dataset name: %2").arg(QString::number(profileIndex), profileDatasetName);
+
+            default:
+                return QVariant();
+        }
+    }
+    catch (std::exception exception)
+    {
+        qDebug() << exception.what();
+    }
+
+    return QVariant();
+}
+
+void Configuration::setProfileDatasetName(const std::int32_t& profileIndex, const QString& datasetName)
+{
+    try
+    {
+        _profileDatasetName[profileIndex] = datasetName;
+    }
+    catch (std::exception exception)
+    {
+        qDebug() << exception.what();
+    }
+}
+
 Channel* Configuration::getChannelByDatasetName(const QString& datasetName)
 {
 	for (auto channel : _channels) {
@@ -866,7 +959,8 @@ void Configuration::updateSpec()
         channels[channel->getInternalName()] = channel->getSpec();
     }
 
-    _spec["channels"] = channels;
+    _spec["channels"]               = channels;
+    _spec["showDimensionNames"]     = _showDimensionNames;
 }
 
 QVariantMap Configuration::getSpec() const

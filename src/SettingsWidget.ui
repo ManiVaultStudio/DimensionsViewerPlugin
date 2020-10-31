@@ -402,7 +402,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="differentialProfileDataset1ComboBox">
+           <widget class="QComboBox" name="profile1DatasetNameComboBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -437,7 +437,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="differentialProfileDataset2ComboBox">
+           <widget class="QComboBox" name="profile2DatasetNameComboBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
