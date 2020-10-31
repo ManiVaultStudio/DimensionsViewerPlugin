@@ -788,7 +788,7 @@ void Configuration::setChannelLocked(const std::int32_t& channelIndex, const boo
 
 QVariant Configuration::getShowDimensionNames(const std::int32_t& role) const
 {
-    const auto showDimensionNames       = _spec["showDimensionNames"].toBool();
+    const auto showDimensionNames       = _showDimensionNames;
     const auto showDimensionNamesString = showDimensionNames ? "on" : "off";
 
     switch (role)
@@ -811,7 +811,7 @@ QVariant Configuration::getShowDimensionNames(const std::int32_t& role) const
 
 void Configuration::setShowDimensionNames(const bool& showDimensions)
 {
-    _spec["showDimensionNames"] = showDimensions;
+    _showDimensionNames = showDimensions;
     _spec["modified"] = _spec["modified"].toInt() + 1;
 
     dimensionsViewerPlugin->setSetting("ShowDimensionNames", showDimensions);
@@ -824,8 +824,8 @@ Configuration::Channels& Configuration::getChannels()
 
 QVariant Configuration::getShowDifferentialProfile(const std::int32_t& role) const
 {
-    const auto showDifferentialProfile = _spec["showDifferentialProfile"].toBool();
-    const auto showDifferentialProfileString = showDifferentialProfile ? "on" : "off";
+    const auto showDifferentialProfile          = _showDifferentialProfile;
+    const auto showDifferentialProfileString    = showDifferentialProfile ? "on" : "off";
 
     switch (role)
     {
@@ -847,7 +847,7 @@ QVariant Configuration::getShowDifferentialProfile(const std::int32_t& role) con
 
 void Configuration::setShowDifferentialProfile(const bool& showDifferentialProfile)
 {
-    _spec["showDifferentialProfile"] = showDifferentialProfile;
+    _showDifferentialProfile = showDifferentialProfile;
 }
 
 QVariant Configuration::getProfileDatasetNames(const std::int32_t& profileIndex, const std::int32_t& role) const
