@@ -260,7 +260,6 @@ private:
 	BandType				    _bandType;			            /** The type of band to visualize */
 	bool					    _showRange;			            /** Show the dimensions ranges */
 	bool					    _locked;			            /** Whether settings are locked (settings are linked to another channel) */
-    QPair<QString, QString>     _differentialDatasetNames;      /** Names of the datasets to compare */
 	QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 	Points*					    _points;			            /** Pointer to points dataset */
 
