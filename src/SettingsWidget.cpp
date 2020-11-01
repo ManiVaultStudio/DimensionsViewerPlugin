@@ -32,7 +32,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_bandTypeComboBoxes << _ui->channel1BandTypeComboBox<< _ui->channel2BandTypeComboBox << _ui->channel3BandTypeComboBox;
 	_lockedPushButtons << _ui->channel1LockedPushButton << _ui->channel2LockedPushButton << _ui->channel3LockedPushButton;
 	_showRangeCheckBoxes << _ui->channel1ShowRangeCheckBox<< _ui->channel2ShowRangeCheckBox << _ui->channel3ShowRangeCheckBox;
-    _differentialProfileWidgets << _ui->differentialProfileLabelWith << _ui->profile1DatasetNameComboBox << _ui->differentialProfileLabelWith << _ui->profile2DatasetNameComboBox << _ui->differentialProfileColorPushButton;
+    _differentialProfileWidgets << _ui->differentialProfileCompareLabel << _ui->profile1DatasetNameComboBox << _ui->differentialProfileWithLabel << _ui->profile2DatasetNameComboBox << _ui->differentialProfileColorPushButton;
 
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
@@ -145,6 +145,14 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
     QObject::connect(_ui->differentialProfileGroupBox, &QGroupBox::toggled, [this, &configurationsModel](bool checked) {
         configurationsModel.setData(Configuration::Column::ShowDifferentialProfile, checked);
+    });
+
+    QObject::connect(_ui->profile1DatasetNameComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](QString currentText) {
+        configurationsModel.setData(Configuration::Column::Profile1DatasetName, currentText);
+    });
+
+    QObject::connect(_ui->profile2DatasetNameComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](QString currentText) {
+        configurationsModel.setData(Configuration::Column::Profile2DatasetName, currentText);
     });
 
     _ui->advancedSettingsCheckBox->setChecked(_dimensionsViewerPlugin->getSetting("AdvancedSettings").toBool());
@@ -363,10 +371,10 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
             _ui->differentialProfileGroupBox->setChecked(index.data(Qt::EditRole).toBool());
             _ui->differentialProfileGroupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->differentialProfileGroupBox->blockSignals(false);
-
-            for (auto differentialProfileWidget : _differentialProfileWidgets) {
-                differentialProfileWidget->setEnabled(index.data(Qt::EditRole).toBool());
-            }
+            
+            _ui->differentialProfileCompareLabel->setEnabled(index.data(Qt::EditRole).toBool());
+            _ui->differentialProfileWithLabel->setEnabled(index.data(Qt::EditRole).toBool());
+            _ui->differentialProfileColorPushButton->setEnabled(index.data(Qt::EditRole).toBool());
         }
 
         if (column == Configuration::Column::Profile1DatasetNames) {
@@ -375,18 +383,18 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
             _ui->profile1DatasetNameComboBox->blockSignals(false);
         }
 
+        if (column == Configuration::Column::Profile2DatasetNames) {
+            _ui->profile2DatasetNameComboBox->blockSignals(true);
+            _ui->profile2DatasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->profile2DatasetNameComboBox->blockSignals(false);
+        }
+
         if (column == Configuration::Column::Profile1DatasetName) {
             _ui->profile1DatasetNameComboBox->blockSignals(true);
             _ui->profile1DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profile1DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
             _ui->profile1DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->profile1DatasetNameComboBox->blockSignals(false);
-        }
-
-        if (column == Configuration::Column::Profile2DatasetNames) {
-            _ui->profile2DatasetNameComboBox->blockSignals(true);
-            _ui->profile2DatasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-            _ui->profile2DatasetNameComboBox->blockSignals(false);
         }
 
         if (column == Configuration::Column::Profile2DatasetName) {

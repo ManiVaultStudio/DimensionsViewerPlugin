@@ -395,7 +395,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="showDifferentialProfileLabel">
+           <widget class="QLabel" name="differentialProfileCompareLabel">
             <property name="text">
              <string>Compare:</string>
             </property>
@@ -424,7 +424,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="differentialProfileLabelWith">
+           <widget class="QLabel" name="differentialProfileWithLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>

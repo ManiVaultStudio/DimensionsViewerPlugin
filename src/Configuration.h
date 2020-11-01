@@ -51,8 +51,8 @@ public: // Columns
 		ShowDimensionNames,		                                            /** Whether dimensions names are displayed in the viewer */
         ShowDifferentialProfile,                                            /** Whether to show the differential profile in the viewer */
         Profile1DatasetNames,                                               /** First profile available dataset names (for differential profile) */
-        Profile1DatasetName,                                                /** First profile selected dataset name (for differential profile) */
         Profile2DatasetNames,                                               /** Second profile available dataset names (for differential profile) */
+        Profile1DatasetName,                                                /** First profile selected dataset name (for differential profile) */
         Profile2DatasetName,                                                /** Second profile selected dataset name (for differential profile) */
 
 		Start = Subsets,                                                    /** Column start */
@@ -103,14 +103,14 @@ public: // Columns
         if (column == Column::Profile1DatasetNames)
             return "Profile 1 dataset names";
 
+        if (column == Column::Profile2DatasetName)
+            return "Profile 2 dataset name";
+
         if (column == Column::Profile1DatasetName)
             return "Profile 1 dataset name";
 
         if (column == Column::Profile2DatasetNames)
             return "Profile 2 dataset names";
-
-        if (column == Column::Profile2DatasetName)
-            return "Profile 2 dataset name";
 
 		return QString();
 	}
@@ -162,7 +162,7 @@ public: // Getters/setters
 	 * @param role Data role
 	 * @return Whether the channel is enabled in variant form
 	 */
-	QVariant getChannelEnabled(const std::int32_t& channelIndex, const std::int32_t& role) const;
+	QVariant isChannelEnabled(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
 	 * Sets whether channel with \p channelIndex is enabled
@@ -288,7 +288,7 @@ public: // Getters/setters
 	 * @param role Data role
 	 * @return Locked in variant form
 	 */
-	QVariant getChannelLocked(const std::int32_t& channelIndex, const std::int32_t& role) const;
+	QVariant isChannelLocked(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
 	 * Sets the locked parameter of channel with \p channelIndex
@@ -379,6 +379,12 @@ public: // Spec
     std::int32_t getModified() const;
 
 private: // Internal
+
+    /** Returns the index(es) of the enabled channels */
+    QVector<std::uint32_t> getChannelsEnabled() const;
+
+    /** Returns the number of enabled channels */
+    std::int32_t getNoChannelsEnabled() const;
 
     /** Returns the number of displayable channels */
     std::int32_t getNoDisplayChannels() const;
