@@ -11,7 +11,6 @@ class ColorPickerPushButton;
 class QCheckBox;
 class QComboBox;
 class QPushButton;
-class QSlider;
 
 namespace Ui {
 	class SettingsWidget;

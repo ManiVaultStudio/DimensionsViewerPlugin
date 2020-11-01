@@ -19,6 +19,8 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
     _profileDatasetName(),
     _showDimensionNames(false),
     _globalSettings(true),
+    _profileType(Channel::ProfileType::Mean),
+    _rangeType(Channel::BandType::StandardDeviation1),
     _spec()
 {
     _spec["modified"] = 0;
@@ -107,6 +109,11 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
         if (getNoDisplayChannels() > 0)
             flags |= Qt::ItemIsEnabled;
     }
+
+    if (index.column() == Column::GlobalProfileType || index.column() == Column::GlobalRangeType) {
+        if (_globalSettings)
+            flags |= Qt::ItemIsEnabled;
+    }
     
     if (index.column() == Column::ShowDifferentialProfile) {
         if (canShowDifferentialProfile())
@@ -154,6 +161,12 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 	if (index.column() == Column::GlobalSettings)
 		return getGlobalSettings(role);
+
+    if (index.column() == Column::GlobalProfileType)
+        return getGlobalProfileType(role);
+
+    if (index.column() == Column::GlobalRangeType)
+        return getGlobalRangeType(role);
 
     if (index.column() == Column::ShowDimensionNames)
         return getShowDimensionNames(role);
@@ -355,38 +368,16 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 	if (index.column() >= Column::ChannelProfileTypeStart && index.column() < Column::ChannelProfileTypeEnd) {
 		const auto channelIndex = index.column() - Column::ChannelProfileTypeStart;
-		const auto profileType  = value.toInt();
 
-		setChannelProfileType(channelIndex, static_cast<Channel::ProfileType>(profileType));
-
-		if (channelIndex == 0) {
-			for (int c = 1; c < Configuration::noChannels; ++c) {
-				if (getGlobalSettings(Qt::EditRole).toBool()) {
-					setChannelProfileType(c, static_cast<Channel::ProfileType>(profileType));
-
-					affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + c);
-				}
-			}
-		}
+		setChannelProfileType(channelIndex, static_cast<Channel::ProfileType>(value.toInt()));
 
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
 	if (index.column() >= Column::ChannelBandTypeStart && index.column() < Column::ChannelBandTypeEnd) {
 		const auto channelIndex = index.column() - Column::ChannelBandTypeStart;
-		const auto bandType     = value.toInt();
 
-		setChannelBandType(channelIndex, static_cast<Channel::BandType>(bandType));
-
-		if (channelIndex == 0) {
-			for (int c = 1; c < Configuration::noChannels; ++c) {
-				if (getGlobalSettings(Qt::EditRole).toBool()) {
-					setChannelBandType(c, static_cast<Channel::BandType>(bandType));
-
-					affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + c);
-				}
-			}
-		}
+		setChannelBandType(channelIndex, static_cast<Channel::BandType>(value.toInt()));
 
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
@@ -397,17 +388,32 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		setGlobalSettings(globalSettings);
 		
         for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-            if (globalSettings) {
-                setChannelProfileType(channelIndex, static_cast<Channel::ProfileType>(getChannelProfileType(0, Qt::EditRole).toInt()));
-                setChannelBandType(channelIndex, static_cast<Channel::BandType>(getChannelBandType(0, Qt::EditRole).toInt()));
-            }
-
             affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
             affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
         }
 		
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
+
+    if (index.column() == Column::GlobalProfileType) {
+        const auto globalProfileType = static_cast<Channel::ProfileType>(value.toInt());
+
+        setGlobalProfileType(globalProfileType);
+
+        if (getGlobalSettings(Qt::EditRole).toBool())
+            for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
+                affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
+    }
+
+    if (index.column() == Column::GlobalRangeType) {
+        const auto globalRangeType = static_cast<Channel::BandType>(value.toInt());
+
+        setGlobalRangeType(globalRangeType);
+
+        if (getGlobalSettings(Qt::EditRole).toBool())
+            for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
+                affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
+    }
 
     if (index.column() == Column::SelectionStamp) {
         //for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
@@ -789,11 +795,80 @@ void Configuration::setGlobalSettings(const bool& globalSettings)
 	try
 	{
 		_globalSettings = globalSettings;
+
+        if (_globalSettings) {
+            for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
+                setChannelProfileType(channelIndex, _profileType);
+                setChannelBandType(channelIndex, _rangeType);
+            }
+        }
 	}
 	catch (std::exception exception)
 	{
 		qDebug() << exception.what();
 	}
+}
+
+QVariant Configuration::getGlobalProfileType(const std::int32_t& role) const
+{
+    const auto profileTypeString = Channel::getProfileTypeName(_profileType);
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return profileTypeString;
+
+        case Qt::EditRole:
+            return static_cast<int>(_profileType);
+
+        case Qt::ToolTipRole:
+            return QString("Global profile type: %1").arg(profileTypeString);
+
+        default:
+            return QVariant();
+    }
+}
+
+void Configuration::setGlobalProfileType(const Channel::ProfileType& profileType)
+{
+    _profileType = profileType;
+
+    if (_globalSettings) {
+        for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
+            setChannelProfileType(channelIndex, _profileType);
+        }
+    }
+}
+
+QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
+{
+    const auto rangeTypeString = Channel::getBandTypeName(_rangeType);
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return rangeTypeString;
+
+        case Qt::EditRole:
+            return static_cast<int>(_rangeType);
+
+        case Qt::ToolTipRole:
+            return QString("Global range type: %1").arg(rangeTypeString);
+
+        default:
+            return QVariant();
+    }
+}
+
+void Configuration::setGlobalRangeType(const Channel::BandType& rangeType)
+{
+    _rangeType = rangeType;
+
+    if (_globalSettings) {
+        for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
+            setChannelBandType(channelIndex, _rangeType);
+        }
+    }
 }
 
 QVariant Configuration::getShowDimensionNames(const std::int32_t& role) const

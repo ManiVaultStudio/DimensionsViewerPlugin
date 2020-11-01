@@ -226,7 +226,10 @@ function getDesign(spec) {
             x: {
                 field: spec.showDimensionNames ? 'dimName' : 'dimId',
                 type: spec.showDimensionNames ? 'ordinal' : 'nominal',
-                title: spec.showDimensionNames ? 'Dimension name' : 'Dimensions index'
+                title: spec.showDimensionNames ? 'Dimension name' : 'Dimensions index',
+                axis: {
+                    labelAngle: spec.showDimensionNames ? -45 : 0
+                }
             }
         }
 

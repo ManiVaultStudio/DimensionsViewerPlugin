@@ -137,6 +137,17 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
         configurationsModel.setData(Configuration::Column::GlobalSettings, state);
     });
 
+    QObject::connect(_ui->globalProfileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+        configurationsModel.setData(Configuration::Column::GlobalProfileType, currentIndex);
+    });
+
+    QObject::connect(_ui->globalRangeTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+        configurationsModel.setData(Configuration::Column::GlobalRangeType, currentIndex);
+    });
+
+    _ui->globalProfileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
+    _ui->globalRangeTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
+
 	updateData(QModelIndex(), QModelIndex());
 }
 
@@ -281,6 +292,22 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			_ui->globalSettingsGroupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 			_ui->globalSettingsGroupBox->blockSignals(false);
 		}
+
+        if (column == Configuration::Column::GlobalProfileType) {
+            _ui->globalProfileTypeComboBox->blockSignals(true);
+            _ui->globalProfileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->globalProfileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+            _ui->globalProfileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->globalProfileTypeComboBox->blockSignals(false);
+        }
+
+        if (column == Configuration::Column::GlobalRangeType) {
+            _ui->globalRangeTypeComboBox->blockSignals(true);
+            _ui->globalRangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->globalRangeTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+            _ui->globalRangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->globalRangeTypeComboBox->blockSignals(false);
+        }
 
         if (column == Configuration::Column::ShowDimensionNames) {
             _ui->showDimensionNamesCheckBox->blockSignals(true);

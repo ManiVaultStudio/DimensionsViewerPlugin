@@ -44,6 +44,8 @@ public: // Columns
 		ChannelBandTypeStart,				                                /** Channel band type first column */
 		ChannelBandTypeEnd = ChannelBandTypeStart + noChannels,             /** Channel band type last column */
         GlobalSettings,                                                     /** Whether whether global settings are on or off */
+        GlobalProfileType,                                                  /** Global profile type */
+        GlobalRangeType,                                                    /** Global range type */
 		SelectionStamp,		                                                /** Auxiliary column for triggering synchronization */
 		ShowDimensionNames,		                                            /** Whether dimensions names are displayed in the viewer */
         ShowDifferentialProfile,                                            /** Whether to show the differential profile in the viewer */
@@ -84,6 +86,12 @@ public: // Columns
 
         if (column == Column::GlobalSettings)
             return "Global settings";
+
+        if (column == Column::GlobalProfileType)
+            return "Global profile type";
+
+        if (column == Column::GlobalRangeType)
+            return "Global range type";
 
         if (column == Column::SelectionStamp)
             return "Selection stamp";
@@ -263,7 +271,6 @@ public: // Getters/setters
 
 	/**
 	 * Returns whether whether global settings are on or off
-	 * @param channelIndex Index of the channel
 	 * @param role Data role
 	 * @return Whether whether global settings are on or off in variant form
 	 */
@@ -271,10 +278,35 @@ public: // Getters/setters
 
 	/**
 	 * Sets whether whether global settings are on or off
-	 * @param channelIndex Index of the channel
 	 * @param globalSettings Whether whether global settings are on or off
 	 */
 	void setGlobalSettings(const bool& globalSettings);
+
+    /**
+     * Returns the global profile type
+     * @param role Data role
+     * @return Global profile type in variant form
+     */
+    QVariant getGlobalProfileType(const std::int32_t& role) const;
+
+    /**
+     * Sets the global profile type
+     * @param profileType Global profile type
+     */
+    void setGlobalProfileType(const Channel::ProfileType& profileType);
+
+    /**
+     * Returns the global range type
+     * @param role Data role
+     * @return Global range type in variant form
+     */
+    QVariant getGlobalRangeType(const std::int32_t& role) const;
+
+    /**
+     * Sets the global range type
+     * @param rangeType Global range type
+     */
+    void setGlobalRangeType(const Channel::BandType& rangeType);
 
     /**
      * Gets whether dimensions names are displayed in the viewer
@@ -379,6 +411,8 @@ private:
     QString                 _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
     bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
     bool                    _globalSettings;                /** Whether whether global settings are on or off */
+    Channel::ProfileType	_profileType;		            /** Global profile type */
+    Channel::BandType		_rangeType;			            /** Global range type */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:
