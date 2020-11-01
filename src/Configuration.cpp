@@ -9,15 +9,16 @@ std::int32_t Configuration::maxNoDimensions = 100;
 Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
 	QObject(parent),
 	_channels({ 
-		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.25f, false),
-		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.25f, true),
-		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.25f, true)
+		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.25f),
+		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.25f),
+		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.25f)
 	}),
 	_subsets(),
     _showDifferentialProfile(false),
     _profileDatasetNames(),
     _profileDatasetName(),
     _showDimensionNames(false),
+    _globalSettings(true),
     _spec()
 {
     _spec["modified"] = 0;
@@ -74,29 +75,15 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 	if (index.column() >= Column::ChannelProfileTypeStart && index.column() < Column::ChannelProfileTypeEnd) {
 		const auto channelIndex = index.column() - Column::ChannelProfileTypeStart;
 
-		if (channelIndex == 0) {
-            for (int c = 0; c < noChannels; ++c)
-			    if (_channels[c]->isEnabled())
-				    flags |= Qt::ItemIsEnabled;
-		}
-		else {
-			if (_channels[channelIndex]->isEnabled() && !_channels[channelIndex]->isLocked() && _subsets.size() >= channelIndex)
-				flags |= Qt::ItemIsEnabled;
-		}
+        if (_channels[channelIndex]->isEnabled() && !_globalSettings && _subsets.size() >= channelIndex)
+            flags |= Qt::ItemIsEnabled;
 	}
 
 	if (index.column() >= Column::ChannelBandTypeStart && index.column() < Column::ChannelBandTypeEnd) {
 		const auto channelIndex = index.column() - Column::ChannelBandTypeStart;
 
-		if (channelIndex == 0) {
-			for (int c = 0; c < noChannels; ++c)
-				if (_channels[c]->isEnabled())
-					flags |= Qt::ItemIsEnabled;
-		}
-		else {
-			if (_channels[channelIndex]->isEnabled() && !_channels[channelIndex]->isLocked() && _subsets.size() >= channelIndex)
-				flags |= Qt::ItemIsEnabled;
-		}
+        if (_channels[channelIndex]->isEnabled() && !_globalSettings && _subsets.size() >= channelIndex)
+            flags |= Qt::ItemIsEnabled;
 	}
 
 	if (index.column() >= Column::ChannelOpacityStart && index.column() < Column::ChannelOpacityEnd) {
@@ -111,30 +98,12 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 		}
 	}
 
-	if (index.column() >= Column::ChannelShowRangeStart && index.column() < Column::ChannelShowRangeEnd) {
-		const auto channelIndex = index.column() - Column::ChannelShowRangeStart;
-		
-		if (channelIndex == 0) {
-            for (int c = 0; c < noChannels; ++c)
-                if (_channels[c]->isEnabled())
-                    flags |= Qt::ItemIsEnabled;
-		}
-		else {
-			if (_channels[channelIndex]->isEnabled() && !_channels[channelIndex]->isLocked() && _subsets.size() >= channelIndex)
-				flags |= Qt::ItemIsEnabled;
-		}
-	}
-
-	if (index.column() >= Column::ChannelLockedStart && index.column() < Column::ChannelLockedEnd) {
-		const auto channelIndex = index.column() - Column::ChannelLockedStart;
-
-		if (channelIndex >= 1) {
-			if (_channels[channelIndex]->isEnabled() && _subsets.size() >= channelIndex)
-				flags |= Qt::ItemIsEnabled;
-		}
-	}
-
     if (index.column() == Column::ShowDimensionNames) {
+        if (getNoDisplayChannels() > 0)
+            flags |= Qt::ItemIsEnabled;
+    }
+
+    if (index.column() == Column::GlobalSettings) {
         if (getNoDisplayChannels() > 0)
             flags |= Qt::ItemIsEnabled;
     }
@@ -183,11 +152,8 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 	if (index.column() >= Column::ChannelBandTypeStart && index.column() < Column::ChannelBandTypeEnd)
 		return getChannelBandType(index.column() - Column::ChannelBandTypeStart, role);
 
-	if (index.column() >= Column::ChannelShowRangeStart && index.column() < Column::ChannelShowRangeEnd)
-		return getChannelShowRange(index.column() - Column::ChannelShowRangeStart, role);
-
-	if (index.column() >= Column::ChannelLockedStart && index.column() < Column::ChannelLockedEnd)
-		return isChannelLocked(index.column() - Column::ChannelLockedStart, role);
+	if (index.column() == Column::GlobalSettings)
+		return getGlobalSettings(role);
 
     if (index.column() == Column::ShowDimensionNames)
         return getShowDimensionNames(role);
@@ -316,8 +282,6 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 			affectedIndices << index.siblingAtColumn(Column::ChannelOpacityStart + s + 1);
 			affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + s + 1);
 			affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + s + 1);
-			affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart + s + 1);
-			affectedIndices << index.siblingAtColumn(Column::ChannelLockedStart + s + 1);
 		}
 
 		switch (_subsets.size())
@@ -341,10 +305,13 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		}
 
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
-        
+        affectedIndices << index.siblingAtColumn(Column::GlobalSettings);
+
         setShowDifferentialProfile(canShowDifferentialProfile());
 
         updateDifferentialProfile();
+
+        setGlobalSettings(getNoDisplayChannels() > 0);
 	}
 
 	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
@@ -357,21 +324,21 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		affectedIndices << index.siblingAtColumn(Column::ChannelOpacityStart + channelIndex);
 		affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
 		affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
-		affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart + channelIndex);
-        affectedIndices << index.siblingAtColumn(Column::ChannelLockedStart + channelIndex);
+        affectedIndices << index.siblingAtColumn(Column::GlobalSettings + channelIndex);
 
         if (channelIndex > 0) {
             affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart);
             affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart);
-            affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart);
-            affectedIndices << index.siblingAtColumn(Column::ChannelLockedStart);
         }
 
+        affectedIndices << index.siblingAtColumn(Column::GlobalSettings);
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 
         setShowDifferentialProfile(canShowDifferentialProfile());
 
         updateDifferentialProfile();
+
+        setGlobalSettings(getNoDisplayChannels() > 0);
 	}
 
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd) {
@@ -394,7 +361,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 		if (channelIndex == 0) {
 			for (int c = 1; c < Configuration::noChannels; ++c) {
-				if (isChannelLocked(c, Qt::EditRole).toBool()) {
+				if (getGlobalSettings(Qt::EditRole).toBool()) {
 					setChannelProfileType(c, static_cast<Channel::ProfileType>(profileType));
 
 					affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + c);
@@ -413,7 +380,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 		if (channelIndex == 0) {
 			for (int c = 1; c < Configuration::noChannels; ++c) {
-				if (isChannelLocked(c, Qt::EditRole).toBool()) {
+				if (getGlobalSettings(Qt::EditRole).toBool()) {
 					setChannelBandType(c, static_cast<Channel::BandType>(bandType));
 
 					affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + c);
@@ -424,40 +391,21 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
-	if (index.column() >= Column::ChannelShowRangeStart && index.column() < Column::ChannelShowRangeEnd) {
-		const auto channelIndex = index.column() - Column::ChannelShowRangeStart;
-		const auto showRange    = value.toBool();
+	if (index.column() == Column::GlobalSettings) {
+		const auto globalSettings = value.toBool();
 
-		setChannelShowRange(channelIndex, showRange);
+		setGlobalSettings(globalSettings);
+		
+        for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
+            if (globalSettings) {
+                setChannelProfileType(channelIndex, static_cast<Channel::ProfileType>(getChannelProfileType(0, Qt::EditRole).toInt()));
+                setChannelBandType(channelIndex, static_cast<Channel::BandType>(getChannelBandType(0, Qt::EditRole).toInt()));
+            }
 
-		if (channelIndex == 0) {
-			for (int c = 1; c < Configuration::noChannels; ++c) {
-				if (isChannelLocked(c, Qt::EditRole).toBool()) {
-					setChannelShowRange(c, showRange);
-					
-					affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart + c);
-				}
-			}
-		}
-
-        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
-	}
-
-	if (index.column() >= Column::ChannelLockedStart && index.column() < Column::ChannelLockedEnd) {
-		const auto channelIndex = index.column() - Column::ChannelLockedStart;
-		const auto locked       = value.toBool();
-
-		setChannelLocked(index.column() - Column::ChannelLockedStart, value.toBool());
-
-		if (locked) {
-			setChannelProfileType(channelIndex, static_cast<Channel::ProfileType>(getChannelProfileType(0, Qt::EditRole).toInt()));
-			setChannelBandType(channelIndex, static_cast<Channel::BandType>(getChannelBandType(0, Qt::EditRole).toInt()));
-			setChannelShowRange(channelIndex, getChannelShowRange(0, Qt::EditRole).toBool());
-		}
-
-		affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
-		affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
-		affectedIndices << index.siblingAtColumn(Column::ChannelShowRangeStart + channelIndex);
+            affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
+            affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
+        }
+		
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
@@ -806,23 +754,23 @@ void Configuration::setChannelBandType(const std::int32_t& channelIndex, const C
 	}
 }
 
-QVariant Configuration::getChannelShowRange(const std::int32_t& channelIndex, const std::int32_t& role) const
+QVariant Configuration::getGlobalSettings(const std::int32_t& role) const
 {
 	try
 	{
-		const auto showRange		= _channels[channelIndex]->getShowRange();
-		const auto showRangeString	= showRange ? "on" : "off";
+		const auto globalSettings           = _globalSettings;
+		const auto globalSettingsString     = globalSettings ? "on" : "off";
 
 		switch (role)
 		{
 			case Qt::DisplayRole:
-				return showRangeString;
+				return globalSettingsString;
 
 			case Qt::EditRole:
-				return showRange;
+				return globalSettings;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 show range: %2").arg(QString::number(channelIndex + 1), showRangeString);
+				return QString("Global settings %1").arg(globalSettingsString);
 
 			default:
 				return QVariant();
@@ -836,53 +784,11 @@ QVariant Configuration::getChannelShowRange(const std::int32_t& channelIndex, co
 	return QVariant();
 }
 
-void Configuration::setChannelShowRange(const std::int32_t& channelIndex, const bool& showRange)
+void Configuration::setGlobalSettings(const bool& globalSettings)
 {
 	try
 	{
-		_channels[channelIndex]->setShowRange(showRange);
-	}
-	catch (std::exception exception)
-	{
-		qDebug() << exception.what();
-	}
-}
-
-QVariant Configuration::isChannelLocked(const std::int32_t& channelIndex, const std::int32_t& role) const
-{
-	try
-	{
-		const auto locked           = _channels[channelIndex]->isLocked();
-		const auto lockedString     = locked ? "on" : "off";
-
-		switch (role)
-		{
-			case Qt::DisplayRole:
-				return lockedString;
-
-			case Qt::EditRole:
-				return locked;
-
-			case Qt::ToolTipRole:
-				return QString("Channel %1 locked: %2").arg(QString::number(channelIndex + 1), lockedString);
-
-			default:
-				return QVariant();
-		}
-	}
-	catch (std::exception exception)
-	{
-		qDebug() << exception.what();
-	}
-
-	return QVariant();
-}
-
-void Configuration::setChannelLocked(const std::int32_t& channelIndex, const bool& locked)
-{
-	try
-	{
-		_channels[channelIndex]->setLocked(locked);
+		_globalSettings = globalSettings;
 	}
 	catch (std::exception exception)
 	{

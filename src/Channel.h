@@ -104,9 +104,8 @@ protected: // Construction
 	 * @param dataName The data name of the channel
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
-	 * @param lock Whether settings are locked
 	 */
-	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
+	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f);
 
 public: // Getters/setters
 
@@ -207,17 +206,6 @@ public: // Getters/setters
 	 */
 	void setShowRange(const bool& showRange);
 
-	/** Returns whether settings are locked */
-	bool isLocked() const {
-		return _locked;
-	};
-
-	/**
-	 * Sets whether settings are locked
-	 * @param locked Whether settings are locked
-	 */
-	void setLocked(const bool& locked);
-
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
 
@@ -259,7 +247,6 @@ private:
 	ProfileType				    _profileType;		            /** The type of profile to visualize */
 	BandType				    _bandType;			            /** The type of band to visualize */
 	bool					    _showRange;			            /** Show the dimensions ranges */
-	bool					    _locked;			            /** Whether settings are locked (settings are linked to another channel) */
 	QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 	Points*					    _points;			            /** Pointer to points dataset */
 

@@ -29,24 +29,21 @@ public: // Columns
 	/** Data columns */
 	enum Column {
 		Subsets,						                                    /** The subset(s) parameter of the first dataset */
-		ChannelEnabledStart,				                                /** Channel enabled parameter of the first channel */
-		ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled parameter of the last channel */
-		ChannelDatasetNameStart,			                                /** Channel dataset name parameter of the first channel */
-		ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name parameter of the last channel */
-		ChannelDataNameStart,				                                /** Channel data name parameter of the first channel */
-		ChannelDataNameEnd = ChannelDataNameStart + noChannels,             /** Channel data name parameter of the last channel */
-		ChannelColorStart,					                                /** Channel color parameter of the first channel */
-		ChannelColorEnd = ChannelColorStart + noChannels,                   /** Channel color parameter of the last channel */
-		ChannelOpacityStart,				                                /** Channel opacity parameter of the first channel */
-		ChannelOpacityEnd = ChannelOpacityStart + noChannels,               /** Channel opacity parameter of the first channel */
-		ChannelProfileTypeStart,			                                /** Channel profile type parameter of the first channel */
-		ChannelProfileTypeEnd = ChannelProfileTypeStart + noChannels,       /** Channel profile type parameter of the second channel */
-		ChannelBandTypeStart,				                                /** Channel band type parameter of the first channel */
-		ChannelBandTypeEnd = ChannelBandTypeStart + noChannels,             /** Channel band type parameter of the second channel */
-		ChannelShowRangeStart,				                                /** Channel show range parameter of the first channel */
-		ChannelShowRangeEnd = ChannelShowRangeStart + noChannels,           /** Channel show range parameter of the last channel */
-		ChannelLockedStart,                                                 /** Channel locked parameter of the first channel */
-		ChannelLockedEnd = ChannelLockedStart + noChannels,		            /** Channel locked parameter of the last channel */
+		ChannelEnabledStart,				                                /** Channel enabled first column */
+		ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled last column */
+		ChannelDatasetNameStart,			                                /** Channel dataset name first column */
+		ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name last column */
+		ChannelDataNameStart,				                                /** Channel data name first column */
+		ChannelDataNameEnd = ChannelDataNameStart + noChannels,             /** Channel data name last column */
+		ChannelColorStart,					                                /** Channel color first column */
+		ChannelColorEnd = ChannelColorStart + noChannels,                   /** Channel color last column */
+		ChannelOpacityStart,				                                /** Channel opacity first column */
+		ChannelOpacityEnd = ChannelOpacityStart + noChannels,               /** Channel opacity last column */
+		ChannelProfileTypeStart,			                                /** Channel profile type first column */
+		ChannelProfileTypeEnd = ChannelProfileTypeStart + noChannels,       /** Channel profile type last column */
+		ChannelBandTypeStart,				                                /** Channel band type first column */
+		ChannelBandTypeEnd = ChannelBandTypeStart + noChannels,             /** Channel band type last column */
+        GlobalSettings,                                                     /** Whether whether global settings are on or off */
 		SelectionStamp,		                                                /** Auxiliary column for triggering synchronization */
 		ShowDimensionNames,		                                            /** Whether dimensions names are displayed in the viewer */
         ShowDifferentialProfile,                                            /** Whether to show the differential profile in the viewer */
@@ -85,11 +82,8 @@ public: // Columns
 		if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
 			return QString("Channel %1: Enabled").arg(QString::number(column));
 
-		if (column >= Column::ChannelShowRangeStart && column < Column::ChannelShowRangeEnd)
-			return QString("Channel %1: Show range").arg(QString::number(column));
-
-		if (column >= Column::ChannelLockedStart && column < Column::ChannelLockedStart)
-			return QString("Channel %1: Locked").arg(QString::number(column));
+        if (column == Column::GlobalSettings)
+            return "Global settings";
 
         if (column == Column::SelectionStamp)
             return "Selection stamp";
@@ -268,34 +262,19 @@ public: // Getters/setters
 	void setChannelBandType(const std::int32_t& channelIndex, const Channel::BandType& bandType);
 
 	/**
-	 * Returns the show range parameter of channel with \p channelIndex
+	 * Returns whether whether global settings are on or off
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
-	 * @return Show range in variant form
+	 * @return Whether whether global settings are on or off in variant form
 	 */
-	QVariant getChannelShowRange(const std::int32_t& channelIndex, const std::int32_t& role) const;
+	QVariant getGlobalSettings(const std::int32_t& role) const;
 
 	/**
-	 * Sets the show range parameter of channel with \p channelIndex
+	 * Sets whether whether global settings are on or off
 	 * @param channelIndex Index of the channel
-	 * @param showRange Show range parameter of channel with \p channelIndex
+	 * @param globalSettings Whether whether global settings are on or off
 	 */
-	void setChannelShowRange(const std::int32_t& channelIndex, const bool& showRange);
-
-	/**
-	 * Returns the locked parameter of channel with \p channelIndex
-	 * @param channelIndex Index of the channel
-	 * @param role Data role
-	 * @return Locked in variant form
-	 */
-	QVariant isChannelLocked(const std::int32_t& channelIndex, const std::int32_t& role) const;
-
-	/**
-	 * Sets the locked parameter of channel with \p channelIndex
-	 * @param channelIndex Index of the channel
-	 * @param locked Locked parameter of channel with \p channelIndex
-	 */
-	void setChannelLocked(const std::int32_t& channelIndex, const bool& locked);
+	void setGlobalSettings(const bool& globalSettings);
 
     /**
      * Gets whether dimensions names are displayed in the viewer
@@ -399,6 +378,7 @@ private:
     QStringList             _profileDatasetNames[2];        /** Profile 1-2 dataset names (for differential profile) */
     QString                 _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
     bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
+    bool                    _globalSettings;                /** Whether whether global settings are on or off */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:

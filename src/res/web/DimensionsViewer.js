@@ -98,7 +98,7 @@ function getAggregatePointsMark(channel) {
             "type": "point",
             "fill": channel.color,
             "opacity": 1,
-            "size": 11
+            "size": 8
         },
         "transform": [
             {
