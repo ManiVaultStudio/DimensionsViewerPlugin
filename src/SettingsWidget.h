@@ -52,6 +52,7 @@ private:
     QVector<QCheckBox*>                     _enabledCheckBoxes;             /** Enabled check boxes */
     QVector<QComboBox*>                     _datasetNameComboBoxes;         /** Dataset name combo boxes */
     QVector<ColorPickerPushButton*>         _colorPushButtons;              /** Color push buttons */
+    QVector<QPushButton*>                   _settingsPushButtons;           /** Settings push buttons */
     QVector<QSlider*>                       _opacitySliders;                /** Opacity sliders */
     QVector<QComboBox*>                     _profileTypeComboBoxes;         /** Color push buttons */
     QVector<QComboBox*>                     _bandTypeComboBoxes;            /** Profile type combo boxes */

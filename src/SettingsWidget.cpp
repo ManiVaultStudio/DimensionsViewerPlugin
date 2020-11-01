@@ -27,6 +27,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_enabledCheckBoxes << _ui->channel1EnabledCheckBox<< _ui->channel2EnabledCheckBox << _ui->channel3EnabledCheckBox;
 	_datasetNameComboBoxes << _ui->channel1DatasetNameComboBox<< _ui->channel2DatasetNameComboBox << _ui->channel3DatasetNameComboBox;
 	_colorPushButtons << _ui->channel1ColorPushButton<< _ui->channel2ColorPushButton << _ui->channel3ColorPushButton;
+    _settingsPushButtons << _ui->channel1SettingsPushButton<< _ui->channel2SettingsPushButton << _ui->channel3SettingsPushButton;
 	_opacitySliders << _ui->channel1OpacitySlider<< _ui->channel2OpacitySlider << _ui->channel3OpacitySlider;
 	_profileTypeComboBoxes << _ui->channel1ProfileTypeComboBox<< _ui->channel2ProfileTypeComboBox << _ui->channel3ProfileTypeComboBox;
 	_bandTypeComboBoxes << _ui->channel1BandTypeComboBox<< _ui->channel2BandTypeComboBox << _ui->channel3BandTypeComboBox;
@@ -95,6 +96,14 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		});
 	}
 
+    for (auto settingsPushButton : _settingsPushButtons) {
+        QFont font = QFont("Font Awesome 5 Free Solid", 8);
+
+        settingsPushButton->setFont(font);
+        settingsPushButton->setStyleSheet("text-align: center");
+        settingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("tools"));
+    }
+
 	for (auto opacitySlider : _opacitySliders) {
 		opacitySlider->setVisible(false);
 
@@ -131,7 +140,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
 		lockedPushButton->setFont(font);
 		lockedPushButton->setStyleSheet("text-align: center");
-		lockedPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("lock"));
+		lockedPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("link"));
 		lockedPushButton->setVisible(_lockedPushButtons.indexOf(lockedPushButton) > 0);
 
 		QObject::connect(lockedPushButton, &QPushButton::toggled, [this, &configurationsModel, lockedPushButton](bool checked) {
@@ -352,7 +361,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			lockedPushButton->blockSignals(true);
 			lockedPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
 			lockedPushButton->setChecked(index.data(Qt::EditRole).toBool());
-			lockedPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(index.data(Qt::EditRole).toBool() ? "lock" : "unlock"));
+			lockedPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter(index.data(Qt::EditRole).toBool() ? "link" : "unlink"));
 			lockedPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 			lockedPushButton->blockSignals(false);
 		}
