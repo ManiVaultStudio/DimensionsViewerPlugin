@@ -1,4 +1,5 @@
 #include "SettingsWidget.h"
+#include "ChannelWidget.h"
 #include "DimensionsViewerPlugin.h"
 #include "Application.h"
 
@@ -23,98 +24,19 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 {
 	_ui->setupUi(this);
 
-	_enabledCheckBoxes << _ui->channel1EnabledCheckBox<< _ui->channel2EnabledCheckBox << _ui->channel3EnabledCheckBox;
+    for (int channelIndex = 0; channelIndex < 3; channelIndex++)
+        _ui->channelsLayout->addWidget(new ChannelWidget(_dimensionsViewerPlugin, channelIndex));
+
+    auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+
+	/*_enabledCheckBoxes << _ui->channel1EnabledCheckBox<< _ui->channel2EnabledCheckBox << _ui->channel3EnabledCheckBox;
 	_datasetNameComboBoxes << _ui->channel1DatasetNameComboBox<< _ui->channel2DatasetNameComboBox << _ui->channel3DatasetNameComboBox;
 	_colorPushButtons << _ui->channel1ColorPushButton<< _ui->channel2ColorPushButton << _ui->channel3ColorPushButton;
 	_profileTypeComboBoxes << _ui->channel1ProfileTypeComboBox<< _ui->channel2ProfileTypeComboBox << _ui->channel3ProfileTypeComboBox;
 	_rangeTypeComboBoxes << _ui->channel1RangeTypeComboBox << _ui->channel2RangeTypeComboBox << _ui->channel3RangeTypeComboBox;
     _settingsPushButtons << _ui->channel1SettingsPushButton << _ui->channel2SettingsPushButton << _ui->channel3SettingsPushButton;
     _differentialProfileWidgets << _ui->differentialProfileCompareLabel << _ui->profile1DatasetNameComboBox << _ui->differentialProfileWithLabel << _ui->profile2DatasetNameComboBox << _ui->differentialProfileColorPushButton;
-
-	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
-
-	const auto updateDataset1Combobox = [this]() {
-		auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
-
-		_ui->channel1DatasetNameComboBox->blockSignals(true);
-		_ui->channel1DatasetNameComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
-		_ui->channel1DatasetNameComboBox->setEnabled(configurationsModel.rowCount() > 1);
-		_ui->channel1DatasetNameComboBox->blockSignals(false);
-	};
-	
-	QObject::connect(&configurationsModel, &ConfigurationsModel::rowsInserted, [this, updateDataset1Combobox](const QModelIndex& parent, int first, int last) {
-		updateDataset1Combobox();
-	});
-
-	QObject::connect(&configurationsModel, &ConfigurationsModel::rowsRemoved, [this, updateDataset1Combobox](const QModelIndex& parent, int first, int last) {
-		updateDataset1Combobox();
-	});
-
-	QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &SettingsWidget::updateData);
-
-	QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
-		const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
-
-		if (selectedRows.isEmpty())
-			updateData(QModelIndex(), QModelIndex());
-		else {
-			const auto first = selectedRows.first();
-
-			updateData(first.siblingAtColumn(static_cast<int>(Configuration::Column::Start)), first.siblingAtColumn(static_cast<int>(Configuration::Column::End)));
-		}
-	});
-
-	for (auto enabledCheckBox : _enabledCheckBoxes) {
-		QObject::connect(enabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel, enabledCheckBox](int state) {
-			configurationsModel.setData(Configuration::Column::ChannelEnabledStart + _enabledCheckBoxes.indexOf(enabledCheckBox), state == Qt::Checked);
-		});
-	}
-
-	for (auto datasetNameComboBox : _datasetNameComboBoxes) {
-		QObject::connect(datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel, datasetNameComboBox](int currentIndex) {
-			const auto channelIndex = _datasetNameComboBoxes.indexOf(datasetNameComboBox);
-
-			if (channelIndex == 0) {
-				configurationsModel.selectRow(currentIndex);
-			}
-			else {
-				configurationsModel.setData(Configuration::Column::ChannelDatasetNameStart + channelIndex, datasetNameComboBox->currentText());
-			}
-		});
-	}
-
-	for (auto colorPushButton : _colorPushButtons) {
-		colorPushButton->setShowText(false);
-		colorPushButton->setColor(Qt::gray);
-
-		QObject::connect(colorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel, colorPushButton](const QColor& color) {
-			configurationsModel.setData(Configuration::Column::ChannelColorStart + _colorPushButtons.indexOf(colorPushButton), color);
-		});
-	}
-
-    for (auto settingsPushButton : _settingsPushButtons) {
-        QFont font = QFont("Font Awesome 5 Free Solid", 8);
-
-        settingsPushButton->setFont(font);
-        settingsPushButton->setStyleSheet("text-align: center");
-        settingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("cog"));
-    }
-
-	for (auto profileTypeComboBox : _profileTypeComboBoxes) {
-		profileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
-
-		QObject::connect(profileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel, profileTypeComboBox](int currentIndex) {
-			configurationsModel.setData(Configuration::Column::ChannelProfileTypeStart + _profileTypeComboBoxes.indexOf(profileTypeComboBox), currentIndex);
-		});
-	}
-
-	for (auto rangeTypeComboBox : _rangeTypeComboBoxes) {
-		rangeTypeComboBox->setModel(new QStringListModel(Channel::getRangeTypeNames()));
-
-		QObject::connect(rangeTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel, rangeTypeComboBox](int currentIndex) {
-			configurationsModel.setData(Configuration::Column::ChannelRangeTypeStart + _rangeTypeComboBoxes.indexOf(rangeTypeComboBox), currentIndex);
-		});
-	}
+    */
 
     QObject::connect(_ui->showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
         configurationsModel.setData(Configuration::Column::ShowDimensionNames, state == Qt::Checked);
@@ -155,37 +77,6 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 	const auto selectedRows = _dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
-		_ui->channelsGroupBox->setEnabled(false);
-
-		for (auto enabledCheckBox : _enabledCheckBoxes) {
-			enabledCheckBox->setEnabled(false);
-			enabledCheckBox->setChecked(false);
-		}
-
-		for (auto datasetNameComboBox : _datasetNameComboBoxes) {
-			datasetNameComboBox->setEnabled(false);
-			datasetNameComboBox->setCurrentIndex(-1);
-		}
-
-		for (auto colorPushButton : _colorPushButtons) {
-			colorPushButton->setEnabled(false);
-			colorPushButton->setColor(Qt::gray);
-		}
-
-		for (auto profileTypeComboBox : _profileTypeComboBoxes) {
-			profileTypeComboBox->setEnabled(false);
-			profileTypeComboBox->setCurrentIndex(-1);
-		}
-
-		for (auto rangeTypeComboBox : _rangeTypeComboBoxes) {
-			rangeTypeComboBox->setEnabled(false);
-			rangeTypeComboBox->setCurrentIndex(-1);
-		}
-		
-        for (auto settingsPushButton : _settingsPushButtons) {
-            settingsPushButton->setEnabled(false);
-        }
-
         _ui->showDimensionNamesCheckBox->setEnabled(false);
         _ui->globalSettingsGroupBox->setEnabled(false);
         _ui->globalSettingsGroupBox->setChecked(false);
@@ -202,87 +93,8 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 	if (begin.row() != selectedRows.first().row())
 		return;
 
-	_ui->channelsGroupBox->setEnabled(true);
-
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
-
-		if (column == static_cast<int>(Configuration::Column::Subsets)) {
-			const auto subsets = index.data(Qt::EditRole).toStringList();
-
-			_ui->channel2DatasetNameComboBox->blockSignals(true);
-			_ui->channel2DatasetNameComboBox->setModel(new QStringListModel(subsets));
-			_ui->channel2DatasetNameComboBox->blockSignals(false);
-
-			_ui->channel3DatasetNameComboBox->blockSignals(true);
-			_ui->channel3DatasetNameComboBox->setModel(new QStringListModel(subsets));
-			_ui->channel3DatasetNameComboBox->blockSignals(false);
-		}
-
-		if (column >= Configuration::Column::ChannelEnabledStart && column < Configuration::Column::ChannelEnabledEnd) {
-			const auto channelIndex = index.column() - Configuration::Column::ChannelEnabledStart;
-
-			auto enabledCheckBox = _enabledCheckBoxes[channelIndex];
-
-			enabledCheckBox->blockSignals(true);
-			enabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			enabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-			enabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			enabledCheckBox->blockSignals(false);
-
-            _settingsPushButtons[channelIndex]->setEnabled(index.data(Qt::EditRole).toBool());
-		}
-
-		if (column >= Configuration::Column::ChannelDatasetNameStart && column < Configuration::Column::ChannelDatasetNameEnd) {
-			const auto channelIndex = index.column() - Configuration::Column::ChannelDatasetNameStart;
-
-			auto datasetNameComboBox = _datasetNameComboBoxes[channelIndex];
-
-			datasetNameComboBox->blockSignals(true);
-
-            if (channelIndex > 0)
-			    datasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-
-			datasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
-			datasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			datasetNameComboBox->blockSignals(false);
-		}
-
-		if (column >= Configuration::Column::ChannelColorStart && column < Configuration::Column::ChannelColorEnd) {
-			const auto channelIndex = index.column() - Configuration::Column::ChannelColorStart;
-
-			auto colorPushButton = _colorPushButtons[channelIndex];
-
-			colorPushButton->blockSignals(true);
-			colorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			colorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
-			colorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-			colorPushButton->blockSignals(false);
-		}
-
-		if (column >= Configuration::Column::ChannelProfileTypeStart && column < Configuration::Column::ChannelProfileTypeEnd) {
-			const auto channelIndex = index.column() - Configuration::Column::ChannelProfileTypeStart;
-
-			auto profileTypeComboBox = _profileTypeComboBoxes[channelIndex];
-
-			profileTypeComboBox->blockSignals(true);
-			profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			profileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
-			profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			profileTypeComboBox->blockSignals(false);
-		}
-
-		if (column >= Configuration::Column::ChannelRangeTypeStart && column < Configuration::Column::ChannelRangeTypeEnd) {
-			const auto channelIndex = index.column() - Configuration::Column::ChannelRangeTypeStart;
-
-			auto rangeTypeComboBox = _rangeTypeComboBoxes[channelIndex];
-
-			rangeTypeComboBox->blockSignals(true);
-			rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			rangeTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
-			rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			rangeTypeComboBox->blockSignals(false);
-		}
 
 		if (column == Configuration::Column::GlobalSettings) {
 			_ui->globalSettingsGroupBox->blockSignals(true);

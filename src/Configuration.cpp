@@ -40,8 +40,7 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 		const auto channelIndex = index.column() - Column::ChannelDatasetNameStart;
 
 		if (channelIndex == 0) {
-			if (_channels[0]->isEnabled())
-			    flags |= Qt::ItemIsEnabled;
+            flags |= Qt::ItemIsEnabled;
 		}
 		else {
 			if (_channels[channelIndex]->isEnabled() && _subsets.size() >= channelIndex)
