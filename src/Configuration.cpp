@@ -208,7 +208,7 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-	QModelIndexList affectedIndices{ index };
+	AffectedColumns affectedColumns{ index.column() };
 
     const auto resetDifferentialProfile = [this]() {
         setProfileDatasetName(0, "");
@@ -255,7 +255,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         return datasetNames;
     };
 
-    const auto updateDifferentialProfile = [this, &resetDifferentialProfile, &getDatasetNames, index, &affectedIndices]() {
+    const auto updateDifferentialProfile = [this, &resetDifferentialProfile, &getDatasetNames, index, &affectedColumns]() {
         if (!canShowDifferentialProfile()) {
             resetDifferentialProfile();
         }
@@ -295,47 +295,15 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
             }
         }
 
-        affectedIndices << index.siblingAtColumn(Column::ShowDifferentialProfile);
+        /*affectedIndices << index.siblingAtColumn(Column::ShowDifferentialProfile);
         affectedIndices << index.siblingAtColumn(Column::Profile1DatasetNames);
         affectedIndices << index.siblingAtColumn(Column::Profile2DatasetNames);
         affectedIndices << index.siblingAtColumn(Column::Profile1DatasetName);
-        affectedIndices << index.siblingAtColumn(Column::Profile2DatasetName);
+        affectedIndices << index.siblingAtColumn(Column::Profile2DatasetName);*/
     };
 
 	if (index.column() == Column::Subsets) {
-		setSubsets(value.toStringList());
-
-		for (int s = 0; s < _subsets.size(); ++s) {
-			affectedIndices << index.siblingAtColumn(Column::ChannelEnabledStart + s +1);
-			affectedIndices << index.siblingAtColumn(Column::ChannelDatasetNameStart + s + 1);
-			affectedIndices << index.siblingAtColumn(Column::ChannelColorStart + s + 1);
-			affectedIndices << index.siblingAtColumn(Column::ChannelOpacityStart + s + 1);
-			affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + s + 1);
-			affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + s + 1);
-		}
-
-		switch (_subsets.size())
-		{
-			case 1: {
-				setChannelDatasetName(1, _subsets[0]);
-				setChannelEnabled(1, true);
-				break;
-			}
-
-			case 2: {
-				setChannelDatasetName(1, _subsets[0]);
-				setChannelDatasetName(2, _subsets[1]);
-				setChannelEnabled(1, true);
-				setChannelEnabled(2, true);
-				break;
-			}
-
-			default:
-				break;
-		}
-
-        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
-        affectedIndices << index.siblingAtColumn(Column::GlobalSettings);
+        affectedColumns << setSubsets(value.toStringList());
 
         setShowDifferentialProfile(canShowDifferentialProfile());
 
@@ -347,16 +315,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
 		const auto channelIndex = index.column() - Column::ChannelEnabledStart;
 
-		setChannelEnabled(channelIndex, value.toBool());
-
-		affectedIndices << index.siblingAtColumn(Column::ChannelDatasetNameStart + channelIndex);
-		affectedIndices << index.siblingAtColumn(Column::ChannelColorStart + channelIndex);
-		affectedIndices << index.siblingAtColumn(Column::ChannelOpacityStart + channelIndex);
-		affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
-		affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + channelIndex);
-        affectedIndices << index.siblingAtColumn(Column::GlobalSettings);
-        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
-
+        affectedColumns << setChannelEnabled(channelIndex, value.toBool());
         setShowDifferentialProfile(canShowDifferentialProfile());
 
         updateDifferentialProfile();
@@ -381,7 +340,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 		setChannelProfileType(channelIndex, static_cast<Channel::ProfileType>(value.toInt()));
 
-        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
+        //affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
 	if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd) {
@@ -389,7 +348,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 		setChannelRangeType(channelIndex, static_cast<Channel::RangeType>(value.toInt()));
 
-        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
+        //affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
 	if (index.column() == Column::GlobalSettings) {
@@ -398,11 +357,11 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		setGlobalSettings(globalSettings);
 		
         for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-            affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
-            affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + channelIndex);
+            //affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
+            //affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + channelIndex);
         }
 		
-        affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
+        //affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
     if (index.column() == Column::GlobalProfileType) {
@@ -410,9 +369,9 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
         setGlobalProfileType(globalProfileType);
 
-        if (getGlobalSettings(Qt::EditRole).toBool())
-            for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
-                affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
+        //if (getGlobalSettings(Qt::EditRole).toBool())
+        //    for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
+        //        affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
     }
 
     if (index.column() == Column::GlobalRangeType) {
@@ -420,9 +379,9 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
         setGlobalRangeType(globalRangeType);
 
-        if (getGlobalSettings(Qt::EditRole).toBool())
-            for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
-                affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + channelIndex);
+        //if (getGlobalSettings(Qt::EditRole).toBool())
+        //    for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
+        //        affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + channelIndex);
     }
 
     if (index.column() == Column::SelectionStamp) {
@@ -448,8 +407,8 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         setProfileDatasetName(1, getDatasetName(1));
         setProfileDatasetNames(1, getDatasetNames(1));
 
-        affectedIndices << index.siblingAtColumn(Column::Profile2DatasetNames);
-        affectedIndices << index.siblingAtColumn(Column::Profile2DatasetName);
+        //affectedIndices << index.siblingAtColumn(Column::Profile2DatasetNames);
+        //affectedIndices << index.siblingAtColumn(Column::Profile2DatasetName);
     }
 
     if (index.column() == Column::Profile2DatasetName) {
@@ -458,9 +417,16 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         setProfileDatasetName(0, getDatasetName(0));
         setProfileDatasetNames(0, getDatasetNames(0));
 
-        affectedIndices << index.siblingAtColumn(Column::Profile1DatasetNames);
-        affectedIndices << index.siblingAtColumn(Column::Profile1DatasetName);
+        //affectedIndices << index.siblingAtColumn(Column::Profile1DatasetNames);
+        //affectedIndices << index.siblingAtColumn(Column::Profile1DatasetName);
     }
+
+    QModelIndexList affectedIndices;
+
+    auto affectedColumnsSet = QSet(affectedColumns.begin(), affectedColumns.end());
+
+    for (auto affectedColumn : affectedColumnsSet)
+        affectedIndices << index.siblingAtColumn(affectedColumn);
 
 	return affectedIndices;
 }
@@ -495,16 +461,29 @@ QVariant Configuration::isChannelEnabled(const std::int32_t& channelIndex, const
 	return QVariant();
 }
 
-void Configuration::setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled)
+Configuration::AffectedColumns Configuration::setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled)
 {
+    AffectedColumns affectedColumns;
+
 	try
 	{
 		_channels[channelIndex]->setEnabled(enabled);
+
+        affectedColumns << Column::ChannelDatasetNameStart + channelIndex;
+        affectedColumns << Column::ChannelColorStart + channelIndex;
+        affectedColumns << Column::ChannelOpacityStart + channelIndex;
+        affectedColumns << Column::ChannelProfileTypeStart + channelIndex;
+        affectedColumns << Column::ChannelRangeTypeStart + channelIndex;
+        affectedColumns << Column::ChannelSettingsStart + channelIndex;
+        affectedColumns << Column::GlobalSettings;
+        affectedColumns << Column::ShowDimensionNames;
 	}
 	catch (std::exception exception)
 	{
 		qDebug() << exception.what();
 	}
+
+    return affectedColumns;
 }
 
 QVariant Configuration::getSubsets(const std::int32_t& role) const
@@ -527,9 +506,45 @@ QVariant Configuration::getSubsets(const std::int32_t& role) const
 	}
 }
 
-void Configuration::setSubsets(const QStringList& subsets)
+Configuration::AffectedColumns Configuration::setSubsets(const QStringList& subsets)
 {
+    AffectedColumns affectedColumns;
+
+    if (subsets == _subsets)
+        return affectedColumns;
+
 	_subsets = subsets;
+
+    for (int s = 0; s < _subsets.size(); ++s) {
+        affectedColumns << Column::ChannelEnabledStart + s + 1;
+        affectedColumns << Column::ChannelDatasetNameStart + s + 1;
+        affectedColumns << Column::ChannelColorStart + s + 1;
+        affectedColumns << Column::ChannelOpacityStart + s + 1;
+        affectedColumns << Column::ChannelProfileTypeStart + s + 1;
+        affectedColumns << Column::ChannelRangeTypeStart + s + 1;
+    }
+
+    switch (_subsets.size())
+    {
+        case 1: {
+            setChannelDatasetName(1, _subsets[0]);
+            setChannelEnabled(1, true);
+            break;
+        }
+
+        case 2: {
+            setChannelDatasetName(1, _subsets[0]);
+            setChannelDatasetName(2, _subsets[1]);
+            setChannelEnabled(1, true);
+            setChannelEnabled(2, true);
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return affectedColumns;
 }
 
 QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, const std::int32_t& role) const

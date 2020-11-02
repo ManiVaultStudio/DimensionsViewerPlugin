@@ -17,9 +17,13 @@ class Configuration : public QObject
 {
 	Q_OBJECT
 
-public:
+public: // Aliases
 
+    /** Vector of channels */
 	using Channels = QVector<Channel*>;
+
+    /** Denotes which columns are affected by a change in model data */
+    using AffectedColumns = QVector<std::int32_t>;
 
     /** The number of channels in the configuration */
 	static const std::int32_t noChannels = 3;
@@ -176,7 +180,7 @@ public: // Getters/setters
 	 * @param channelIndex Index of the channel
 	 * @param enabled Whether channel with \p channelIndex is enabled
 	 */
-	void setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled);
+	AffectedColumns setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled);
 
 	/**
 	 * Returns the subset
@@ -189,7 +193,7 @@ public: // Getters/setters
 	 * Sets the subsets
 	 * @param subsets The subsets
 	 */
-	void setSubsets(const QStringList& subsets);
+	Configuration::AffectedColumns setSubsets(const QStringList& subsets);
 
 	/**
 	 * Returns the dataset name of channel with \p channelIndex
