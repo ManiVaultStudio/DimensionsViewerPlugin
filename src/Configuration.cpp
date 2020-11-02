@@ -463,7 +463,7 @@ QVariant Configuration::isChannelEnabled(const std::int32_t& channelIndex, const
 				return enabled;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 is %2").arg(QString::number(channelIndex + 1), enabledString);
+                return getTooltip(Column::ChannelEnabledStart + channelIndex, enabledString);
 
 			default:
 				return QVariant();
@@ -502,7 +502,7 @@ QVariant Configuration::getSubsets(const std::int32_t& role) const
 			return _subsets;
 
 		case Qt::ToolTipRole:
-			return QString("Subsets: %1").arg(subsetsString);
+            return getTooltip(Column::Subsets, subsetsString);
 
 		default:
 			return QVariant();
@@ -529,7 +529,7 @@ QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, 
 				return datasetName;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 dataset name: %2").arg(QString::number(channelIndex + 1), datasetName);
+                return getTooltip(Column::ChannelDatasetNameStart + channelIndex, datasetName);
 
 			default:
 				return QVariant();
@@ -570,7 +570,7 @@ QVariant Configuration::getChannelDataName(const std::int32_t& channelIndex, con
 				return dataName;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 data name: %2").arg(QString::number(channelIndex + 1), dataName);
+                return getTooltip(Column::ChannelDataNameStart + channelIndex, dataName);
 
 			default:
 				return QVariant();
@@ -600,7 +600,7 @@ QVariant Configuration::getChannelColor(const std::int32_t& channelIndex, const 
 				return color;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 color: %2").arg(QString::number(channelIndex + 1), colorString);
+                return getTooltip(Column::ChannelColorStart + channelIndex, colorString);
 
 			default:
 				return QVariant();
@@ -642,7 +642,7 @@ QVariant Configuration::getChannelOpacity(const std::int32_t& channelIndex, cons
 				return opacity;
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 opacity: %2").arg(QString::number(channelIndex + 1), opacityString);
+                return getTooltip(Column::ChannelOpacityStart + channelIndex, opacityString);
 
 			default:
 				return QVariant();
@@ -684,7 +684,7 @@ QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, 
 				return static_cast<int>(profileType);
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 profile type: %2").arg(QString::number(channelIndex + 1), profileTypeString);
+                return getTooltip(Column::ChannelProfileTypeStart + channelIndex, profileTypeString);
 
 			default:
 				return QVariant();
@@ -726,7 +726,7 @@ QVariant Configuration::getChannelRangeType(const std::int32_t& channelIndex, co
 				return static_cast<int>(rangeType);
 
 			case Qt::ToolTipRole:
-				return QString("%1: %2").arg(getColumnName(Column::ChannelRangeTypeStart + channelIndex), rangeTypeString);
+				return getTooltip(Column::ChannelRangeTypeStart + channelIndex, rangeTypeString);
 
 			default:
 				return QVariant();
@@ -768,7 +768,7 @@ QVariant Configuration::getGlobalSettings(const std::int32_t& role) const
 				return globalSettings;
 
 			case Qt::ToolTipRole:
-				return QString("Global settings %1").arg(globalSettingsString);
+                return getTooltip(Column::GlobalSettings, globalSettingsString);
 
 			default:
 				return QVariant();
@@ -814,7 +814,7 @@ QVariant Configuration::getGlobalProfileType(const std::int32_t& role) const
             return static_cast<int>(_globalProfileType);
 
         case Qt::ToolTipRole:
-            return QString("Global profile type: %1").arg(profileTypeString);
+            return getTooltip(Column::GlobalProfileType, profileTypeString);
 
         default:
             return QVariant();
@@ -845,7 +845,7 @@ QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
             return static_cast<int>(_globalRangeType);
 
         case Qt::ToolTipRole:
-            return QString("Global range type: %1").arg(rangeTypeString);
+            return getTooltip(Column::GlobalRangeType, rangeTypeString);
 
         default:
             return QVariant();
@@ -877,7 +877,7 @@ QVariant Configuration::getShowDimensionNames(const std::int32_t& role) const
             return showDimensionNames;
 
         case Qt::ToolTipRole:
-            return QString("Show dimension names: %1").arg(showDimensionNamesString);
+            return getTooltip(Column::ShowDimensionNames, showDimensionNamesString);
 
         default:
             return QVariant();
@@ -913,7 +913,7 @@ QVariant Configuration::getShowDifferentialProfile(const std::int32_t& role) con
             return showDifferentialProfile;
 
         case Qt::ToolTipRole:
-            return QString("Show differential profile: %1").arg(showDifferentialProfileString);
+            return getTooltip(Column::ShowDifferentialProfile, showDifferentialProfileString);
 
         default:
             return QVariant();
@@ -943,7 +943,7 @@ QVariant Configuration::getProfileDatasetNames(const std::int32_t& profileIndex,
                 return profileDatasetNames;
 
             case Qt::ToolTipRole:
-                return QString("Profile %1 selectable dataset names: %2").arg(QString::number(profileIndex), profileDatasetNamesString);
+                return getTooltip(Column::Profile1DatasetNames + profileIndex, profileDatasetNamesString);
 
             default:
                 return QVariant();
@@ -984,7 +984,7 @@ QVariant Configuration::getProfileDatasetName(const std::int32_t& profileIndex, 
                 return profileDatasetName;
 
             case Qt::ToolTipRole:
-                return QString("Profile %1 selected dataset name: %2").arg(QString::number(profileIndex), profileDatasetName);
+                return getTooltip(Column::Profile1DatasetName + profileIndex, profileDatasetName);
 
             default:
                 return QVariant();
@@ -1089,4 +1089,9 @@ std::int32_t Configuration::getNoDisplayChannels() const
 bool Configuration::canShowDifferentialProfile() const
 {
     return getNoDisplayChannels() >= 2;
+}
+
+QString Configuration::getTooltip(const std::int32_t& column, const QString& description) const
+{
+    return QString("%1: %2").arg(getColumnName(column), description);
 }

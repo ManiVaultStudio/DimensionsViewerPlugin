@@ -403,6 +403,13 @@ private: // Internal
     /** Returns whether a differential profile can be shown */
     bool canShowDifferentialProfile() const;
 
+    /**
+     * Get tooltip for \p column
+     * @param column Column
+     * @param description Description
+     */
+    QString getTooltip(const std::int32_t& column, const QString& description) const;
+
 private:
     Channels		        _channels;                      /** Channels */
     QStringList		        _subsets;                       /** Subsets of the primary dataset (selected in the first channel) */
