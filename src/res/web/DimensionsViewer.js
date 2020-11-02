@@ -199,7 +199,7 @@ function addChannel(design, channel) {
         design.layer.push(getAggregatePointsMark(channel));
     }
 
-    if (channel.bandType > 0) {
+    if (channel.rangeType > 0) {
         design.layer.push(getStdDevLineMark(channel, "v1", 1, [2, 2]));
         design.layer.push(getStdDevLineMark(channel, "v2", 1, [2, 2]));
     }

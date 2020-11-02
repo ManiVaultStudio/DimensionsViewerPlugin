@@ -21,7 +21,7 @@ class Channel : public QObject {
 
 public: // Enumerations
 
-	/** Profile type (e.g. mean and median) */
+	/** Dimension values profile type (e.g. mean and median) */
 	enum class ProfileType {
 		None,               /** No profile is displayed */
 		Mean,               /** Display statistical mean */
@@ -54,39 +54,40 @@ public: // Enumerations
 		return profileTypeNames;
 	}
 
-	/** Band type (e.g. standard deviation) */
-	enum class BandType {
-		None,                   /** Do not display standard deviation */
-		StandardDeviation1,     /** Display one standard deviation */
-		StandardDeviation2,     /** Display two standard deviations */
+	/** Dimension values range type */
+	enum class RangeType {
+		None,                   /** Do not display value range */
+		StandardDeviation1,     /** Plus and minus three standard deviations (mean profile type) */
+		StandardDeviation2,     /** Plus and minus three standard deviations (mean profile type) */
+		StandardDeviation3,     /** Plus and minus three standard deviations (mean profile type) */
+		MinMax,                 /** Minimum and maximum range (mean profile type) */
+		Percentile5,            /** 5% and 95% percentile (median profile type) */
+		Percentile10,           /** 10% and 90% percentile (median profile type) */
 
-		End = StandardDeviation2
+		End = Percentile10
 	};
 
-	/** Get string representation of band type enumeration */
-	static QString getBandTypeName(const BandType& bandType) {
-		switch (bandType) {
-			case BandType::None:
-				return "None";
+    /** Maps range type name to range type enum and */
+    static QMap<QString, RangeType> const rangeTypes;
 
-			case BandType::StandardDeviation1:
-				return "1 SD";
-
-			case BandType::StandardDeviation2:
-				return "2 SD";
-		}
-
-		return QString();
+	/** Get string representation of range type enumeration */
+	static QString getRangeTypeName(const RangeType& rangeType) {
+        return rangeTypes.key(rangeType);
 	}
 
-	/** Get band type names in a string list */
-	static QStringList getBandTypeNames() {
-		QStringList bandTypeNames;
+    /** Get enum representation from range type name */
+    static RangeType getRangeTypeEnum(const QString& rangeTypeName) {
+        return rangeTypes[rangeTypeName];
+    }
 
-		for (int i = 0; i <= static_cast<int>(BandType::End); ++i)
-			bandTypeNames << getBandTypeName(static_cast<BandType>(i));
+	/** Get range type names in a string list */
+	static QStringList getRangeTypeNames() {
+		QStringList rangeTypeNames;
 
-		return bandTypeNames;
+		for (int i = 0; i <= static_cast<int>(RangeType::End); ++i)
+			rangeTypeNames << getRangeTypeName(static_cast<RangeType>(i));
+
+		return rangeTypeNames;
 	}
 
 protected: // Construction
@@ -181,16 +182,16 @@ public: // Getters/setters
 	 */
 	void setProfileType(const ProfileType& profileType);
 
-	/** Returns the band type */
-	BandType getBandType() const {
-		return _bandType;
+	/** Returns the range type */
+	RangeType getRangeType() const {
+		return _rangeType;
 	};
 
 	/**
-	 * Sets the band type
-	 * @param bandType Band type
+	 * Sets the range type
+	 * @param rangeType Range type
 	 */
-	void setBandType(const BandType& bandType);
+	void setRangeType(const RangeType& rangeType);
 
 	/** Returns whether to show the dimension range */
 	bool getShowRange() const {
@@ -241,8 +242,8 @@ private:
 	QString					    _dataName;			            /** Channel data name */
 	QColor					    _color;				            /** Channel color */
 	float					    _opacity;			            /** Channel opacity */
-	ProfileType				    _profileType;		            /** The type of profile to visualize */
-	BandType				    _bandType;			            /** The type of band to visualize */
+	ProfileType				    _profileType;		            /** The type of dimension values profile to visualize */
+	RangeType				    _rangeType;			            /** The type of dimension values range to visualize */
 	bool					    _showRange;			            /** Show the dimensions ranges */
 	QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 	Points*					    _points;			            /** Pointer to points dataset */

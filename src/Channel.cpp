@@ -17,6 +17,16 @@ const QMap<QString, Channel::ProfileType> Channel::profileTypes = {
     { "Differential", ProfileType::Differential }
 };
 
+const QMap<QString, Channel::RangeType> Channel::rangeTypes = {
+    { "None", RangeType::None },
+    { "1 StdDev", RangeType::StandardDeviation1 },
+    { "2 StdDev", RangeType::StandardDeviation2 },
+    { "3 StdDev", RangeType::StandardDeviation3 },
+    { "MinMax", RangeType::MinMax },
+    { "5% - 95% percentile", RangeType::Percentile5 },
+    { "10% - 90% percentile", RangeType::Percentile10 }
+};
+
 Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
 	QObject(parent),
 	_index(index),
@@ -28,7 +38,7 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_color(color),
 	_opacity(opacity),
 	_profileType(ProfileType::Mean),
-	_bandType(BandType::None),
+	_rangeType(RangeType::None),
 	_showRange(false),
 	_spec(),
     _points(nullptr)
@@ -88,12 +98,12 @@ void Channel::setProfileType(const ProfileType& profileType)
 	updateSpec();
 }
 
-void Channel::setBandType(const BandType& bandType)
+void Channel::setRangeType(const RangeType& rangeType)
 {
-	if (bandType == _bandType)
+	if (rangeType == _rangeType)
 		return;
 
-	_bandType = bandType;
+	_rangeType = rangeType;
 
 	updateSpec();
 }
@@ -116,7 +126,7 @@ bool Channel::canDisplay() const
     if (_profileType != ProfileType::None)
         return true;
 
-    if (_bandType != BandType::None)
+    if (_rangeType != RangeType::None)
         return true;
 
     if (_showRange)
@@ -219,9 +229,9 @@ void Channel::updateSpec()
 						break;
 				}
 
-				switch (_bandType)
+				switch (_rangeType)
 				{
-					case BandType::StandardDeviation1: {
+					case RangeType::StandardDeviation1: {
 						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
 						double stdDev1	= std::sqrt(sqSum / dimensionValues.size());
 
@@ -230,7 +240,7 @@ void Channel::updateSpec()
 						break;
 					}
 
-					case BandType::StandardDeviation2: {
+					case RangeType::StandardDeviation2: {
 						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
 						double stdDev2	= 2.0 * std::sqrt(sqSum / dimensionValues.size());
 
@@ -263,7 +273,7 @@ void Channel::updateSpec()
 	_spec["color"]			= _color;
 	_spec["opacity"]		= _opacity;
 	_spec["profileType"]	= static_cast<int>(_profileType);
-	_spec["bandType"]		= static_cast<int>(_bandType);
+	_spec["rangeType"]		= static_cast<int>(_rangeType);
 	_spec["showRange"]		= _showRange && pointIndices.size() > 1;
 	_spec["canDisplay"]		= canDisplay();
 

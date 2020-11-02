@@ -68,7 +68,7 @@
            </widget>
           </item>
           <item row="1" column="7">
-           <widget class="QComboBox" name="channel2BandTypeComboBox"/>
+           <widget class="QComboBox" name="channel2RangeTypeComboBox"/>
           </item>
           <item row="1" column="4">
            <widget class="ColorPickerPushButton" name="channel2ColorPushButton">
@@ -102,7 +102,7 @@
            <widget class="QComboBox" name="channel3ProfileTypeComboBox"/>
           </item>
           <item row="2" column="7">
-           <widget class="QComboBox" name="channel3BandTypeComboBox"/>
+           <widget class="QComboBox" name="channel3RangeTypeComboBox"/>
           </item>
           <item row="2" column="1">
            <widget class="QComboBox" name="channel3DatasetNameComboBox">
@@ -184,7 +184,7 @@
            <widget class="QComboBox" name="channel1ProfileTypeComboBox"/>
           </item>
           <item row="0" column="7">
-           <widget class="QComboBox" name="channel1BandTypeComboBox"/>
+           <widget class="QComboBox" name="channel1RangeTypeComboBox"/>
           </item>
           <item row="2" column="4">
            <widget class="ColorPickerPushButton" name="channel3ColorPushButton">

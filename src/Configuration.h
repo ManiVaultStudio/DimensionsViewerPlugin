@@ -41,8 +41,8 @@ public: // Columns
 		ChannelOpacityEnd = ChannelOpacityStart + noChannels,               /** Channel opacity last column */
 		ChannelProfileTypeStart,			                                /** Channel profile type first column */
 		ChannelProfileTypeEnd = ChannelProfileTypeStart + noChannels,       /** Channel profile type last column */
-		ChannelBandTypeStart,				                                /** Channel band type first column */
-		ChannelBandTypeEnd = ChannelBandTypeStart + noChannels,             /** Channel band type last column */
+        ChannelRangeTypeStart,				                                /** Channel range type first column */
+        ChannelRangeTypeEnd = ChannelRangeTypeStart + noChannels,           /** Channel range type last column */
         GlobalSettings,                                                     /** Whether whether global settings are on or off */
         GlobalProfileType,                                                  /** Global profile type */
         GlobalRangeType,                                                    /** Global range type */
@@ -64,25 +64,25 @@ public: // Columns
 			return "Subsets";
 
 		if (column >= Column::ChannelColorStart && column < Column::ChannelColorEnd)
-			return QString("Channel %1: Color").arg(QString::number(column));
+			return QString("Channel %1 Color").arg(QString::number(column));
 
 		if (column >= Column::ChannelOpacityStart && column < Column::ChannelOpacityEnd)
-			return QString("Channel %1: Opacity").arg(QString::number(column));
+			return QString("Channel %1 Opacity").arg(QString::number(column));
 
 		if (column >= Column::ChannelProfileTypeStart && column < Column::ChannelProfileTypeEnd)
-			return QString("Channel %1: Profile type").arg(QString::number(column));
+			return QString("Channel %1 Profile type").arg(QString::number(column));
 
-		if (column >= Column::ChannelBandTypeStart && column < Column::ChannelBandTypeEnd)
-			return QString("Channel %1: Band type").arg(QString::number(column));
+		if (column >= Column::ChannelRangeTypeStart && column < Column::ChannelRangeTypeEnd)
+			return QString("Channel %1 Range type").arg(QString::number(column));
 
 		if (column >= Column::ChannelDataNameStart && column < Column::ChannelDataNameEnd)
-			return QString("Channel %1: Data name").arg(QString::number(column));
+			return QString("Channel %1 Data name").arg(QString::number(column));
 
 		if (column >= Column::ChannelDatasetNameStart && column < Column::ChannelDatasetNameEnd)
-			return QString("Channel %1: Dataset name").arg(QString::number(column));
+			return QString("Channel %1 Dataset name").arg(QString::number(column));
 
 		if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
-			return QString("Channel %1: Enabled").arg(QString::number(column));
+			return QString("Channel %1 Enabled").arg(QString::number(column));
 
         if (column == Column::GlobalSettings)
             return "Global settings";
@@ -255,19 +255,19 @@ public: // Getters/setters
 	void setChannelProfileType(const std::int32_t& channelIndex, const Channel::ProfileType& profileType);
 
 	/**
-	 * Returns the band type of channel with \p channelIndex
+	 * Returns the range type of channel with \p channelIndex
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
-	 * @return Band type in variant form
+	 * @return Range type in variant form
 	 */
-	QVariant getChannelBandType(const std::int32_t& channelIndex, const std::int32_t& role) const;
+	QVariant getChannelRangeType(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
-	 * Sets the band type of channel with \p channelIndex
+	 * Sets the range type of channel with \p channelIndex
 	 * @param channelIndex Index of the channel
-	 * @param bandType The band type of channel with \p channelIndex
+	 * @param rangeType The range type of channel with \p channelIndex
 	 */
-	void setChannelBandType(const std::int32_t& channelIndex, const Channel::BandType& bandType);
+	void setChannelRangeType(const std::int32_t& channelIndex, const Channel::RangeType& rangeType);
 
 	/**
 	 * Returns whether whether global settings are on or off
@@ -306,7 +306,7 @@ public: // Getters/setters
      * Sets the global range type
      * @param rangeType Global range type
      */
-    void setGlobalRangeType(const Channel::BandType& rangeType);
+    void setGlobalRangeType(const Channel::RangeType& rangeType);
 
     /**
      * Gets whether dimensions names are displayed in the viewer
@@ -412,7 +412,7 @@ private:
     bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
     bool                    _globalSettings;                /** Whether whether global settings are on or off */
     Channel::ProfileType	_globalProfileType;             /** Global profile type */
-    Channel::BandType		_globalRangeType;			    /** Global range type */
+    Channel::RangeType		_globalRangeType;			    /** Global range type */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:

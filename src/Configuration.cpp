@@ -20,7 +20,7 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
     _showDimensionNames(false),
     _globalSettings(true),
     _globalProfileType(Channel::ProfileType::Mean),
-    _globalRangeType(Channel::BandType::StandardDeviation1),
+    _globalRangeType(Channel::RangeType::StandardDeviation1),
     _spec()
 {
     _spec["modified"] = 0;
@@ -81,8 +81,8 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
             flags |= Qt::ItemIsEnabled;
 	}
 
-	if (index.column() >= Column::ChannelBandTypeStart && index.column() < Column::ChannelBandTypeEnd) {
-		const auto channelIndex = index.column() - Column::ChannelBandTypeStart;
+	if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd) {
+		const auto channelIndex = index.column() - Column::ChannelRangeTypeStart;
 
         if (_channels[channelIndex]->isEnabled() && !_globalSettings && _subsets.size() >= channelIndex)
             flags |= Qt::ItemIsEnabled;
@@ -156,8 +156,8 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 	if (index.column() >= Column::ChannelProfileTypeStart && index.column() < Column::ChannelProfileTypeEnd)
 		return getChannelProfileType(index.column() - Column::ChannelProfileTypeStart, role);
 
-	if (index.column() >= Column::ChannelBandTypeStart && index.column() < Column::ChannelBandTypeEnd)
-		return getChannelBandType(index.column() - Column::ChannelBandTypeStart, role);
+	if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd)
+		return getChannelRangeType(index.column() - Column::ChannelRangeTypeStart, role);
 
 	if (index.column() == Column::GlobalSettings)
 		return getGlobalSettings(role);
@@ -294,7 +294,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 			affectedIndices << index.siblingAtColumn(Column::ChannelColorStart + s + 1);
 			affectedIndices << index.siblingAtColumn(Column::ChannelOpacityStart + s + 1);
 			affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + s + 1);
-			affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + s + 1);
+			affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + s + 1);
 		}
 
 		switch (_subsets.size())
@@ -336,7 +336,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		affectedIndices << index.siblingAtColumn(Column::ChannelColorStart + channelIndex);
 		affectedIndices << index.siblingAtColumn(Column::ChannelOpacityStart + channelIndex);
 		affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
-		affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
+		affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + channelIndex);
         affectedIndices << index.siblingAtColumn(Column::GlobalSettings);
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 
@@ -367,10 +367,10 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
 
-	if (index.column() >= Column::ChannelBandTypeStart && index.column() < Column::ChannelBandTypeEnd) {
-		const auto channelIndex = index.column() - Column::ChannelBandTypeStart;
+	if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd) {
+		const auto channelIndex = index.column() - Column::ChannelRangeTypeStart;
 
-		setChannelBandType(channelIndex, static_cast<Channel::BandType>(value.toInt()));
+		setChannelRangeType(channelIndex, static_cast<Channel::RangeType>(value.toInt()));
 
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 	}
@@ -382,7 +382,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		
         for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
             affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
-            affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
+            affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + channelIndex);
         }
 		
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
@@ -399,13 +399,13 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
     }
 
     if (index.column() == Column::GlobalRangeType) {
-        const auto globalRangeType = static_cast<Channel::BandType>(value.toInt());
+        const auto globalRangeType = static_cast<Channel::RangeType>(value.toInt());
 
         setGlobalRangeType(globalRangeType);
 
         if (getGlobalSettings(Qt::EditRole).toBool())
             for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++)
-                affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
+                affectedIndices << index.siblingAtColumn(Column::ChannelRangeTypeStart + channelIndex);
     }
 
     if (index.column() == Column::SelectionStamp) {
@@ -711,23 +711,23 @@ void Configuration::setChannelProfileType(const std::int32_t& channelIndex, cons
 	}
 }
 
-QVariant Configuration::getChannelBandType(const std::int32_t& channelIndex, const std::int32_t& role) const
+QVariant Configuration::getChannelRangeType(const std::int32_t& channelIndex, const std::int32_t& role) const
 {
 	try
 	{
-		const auto bandType			= _channels[channelIndex]->getBandType();
-		const auto bandTypeString	= Channel::getBandTypeName(bandType);
+		const auto rangeType        = _channels[channelIndex]->getRangeType();
+		const auto rangeTypeString	= Channel::getRangeTypeName(rangeType);
 
 		switch (role)
 		{
 			case Qt::DisplayRole:
-				return bandTypeString;
+				return rangeTypeString;
 
 			case Qt::EditRole:
-				return static_cast<int>(bandType);
+				return static_cast<int>(rangeType);
 
 			case Qt::ToolTipRole:
-				return QString("Channel %1 band type: %2").arg(QString::number(channelIndex + 1), bandTypeString);
+				return QString("%1: %2").arg(getColumnName(Column::ChannelRangeTypeStart + channelIndex), rangeTypeString);
 
 			default:
 				return QVariant();
@@ -741,11 +741,11 @@ QVariant Configuration::getChannelBandType(const std::int32_t& channelIndex, con
 	return QVariant();
 }
 
-void Configuration::setChannelBandType(const std::int32_t& channelIndex, const Channel::BandType& bandType)
+void Configuration::setChannelRangeType(const std::int32_t& channelIndex, const Channel::RangeType& rangeType)
 {
 	try
 	{
-		_channels[channelIndex]->setBandType(bandType);
+		_channels[channelIndex]->setRangeType(rangeType);
 	}
 	catch (std::exception exception)
 	{
@@ -792,7 +792,7 @@ void Configuration::setGlobalSettings(const bool& globalSettings)
         if (_globalSettings) {
             for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
                 setChannelProfileType(channelIndex, _globalProfileType);
-                setChannelBandType(channelIndex, _globalRangeType);
+                setChannelRangeType(channelIndex, _globalRangeType);
             }
         }
 	}
@@ -835,7 +835,7 @@ void Configuration::setGlobalProfileType(const Channel::ProfileType& profileType
 
 QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
 {
-    const auto rangeTypeString = Channel::getBandTypeName(_globalRangeType);
+    const auto rangeTypeString = Channel::getRangeTypeName(_globalRangeType);
 
     switch (role)
     {
@@ -853,13 +853,13 @@ QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
     }
 }
 
-void Configuration::setGlobalRangeType(const Channel::BandType& rangeType)
+void Configuration::setGlobalRangeType(const Channel::RangeType& rangeType)
 {
     _globalRangeType = rangeType;
 
     if (_globalSettings) {
         for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-            setChannelBandType(channelIndex, _globalRangeType);
+            setChannelRangeType(channelIndex, _globalRangeType);
         }
     }
 }

@@ -17,7 +17,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_datasetNameComboBoxes(),
 	_colorPushButtons(),
 	_profileTypeComboBoxes(),
-	_bandTypeComboBoxes(),
+	_rangeTypeComboBoxes(),
     _settingsPushButtons(),
     _differentialProfileWidgets()
 {
@@ -27,7 +27,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_datasetNameComboBoxes << _ui->channel1DatasetNameComboBox<< _ui->channel2DatasetNameComboBox << _ui->channel3DatasetNameComboBox;
 	_colorPushButtons << _ui->channel1ColorPushButton<< _ui->channel2ColorPushButton << _ui->channel3ColorPushButton;
 	_profileTypeComboBoxes << _ui->channel1ProfileTypeComboBox<< _ui->channel2ProfileTypeComboBox << _ui->channel3ProfileTypeComboBox;
-	_bandTypeComboBoxes << _ui->channel1BandTypeComboBox << _ui->channel2BandTypeComboBox << _ui->channel3BandTypeComboBox;
+	_rangeTypeComboBoxes << _ui->channel1RangeTypeComboBox << _ui->channel2RangeTypeComboBox << _ui->channel3RangeTypeComboBox;
     _settingsPushButtons << _ui->channel1SettingsPushButton << _ui->channel2SettingsPushButton << _ui->channel3SettingsPushButton;
     _differentialProfileWidgets << _ui->differentialProfileCompareLabel << _ui->profile1DatasetNameComboBox << _ui->differentialProfileWithLabel << _ui->profile2DatasetNameComboBox << _ui->differentialProfileColorPushButton;
 
@@ -108,12 +108,11 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		});
 	}
 
-	for (auto bandTypeComboBox : _bandTypeComboBoxes) {
-		bandTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
-		//bandTypeComboBox->setVisible(false);
+	for (auto rangeTypeComboBox : _rangeTypeComboBoxes) {
+		rangeTypeComboBox->setModel(new QStringListModel(Channel::getRangeTypeNames()));
 
-		QObject::connect(bandTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel, bandTypeComboBox](int currentIndex) {
-			configurationsModel.setData(Configuration::Column::ChannelBandTypeStart + _bandTypeComboBoxes.indexOf(bandTypeComboBox), currentIndex);
+		QObject::connect(rangeTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel, rangeTypeComboBox](int currentIndex) {
+			configurationsModel.setData(Configuration::Column::ChannelRangeTypeStart + _rangeTypeComboBoxes.indexOf(rangeTypeComboBox), currentIndex);
 		});
 	}
 
@@ -146,7 +145,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
     });
 
     _ui->globalProfileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
-    _ui->globalRangeTypeComboBox->setModel(new QStringListModel(Channel::getBandTypeNames()));
+    _ui->globalRangeTypeComboBox->setModel(new QStringListModel(Channel::getRangeTypeNames()));
 
 	updateData(QModelIndex(), QModelIndex());
 }
@@ -178,9 +177,9 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			profileTypeComboBox->setCurrentIndex(-1);
 		}
 
-		for (auto bandTypeComboBox : _bandTypeComboBoxes) {
-			bandTypeComboBox->setEnabled(false);
-			bandTypeComboBox->setCurrentIndex(-1);
+		for (auto rangeTypeComboBox : _rangeTypeComboBoxes) {
+			rangeTypeComboBox->setEnabled(false);
+			rangeTypeComboBox->setCurrentIndex(-1);
 		}
 		
         for (auto settingsPushButton : _settingsPushButtons) {
@@ -273,16 +272,16 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			profileTypeComboBox->blockSignals(false);
 		}
 
-		if (column >= Configuration::Column::ChannelBandTypeStart && column < Configuration::Column::ChannelBandTypeEnd) {
-			const auto channelIndex = index.column() - Configuration::Column::ChannelBandTypeStart;
+		if (column >= Configuration::Column::ChannelRangeTypeStart && column < Configuration::Column::ChannelRangeTypeEnd) {
+			const auto channelIndex = index.column() - Configuration::Column::ChannelRangeTypeStart;
 
-			auto bandTypeComboBox = _bandTypeComboBoxes[channelIndex];
+			auto rangeTypeComboBox = _rangeTypeComboBoxes[channelIndex];
 
-			bandTypeComboBox->blockSignals(true);
-			bandTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-			bandTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
-			bandTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-			bandTypeComboBox->blockSignals(false);
+			rangeTypeComboBox->blockSignals(true);
+			rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+			rangeTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+			rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+			rangeTypeComboBox->blockSignals(false);
 		}
 
 		if (column == Configuration::Column::GlobalSettings) {
