@@ -311,13 +311,8 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 	}
 
 	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
-		const auto channelIndex = index.column() - Column::ChannelEnabledStart;
-
-        affectedColumns << setChannelEnabled(channelIndex, value.toBool());
-        
+        affectedColumns << setChannelEnabled(index.column() - Column::ChannelEnabledStart, value.toBool());
         updateDifferentialProfile();
-
-        setGlobalSettings(getNoDisplayChannels() > 0);
 	}
 
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd)
@@ -361,25 +356,11 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         updateDifferentialProfile();
     }
 
-    if (index.column() == Column::Profile1DatasetName) {
-        _profileDatasetName[0] = value.toString();
+    if (index.column() == Column::Profile1DatasetName)
+        affectedColumns << setProfileDatasetName(0, value.toString());
 
-        setProfileDatasetName(1, getDatasetName(1));
-        setProfileDatasetNames(1, getDatasetNames(1));
-
-        //affectedIndices << index.siblingAtColumn(Column::Profile2DatasetNames);
-        //affectedIndices << index.siblingAtColumn(Column::Profile2DatasetName);
-    }
-
-    if (index.column() == Column::Profile2DatasetName) {
-        _profileDatasetName[1] = value.toString();
-        
-        setProfileDatasetName(0, getDatasetName(0));
-        setProfileDatasetNames(0, getDatasetNames(0));
-
-        //affectedIndices << index.siblingAtColumn(Column::Profile1DatasetNames);
-        //affectedIndices << index.siblingAtColumn(Column::Profile1DatasetName);
-    }
+    if (index.column() == Column::Profile2DatasetName)
+        affectedColumns << setProfileDatasetName(1, value.toString());
 
     QModelIndexList affectedIndices;
 
@@ -441,6 +422,7 @@ Configuration::AffectedColumns Configuration::setChannelEnabled(const std::int32
         affectedColumns << Column::GlobalSettings;
         affectedColumns << Column::ShowDimensionNames;
         affectedColumns << setShowDifferentialProfile(canShowDifferentialProfile());
+        affectedColumns << setGlobalSettings(getNoDisplayChannels() > 0);
 	}
 	catch (std::exception exception)
 	{
@@ -1031,16 +1013,23 @@ QVariant Configuration::getProfileDatasetNames(const std::int32_t& profileIndex,
     return QVariant();
 }
 
-void Configuration::setProfileDatasetNames(const std::int32_t& profileIndex, const QStringList& datasetNames)
+Configuration::AffectedColumns Configuration::setProfileDatasetNames(const std::int32_t& profileIndex, const QStringList& datasetNames)
 {
+    AffectedColumns affectedColumns{ Column::Profile1DatasetNames + profileIndex };
+
     try
     {
+        if (datasetNames == _profileDatasetNames[profileIndex])
+            return affectedColumns;
+
         _profileDatasetNames[profileIndex] = datasetNames;
     }
     catch (std::exception exception)
     {
         qDebug() << exception.what();
     }
+
+    return affectedColumns;
 }
 
 QVariant Configuration::getProfileDatasetName(const std::int32_t& profileIndex, const std::int32_t& role) const
@@ -1072,16 +1061,23 @@ QVariant Configuration::getProfileDatasetName(const std::int32_t& profileIndex, 
     return QVariant();
 }
 
-void Configuration::setProfileDatasetName(const std::int32_t& profileIndex, const QString& datasetName)
+Configuration::AffectedColumns Configuration::setProfileDatasetName(const std::int32_t& profileIndex, const QString& datasetName)
 {
+    AffectedColumns affectedColumns{Column::Profile1DatasetName + profileIndex};
+
     try
     {
+        if (datasetName == _profileDatasetName[profileIndex])
+            return affectedColumns;
+
         _profileDatasetName[profileIndex] = datasetName;
     }
     catch (std::exception exception)
     {
         qDebug() << exception.what();
     }
+
+    return affectedColumns;
 }
 
 Channel* Configuration::getChannelByDatasetName(const QString& datasetName)

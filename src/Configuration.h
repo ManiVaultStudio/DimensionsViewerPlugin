@@ -180,7 +180,7 @@ public: // Getters/setters
 	 * @param channelIndex Index of the channel
 	 * @param enabled Whether channel with \p channelIndex is enabled
 	 */
-	AffectedColumns setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled);
+	Configuration::AffectedColumns setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled);
 
 	/**
 	 * Returns the subset
@@ -354,7 +354,7 @@ public: // Getters/setters
      * @param profileIndex Index of the profile
      * @param datasetNames Selectable dataset names
      */
-    void setProfileDatasetNames(const std::int32_t& profileIndex, const QStringList& datasetNames);
+    Configuration::AffectedColumns setProfileDatasetNames(const std::int32_t& profileIndex, const QStringList& datasetNames);
 
     /** Gets selected dataset name for profile with \p profileIndex
      * @param profileIndex Index of the profile
@@ -368,7 +368,7 @@ public: // Getters/setters
      * @param profileIndex Index of the profile
      * @param datasetName Selectable dataset names
      */
-    void setProfileDatasetName(const std::int32_t& profileIndex, const QString& datasetName);
+    Configuration::AffectedColumns setProfileDatasetName(const std::int32_t& profileIndex, const QString& datasetName);
 
 public: // Miscellaneous
 
