@@ -39,7 +39,6 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_opacity(opacity),
 	_profileType(ProfileType::Mean),
 	_rangeType(RangeType::None),
-	_showRange(false),
 	_spec(),
     _points(nullptr)
 {
@@ -108,16 +107,6 @@ void Channel::setRangeType(const RangeType& rangeType)
 	updateSpec();
 }
 
-void Channel::setShowRange(const bool& showRange)
-{
-	if (showRange == _showRange)
-		return;
-
-	_showRange = showRange;
-
-	updateSpec();
-}
-
 bool Channel::canDisplay() const
 {
     if (!_enabled)
@@ -127,9 +116,6 @@ bool Channel::canDisplay() const
         return true;
 
     if (_rangeType != RangeType::None)
-        return true;
-
-    if (_showRange)
         return true;
 
     return false;
@@ -249,15 +235,16 @@ void Channel::updateSpec()
 						break;
 					}
 
+                    case RangeType::MinMax: {
+                        auto result = std::minmax_element(dimensionValues.begin(), dimensionValues.end());
+
+                        dimension["min"] = *result.first;
+                        dimension["max"] = *result.second;
+                        break;
+                    }
+
 					default:
 						break;
-				}
-
-				if (_showRange) {
-					auto result = std::minmax_element(dimensionValues.begin(), dimensionValues.end());
-
-                    dimension["min"] = *result.first;
-					dimension["max"] = *result.second;
 				}
 
 				dimensions.append(dimension);
@@ -274,7 +261,6 @@ void Channel::updateSpec()
 	_spec["opacity"]		= _opacity;
 	_spec["profileType"]	= static_cast<int>(_profileType);
 	_spec["rangeType"]		= static_cast<int>(_rangeType);
-	_spec["showRange"]		= _showRange && pointIndices.size() > 1;
 	_spec["canDisplay"]		= canDisplay();
 
     emit specChanged(this);

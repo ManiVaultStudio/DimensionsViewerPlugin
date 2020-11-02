@@ -193,17 +193,6 @@ public: // Getters/setters
 	 */
 	void setRangeType(const RangeType& rangeType);
 
-	/** Returns whether to show the dimension range */
-	bool getShowRange() const {
-		return _showRange;
-	};
-
-	/**
-	 * Sets whether to show the dimension range
-	 * @param showRange Whether to show the dimension range
-	 */
-	void setShowRange(const bool& showRange);
-
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
 
@@ -244,7 +233,6 @@ private:
 	float					    _opacity;			            /** Channel opacity */
 	ProfileType				    _profileType;		            /** The type of dimension values profile to visualize */
 	RangeType				    _rangeType;			            /** The type of dimension values range to visualize */
-	bool					    _showRange;			            /** Show the dimensions ranges */
 	QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 	Points*					    _points;			            /** Pointer to points dataset */
 
