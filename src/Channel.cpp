@@ -10,6 +10,13 @@
 
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
+const QMap<QString, Channel::ProfileType> Channel::profileTypes = {
+    { "None", ProfileType::None },
+    { "Mean", ProfileType::Mean },
+    { "Median", ProfileType::Median },
+    { "Differential", ProfileType::Differential }
+};
+
 Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
 	QObject(parent),
 	_index(index),

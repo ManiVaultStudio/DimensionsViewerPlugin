@@ -28,24 +28,21 @@ public: // Enumerations
 		Median,             /** Display statistical median */
 		Differential,       /** Display differential profile (difference between two profiles) */
 
-		End = Median
+		End = Differential
 	};
+    
+    /** Maps profile type name to profile type enum and */
+    static QMap<QString, ProfileType> const profileTypes;
 
 	/** Get string representation of profile type enumeration */
 	static QString getProfileTypeName(const ProfileType& profileType) {
-		switch (profileType) {
-			case ProfileType::None:
-				return "None";
-
-			case ProfileType::Mean:
-				return "Mean";
-
-			case ProfileType::Median:
-				return "Median";
-		}
-
-		return QString();
+        return profileTypes.key(profileType);
 	}
+
+    /** Get enum representation from profile type name */
+    static ProfileType getProfileTypeEnum(const QString& profileTypeName) {
+        return profileTypes[profileTypeName];
+    }
 
 	/** Get profile type names in a string list */
 	static QStringList getProfileTypeNames() {
