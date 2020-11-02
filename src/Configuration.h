@@ -411,8 +411,8 @@ private:
     QString                 _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
     bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
     bool                    _globalSettings;                /** Whether whether global settings are on or off */
-    Channel::ProfileType	_profileType;		            /** Global profile type */
-    Channel::BandType		_rangeType;			            /** Global range type */
+    Channel::ProfileType	_globalProfileType;             /** Global profile type */
+    Channel::BandType		_globalRangeType;			    /** Global range type */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:

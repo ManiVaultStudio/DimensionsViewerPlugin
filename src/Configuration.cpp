@@ -19,8 +19,8 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
     _profileDatasetName(),
     _showDimensionNames(false),
     _globalSettings(true),
-    _profileType(Channel::ProfileType::Mean),
-    _rangeType(Channel::BandType::StandardDeviation1),
+    _globalProfileType(Channel::ProfileType::Mean),
+    _globalRangeType(Channel::BandType::StandardDeviation1),
     _spec()
 {
     _spec["modified"] = 0;
@@ -337,13 +337,6 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		affectedIndices << index.siblingAtColumn(Column::ChannelOpacityStart + channelIndex);
 		affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart + channelIndex);
 		affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart + channelIndex);
-        affectedIndices << index.siblingAtColumn(Column::GlobalSettings + channelIndex);
-
-        if (channelIndex > 0) {
-            affectedIndices << index.siblingAtColumn(Column::ChannelProfileTypeStart);
-            affectedIndices << index.siblingAtColumn(Column::ChannelBandTypeStart);
-        }
-
         affectedIndices << index.siblingAtColumn(Column::GlobalSettings);
         affectedIndices << index.siblingAtColumn(Column::ShowDimensionNames);
 
@@ -798,8 +791,8 @@ void Configuration::setGlobalSettings(const bool& globalSettings)
 
         if (_globalSettings) {
             for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-                setChannelProfileType(channelIndex, _profileType);
-                setChannelBandType(channelIndex, _rangeType);
+                setChannelProfileType(channelIndex, _globalProfileType);
+                setChannelBandType(channelIndex, _globalRangeType);
             }
         }
 	}
@@ -811,7 +804,7 @@ void Configuration::setGlobalSettings(const bool& globalSettings)
 
 QVariant Configuration::getGlobalProfileType(const std::int32_t& role) const
 {
-    const auto profileTypeString = Channel::getProfileTypeName(_profileType);
+    const auto profileTypeString = Channel::getProfileTypeName(_globalProfileType);
 
     switch (role)
     {
@@ -819,7 +812,7 @@ QVariant Configuration::getGlobalProfileType(const std::int32_t& role) const
             return profileTypeString;
 
         case Qt::EditRole:
-            return static_cast<int>(_profileType);
+            return static_cast<int>(_globalProfileType);
 
         case Qt::ToolTipRole:
             return QString("Global profile type: %1").arg(profileTypeString);
@@ -831,18 +824,18 @@ QVariant Configuration::getGlobalProfileType(const std::int32_t& role) const
 
 void Configuration::setGlobalProfileType(const Channel::ProfileType& profileType)
 {
-    _profileType = profileType;
+    _globalProfileType = profileType;
 
     if (_globalSettings) {
         for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-            setChannelProfileType(channelIndex, _profileType);
+            setChannelProfileType(channelIndex, _globalProfileType);
         }
     }
 }
 
 QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
 {
-    const auto rangeTypeString = Channel::getBandTypeName(_rangeType);
+    const auto rangeTypeString = Channel::getBandTypeName(_globalRangeType);
 
     switch (role)
     {
@@ -850,7 +843,7 @@ QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
             return rangeTypeString;
 
         case Qt::EditRole:
-            return static_cast<int>(_rangeType);
+            return static_cast<int>(_globalRangeType);
 
         case Qt::ToolTipRole:
             return QString("Global range type: %1").arg(rangeTypeString);
@@ -862,11 +855,11 @@ QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
 
 void Configuration::setGlobalRangeType(const Channel::BandType& rangeType)
 {
-    _rangeType = rangeType;
+    _globalRangeType = rangeType;
 
     if (_globalSettings) {
         for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-            setChannelBandType(channelIndex, _rangeType);
+            setChannelBandType(channelIndex, _globalRangeType);
         }
     }
 }
