@@ -179,6 +179,7 @@ public: // Getters/setters
 	 * Sets whether channel with \p channelIndex is enabled
 	 * @param channelIndex Index of the channel
 	 * @param enabled Whether channel with \p channelIndex is enabled
+	 * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled);
 
@@ -192,6 +193,7 @@ public: // Getters/setters
 	/**
 	 * Sets the subsets
 	 * @param subsets The subsets
+     * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setSubsets(const QStringList& subsets);
 
@@ -207,6 +209,7 @@ public: // Getters/setters
 	 * Sets the dataset name of channel with \p channelIndex
 	 * @param channelIndex Index of the channel
 	 * @param datasetName The dataset name of channel with \p channelIndex
+     * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelDatasetName(const std::int32_t& channelIndex, const QString& datasetName);
 
@@ -230,6 +233,7 @@ public: // Getters/setters
 	 * Sets the color of channel with \p channelIndex
 	 * @param channelIndex Index of the channel
 	 * @param color The color of channel with \p channelIndex
+     * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelColor(const std::int32_t& channelIndex, const QColor& color);
 
@@ -245,6 +249,7 @@ public: // Getters/setters
 	 * Sets the opacity of channel with \p channelIndex
 	 * @param channelIndex Index of the channel
 	 * @param opacity The opacity of channel with \p channelIndex
+     * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelOpacity(const std::int32_t& channelIndex, const float& opacity);
 
@@ -260,6 +265,7 @@ public: // Getters/setters
 	 * Sets the profile type of channel with \p channelIndex
 	 * @param channelIndex Index of the channel
 	 * @param profileType The profile type of channel with \p channelIndex
+     * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelProfileType(const std::int32_t& channelIndex, const Channel::ProfileType& profileType);
 
@@ -275,6 +281,7 @@ public: // Getters/setters
 	 * Sets the range type of channel with \p channelIndex
 	 * @param channelIndex Index of the channel
 	 * @param rangeType The range type of channel with \p channelIndex
+     * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelRangeType(const std::int32_t& channelIndex, const Channel::RangeType& rangeType);
 
@@ -288,6 +295,7 @@ public: // Getters/setters
 	/**
 	 * Sets whether whether global settings are on or off
 	 * @param globalSettings Whether whether global settings are on or off
+     * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setGlobalSettings(const bool& globalSettings);
 
@@ -301,6 +309,7 @@ public: // Getters/setters
     /**
      * Sets the global profile type
      * @param profileType Global profile type
+     * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setGlobalProfileType(const Channel::ProfileType& globalProfileType);
 
@@ -314,6 +323,7 @@ public: // Getters/setters
     /**
      * Sets the global range type
      * @param rangeType Global range type
+     * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setGlobalRangeType(const Channel::RangeType& globalRangeType);
 
@@ -327,6 +337,7 @@ public: // Getters/setters
     /**
      * Sets whether dimensions names are displayed in the viewer
      * @param showDimensionNames Whether dimensions names are displayed in the viewer
+     * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setShowDimensionNames(const bool& showDimensionNames);
 
@@ -339,6 +350,7 @@ public: // Getters/setters
     /**
      * Sets whether to show a differential profile in the viewer
      * @param showDifferentialProfile Whether to show a differential profile in the viewer
+     * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setShowDifferentialProfile(const bool& showDifferentialProfile);
 
@@ -353,6 +365,7 @@ public: // Getters/setters
      * Sets selectable dataset names for profile with \p profileIndex
      * @param profileIndex Index of the profile
      * @param datasetNames Selectable dataset names
+     * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setProfileDatasetNames(const std::int32_t& profileIndex, const QStringList& datasetNames);
 
@@ -367,6 +380,7 @@ public: // Getters/setters
      * Sets selectable dataset names for profile with \p profileIndex
      * @param profileIndex Index of the profile
      * @param datasetName Selectable dataset names
+     * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setProfileDatasetName(const std::int32_t& profileIndex, const QString& datasetName);
 
@@ -418,6 +432,12 @@ private: // Internal
      * @param description Description
      */
     QString getTooltip(const std::int32_t& column, const QString& description) const;
+
+    /**
+     * Updates the differential profile settings
+     * @return Columns that are affected by the operation
+     */
+    Configuration::AffectedColumns updateDifferentialProfile();
 
 private:
     Channels		        _channels;                      /** Channels */

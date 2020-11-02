@@ -29,14 +29,19 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
     auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-	/*_enabledCheckBoxes << _ui->channel1EnabledCheckBox<< _ui->channel2EnabledCheckBox << _ui->channel3EnabledCheckBox;
-	_datasetNameComboBoxes << _ui->channel1DatasetNameComboBox<< _ui->channel2DatasetNameComboBox << _ui->channel3DatasetNameComboBox;
-	_colorPushButtons << _ui->channel1ColorPushButton<< _ui->channel2ColorPushButton << _ui->channel3ColorPushButton;
-	_profileTypeComboBoxes << _ui->channel1ProfileTypeComboBox<< _ui->channel2ProfileTypeComboBox << _ui->channel3ProfileTypeComboBox;
-	_rangeTypeComboBoxes << _ui->channel1RangeTypeComboBox << _ui->channel2RangeTypeComboBox << _ui->channel3RangeTypeComboBox;
-    _settingsPushButtons << _ui->channel1SettingsPushButton << _ui->channel2SettingsPushButton << _ui->channel3SettingsPushButton;
-    _differentialProfileWidgets << _ui->differentialProfileCompareLabel << _ui->profile1DatasetNameComboBox << _ui->differentialProfileWithLabel << _ui->profile2DatasetNameComboBox << _ui->differentialProfileColorPushButton;
-    */
+    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &SettingsWidget::updateData);
+
+    QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
+        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
+
+        if (selectedRows.isEmpty())
+            updateData(QModelIndex(), QModelIndex());
+        else {
+            const auto first = selectedRows.first();
+
+            updateData(first.siblingAtColumn(static_cast<int>(Configuration::Column::Start)), first.siblingAtColumn(static_cast<int>(Configuration::Column::End)));
+        }
+    });
 
     QObject::connect(_ui->showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
         configurationsModel.setData(Configuration::Column::ShowDimensionNames, state == Qt::Checked);
