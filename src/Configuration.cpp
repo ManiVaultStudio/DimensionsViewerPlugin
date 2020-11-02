@@ -87,6 +87,13 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
             flags |= Qt::ItemIsEnabled;
 	}
 
+    if (index.column() >= Column::ChannelSettingsStart && index.column() < Column::ChannelSettingsEnd) {
+        const auto channelIndex = index.column() - Column::ChannelSettingsStart;
+
+        if (_channels[channelIndex]->isEnabled())
+            flags |= Qt::ItemIsEnabled;
+    }
+
 	if (index.column() >= Column::ChannelOpacityStart && index.column() < Column::ChannelOpacityEnd) {
 		const auto channelIndex = index.column() - Column::ChannelOpacityStart;
 
@@ -157,6 +164,17 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 	if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd)
 		return getChannelRangeType(index.column() - Column::ChannelRangeTypeStart, role);
+
+    if (index.column() >= Column::ChannelSettingsStart && index.column() < Column::ChannelSettingsEnd) {
+        switch (role)
+        {
+            case Qt::EditRole:
+                return getTooltip(index.column(), "");
+
+            default:
+                break;
+        }
+    }
 
 	if (index.column() == Column::GlobalSettings)
 		return getGlobalSettings(role);
@@ -1093,5 +1111,10 @@ bool Configuration::canShowDifferentialProfile() const
 
 QString Configuration::getTooltip(const std::int32_t& column, const QString& description) const
 {
-    return QString("%1: %2").arg(getColumnName(column), description);
+    const auto columnName = getColumnName(column);
+
+    if (description.isEmpty())
+        return columnName;
+
+    return QString("%1: %2").arg(columnName, description);
 }

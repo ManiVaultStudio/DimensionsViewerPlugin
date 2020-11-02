@@ -130,12 +130,10 @@ void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
 
             if (channelIndex == _channelIndex) {
                 _ui->enabledCheckBox->blockSignals(true);
-                _ui->enabledCheckBox->setEnabled(true);// index.flags() & Qt::ItemIsEnabled);
+                _ui->enabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
                 _ui->enabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
                 _ui->enabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
                 _ui->enabledCheckBox->blockSignals(false);
-
-                _ui->settingsPushButton->setEnabled(index.data(Qt::EditRole).toBool());
             }
 		}
         
@@ -189,5 +187,16 @@ void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
                 _ui->rangeTypeComboBox->blockSignals(false);
             }
 		}
+
+        if (column >= Configuration::Column::ChannelSettingsStart && column < Configuration::Column::ChannelSettingsEnd) {
+            const auto channelIndex = index.column() - Configuration::Column::ChannelSettingsStart;
+
+            if (channelIndex == _channelIndex) {
+                _ui->settingsPushButton->blockSignals(true);
+                _ui->settingsPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+                _ui->settingsPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
+                _ui->settingsPushButton->blockSignals(false);
+            }
+        }
 	}
 }

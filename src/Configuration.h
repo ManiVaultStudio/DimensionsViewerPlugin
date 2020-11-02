@@ -43,6 +43,8 @@ public: // Columns
 		ChannelProfileTypeEnd = ChannelProfileTypeStart + noChannels,       /** Channel profile type last column */
         ChannelRangeTypeStart,				                                /** Channel range type first column */
         ChannelRangeTypeEnd = ChannelRangeTypeStart + noChannels,           /** Channel range type last column */
+        ChannelSettingsStart,				                                /** Channel settings type first column */
+        ChannelSettingsEnd = ChannelSettingsStart + noChannels,             /** Channel settings type last column */
         GlobalSettings,                                                     /** Whether whether global settings are on or off */
         GlobalProfileType,                                                  /** Global profile type */
         GlobalRangeType,                                                    /** Global range type */
@@ -64,25 +66,28 @@ public: // Columns
 			return "Subsets";
 
 		if (column >= Column::ChannelColorStart && column < Column::ChannelColorEnd)
-			return QString("Channel %1 Color").arg(QString::number(column));
+			return QString("Channel %1 Color").arg(QString::number(column - Column::ChannelColorStart + 1));
 
 		if (column >= Column::ChannelOpacityStart && column < Column::ChannelOpacityEnd)
-			return QString("Channel %1 Opacity").arg(QString::number(column));
+			return QString("Channel %1 Opacity").arg(QString::number(column - Column::ChannelOpacityStart + 1));
 
 		if (column >= Column::ChannelProfileTypeStart && column < Column::ChannelProfileTypeEnd)
-			return QString("Channel %1 Profile type").arg(QString::number(column));
+			return QString("Channel %1 Profile type").arg(QString::number(column - Column::ChannelProfileTypeStart + 1));
 
 		if (column >= Column::ChannelRangeTypeStart && column < Column::ChannelRangeTypeEnd)
-			return QString("Channel %1 Range type").arg(QString::number(column));
+			return QString("Channel %1 Range type").arg(QString::number(column - Column::ChannelRangeTypeStart + 1));
 
 		if (column >= Column::ChannelDataNameStart && column < Column::ChannelDataNameEnd)
-			return QString("Channel %1 Data name").arg(QString::number(column));
+			return QString("Channel %1 Data name").arg(QString::number(column - Column::ChannelDataNameStart + 1));
 
 		if (column >= Column::ChannelDatasetNameStart && column < Column::ChannelDatasetNameEnd)
-			return QString("Channel %1 Dataset name").arg(QString::number(column));
+			return QString("Channel %1 Dataset name").arg(QString::number(column - Column::ChannelDatasetNameStart + 1));
 
 		if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
-			return QString("Channel %1 Enabled").arg(QString::number(column));
+			return QString("Channel %1 Enabled").arg(QString::number(column - Column::ChannelEnabledStart + 1));
+
+        if (column >= Column::ChannelSettingsStart && column < Column::ChannelSettingsEnd)
+            return QString("Channel %1 settings").arg(QString::number(column - Column::ChannelSettingsStart + 1));
 
         if (column == Column::GlobalSettings)
             return "Global settings";
