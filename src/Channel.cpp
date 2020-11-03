@@ -78,8 +78,10 @@ void Channel::setOpacity(const float& opacity)
 
 Profile::ProfileType Channel::getProfileType() const
 {
-    if (_configuration->getGlobalSettings(Qt::EditRole).toBool())
-        return static_cast<Profile::ProfileType>(_configuration->getGlobalProfileType(Qt::EditRole).toInt());
+    auto& globalSettings = _configuration->getGlobalSettings();
+
+    if (globalSettings.getEnabled(Qt::EditRole).toBool())
+        return static_cast<Profile::ProfileType>(globalSettings.getProfileType(Qt::EditRole).toInt());
 
     return _profile.getProfileType();
 }
@@ -96,8 +98,10 @@ void Channel::setProfileType(const Profile::ProfileType& profileType)
 
 Profile::RangeType Channel::getRangeType() const
 {
-    if (_configuration->getGlobalSettings(Qt::EditRole).toBool())
-        return static_cast<Profile::RangeType>(_configuration->getGlobalRangeType(Qt::EditRole).toInt());
+    auto& globalSettings = _configuration->getGlobalSettings();
+
+    if (globalSettings.getEnabled(Qt::EditRole).toBool())
+        return static_cast<Profile::RangeType>(globalSettings.getRangeType(Qt::EditRole).toInt());
 
     return _profile.getRangeType();
 }

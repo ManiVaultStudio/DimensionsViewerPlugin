@@ -37,17 +37,18 @@ void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
 
 void DimensionsViewerWidget::dropEvent(QDropEvent* dropEvent)
 {
-	const auto items        = dropEvent->mimeData()->text().split("\n");
-	const auto datasetName  = items.at(0);
+    //TODO
+	//const auto items        = dropEvent->mimeData()->text().split("\n");
+	//const auto datasetName  = items.at(0);
 
-	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+	//auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-	for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-		const auto hits = configurationsModel.match(configurationsModel.index(0, Configuration::Column::ChannelDatasetNameStart + channelIndex), Qt::DisplayRole, datasetName, -1, Qt::MatchExactly);
+	//for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
+	//	const auto hits = configurationsModel.match(configurationsModel.index(0, Configuration::Column::ChannelDatasetNameStart + channelIndex), Qt::DisplayRole, datasetName, -1, Qt::MatchExactly);
 
-		if (!hits.isEmpty()) {
-			configurationsModel.selectRow(hits.first().row());
-			break;
-		}
-	}
+	//	if (!hits.isEmpty()) {
+	//		configurationsModel.selectRow(hits.first().row());
+	//		break;
+	//	}
+	//}
 }

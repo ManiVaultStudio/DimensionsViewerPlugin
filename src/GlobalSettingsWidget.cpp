@@ -14,7 +14,7 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
+    /*auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
     QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &GlobalSettingsWidget::updateData);
 
@@ -42,12 +42,12 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
         configurationsModel.setData(Configuration::Column::GlobalRangeType, currentText);
     });
 
-	updateData(QModelIndex(), QModelIndex());
+	updateData(QModelIndex(), QModelIndex());*/
 }
 
 void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
+	/*const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
         _ui->groupBox->setEnabled(false);
@@ -97,5 +97,5 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
             _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->rangeTypeComboBox->blockSignals(false);
         }
-	}
+	}*/
 }

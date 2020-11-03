@@ -83,24 +83,25 @@ QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientatio
 
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
-	auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
+    auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
 
-	Configuration* parentConfiguration = false;
+    //TODO
+	//Configuration* parentConfiguration = false;
 
-	for (auto configuration : _configurations) {
-		if (dataName == configuration->getChannelDataName(0, Qt::EditRole).toString()) {
-			parentConfiguration = configuration;
-			break;
-		}
-	}
+	//for (auto configuration : _configurations) {
+	//	if (dataName == configuration->getChannelDataName(0, Qt::EditRole).toString()) {
+	//		parentConfiguration = configuration;
+	//		break;
+	//	}
+	//}
 
-	if (parentConfiguration) {
-		const auto configurationIndex	= _configurations.indexOf(parentConfiguration);
-		const auto subsetsIndex			= index(configurationIndex, static_cast<int>(Configuration::Column::Subsets));
+	//if (parentConfiguration) {
+	//	const auto configurationIndex	= _configurations.indexOf(parentConfiguration);
+	//	const auto subsetsIndex			= index(configurationIndex, static_cast<int>(Configuration::Column::Subsets));
 
-		setData(subsetsIndex, parentConfiguration->getSubsets(Qt::EditRole).toStringList() << datasetName);
-	}
-	else {
+	//	setData(subsetsIndex, parentConfiguration->getSubsets(Qt::EditRole).toStringList() << datasetName);
+	//}
+	//else {
 		beginInsertRows(QModelIndex(), _configurations.size(), _configurations.size());
 		{
 			_configurations << new Configuration(_dimensionsViewerPlugin, datasetName, dataName);
@@ -109,7 +110,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 
 		if (_configurations.size() == 1)
 			selectRow(0);
-	}
+	//}
 }
 
 QStringList ConfigurationsModel::getConfigurationNames()
@@ -117,7 +118,7 @@ QStringList ConfigurationsModel::getConfigurationNames()
 	QStringList configurationNames;
 
 	for (auto configuration : _configurations)
-		configurationNames << configuration->getChannelDatasetName(0, Qt::EditRole).toString();
+		configurationNames << configuration->getChannels()[0]->getDatasetName();
 	
 	return configurationNames;
 }
@@ -125,14 +126,14 @@ QStringList ConfigurationsModel::getConfigurationNames()
 void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
 {
     const auto presentWarning = [](const QString& reason) {
-        QMessageBox::warning(nullptr, "Unable to visualization dataset dimensions", reason);
+        QMessageBox::warning(nullptr, "Unable to visualize dataset dimensions", reason);
     };
 
     try
     {
         auto configuration = _configurations[rowIndex];
 
-        const auto datasetName = configuration->getChannelDatasetName(0, Qt::EditRole).toString();
+        const auto datasetName = configuration->getChannels()[0]->getDatasetName();
 
         if (configuration->getChannels()[0]->getNoDimensions() > Configuration::maxNoDimensions) {
             throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());

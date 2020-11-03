@@ -174,5 +174,5 @@ protected:
 	static DimensionsViewerPlugin* dimensionsViewerPlugin;
 
 	friend class DimensionsViewerPlugin;
-	friend class Configuration;
+	friend class Channels;
 };

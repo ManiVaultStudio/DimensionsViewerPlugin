@@ -57,12 +57,13 @@ void DimensionsViewerPlugin::dataRemoved(const QString dataset)
 
 void DimensionsViewerPlugin::selectionChanged(const QString dataName)
 {
-    const auto hits = _configurationsModel.match(_configurationsModel.index(0, Configuration::Column::ChannelDataNameStart), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
+    //TODO
+    //const auto hits = _configurationsModel.match(_configurationsModel.index(0, Configuration::Column::ChannelDataNameStart), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
 
-    if (!hits.isEmpty()) {
-        //const auto selectionStamp = _configurationsModel.data(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp)).toInt();
-        _configurationsModel.setData(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp), 0);
-    }
+    //if (!hits.isEmpty()) {
+    //    //const auto selectionStamp = _configurationsModel.data(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp)).toInt();
+    //    _configurationsModel.setData(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp), 0);
+    //}
 }
 
 hdps::DataTypes DimensionsViewerPlugin::supportedDataTypes() const

@@ -19,83 +19,83 @@ ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent, const std::uint32_
 {
 	_ui->setupUi(this);
 
-    const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
+ //   const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
 
-    auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
+ //   auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
-    if (_channelIndex == 0) {
-        const auto updateDatasetCombobox = [this]() {
-            auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
+ //   if (_channelIndex == 0) {
+ //       const auto updateDatasetCombobox = [this]() {
+ //           auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
-            _ui->datasetNameComboBox->blockSignals(true);
-            _ui->datasetNameComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
-            _ui->datasetNameComboBox->setEnabled(configurationsModel.rowCount() > 1);
-            _ui->datasetNameComboBox->blockSignals(false);
-        };
+ //           _ui->datasetNameComboBox->blockSignals(true);
+ //           _ui->datasetNameComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
+ //           _ui->datasetNameComboBox->setEnabled(configurationsModel.rowCount() > 1);
+ //           _ui->datasetNameComboBox->blockSignals(false);
+ //       };
 
-        QObject::connect(&configurationsModel, &ConfigurationsModel::rowsInserted, [this, updateDatasetCombobox](const QModelIndex& parent, int first, int last) {
-            updateDatasetCombobox();
-        });
+ //       QObject::connect(&configurationsModel, &ConfigurationsModel::rowsInserted, [this, updateDatasetCombobox](const QModelIndex& parent, int first, int last) {
+ //           updateDatasetCombobox();
+ //       });
 
-        QObject::connect(&configurationsModel, &ConfigurationsModel::rowsRemoved, [this, updateDatasetCombobox](const QModelIndex& parent, int first, int last) {
-            updateDatasetCombobox();
-        });
-    }
+ //       QObject::connect(&configurationsModel, &ConfigurationsModel::rowsRemoved, [this, updateDatasetCombobox](const QModelIndex& parent, int first, int last) {
+ //           updateDatasetCombobox();
+ //       });
+ //   }
 
-    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &ChannelSettingsWidget::updateData);
+ //   QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &ChannelSettingsWidget::updateData);
 
-    QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
-        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
+ //   QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
+ //       const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
 
-        if (selectedRows.isEmpty())
-            updateData(QModelIndex(), QModelIndex());
-        else {
-            const auto first = selectedRows.first();
+ //       if (selectedRows.isEmpty())
+ //           updateData(QModelIndex(), QModelIndex());
+ //       else {
+ //           const auto first = selectedRows.first();
 
-            updateData(first.siblingAtColumn(static_cast<int>(Configuration::Column::Start)), first.siblingAtColumn(static_cast<int>(Configuration::Column::End)));
-        }
-    });
+ //           updateData(first.siblingAtColumn(static_cast<int>(Configuration::Column::Start)), first.siblingAtColumn(static_cast<int>(Configuration::Column::End)));
+ //       }
+ //   });
 
-    QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
-        configurationsModel.setData(Configuration::Column::ChannelEnabledStart + _channelIndex, state == Qt::Checked);
-    });
+ //   QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+ //       configurationsModel.setData(Configuration::Column::ChannelEnabledStart + _channelIndex, state == Qt::Checked);
+ //   });
 
-    QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
-        if (_channelIndex == 0)
-            configurationsModel.selectRow(currentIndex);
-        else
-            configurationsModel.setData(Configuration::Column::ChannelDatasetNameStart + _channelIndex, _ui->datasetNameComboBox->currentText());
-    });
+ //   QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+ //       if (_channelIndex == 0)
+ //           configurationsModel.selectRow(currentIndex);
+ //       else
+ //           configurationsModel.setData(Configuration::Column::ChannelDatasetNameStart + _channelIndex, _ui->datasetNameComboBox->currentText());
+ //   });
 
-    _ui->colorPushButton->setShowText(false);
-    _ui->colorPushButton->setColor(Qt::gray);
+ //   _ui->colorPushButton->setShowText(false);
+ //   _ui->colorPushButton->setColor(Qt::gray);
 
-    QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
-        configurationsModel.setData(Configuration::Column::ChannelColorStart + _channelIndex, color);
-    });
+ //   QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
+ //       configurationsModel.setData(Configuration::Column::ChannelColorStart + _channelIndex, color);
+ //   });
 
-    _ui->settingsPushButton->setFont(fontAwesome);
-    _ui->settingsPushButton->setStyleSheet("text-align: center");
-    _ui->settingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("cog"));
+ //   _ui->settingsPushButton->setFont(fontAwesome);
+ //   _ui->settingsPushButton->setStyleSheet("text-align: center");
+ //   _ui->settingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("cog"));
 
-    //_ui->profileTypeComboBox->setModel(new QStringListModel(Profile::getProfileTypeNames()));
+ //   //_ui->profileTypeComboBox->setModel(new QStringListModel(Profile::getProfileTypeNames()));
 
-    QObject::connect(_ui->profileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
-        configurationsModel.setData(Configuration::Column::ChannelProfileTypeStart + _channelIndex, currentIndex);
-    });
+ //   QObject::connect(_ui->profileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+ //       configurationsModel.setData(Configuration::Column::ChannelProfileTypeStart + _channelIndex, currentIndex);
+ //   });
 
-    //_ui->rangeTypeComboBox->setModel(new QStringListModel(Profile::getRangeTypeNames()));
+ //   //_ui->rangeTypeComboBox->setModel(new QStringListModel(Profile::getRangeTypeNames()));
 
-    QObject::connect(_ui->rangeTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
-        configurationsModel.setData(Configuration::Column::ChannelRangeTypeStart + _channelIndex, currentIndex);
-    });
+ //   QObject::connect(_ui->rangeTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
+ //       configurationsModel.setData(Configuration::Column::ChannelRangeTypeStart + _channelIndex, currentIndex);
+ //   });
 
-	updateData(QModelIndex(), QModelIndex());
+	//updateData(QModelIndex(), QModelIndex());
 }
 
 void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
+	/*const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
         _ui->enabledCheckBox->setEnabled(false);
@@ -211,5 +211,5 @@ void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelInd
                 _ui->settingsPushButton->blockSignals(false);
             }
         }
-	}
+	}*/
 }

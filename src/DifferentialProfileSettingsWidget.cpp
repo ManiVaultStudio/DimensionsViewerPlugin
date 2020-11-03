@@ -14,7 +14,7 @@ DifferentialProfileSettingsWidget::DifferentialProfileSettingsWidget(QWidget* pa
 {
 	_ui->setupUi(this);
 
-    auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
+    /*auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
     QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &DifferentialProfileSettingsWidget::updateData);
 
@@ -42,12 +42,12 @@ DifferentialProfileSettingsWidget::DifferentialProfileSettingsWidget(QWidget* pa
         configurationsModel.setData(Configuration::Column::Profile2DatasetName, currentText);
     });
 
-	updateData(QModelIndex(), QModelIndex());
+	updateData(QModelIndex(), QModelIndex());*/
 }
 
 void DifferentialProfileSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
+	/*const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
         _ui->groupBox->setEnabled(false);
@@ -101,5 +101,5 @@ void DifferentialProfileSettingsWidget::updateData(const QModelIndex& begin, con
             _ui->profile2DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->profile2DatasetNameComboBox->blockSignals(false);
         }
-	}
+	}*/
 }

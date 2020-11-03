@@ -13,7 +13,7 @@ MiscellaneousSettingsWidget::MiscellaneousSettingsWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
+    /*auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
     QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &MiscellaneousSettingsWidget::updateData);
 
@@ -33,24 +33,24 @@ MiscellaneousSettingsWidget::MiscellaneousSettingsWidget(QWidget* parent) :
         configurationsModel.setData(Configuration::Column::ShowDimensionNames, state == Qt::Checked);
     });
 
-	updateData(QModelIndex(), QModelIndex());
+	updateData(QModelIndex(), QModelIndex());*/
 }
 
 void MiscellaneousSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
+    /*const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
-	if (selectedRows.isEmpty()) {
+    if (selectedRows.isEmpty()) {
         _ui->showDimensionNamesCheckBox->setEnabled(false);
 
-		return;
-	}
+        return;
+    }
 
-	if (begin.row() != selectedRows.first().row())
-		return;
+    if (begin.row() != selectedRows.first().row())
+        return;
 
-	for (int column = begin.column(); column <= end.column(); column++) {
-		const auto index = begin.siblingAtColumn(column);
+    for (int column = begin.column(); column <= end.column(); column++) {
+        const auto index = begin.siblingAtColumn(column);
 
         if (column == Configuration::Column::ShowDimensionNames) {
             _ui->showDimensionNamesCheckBox->blockSignals(true);
@@ -59,5 +59,5 @@ void MiscellaneousSettingsWidget::updateData(const QModelIndex& begin, const QMo
             _ui->showDimensionNamesCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->showDimensionNamesCheckBox->blockSignals(false);
         }
-	}
+    }*/
 }
