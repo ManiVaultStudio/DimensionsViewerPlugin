@@ -33,7 +33,6 @@ public: // Columns
 	/** Data columns */
 	enum Column {
 		Subsets,						                                    /** The subset(s) parameter of the first dataset */
-        RangeTypes,                                                         /** Range types (depends on the profile type) */
         ChannelNameStart,				                                    /** Channel name first column */
         ChannelNameEnd = ChannelNameStart + noChannels,                     /** Channel name last column */
 		ChannelEnabledStart,				                                /** Channel enabled first column */
@@ -53,7 +52,9 @@ public: // Columns
         ChannelSettingsStart,				                                /** Channel settings type first column */
         ChannelSettingsEnd = ChannelSettingsStart + noChannels,             /** Channel settings type last column */
         GlobalSettings,                                                     /** Whether whether global settings are on or off */
+        GlobalProfileTypes,                                                 /** Global profile types */
         GlobalProfileType,                                                  /** Global profile type */
+        GlobalRangeTypes,                                                   /** Global range types */
         GlobalRangeType,                                                    /** Global range type */
 		SelectionStamp,		                                                /** Auxiliary column for triggering synchronization */
 		ShowDimensionNames,		                                            /** Whether dimensions names are displayed in the viewer */
@@ -71,9 +72,6 @@ public: // Columns
 	static QString getColumnName(const std::int32_t& column) {
 		if (column == Column::Subsets)
 			return "Subsets";
-
-        if (column == Column::RangeTypes)
-            return "Range types";
 
         if (column >= Column::ChannelNameStart && column < Column::ChannelNameEnd)
             return QString("Channel %1 Name").arg(QString::number(column - Column::ChannelNameStart + 1));
@@ -105,8 +103,14 @@ public: // Columns
         if (column == Column::GlobalSettings)
             return "Global settings";
 
+        if (column == Column::GlobalProfileTypes)
+            return "Global profile types";
+
         if (column == Column::GlobalProfileType)
             return "Global profile type";
+
+        if (column == Column::GlobalRangeTypes)
+            return "Global range types";
 
         if (column == Column::GlobalRangeType)
             return "Global range type";
@@ -292,7 +296,7 @@ public: // Getters/setters
 	 * @param profileType Channel profile type
      * @return Columns that are affected by the operation
 	 */
-	Configuration::AffectedColumns setChannelProfileType(const std::int32_t& channelIndex, const Channel::ProfileType& profileType);
+	Configuration::AffectedColumns setChannelProfileType(const std::int32_t& channelIndex, const Profile::ProfileType& profileType);
 
 	/**
 	 * Gets channel range type
@@ -308,7 +312,7 @@ public: // Getters/setters
 	 * @param rangeType Channel range type
      * @return Columns that are affected by the operation
 	 */
-	Configuration::AffectedColumns setChannelRangeType(const std::int32_t& channelIndex, const Channel::RangeType& rangeType);
+	Configuration::AffectedColumns setChannelRangeType(const std::int32_t& channelIndex, const Profile::RangeType& rangeType);
 
 	/**
 	 * Gets global settings
@@ -325,6 +329,13 @@ public: // Getters/setters
 	Configuration::AffectedColumns setGlobalSettings(const bool& globalSettings);
 
     /**
+     * Gets global profile types
+     * @param role Data role
+     * @return Global profile types in variant form
+     */
+    QVariant getGlobalProfileTypes(const std::int32_t& role) const;
+
+    /**
      * Gets global profile type
      * @param role Data role
      * @return Global profile type in variant form
@@ -336,7 +347,14 @@ public: // Getters/setters
      * @param profileType Global profile type
      * @return Columns that are affected by the operation
      */
-    Configuration::AffectedColumns setGlobalProfileType(const Channel::ProfileType& globalProfileType);
+    Configuration::AffectedColumns setGlobalProfileType(const Profile::ProfileType& globalProfileType);
+
+    /**
+     * Gets global range types
+     * @param role Data role
+     * @return Global range types in variant form
+     */
+    QVariant getGlobalRangeTypes(const std::int32_t& role) const;
 
     /**
      * Gets global range type
@@ -350,7 +368,7 @@ public: // Getters/setters
      * @param rangeType Global range type
      * @return Columns that are affected by the operation
      */
-    Configuration::AffectedColumns setGlobalRangeType(const Channel::RangeType& globalRangeType);
+    Configuration::AffectedColumns setGlobalRangeType(const Profile::RangeType& globalRangeType);
 
     /**
      * Gets show dimensions names
@@ -475,8 +493,7 @@ private:
     QString                 _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
     bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
     bool                    _globalSettings;                /** Whether whether global settings are on or off */
-    Channel::ProfileType	_globalProfileType;             /** Global profile type */
-    Channel::RangeType		_globalRangeType;			    /** Global range type */
+    Profile                 _globalProfile;                 /** Global profile type */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:

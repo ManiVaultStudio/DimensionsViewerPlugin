@@ -78,13 +78,13 @@ ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent, const std::uint32_
     _ui->settingsPushButton->setStyleSheet("text-align: center");
     _ui->settingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("cog"));
 
-    _ui->profileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
+    //_ui->profileTypeComboBox->setModel(new QStringListModel(Profile::getProfileTypeNames()));
 
     QObject::connect(_ui->profileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
         configurationsModel.setData(Configuration::Column::ChannelProfileTypeStart + _channelIndex, currentIndex);
     });
 
-    _ui->rangeTypeComboBox->setModel(new QStringListModel(Channel::getRangeTypeNames()));
+    //_ui->rangeTypeComboBox->setModel(new QStringListModel(Profile::getRangeTypeNames()));
 
     QObject::connect(_ui->rangeTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
         configurationsModel.setData(Configuration::Column::ChannelRangeTypeStart + _channelIndex, currentIndex);

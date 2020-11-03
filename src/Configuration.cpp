@@ -19,8 +19,7 @@ Configuration::Configuration(QObject* parent, const QString& datasetName, const 
     _profileDatasetName(),
     _showDimensionNames(false),
     _globalSettings(true),
-    _globalProfileType(Channel::ProfileType::Mean),
-    _globalRangeType(Channel::RangeType::StandardDeviation1),
+    _globalProfile(Profile::ProfileType::Mean),
     _spec()
 {
     _spec["modified"] = 0;
@@ -80,12 +79,12 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
             flags |= Qt::ItemIsEnabled;
 	}
 
-	if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd) {
-		const auto channelIndex = index.column() - Column::ChannelRangeTypeStart;
+    if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd) {
+        const auto channelIndex = index.column() - Column::ChannelRangeTypeStart;
 
         if (_channels[channelIndex]->isEnabled() && !_globalSettings && _subsets.size() >= channelIndex)
             flags |= Qt::ItemIsEnabled;
-	}
+    }
 
     if (index.column() >= Column::ChannelSettingsStart && index.column() < Column::ChannelSettingsEnd) {
         const auto channelIndex = index.column() - Column::ChannelSettingsStart;
@@ -116,8 +115,13 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
             flags |= Qt::ItemIsEnabled;
     }
 
-    if (index.column() == Column::GlobalProfileType || index.column() == Column::GlobalRangeType) {
-        if (_globalSettings)
+    if (index.column() == Column::GlobalProfileType) {
+        if (_globalSettings && !_globalProfile.getProfileTypeNames().isEmpty())
+            flags |= Qt::ItemIsEnabled;
+    }
+
+    if (index.column() == Column::GlobalRangeType) {
+        if (_globalSettings && !_globalProfile.getRangeTypeNames().isEmpty())
             flags |= Qt::ItemIsEnabled;
     }
     
@@ -182,8 +186,14 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 	if (index.column() == Column::GlobalSettings)
 		return getGlobalSettings(role);
 
+    if (index.column() == Column::GlobalProfileTypes)
+        return getGlobalProfileTypes(role);
+
     if (index.column() == Column::GlobalProfileType)
         return getGlobalProfileType(role);
+
+    if (index.column() == Column::GlobalRangeTypes)
+        return getGlobalRangeTypes(role);
 
     if (index.column() == Column::GlobalRangeType)
         return getGlobalRangeType(role);
@@ -232,19 +242,19 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         affectedColumns << setChannelOpacity(index.column() - Column::ChannelOpacityStart, value.toFloat());
 
 	if (index.column() >= Column::ChannelProfileTypeStart && index.column() < Column::ChannelProfileTypeEnd)
-        affectedColumns << setChannelProfileType(index.column() - Column::ChannelProfileTypeStart, static_cast<Channel::ProfileType>(value.toInt()));
+        affectedColumns << setChannelProfileType(index.column() - Column::ChannelProfileTypeStart, static_cast<Profile::ProfileType>(value.toInt()));
 
 	if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd)
-        affectedColumns << setChannelRangeType(index.column() - Column::ChannelRangeTypeStart, static_cast<Channel::RangeType>(value.toInt()));
+        affectedColumns << setChannelRangeType(index.column() - Column::ChannelRangeTypeStart, static_cast<Profile::RangeType>(value.toInt()));
 
 	if (index.column() == Column::GlobalSettings)
 		affectedColumns << setGlobalSettings(value.toBool());
 
     if (index.column() == Column::GlobalProfileType)
-        affectedColumns << setGlobalProfileType(Channel::getProfileTypeEnum(value.toString()));
+        affectedColumns << setGlobalProfileType(Profile::getProfileTypeEnum(value.toString()));
 
     if (index.column() == Column::GlobalRangeType)
-        affectedColumns << setGlobalRangeType(Channel::getRangeTypeEnum(value.toString()));
+        affectedColumns << setGlobalRangeType(Profile::getRangeTypeEnum(value.toString()));
 
     if (index.column() == Column::SelectionStamp)
         _channels[0]->updateSpec();
@@ -626,7 +636,7 @@ QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, 
 	try
 	{
 		const auto profileType			= _channels[channelIndex]->getProfileType();
-		const auto profileTypeString	= Channel::getProfileTypeName(profileType);
+		const auto profileTypeString	= Profile::getProfileTypeName(profileType);
 
 		switch (role)
 		{
@@ -651,7 +661,7 @@ QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, 
 	return QVariant();
 }
 
-Configuration::AffectedColumns Configuration::setChannelProfileType(const std::int32_t& channelIndex, const Channel::ProfileType& profileType)
+Configuration::AffectedColumns Configuration::setChannelProfileType(const std::int32_t& channelIndex, const Profile::ProfileType& profileType)
 {
     AffectedColumns affectedColumns{ Column::ChannelProfileTypeStart + channelIndex };
 
@@ -678,7 +688,7 @@ QVariant Configuration::getChannelRangeType(const std::int32_t& channelIndex, co
 	try
 	{
 		const auto rangeType        = _channels[channelIndex]->getRangeType();
-		const auto rangeTypeString	= Channel::getRangeTypeName(rangeType);
+		const auto rangeTypeString	= Profile::getRangeTypeName(rangeType);
 
 		switch (role)
 		{
@@ -703,7 +713,7 @@ QVariant Configuration::getChannelRangeType(const std::int32_t& channelIndex, co
 	return QVariant();
 }
 
-Configuration::AffectedColumns Configuration::setChannelRangeType(const std::int32_t& channelIndex, const Channel::RangeType& rangeType)
+Configuration::AffectedColumns Configuration::setChannelRangeType(const std::int32_t& channelIndex, const Profile::RangeType& rangeType)
 {
     AffectedColumns affectedColumns{ Column::ChannelRangeTypeStart + channelIndex };
 
@@ -767,8 +777,8 @@ Configuration::AffectedColumns Configuration::setGlobalSettings(const bool& glob
 
         if (_globalSettings) {
             for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-                affectedColumns << setChannelProfileType(channelIndex, _globalProfileType);
-                affectedColumns << setChannelRangeType(channelIndex, _globalRangeType);
+                affectedColumns << setChannelProfileType(channelIndex, _globalProfile.getProfileType());
+                affectedColumns << setChannelRangeType(channelIndex, _globalProfile.getRangeType());
             }
         }
 
@@ -782,9 +792,30 @@ Configuration::AffectedColumns Configuration::setGlobalSettings(const bool& glob
     return affectedColumns;
 }
 
+QVariant Configuration::getGlobalProfileTypes(const std::int32_t& role) const
+{
+    const auto profileTypes = _globalProfile.getProfileTypeNames();
+    const auto profileTypesString = profileTypes.join(", ");
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return profileTypesString;
+
+        case Qt::EditRole:
+            return profileTypes;
+
+        case Qt::ToolTipRole:
+            return getTooltip(Column::GlobalProfileTypes, profileTypesString);
+
+        default:
+            return QVariant();
+    }
+}
+
 QVariant Configuration::getGlobalProfileType(const std::int32_t& role) const
 {
-    const auto profileTypeString = Channel::getProfileTypeName(_globalProfileType);
+    const auto profileTypeString = Profile::getProfileTypeName(_globalProfile.getProfileType());
 
     switch (role)
     {
@@ -792,7 +823,7 @@ QVariant Configuration::getGlobalProfileType(const std::int32_t& role) const
             return profileTypeString;
 
         case Qt::EditRole:
-            return static_cast<int>(_globalProfileType);
+            return static_cast<int>(_globalProfile.getProfileType());
 
         case Qt::ToolTipRole:
             return getTooltip(Column::GlobalProfileType, profileTypeString);
@@ -802,27 +833,51 @@ QVariant Configuration::getGlobalProfileType(const std::int32_t& role) const
     }
 }
 
-Configuration::AffectedColumns Configuration::setGlobalProfileType(const Channel::ProfileType& globalProfileType)
+Configuration::AffectedColumns Configuration::setGlobalProfileType(const Profile::ProfileType& globalProfileType)
 {
     AffectedColumns affectedColumns{ Column::GlobalProfileType };
 
-    if (globalProfileType == _globalProfileType)
+    if (globalProfileType == _globalProfile.getProfileType())
         return affectedColumns;
 
-    _globalProfileType = globalProfileType;
+    _globalProfile.setProfileType(globalProfileType);
+
+    affectedColumns << Column::GlobalRangeType;
+    affectedColumns << Column::GlobalRangeTypes;
 
     if (_globalSettings) {
         for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-            affectedColumns << setChannelProfileType(channelIndex, _globalProfileType);
+            affectedColumns << setChannelProfileType(channelIndex, _globalProfile.getProfileType());
         }
     }
 
     return affectedColumns;
 }
 
+QVariant Configuration::getGlobalRangeTypes(const std::int32_t& role) const
+{
+    const auto rangeTypes = _globalProfile.getRangeTypeNames();
+    const auto rangeTypesString = rangeTypes.join(", ");
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return rangeTypesString;
+
+        case Qt::EditRole:
+            return rangeTypes;
+
+        case Qt::ToolTipRole:
+            return getTooltip(Column::GlobalRangeTypes, rangeTypesString);
+
+        default:
+            return QVariant();
+    }
+}
+
 QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
 {
-    const auto rangeTypeString = Channel::getRangeTypeName(_globalRangeType);
+    const auto rangeTypeString = Profile::getRangeTypeName(_globalProfile.getRangeType());
 
     switch (role)
     {
@@ -830,7 +885,7 @@ QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
             return rangeTypeString;
 
         case Qt::EditRole:
-            return static_cast<int>(_globalRangeType);
+            return static_cast<int>(_globalProfile.getRangeType());
 
         case Qt::ToolTipRole:
             return getTooltip(Column::GlobalRangeType, rangeTypeString);
@@ -840,18 +895,18 @@ QVariant Configuration::getGlobalRangeType(const std::int32_t& role) const
     }
 }
 
-Configuration::AffectedColumns Configuration::setGlobalRangeType(const Channel::RangeType& globalRangeType)
+Configuration::AffectedColumns Configuration::setGlobalRangeType(const Profile::RangeType& globalRangeType)
 {
     AffectedColumns affectedColumns{ Column::GlobalRangeType };
 
-    if (globalRangeType == _globalRangeType)
+    if (globalRangeType == _globalProfile.getRangeType())
         return affectedColumns;
 
-    _globalRangeType = globalRangeType;
+    _globalProfile.setRangeType(globalRangeType);
 
     if (_globalSettings) {
         for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-            affectedColumns << setChannelRangeType(channelIndex, _globalRangeType);
+            affectedColumns << setChannelRangeType(channelIndex, _globalProfile.getRangeType());
         }
     }
 

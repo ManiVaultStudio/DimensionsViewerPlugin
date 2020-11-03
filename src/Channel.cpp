@@ -11,23 +11,6 @@
 
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
-const QMap<QString, Channel::ProfileType> Channel::profileTypes = {
-    { "None", ProfileType::None },
-    { "Mean", ProfileType::Mean },
-    { "Median", ProfileType::Median },
-    { "Differential", ProfileType::Differential }
-};
-
-const QMap<QString, Channel::RangeType> Channel::rangeTypes = {
-    { "None", RangeType::None },
-    { "1 StdDev", RangeType::StandardDeviation1 },
-    { "2 StdDev", RangeType::StandardDeviation2 },
-    { "3 StdDev", RangeType::StandardDeviation3 },
-    { "MinMax", RangeType::MinMax },
-    { "5% - 95% percentile", RangeType::Percentile5 },
-    { "10% - 90% percentile", RangeType::Percentile10 }
-};
-
 Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
 	QObject(parent),
     _configuration(dynamic_cast<Configuration*>(parent)),
@@ -39,8 +22,7 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	_dataName(dataName),
 	_color(color),
 	_opacity(opacity),
-	_profileType(ProfileType::Mean),
-	_rangeType(RangeType::None),
+	_profile(Profile::ProfileType::Mean),
 	_spec(),
     _points(nullptr)
 {
@@ -94,38 +76,38 @@ void Channel::setOpacity(const float& opacity)
 	updateSpec();
 }
 
-Channel::ProfileType Channel::getProfileType() const
+Profile::ProfileType Channel::getProfileType() const
 {
     if (_configuration->getGlobalSettings(Qt::EditRole).toBool())
-        return static_cast<ProfileType>(_configuration->getGlobalProfileType(Qt::EditRole).toInt());
+        return static_cast<Profile::ProfileType>(_configuration->getGlobalProfileType(Qt::EditRole).toInt());
 
-    return _profileType;
+    return _profile.getProfileType();
 }
 
-void Channel::setProfileType(const ProfileType& profileType)
+void Channel::setProfileType(const Profile::ProfileType& profileType)
 {
-	if (profileType == _profileType)
+	if (profileType == _profile.getProfileType())
 		return;
 
-	_profileType = profileType;
+	_profile.setProfileType(profileType);
 	
 	updateSpec();
 }
 
-Channel::RangeType Channel::getRangeType() const
+Profile::RangeType Channel::getRangeType() const
 {
     if (_configuration->getGlobalSettings(Qt::EditRole).toBool())
-        return static_cast<RangeType>(_configuration->getGlobalRangeType(Qt::EditRole).toInt());
+        return static_cast<Profile::RangeType>(_configuration->getGlobalRangeType(Qt::EditRole).toInt());
 
-    return _rangeType;
+    return _profile.getRangeType();
 }
 
-void Channel::setRangeType(const RangeType& rangeType)
+void Channel::setRangeType(const Profile::RangeType& rangeType)
 {
-	if (rangeType == _rangeType)
+	if (rangeType == _profile.getRangeType())
 		return;
 
-	_rangeType = rangeType;
+	_profile.setRangeType(rangeType);
 
 	updateSpec();
 }
@@ -135,13 +117,7 @@ bool Channel::canDisplay() const
     if (!_enabled)
         return false;
 
-    if (_profileType != ProfileType::None)
-        return true;
-
-    if (_rangeType != RangeType::None)
-        return true;
-
-    return false;
+    return _profile.canDisplay();
 }
 
 std::int32_t Channel::getNoDimensions() const
@@ -221,14 +197,14 @@ void Channel::updateSpec()
 
 				std::transform(dimensionValues.begin(), dimensionValues.end(), diff.begin(), [mean](double x) { return x - mean; });
 
-				switch (_profileType)
+				switch (_profile.getProfileType())
 				{
-					case ProfileType::Mean: {
+					case Profile::ProfileType::Mean: {
 						dimension["agg"] = mean;
 						break;
 					}
 
-					case ProfileType::Median: {
+					case Profile::ProfileType::Median: {
 						std::sort(dimensionValues.begin(), dimensionValues.end());
 						dimension["agg"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
 						break;
@@ -238,9 +214,9 @@ void Channel::updateSpec()
 						break;
 				}
 
-				switch (_rangeType)
+				switch (_profile.getRangeType())
 				{
-					case RangeType::StandardDeviation1: {
+                    case Profile::RangeType::StandardDeviation1: {
 						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
 						double stdDev1	= std::sqrt(sqSum / dimensionValues.size());
 
@@ -249,7 +225,7 @@ void Channel::updateSpec()
 						break;
 					}
 
-					case RangeType::StandardDeviation2: {
+					case Profile::RangeType::StandardDeviation2: {
 						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
 						double stdDev2	= 2.0 * std::sqrt(sqSum / dimensionValues.size());
 
@@ -258,7 +234,7 @@ void Channel::updateSpec()
 						break;
 					}
 
-                    case RangeType::MinMax: {
+                    case Profile::RangeType::MinMax: {
                         auto result = std::minmax_element(dimensionValues.begin(), dimensionValues.end());
 
                         dimension["min"] = *result.first;
@@ -282,8 +258,8 @@ void Channel::updateSpec()
 	_spec["dimensions"]		= dimensions;
 	_spec["color"]			= _color;
 	_spec["opacity"]		= _opacity;
-	_spec["profileType"]	= static_cast<int>(_profileType);
-	_spec["rangeType"]		= static_cast<int>(_rangeType);
+	_spec["profileType"]	= static_cast<int>(_profile.getProfileType());
+	_spec["rangeType"]		= static_cast<int>(_profile.getRangeType());
 	_spec["canDisplay"]		= canDisplay();
 
     emit specChanged(this);

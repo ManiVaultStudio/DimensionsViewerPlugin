@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Profile.h"
+
 #include <QObject>
 #include <QVector>
 #include <QColor>
@@ -19,77 +21,6 @@ class Configuration;
 class Channel : public QObject {
 
 	Q_OBJECT
-
-public: // Enumerations
-
-	/** Dimension values profile type (e.g. mean and median) */
-	enum class ProfileType {
-		None,               /** No profile is displayed */
-		Mean,               /** Display statistical mean */
-		Median,             /** Display statistical median */
-		Differential,       /** Display differential profile (difference between two profiles) */
-
-		End = Differential
-	};
-    
-    /** Maps profile type name to profile type enum and */
-    static QMap<QString, ProfileType> const profileTypes;
-
-	/** Get string representation of profile type enumeration */
-	static QString getProfileTypeName(const ProfileType& profileType) {
-        return profileTypes.key(profileType);
-	}
-
-    /** Get enum representation from profile type name */
-    static ProfileType getProfileTypeEnum(const QString& profileTypeName) {
-        return profileTypes[profileTypeName];
-    }
-
-	/** Get profile type names in a string list */
-	static QStringList getProfileTypeNames() {
-		QStringList profileTypeNames;
-
-		for (int i = 0; i <= static_cast<int>(ProfileType::End); ++i)
-			profileTypeNames << getProfileTypeName(static_cast<ProfileType>(i));
-
-		return profileTypeNames;
-	}
-
-	/** Dimension values range type */
-	enum class RangeType {
-		None,                   /** Do not display value range */
-		StandardDeviation1,     /** Plus and minus three standard deviations (mean profile type) */
-		StandardDeviation2,     /** Plus and minus three standard deviations (mean profile type) */
-		StandardDeviation3,     /** Plus and minus three standard deviations (mean profile type) */
-		MinMax,                 /** Minimum and maximum range (mean profile type) */
-		Percentile5,            /** 5% and 95% percentile (median profile type) */
-		Percentile10,           /** 10% and 90% percentile (median profile type) */
-
-		End = Percentile10
-	};
-
-    /** Maps range type name to range type enum and */
-    static QMap<QString, RangeType> const rangeTypes;
-
-	/** Get string representation of range type enumeration */
-	static QString getRangeTypeName(const RangeType& rangeType) {
-        return rangeTypes.key(rangeType);
-	}
-
-    /** Get enum representation from range type name */
-    static RangeType getRangeTypeEnum(const QString& rangeTypeName) {
-        return rangeTypes[rangeTypeName];
-    }
-
-	/** Get range type names in a string list */
-	static QStringList getRangeTypeNames() {
-		QStringList rangeTypeNames;
-
-		for (int i = 0; i <= static_cast<int>(RangeType::End); ++i)
-			rangeTypeNames << getRangeTypeName(static_cast<RangeType>(i));
-
-		return rangeTypeNames;
-	}
 
 protected: // Construction
 
@@ -179,22 +110,22 @@ public: // Getters/setters
 	void setOpacity(const float& opacity);
 
 	/** Returns the profile type */
-	ProfileType getProfileType() const;
+    Profile::ProfileType getProfileType() const;
 
 	/**
 	 * Sets the profile type
 	 * @param profileType Profile type
 	 */
-	void setProfileType(const ProfileType& profileType);
+	void setProfileType(const Profile::ProfileType& profileType);
 
 	/** Returns the range type */
-	RangeType getRangeType() const;
+    Profile::RangeType getRangeType() const;
 
 	/**
 	 * Sets the range type
 	 * @param rangeType Range type
 	 */
-	void setRangeType(const RangeType& rangeType);
+	void setRangeType(const Profile::RangeType& rangeType);
 
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
@@ -235,8 +166,7 @@ private:
 	QString					    _dataName;			            /** Channel data name */
 	QColor					    _color;				            /** Channel color */
 	float					    _opacity;			            /** Channel opacity */
-	ProfileType				    _profileType;		            /** The type of dimension values profile to visualize */
-	RangeType				    _rangeType;			            /** The type of dimension values range to visualize */
+    Profile				        _profile;		                /** TODO */
 	QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 	Points*					    _points;			            /** Pointer to points dataset */
 

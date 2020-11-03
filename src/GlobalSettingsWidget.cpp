@@ -42,9 +42,6 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
         configurationsModel.setData(Configuration::Column::GlobalRangeType, currentText);
     });
 
-    _ui->profileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
-    _ui->rangeTypeComboBox->setModel(new QStringListModel(Channel::getRangeTypeNames()));
-
 	updateData(QModelIndex(), QModelIndex());
 }
 
@@ -53,7 +50,7 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
 	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
-        _ui->groupBox->setEnabled(false);
+        //_ui->groupBox->setEnabled(false);
         _ui->groupBox->setChecked(false);
 
 		return;
@@ -73,18 +70,30 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
             _ui->groupBox->blockSignals(false);
         }
 
+        if (column == Configuration::Column::GlobalProfileTypes) {
+            _ui->profileTypeComboBox->blockSignals(true);
+            _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->profileTypeComboBox->blockSignals(false);
+        }
+
         if (column == Configuration::Column::GlobalProfileType) {
             _ui->profileTypeComboBox->blockSignals(true);
             _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->profileTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+            _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->profileTypeComboBox->blockSignals(false);
+        }
+
+        if (column == Configuration::Column::GlobalRangeTypes) {
+            _ui->rangeTypeComboBox->blockSignals(true);
+            _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->rangeTypeComboBox->blockSignals(false);
         }
 
         if (column == Configuration::Column::GlobalRangeType) {
             _ui->rangeTypeComboBox->blockSignals(true);
             _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+            _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->rangeTypeComboBox->blockSignals(false);
         }
