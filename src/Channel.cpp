@@ -45,6 +45,11 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	setDatasetName(datasetName);
 }
 
+void Channel::setDisplayName(const QString& displayName)
+{
+    _displayName = displayName;
+}
+
 void Channel::setEnabled(const bool& enabled)
 {
 	if (enabled == _enabled)

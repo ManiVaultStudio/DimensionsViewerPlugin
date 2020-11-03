@@ -98,6 +98,7 @@ void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
 	if (selectedRows.isEmpty()) {
         _ui->enabledCheckBox->setEnabled(false);
         _ui->enabledCheckBox->setChecked(false);
+        _ui->enabledCheckBox->setText(QString("Channel %1").arg(QString::number(_channelIndex + 1)));
         _ui->datasetNameComboBox->setEnabled(false);
         _ui->datasetNameComboBox->setCurrentIndex(-1);
         _ui->colorPushButton->setEnabled(false);
@@ -136,6 +137,16 @@ void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
                 _ui->enabledCheckBox->blockSignals(false);
             }
 		}
+
+        if (column >= Configuration::Column::ChannelNameStart && column < Configuration::Column::ChannelNameEnd) {
+            const auto channelIndex = index.column() - Configuration::Column::ChannelNameStart;
+
+            if (channelIndex == _channelIndex) {
+                _ui->enabledCheckBox->blockSignals(true);
+                _ui->enabledCheckBox->setText(index.data(Qt::EditRole).toString());
+                _ui->enabledCheckBox->blockSignals(false);
+            }
+        }
         
 		if (column >= Configuration::Column::ChannelDatasetNameStart && column < Configuration::Column::ChannelDatasetNameEnd) {
 			const auto channelIndex = index.column() - Configuration::Column::ChannelDatasetNameStart;

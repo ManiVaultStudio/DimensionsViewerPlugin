@@ -122,6 +122,12 @@ public: // Getters/setters
 		return _displayName;
 	};
 
+    /**
+     * Sets name
+     * @param displayName Display name
+     */
+    void setDisplayName(const QString& displayName);
+
 	/** Returns whether the channel is enabled */
 	bool isEnabled() const {
 		return _enabled;
@@ -225,7 +231,7 @@ signals:
 private:
 	const std::uint32_t		    _index;				            /** Channel index */
 	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
-	const QString			    _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
+	QString			            _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
 	bool					    _enabled;			            /** Whether the channel is enabled or not */
 	QString					    _datasetName;		            /** Channel dataset name */
 	QString					    _dataName;			            /** Channel data name */

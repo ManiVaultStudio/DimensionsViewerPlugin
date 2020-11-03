@@ -36,18 +36,6 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
 	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
-	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd) {
-		const auto channelIndex = index.column() - Column::ChannelDatasetNameStart;
-
-		if (channelIndex == 0) {
-            flags |= Qt::ItemIsEnabled;
-		}
-		else {
-			if (_channels[channelIndex]->isEnabled() && _subsets.size() >= channelIndex)
-				flags |= Qt::ItemIsEnabled;
-		}
-	}
-
 	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
 		const auto channelIndex = index.column() - Column::ChannelEnabledStart;
 
@@ -59,6 +47,18 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 				flags |= Qt::ItemIsEnabled;
 		}
 	}
+
+    if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd) {
+        const auto channelIndex = index.column() - Column::ChannelDatasetNameStart;
+
+        if (channelIndex == 0) {
+            flags |= Qt::ItemIsEnabled;
+        }
+        else {
+            if (_channels[channelIndex]->isEnabled() && _subsets.size() >= channelIndex)
+                flags |= Qt::ItemIsEnabled;
+        }
+    }
 
 	if (index.column() >= Column::ChannelColorStart && index.column() < Column::ChannelColorEnd) {
 		const auto channelIndex = index.column() - Column::ChannelColorStart;
@@ -147,6 +147,9 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd)
 		return isChannelEnabled(index.column() - Column::ChannelEnabledStart, role);
 
+    if (index.column() >= Column::ChannelNameStart && index.column() < Column::ChannelNameEnd)
+        return getChannelName(index.column() - Column::ChannelNameStart, role);
+
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd)
 		return getChannelDatasetName(index.column() - Column::ChannelDatasetNameStart, role);
 
@@ -215,6 +218,9 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 	if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd)
         affectedColumns << setChannelEnabled(index.column() - Column::ChannelEnabledStart, value.toBool());
+
+    if (index.column() >= Column::ChannelNameStart && index.column() < Column::ChannelNameEnd)
+        affectedColumns << setChannelName(index.column() - Column::ChannelNameStart, value.toString());
 
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd)
         affectedColumns << setChannelDatasetName(index.column() - Column::ChannelDatasetNameStart, value.toString());
@@ -322,6 +328,55 @@ Configuration::AffectedColumns Configuration::setChannelEnabled(const std::int32
 	{
 		qDebug() << exception.what();
 	}
+
+    return affectedColumns;
+}
+
+QVariant Configuration::getChannelName(const std::int32_t& channelIndex, const std::int32_t& role) const
+{
+    try
+    {
+        const auto name         = _channels[channelIndex]->getDisplayName();
+        const auto nameString   = name;
+
+        switch (role)
+        {
+            case Qt::DisplayRole:
+                return nameString;
+
+            case Qt::EditRole:
+                return name;
+
+            case Qt::ToolTipRole:
+                return getTooltip(Column::ChannelNameStart + channelIndex, nameString);
+
+            default:
+                return QVariant();
+        }
+    }
+    catch (std::exception exception)
+    {
+        qDebug() << exception.what();
+    }
+
+    return QVariant();
+}
+
+Configuration::AffectedColumns Configuration::setChannelName(const std::int32_t& channelIndex, const QString& name)
+{
+    AffectedColumns affectedColumns{ Column::ChannelNameStart + channelIndex };
+
+    try
+    {
+        if (name == _channels[channelIndex]->getDisplayName())
+            return affectedColumns;
+
+        _channels[channelIndex]->setDisplayName(name);
+    }
+    catch (std::exception exception)
+    {
+        qDebug() << exception.what();
+    }
 
     return affectedColumns;
 }

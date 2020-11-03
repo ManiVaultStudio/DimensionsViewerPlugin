@@ -33,6 +33,8 @@ public: // Columns
 	/** Data columns */
 	enum Column {
 		Subsets,						                                    /** The subset(s) parameter of the first dataset */
+        ChannelNameStart,				                                    /** Channel name first column */
+        ChannelNameEnd = ChannelNameStart + noChannels,                     /** Channel name last column */
 		ChannelEnabledStart,				                                /** Channel enabled first column */
 		ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled last column */
 		ChannelDatasetNameStart,			                                /** Channel dataset name first column */
@@ -69,6 +71,12 @@ public: // Columns
 		if (column == Column::Subsets)
 			return "Subsets";
 
+        if (column >= Column::ChannelNameStart && column < Column::ChannelNameEnd)
+            return QString("Channel %1 Name").arg(QString::number(column - Column::ChannelNameStart + 1));
+
+        if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
+            return QString("Channel %1 Enabled").arg(QString::number(column - Column::ChannelEnabledStart + 1));
+
 		if (column >= Column::ChannelColorStart && column < Column::ChannelColorEnd)
 			return QString("Channel %1 Color").arg(QString::number(column - Column::ChannelColorStart + 1));
 
@@ -86,9 +94,6 @@ public: // Columns
 
 		if (column >= Column::ChannelDatasetNameStart && column < Column::ChannelDatasetNameEnd)
 			return QString("Channel %1 Dataset name").arg(QString::number(column - Column::ChannelDatasetNameStart + 1));
-
-		if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
-			return QString("Channel %1 Enabled").arg(QString::number(column - Column::ChannelEnabledStart + 1));
 
         if (column >= Column::ChannelSettingsStart && column < Column::ChannelSettingsEnd)
             return QString("Channel %1 settings").arg(QString::number(column - Column::ChannelSettingsStart + 1));
@@ -168,37 +173,53 @@ public: // MVC
 public: // Getters/setters
 
 	/**
-	 * Returns whether channel with \p channelIndex is enabled
+	 * Gets channel enabled
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
-	 * @return Whether the channel is enabled in variant form
+	 * @return Channel enabled in variant form
 	 */
 	QVariant isChannelEnabled(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
-	 * Sets whether channel with \p channelIndex is enabled
+	 * Sets channel enabled
 	 * @param channelIndex Index of the channel
-	 * @param enabled Whether channel with \p channelIndex is enabled
+	 * @param enabled Channel enabled for profile with \p profileIndex
 	 * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled);
 
+    /**
+     * Gets channel name
+     * @param channelIndex Index of the channel
+     * @param role Data role
+     * @return Channel name
+     */
+    QVariant getChannelName(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+    /**
+     * Sets channel name
+     * @param channelIndex Index of the channel
+     * @param name Channel name
+     * @return Columns that are affected by the operation
+     */
+    Configuration::AffectedColumns setChannelName(const std::int32_t& channelIndex, const QString& name);
+
 	/**
-	 * Returns the subset
+	 * Returns subsets
 	 * @param role Data role
 	 * @return Subsets in variant form
 	 */
 	QVariant getSubsets(const std::int32_t& role) const;
 
 	/**
-	 * Sets the subsets
-	 * @param subsets The subsets
+	 * Sets subsets
+	 * @param subsets Subsets
      * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setSubsets(const QStringList& subsets);
 
 	/**
-	 * Returns the dataset name of channel with \p channelIndex
+	 * Gets channel dataset name
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
 	 * @return Channel dataset name in variant form
@@ -206,15 +227,15 @@ public: // Getters/setters
 	QVariant getChannelDatasetName(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
-	 * Sets the dataset name of channel with \p channelIndex
+	 * Sets channel dataset name
 	 * @param channelIndex Index of the channel
-	 * @param datasetName The dataset name of channel with \p channelIndex
+	 * @param datasetName Channel dataset name
      * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelDatasetName(const std::int32_t& channelIndex, const QString& datasetName);
 
 	/**
-	 * Returns the data name of channel with \p channelIndex
+	 * Gets a channel data name
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
 	 * @return Channel data name in variant form
@@ -222,7 +243,7 @@ public: // Getters/setters
 	QVariant getChannelDataName(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
-	 * Returns the color of channel with \p channelIndex
+	 * Gets channel color
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
 	 * @return Channel color in variant form
@@ -230,15 +251,15 @@ public: // Getters/setters
 	QVariant getChannelColor(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
-	 * Sets the color of channel with \p channelIndex
+	 * Sets channel color
 	 * @param channelIndex Index of the channel
-	 * @param color The color of channel with \p channelIndex
+	 * @param color Channel color
      * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelColor(const std::int32_t& channelIndex, const QColor& color);
 
 	/**
-	 * Returns the opacity of channel with \p channelIndex
+	 * Gets channel opacity
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
 	 * @return Channel opacity in variant form
@@ -254,53 +275,53 @@ public: // Getters/setters
 	Configuration::AffectedColumns setChannelOpacity(const std::int32_t& channelIndex, const float& opacity);
 
 	/**
-	 * Returns the profile type of channel with \p channelIndex
+	 * Gets channel profile type
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
-	 * @return Profile type in variant form
+	 * @return Channel profile type in variant form
 	 */
 	QVariant getChannelProfileType(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
-	 * Sets the profile type of channel with \p channelIndex
+	 * Sets channel profile type
 	 * @param channelIndex Index of the channel
-	 * @param profileType The profile type of channel with \p channelIndex
+	 * @param profileType Channel profile type
      * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelProfileType(const std::int32_t& channelIndex, const Channel::ProfileType& profileType);
 
 	/**
-	 * Returns the range type of channel with \p channelIndex
+	 * Gets channel range type
 	 * @param channelIndex Index of the channel
 	 * @param role Data role
-	 * @return Range type in variant form
+	 * @return Channel range type in variant form
 	 */
 	QVariant getChannelRangeType(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
-	 * Sets the range type of channel with \p channelIndex
+	 * Sets channel range type
 	 * @param channelIndex Index of the channel
-	 * @param rangeType The range type of channel with \p channelIndex
+	 * @param rangeType Channel range type
      * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setChannelRangeType(const std::int32_t& channelIndex, const Channel::RangeType& rangeType);
 
 	/**
-	 * Returns whether whether global settings are on or off
+	 * Gets global settings
 	 * @param role Data role
-	 * @return Whether whether global settings are on or off in variant form
+	 * @return Global settings
 	 */
 	QVariant getGlobalSettings(const std::int32_t& role) const;
 
 	/**
-	 * Sets whether whether global settings are on or off
-	 * @param globalSettings Whether whether global settings are on or off
+	 * Sets global settings
+	 * @param globalSettings Global settings (on/off)
      * @return Columns that are affected by the operation
 	 */
 	Configuration::AffectedColumns setGlobalSettings(const bool& globalSettings);
 
     /**
-     * Returns the global profile type
+     * Gets global profile type
      * @param role Data role
      * @return Global profile type in variant form
      */
@@ -314,50 +335,52 @@ public: // Getters/setters
     Configuration::AffectedColumns setGlobalProfileType(const Channel::ProfileType& globalProfileType);
 
     /**
-     * Returns the global range type
+     * Gets global range type
      * @param role Data role
      * @return Global range type in variant form
      */
     QVariant getGlobalRangeType(const std::int32_t& role) const;
 
     /**
-     * Sets the global range type
+     * Sets global range type
      * @param rangeType Global range type
      * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setGlobalRangeType(const Channel::RangeType& globalRangeType);
 
     /**
-     * Gets whether dimensions names are displayed in the viewer
+     * Gets show dimensions names
      * @param role Data role
-     * @return Whether dimensions names are displayed in the viewer in variant form
+     * @return Show dimensions names in variant form
      */
     QVariant getShowDimensionNames(const std::int32_t& role) const;
 
     /**
-     * Sets whether dimensions names are displayed in the viewer
-     * @param showDimensionNames Whether dimensions names are displayed in the viewer
+     * Sets show dimensions names
+     * @param showDimensionNames Show dimensions names (on/off)
      * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setShowDimensionNames(const bool& showDimensionNames);
 
-    /** Gets whether to show a differential profile in the viewer
+    /** 
+     * Gets show differential profile
      * @param role Data role
-     * @return Whether to show a differential profile in the viewer in variant form
+     * @return Show differential profile in variant form
      */
     QVariant getShowDifferentialProfile(const std::int32_t& role) const;
 
     /**
-     * Sets whether to show a differential profile in the viewer
-     * @param showDifferentialProfile Whether to show a differential profile in the viewer
+     * Sets show differential profile
+     * @param showDifferentialProfile Show differential profile in the viewer (on/off)
      * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setShowDifferentialProfile(const bool& showDifferentialProfile);
 
-    /** Gets selectable dataset names for profile with \p profileIndex
+    /**
+     * Gets profile dataset names (selectable)
      * @param profileIndex Index of the profile
      * @param role Data role
-     * @return Selectable dataset names for profile with \p profileIndex in variant form
+     * @return Profile dataset names in variant form
      */
     QVariant getProfileDatasetNames(const std::int32_t& profileIndex, const std::int32_t& role) const;
 
@@ -369,17 +392,18 @@ public: // Getters/setters
      */
     Configuration::AffectedColumns setProfileDatasetNames(const std::int32_t& profileIndex, const QStringList& datasetNames);
 
-    /** Gets selected dataset name for profile with \p profileIndex
+    /**
+     * Gets profile dataset name
      * @param profileIndex Index of the profile
      * @param role Data role
-     * @return Selected dataset name for profile with \p profileIndex in variant form
+     * @return Profile dataset name in variant form
      */
     QVariant getProfileDatasetName(const std::int32_t& profileIndex, const std::int32_t& role) const;
 
     /**
-     * Sets selectable dataset names for profile with \p profileIndex
+     * Sets profile dataset names
      * @param profileIndex Index of the profile
-     * @param datasetName Selectable dataset names
+     * @param datasetName Profile dataset names
      * @return Columns that are affected by the operation
      */
     Configuration::AffectedColumns setProfileDatasetName(const std::int32_t& profileIndex, const QString& datasetName);
