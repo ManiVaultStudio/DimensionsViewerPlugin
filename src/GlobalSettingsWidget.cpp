@@ -65,6 +65,14 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
 
+        if (column == Configuration::Column::GlobalSettings) {
+            _ui->groupBox->blockSignals(true);
+            _ui->groupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->groupBox->setChecked(index.data(Qt::EditRole).toBool());
+            _ui->groupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->groupBox->blockSignals(false);
+        }
+
         if (column == Configuration::Column::GlobalProfileType) {
             _ui->profileTypeComboBox->blockSignals(true);
             _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);

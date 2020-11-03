@@ -1,5 +1,6 @@
 #include "Channel.h"
 #include "DimensionsViewerPlugin.h"
+#include "Configuration.h"
 
 #include "PointData.h"
 
@@ -29,6 +30,7 @@ const QMap<QString, Channel::RangeType> Channel::rangeTypes = {
 
 Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
 	QObject(parent),
+    _configuration(dynamic_cast<Configuration*>(parent)),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),
@@ -92,6 +94,14 @@ void Channel::setOpacity(const float& opacity)
 	updateSpec();
 }
 
+Channel::ProfileType Channel::getProfileType() const
+{
+    if (_configuration->getGlobalSettings(Qt::EditRole).toBool())
+        return static_cast<ProfileType>(_configuration->getGlobalProfileType(Qt::EditRole).toInt());
+
+    return _profileType;
+}
+
 void Channel::setProfileType(const ProfileType& profileType)
 {
 	if (profileType == _profileType)
@@ -100,6 +110,14 @@ void Channel::setProfileType(const ProfileType& profileType)
 	_profileType = profileType;
 	
 	updateSpec();
+}
+
+Channel::RangeType Channel::getRangeType() const
+{
+    if (_configuration->getGlobalSettings(Qt::EditRole).toBool())
+        return static_cast<RangeType>(_configuration->getGlobalRangeType(Qt::EditRole).toInt());
+
+    return _rangeType;
 }
 
 void Channel::setRangeType(const RangeType& rangeType)

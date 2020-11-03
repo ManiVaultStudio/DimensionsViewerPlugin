@@ -9,9 +9,9 @@ std::int32_t Configuration::maxNoDimensions = 100;
 Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
 	QObject(parent),
 	_channels({ 
-		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.25f),
-		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.25f),
-		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.25f)
+		new Channel(this, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.25f),
+		new Channel(this, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.25f),
+		new Channel(this, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.25f)
 	}),
 	_subsets(),
     _showDifferentialProfile(false),

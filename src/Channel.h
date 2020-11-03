@@ -7,6 +7,7 @@
 
 class Points;
 class DimensionsViewerPlugin;
+class Configuration;
 
 /**
  * Channel class
@@ -178,9 +179,7 @@ public: // Getters/setters
 	void setOpacity(const float& opacity);
 
 	/** Returns the profile type */
-	ProfileType getProfileType() const {
-		return _profileType;
-	};
+	ProfileType getProfileType() const;
 
 	/**
 	 * Sets the profile type
@@ -189,9 +188,7 @@ public: // Getters/setters
 	void setProfileType(const ProfileType& profileType);
 
 	/** Returns the range type */
-	RangeType getRangeType() const {
-		return _rangeType;
-	};
+	RangeType getRangeType() const;
 
 	/**
 	 * Sets the range type
@@ -229,6 +226,7 @@ signals:
     void specChanged(Channel* channel);
 
 private:
+    Configuration*              _configuration;                 /** Parent configuration */
 	const std::uint32_t		    _index;				            /** Channel index */
 	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
 	QString			            _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
