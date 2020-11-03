@@ -50,7 +50,7 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
 	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
-        //_ui->groupBox->setEnabled(false);
+        _ui->groupBox->setEnabled(false);
         _ui->groupBox->setChecked(false);
 
 		return;
