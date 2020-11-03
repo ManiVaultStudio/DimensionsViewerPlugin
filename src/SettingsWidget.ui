@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1129</width>
-    <height>178</height>
+    <width>503</width>
+    <height>209</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,80 +35,17 @@
    <item>
     <layout class="QHBoxLayout" name="topHorizontalLayout">
      <item>
-      <widget class="QGroupBox" name="channelsGroupBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Channels</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <layout class="QVBoxLayout" name="channelsLayout"/>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="globalSettingsGroupBox">
+      <widget class="ChannelsWidget" name="channelsWidget" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="title">
-        <string>Global settings</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="1" column="1">
-           <widget class="QComboBox" name="globalRangeTypeComboBox"/>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="globalRangeTypeLabel">
-            <property name="text">
-             <string>Profile</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="globalProfileTypeComboBox"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="globalProfileTypeLabel">
-            <property name="text">
-             <string>Range</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::MinimumExpanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>10</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
       </widget>
+     </item>
+     <item>
+      <widget class="GlobalSettingsWidget" name="globalSettingsWidget" native="true"/>
      </item>
     </layout>
    </item>
@@ -118,146 +55,16 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QGroupBox" name="differentialProfileGroupBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Differential profile</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <layout class="QHBoxLayout" name="differentialProfileHorizontalLayout">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="differentialProfileCompareLabel">
-            <property name="text">
-             <string>Compare:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="profile1DatasetNameComboBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>150</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="differentialProfileWithLabel">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>with:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="profile2DatasetNameComboBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>150</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="ColorPickerPushButton" name="differentialProfileColorPushButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="differentialProfileHorizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
+      <widget class="DifferentialProfileSettingsWidget" name="differentialProfileSettingsWidget" native="true"/>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string>Miscellaneous</string>
+      <widget class="MiscellaneousSettingsWidget" name="miscellaneousSettingsWidget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QCheckBox" name="showDimensionNamesCheckBox">
-          <property name="text">
-           <string>Show dimension names</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </widget>
      </item>
     </layout>
@@ -266,9 +73,28 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ColorPickerPushButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/ColorPickerPushButton.h</header>
+   <class>DifferentialProfileSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>DifferentialProfileSettingsWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MiscellaneousSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>MiscellaneousSettingsWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChannelsWidget</class>
+   <extends>QWidget</extends>
+   <header>ChannelsWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GlobalSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>GlobalSettingsWidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -1,8 +1,8 @@
-#include "ChannelWidget.h"
+#include "ChannelSettingsWidget.h"
 #include "DimensionsViewerPlugin.h"
 #include "Application.h"
 
-#include "ui_ChannelWidget.h"
+#include "ui_ChannelSettingsWidget.h"
 
 #include <QDebug>
 #include <QComboBox>
@@ -10,20 +10,22 @@
 #include <QLabel>
 #include <QStringListModel>
 
-ChannelWidget::ChannelWidget(DimensionsViewerPlugin* dimensionsViewerPlugin, const std::uint32_t& channelIndex) :
-	_dimensionsViewerPlugin(dimensionsViewerPlugin),
-	_ui{ std::make_unique<Ui::ChannelWidget>() },
+DimensionsViewerPlugin* ChannelSettingsWidget::dimensionsViewerPlugin = nullptr;
+
+ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent, const std::uint32_t& channelIndex) :
+    QWidget(parent),
+	_ui{ std::make_unique<Ui::ChannelSettingsWidget>() },
     _channelIndex(channelIndex)
 {
 	_ui->setupUi(this);
 
     const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
 
-    auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+    auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
     if (_channelIndex == 0) {
         const auto updateDatasetCombobox = [this]() {
-            auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+            auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
             _ui->datasetNameComboBox->blockSignals(true);
             _ui->datasetNameComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
@@ -40,7 +42,7 @@ ChannelWidget::ChannelWidget(DimensionsViewerPlugin* dimensionsViewerPlugin, con
         });
     }
 
-    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &ChannelWidget::updateData);
+    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &ChannelSettingsWidget::updateData);
 
     QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
@@ -91,9 +93,9 @@ ChannelWidget::ChannelWidget(DimensionsViewerPlugin* dimensionsViewerPlugin, con
 	updateData(QModelIndex(), QModelIndex());
 }
 
-void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
+void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-	const auto selectedRows = _dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
+	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
         _ui->enabledCheckBox->setEnabled(false);

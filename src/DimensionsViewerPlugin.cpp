@@ -1,6 +1,11 @@
 #include "DimensionsViewerPlugin.h"
 #include "DimensionsViewerWidget.h"
 #include "SettingsWidget.h"
+#include "ChannelsWidget.h"
+#include "ChannelSettingsWidget.h"
+#include "GlobalSettingsWidget.h"
+#include "DifferentialProfileSettingsWidget.h"
+#include "MiscellaneousSettingsWidget.h"
 #include "Channel.h"
 
 #include <QDebug>
@@ -17,6 +22,11 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 
 	Channel::dimensionsViewerPlugin = this;
 	Configuration::dimensionsViewerPlugin = this;
+    ChannelsWidget::dimensionsViewerPlugin = this;
+    ChannelSettingsWidget::dimensionsViewerPlugin = this;
+    GlobalSettingsWidget::dimensionsViewerPlugin = this;
+    DifferentialProfileSettingsWidget::dimensionsViewerPlugin = this;
+    MiscellaneousSettingsWidget::dimensionsViewerPlugin = this;
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
 	_settingsWidget = new SettingsWidget(this);

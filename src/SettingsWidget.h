@@ -3,23 +3,15 @@
 #include <memory>
 
 #include <QWidget.h>
-#include <QVector.h>
 
 class DimensionsViewerPlugin;
-class ColorPickerPushButton;
-
-class QCheckBox;
-class QComboBox;
-class QPushButton;
 
 namespace Ui {
 	class SettingsWidget;
 }
 
 /**
- * Settings widget class
- *
- * UI widget class for interfacing with dataset configurations
+ * Settings container widget class
  *
  * @author T. Kroes
  */
@@ -31,28 +23,11 @@ public: // Construction
 
     /**
      * Constructor
-     * @param dimensionsViewerPlugin Pointer to an instance of the dimensions viewer plugin
+     * @param parent Parent widget
      */
-	SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin);
-
-public:
-
-	/**
-	 * Updates the UI with model indices ranging from \p begin to \p end
-	 * @param begin Start of model index range
-	 * @param end End of model index range
-	 * @param roles Data roles
-	 */
-	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>());
+	SettingsWidget(QWidget* parent);
 
 private:
 	DimensionsViewerPlugin*					_dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
 	std::unique_ptr<Ui::SettingsWidget>		_ui;                            /** UI from creator */
-    QVector<QCheckBox*>                     _enabledCheckBoxes;             /** Enabled check boxes */
-    QVector<QComboBox*>                     _datasetNameComboBoxes;         /** Dataset name combo boxes */
-    QVector<ColorPickerPushButton*>         _colorPushButtons;              /** Color push buttons */
-    QVector<QComboBox*>                     _profileTypeComboBoxes;         /** Color push buttons */
-    QVector<QComboBox*>                     _rangeTypeComboBoxes;            /** Profile type combo boxes */
-    QVector<QPushButton*>                   _settingsPushButtons;           /** Settings push buttons */
-    QVector<QWidget*>                       _differentialProfileWidgets;    /** Widget for differential profile */
 };
