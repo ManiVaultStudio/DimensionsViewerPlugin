@@ -33,6 +33,7 @@ public: // Columns
 	/** Data columns */
 	enum Column {
 		Subsets,						                                    /** The subset(s) parameter of the first dataset */
+        RangeTypes,                                                         /** Range types (depends on the profile type) */
         ChannelNameStart,				                                    /** Channel name first column */
         ChannelNameEnd = ChannelNameStart + noChannels,                     /** Channel name last column */
 		ChannelEnabledStart,				                                /** Channel enabled first column */
@@ -70,6 +71,9 @@ public: // Columns
 	static QString getColumnName(const std::int32_t& column) {
 		if (column == Column::Subsets)
 			return "Subsets";
+
+        if (column == Column::RangeTypes)
+            return "Range types";
 
         if (column >= Column::ChannelNameStart && column < Column::ChannelNameEnd)
             return QString("Channel %1 Name").arg(QString::number(column - Column::ChannelNameStart + 1));

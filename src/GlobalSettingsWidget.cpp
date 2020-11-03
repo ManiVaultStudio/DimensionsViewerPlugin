@@ -34,12 +34,12 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
         configurationsModel.setData(Configuration::Column::GlobalSettings, state);
     });
 
-    QObject::connect(_ui->profileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
-        configurationsModel.setData(Configuration::Column::GlobalProfileType, currentIndex);
+    QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](QString currentText) {
+        configurationsModel.setData(Configuration::Column::GlobalProfileType, currentText);
     });
 
-    QObject::connect(_ui->rangeTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
-        configurationsModel.setData(Configuration::Column::GlobalRangeType, currentIndex);
+    QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](QString currentText) {
+        configurationsModel.setData(Configuration::Column::GlobalRangeType, currentText);
     });
 
     _ui->profileTypeComboBox->setModel(new QStringListModel(Channel::getProfileTypeNames()));
@@ -76,7 +76,7 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
         if (column == Configuration::Column::GlobalProfileType) {
             _ui->profileTypeComboBox->blockSignals(true);
             _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->profileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+            _ui->profileTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
             _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->profileTypeComboBox->blockSignals(false);
         }
@@ -84,7 +84,7 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
         if (column == Configuration::Column::GlobalRangeType) {
             _ui->rangeTypeComboBox->blockSignals(true);
             _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->rangeTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
+            _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::EditRole).toString());
             _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->rangeTypeComboBox->blockSignals(false);
         }

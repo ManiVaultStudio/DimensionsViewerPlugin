@@ -241,10 +241,10 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 		affectedColumns << setGlobalSettings(value.toBool());
 
     if (index.column() == Column::GlobalProfileType)
-        affectedColumns << setGlobalProfileType(static_cast<Channel::ProfileType>(value.toInt()));
+        affectedColumns << setGlobalProfileType(Channel::getProfileTypeEnum(value.toString()));
 
     if (index.column() == Column::GlobalRangeType)
-        affectedColumns << setGlobalRangeType(static_cast<Channel::RangeType>(value.toInt()));
+        affectedColumns << setGlobalRangeType(Channel::getRangeTypeEnum(value.toString()));
 
     if (index.column() == Column::SelectionStamp)
         _channels[0]->updateSpec();
