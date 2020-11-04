@@ -1,15 +1,13 @@
 #pragma once
 
+#include "ModelItemWidget.h"
+
 #include <memory>
 
 #include <QWidget.h>
 #include <QVector.h>
 
 class DimensionsViewerPlugin;
-
-class QCheckBox;
-class QComboBox;
-class QPushButton;
 
 namespace Ui {
 	class DifferentialProfileSettingsWidget;
@@ -20,10 +18,8 @@ namespace Ui {
  *
  * @author T. Kroes
  */
-class DifferentialProfileSettingsWidget : public QWidget
+class DifferentialProfileSettingsWidget : public ModelItemWidget
 {
-	Q_OBJECT
-
 public: // Construction
 
     /**
@@ -32,7 +28,7 @@ public: // Construction
      */
     DifferentialProfileSettingsWidget(QWidget* parent);
 
-public:
+public: // Inherited from ModelItemWidget
 
 	/**
 	 * Updates the UI with model indices ranging from \p begin to \p end
@@ -40,13 +36,8 @@ public:
 	 * @param end End of model index range
 	 * @param roles Data roles
 	 */
-	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>());
+	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>()) override;
 
 private:
 	std::unique_ptr<Ui::DifferentialProfileSettingsWidget>  _ui;    /** UI from creator */
-
-protected:
-    static DimensionsViewerPlugin*  dimensionsViewerPlugin;         /** Pointer to an instance of the dimensions viewer plugin */
-
-    friend class DimensionsViewerPlugin;
 };

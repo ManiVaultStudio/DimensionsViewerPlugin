@@ -20,3 +20,8 @@ ChannelsWidget::ChannelsWidget(QWidget* parent) :
     for (int channelIndex = 0; channelIndex < 3; channelIndex++)
         _ui->channelsLayout->addWidget(new ChannelSettingsWidget(this, channelIndex));
 }
+
+void ChannelsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
+{
+
+}

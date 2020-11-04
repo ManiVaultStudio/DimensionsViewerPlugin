@@ -5,10 +5,8 @@
 
 #include <QDebug>
 
-DimensionsViewerPlugin* MiscellaneousSettingsWidget::dimensionsViewerPlugin = nullptr;
-
 MiscellaneousSettingsWidget::MiscellaneousSettingsWidget(QWidget* parent) :
-	QWidget(parent),
+    ModelItemWidget(parent),
 	_ui{ std::make_unique<Ui::MiscellaneousSettingsWidget>() }
 {
 	_ui->setupUi(this);

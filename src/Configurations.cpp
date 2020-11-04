@@ -16,12 +16,12 @@ Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
 
 QVariant Configurations::getData(const QModelIndex& index, const int& role) const
 {
-    return "CONFIGURATIONS_MODEL_ITEM";
+    return getChild(index.row())->getData(index, role);
 }
 
 QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    return QModelIndexList();
+    return getChild(index.row())->setData(index, value, role);
 }
 
 QModelIndex Configurations::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const

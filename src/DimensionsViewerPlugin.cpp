@@ -1,6 +1,6 @@
 #include "DimensionsViewerPlugin.h"
+#include "ModelItemWidget.h"
 #include "DimensionsViewerWidget.h"
-#include "ModelItem.h"
 #include "SettingsWidget.h"
 #include "ChannelsWidget.h"
 #include "ChannelSettingsWidget.h"
@@ -22,11 +22,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     ModelItem::dimensionsViewerPlugin = this;
-    ChannelsWidget::dimensionsViewerPlugin = this;
-    ChannelSettingsWidget::dimensionsViewerPlugin = this;
-    GlobalSettingsWidget::dimensionsViewerPlugin = this;
-    DifferentialProfileSettingsWidget::dimensionsViewerPlugin = this;
-    MiscellaneousSettingsWidget::dimensionsViewerPlugin = this;
+    ModelItemWidget::dimensionsViewerPlugin = this;
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
 	_settingsWidget = new SettingsWidget(this);

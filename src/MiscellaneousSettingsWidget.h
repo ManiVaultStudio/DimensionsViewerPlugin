@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ModelItemWidget.h"
+
 #include <memory>
 
 #include <QWidget.h>
@@ -15,10 +17,8 @@ namespace Ui {
  *
  * @author T. Kroes
  */
-class MiscellaneousSettingsWidget : public QWidget
+class MiscellaneousSettingsWidget : public ModelItemWidget
 {
-	Q_OBJECT
-
 public: // Construction
 
     /**
@@ -27,7 +27,7 @@ public: // Construction
      */
     MiscellaneousSettingsWidget(QWidget* parent);
 
-public:
+public: // Inherited from ModelItemWidget
 
 	/**
 	 * Updates the UI with model indices ranging from \p begin to \p end
@@ -35,13 +35,8 @@ public:
 	 * @param end End of model index range
 	 * @param roles Data roles
 	 */
-	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>());
+	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>()) override;
 
 private:
 	std::unique_ptr<Ui::MiscellaneousSettingsWidget>	_ui;    /** UI from creator */
-
-protected:
-    static DimensionsViewerPlugin*  dimensionsViewerPlugin;     /** Pointer to an instance of the dimensions viewer plugin */
-
-    friend class DimensionsViewerPlugin;
 };

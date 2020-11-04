@@ -6,10 +6,8 @@
 #include <QDebug>
 #include <QStringListModel>
 
-DimensionsViewerPlugin* DifferentialProfileSettingsWidget::dimensionsViewerPlugin = nullptr;
-
 DifferentialProfileSettingsWidget::DifferentialProfileSettingsWidget(QWidget* parent) :
-    QWidget(parent),
+    ModelItemWidget(parent),
 	_ui{ std::make_unique<Ui::DifferentialProfileSettingsWidget>() }
 {
 	_ui->setupUi(this);

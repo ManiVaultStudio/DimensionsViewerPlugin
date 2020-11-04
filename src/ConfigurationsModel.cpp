@@ -81,8 +81,11 @@ QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientatio
 
 QModelIndex ConfigurationsModel::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    if (parent.isValid() && parent.column() != 0)
-        return QModelIndex();
+    /*if (parent.isValid() && parent.column() != 0)
+        return QModelIndex();*/
+
+    if (parent.isValid()) {}
+        return createIndex(row, column, getItem(parent));
 
     auto parentItem = getItem(parent);
 

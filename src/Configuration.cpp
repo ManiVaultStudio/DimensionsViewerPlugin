@@ -39,7 +39,7 @@ int Configuration::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
-	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
+	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
 
     const auto column = static_cast<Column>(index.column());
 
@@ -148,8 +148,16 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
             affectedColumns << setSubsets(value.toStringList());
 
         case Column::SelectionStamp:
+            break;
+
         case Column::Channels:
+            _channels.setData(index, value, role);
+            break;
+
         case Column::Global:
+            _globalSettings.setData(index, value, role);
+            break;
+
         case Column::Miscellaneous:
             break;
 

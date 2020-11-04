@@ -10,10 +10,8 @@
 #include <QLabel>
 #include <QStringListModel>
 
-DimensionsViewerPlugin* ChannelSettingsWidget::dimensionsViewerPlugin = nullptr;
-
 ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent, const std::uint32_t& channelIndex) :
-    QWidget(parent),
+    ModelItemWidget(parent),
 	_ui{ std::make_unique<Ui::ChannelSettingsWidget>() },
     _channelIndex(channelIndex)
 {
