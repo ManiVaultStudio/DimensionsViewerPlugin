@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Configuration.h"
+#include "Configurations.h"
 
-#include <QAbstractListModel>
+#include <QAbstractItemModel>
 #include <QItemSelectionModel>
 
 class DimensionsViewerPlugin;
@@ -14,7 +14,7 @@ class DimensionsViewerPlugin;
  *
  * @author T. Kroes
  */
-class ConfigurationsModel : public QAbstractListModel
+class ConfigurationsModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
@@ -30,15 +30,15 @@ public: // Obligatory overrides
 
 	/**
 	 * Returns the number of rows in the model
-	 * @param parentIndex Parent index
+	 * @param parent Parent index
 	 */
-	int rowCount(const QModelIndex& parentIndex = QModelIndex()) const override;
+	int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
 	/**
 	 * Returns the number of columns in the model
-	 * @param parentIndex Parent index
+	 * @param parent Parent index
 	 */
-	int	columnCount(const QModelIndex& parentIndex = QModelIndex()) const override;
+	int	columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
 	/**
 	 * Returns model data for the given index
@@ -81,6 +81,22 @@ public: // Obligatory overrides
 	 */
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
+    /**
+     * Returns the model index belonging to the given model row and column
+     * @param row Model row
+     * @param column Model column
+     * @param parent Parent model index
+     * @return Model index for the given model row and column
+     */
+    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
+
+    /**
+     * Returns the parent model index
+     * @param index Model index
+     * @return Parent model index for the given model index
+     */
+     QModelIndex parent(const QModelIndex& index) const override;
+
 public: // Dataset management
 
 	/**
@@ -103,21 +119,19 @@ public: // Miscellaneous
 	 */
 	void selectRow(const std::int32_t& rowIndex);
 
-	/**
-	 * Returns the selected configuration (if any)
-	 * @return Configuration
-	 */
+    /** TODO */
+    Configuration* getConfiguration(const QModelIndex& index) const;
+
+        /** TODO */
 	Configuration* getSelectedConfiguration() const;
 
-	/**
-	 * Returns a configuration by model index
-	 * @param index Model index of the layer to obtain
-	 * @return Configuration
-	 */
-	Configuration* getConfiguration(const QModelIndex& index) const;
+private:
+    ModelItem* getItem(const QModelIndex &index) const;
 
 private:
 	DimensionsViewerPlugin*		_dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
-	QVector<Configuration*>		_configurations;				/** Actual configurations data source */
+    Configurations		        _configurations;				/** Configurations data source */
 	QItemSelectionModel			_selectionModel;				/** Selection model */
+
+    friend class Configurations;
 };

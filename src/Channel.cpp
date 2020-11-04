@@ -9,10 +9,8 @@
 #include <QDebug>
 #include <QVariantList>
 
-DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
-
-Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
-	QObject(parent),
+Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
+    ModelItem(parent),
     _configuration(dynamic_cast<Configuration*>(parent)),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
@@ -27,6 +25,52 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
     _points(nullptr)
 {
 	setDatasetName(datasetName);
+}
+
+int Channel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
+{
+    return 0;
+}
+
+int Channel::getColumnCount() const
+{
+    return 10;
+}
+
+Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
+{
+    Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
+    return flags;
+}
+
+QVariant Channel::getData(const QModelIndex& index, const int& role) const
+{
+    return "CHANNEL_MODEL_ITEM";
+}
+
+QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value, const int& role)
+{
+    return QModelIndexList();
+}
+
+QModelIndex Channel::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
+{
+    return QModelIndex();
+}
+
+QModelIndex Channel::parent(const QModelIndex& index) const
+{
+    return QModelIndex();
+}
+
+ModelItem* Channel::getChild(const int& index) const
+{
+    return nullptr;
+}
+
+int Channel::getChildCount() const
+{
+    return 0;
 }
 
 void Channel::setDisplayName(const QString& displayName)
@@ -268,3 +312,509 @@ void Channel::updateSpec()
 
     emit specChanged(this);
 }
+
+
+//if (index.column() >= Column::ChannelEnabledStart && index.column() < Column::ChannelEnabledEnd) {
+//    const auto channelIndex = index.column() - Column::ChannelEnabledStart;
+//
+//    if (channelIndex == 0) {
+//        flags |= Qt::ItemIsEnabled;
+//    }
+//    else {
+//        if (_subsets.size() >= channelIndex)
+//            flags |= Qt::ItemIsEnabled;
+//    }
+//}
+//
+//if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd) {
+//    const auto channelIndex = index.column() - Column::ChannelDatasetNameStart;
+//
+//    if (channelIndex == 0) {
+//        flags |= Qt::ItemIsEnabled;
+//    }
+//    else {
+//        if (_channels[channelIndex]->isEnabled() && _subsets.size() >= channelIndex)
+//            flags |= Qt::ItemIsEnabled;
+//    }
+//}
+//
+//if (index.column() >= Column::ChannelColorStart && index.column() < Column::ChannelColorEnd) {
+//    const auto channelIndex = index.column() - Column::ChannelColorStart;
+//
+//    if (channelIndex == 0) {
+//        if (_channels[0]->isEnabled())
+//            flags |= Qt::ItemIsEnabled;
+//    }
+//    else {
+//        if (_channels[channelIndex]->isEnabled() && _subsets.size() >= channelIndex)
+//            flags |= Qt::ItemIsEnabled;
+//    }
+//}
+//
+//if (index.column() >= Column::ChannelProfileTypeStart && index.column() < Column::ChannelProfileTypeEnd) {
+//    const auto channelIndex = index.column() - Column::ChannelProfileTypeStart;
+//
+//    if (_channels[channelIndex]->isEnabled() && !_globalSettings && _subsets.size() >= channelIndex)
+//        flags |= Qt::ItemIsEnabled;
+//}
+//
+//if (index.column() >= Column::ChannelRangeTypeStart && index.column() < Column::ChannelRangeTypeEnd) {
+//    const auto channelIndex = index.column() - Column::ChannelRangeTypeStart;
+//
+//    if (_channels[channelIndex]->isEnabled() && !_globalSettings && _subsets.size() >= channelIndex)
+//        flags |= Qt::ItemIsEnabled;
+//}
+//
+//if (index.column() >= Column::ChannelSettingsStart && index.column() < Column::ChannelSettingsEnd) {
+//    const auto channelIndex = index.column() - Column::ChannelSettingsStart;
+//
+//    if (_channels[channelIndex]->isEnabled())
+//        flags |= Qt::ItemIsEnabled;
+//}
+
+//if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
+//    return isChannelEnabled(column - Column::ChannelEnabledStart, role);
+//
+//if (column >= Column::ChannelNameStart && column < Column::ChannelNameEnd)
+//    return getChannelName(column - Column::ChannelNameStart, role);
+//
+//if (column >= Column::ChannelDatasetNameStart && column < Column::ChannelDatasetNameEnd)
+//    return getChannelDatasetName(column - Column::ChannelDatasetNameStart, role);
+//
+//if (column >= Column::ChannelDataNameStart && column < Column::ChannelDataNameEnd)
+//    return getChannelDataName(column - Column::ChannelDataNameStart, role);
+//
+//if (column >= Column::ChannelColorStart && column < Column::ChannelColorEnd)
+//    return getChannelColor(column - Column::ChannelColorStart, role);
+//
+//if (column >= Column::ChannelOpacityStart && column < Column::ChannelOpacityEnd)
+//    return getChannelOpacity(column - Column::ChannelOpacityStart, role);
+//
+//if (column >= Column::ChannelProfileTypeStart && column < Column::ChannelProfileTypeEnd)
+//    return getChannelProfileType(column - Column::ChannelProfileTypeStart, role);
+//
+//if (column >= Column::ChannelRangeTypeStart && column < Column::ChannelRangeTypeEnd)
+//    return getChannelRangeType(column - Column::ChannelRangeTypeStart, role);
+//
+//if (column >= Column::ChannelSettingsStart && column < Column::ChannelSettingsEnd) {
+//    switch (role)
+//    {
+//        case Qt::EditRole:
+//            return getTooltip(column, "");
+//
+//        default:
+//            break;
+//    }
+//}
+
+
+//if (column >= Column::ChannelEnabledStart && column < Column::ChannelEnabledEnd)
+//    affectedColumns << setChannelEnabled(column - Column::ChannelEnabledStart, value.toBool());
+//
+//if (column >= Column::ChannelNameStart && column < Column::ChannelNameEnd)
+//    affectedColumns << setChannelName(column - Column::ChannelNameStart, value.toString());
+//
+//if (column >= Column::ChannelDatasetNameStart && column < Column::ChannelDatasetNameEnd)
+//    affectedColumns << setChannelDatasetName(column - Column::ChannelDatasetNameStart, value.toString());
+//
+//if (column >= Column::ChannelColorStart && column < Column::ChannelColorEnd)
+//    affectedColumns << setChannelColor(column - Column::ChannelColorStart, value.value<QColor>());
+//
+//if (column >= Column::ChannelOpacityStart && column < Column::ChannelOpacityEnd)
+//    affectedColumns << setChannelOpacity(column - Column::ChannelOpacityStart, value.toFloat());
+//
+//if (column >= Column::ChannelProfileTypeStart && column < Column::ChannelProfileTypeEnd)
+//    affectedColumns << setChannelProfileType(column - Column::ChannelProfileTypeStart, static_cast<Profile::ProfileType>(value.toInt()));
+//
+//if (column >= Column::ChannelRangeTypeStart && column < Column::ChannelRangeTypeEnd)
+//    affectedColumns << setChannelRangeType(column - Column::ChannelRangeTypeStart, static_cast<Profile::RangeType>(value.toInt()));
+
+
+//QVariant Configuration::isChannelEnabled(const std::int32_t& channelIndex, const std::int32_t& role) const
+//{
+//	try
+//	{
+//		const auto enabled			= _channels[channelIndex]->isEnabled();
+//		const auto enabledString	= enabled ? "on" : "off";
+//
+//		switch (role)
+//		{
+//			case Qt::DisplayRole:
+//				return enabledString;
+//
+//			case Qt::EditRole:
+//				return enabled;
+//
+//			case Qt::ToolTipRole:
+//                return getTooltip(Column::ChannelEnabledStart + channelIndex, enabledString);
+//
+//			default:
+//				return QVariant();
+//		}
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//	
+//	return QVariant();
+//}
+//
+//Configuration::AffectedColumns Configuration::setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled)
+//{
+//    AffectedColumns affectedColumns{ Column::ChannelEnabledStart + channelIndex };
+//
+//    try
+//    {
+//        if (enabled == _channels[channelIndex]->isEnabled())
+//            return affectedColumns;
+//
+//        _channels[channelIndex]->setEnabled(enabled);
+//
+//        affectedColumns << Column::ChannelDatasetNameStart + channelIndex;
+//        affectedColumns << Column::ChannelColorStart + channelIndex;
+//        affectedColumns << Column::ChannelOpacityStart + channelIndex;
+//        affectedColumns << Column::ChannelProfileTypeStart + channelIndex;
+//        affectedColumns << Column::ChannelRangeTypeStart + channelIndex;
+//        affectedColumns << Column::ChannelSettingsStart + channelIndex;
+//        affectedColumns << Column::GlobalSettings;
+//        affectedColumns << Column::ShowDimensionNames;
+//        affectedColumns << setShowDifferentialProfile(canShowDifferentialProfile());
+//        affectedColumns << setGlobalSettings(getNoDisplayChannels() > 0);
+//        affectedColumns << updateDifferentialProfile();
+//    }
+//    catch (std::exception exception)
+//    {
+//        qDebug() << exception.what();
+//    }
+//
+//    return affectedColumns;
+//}
+//
+//QVariant Configuration::getChannelName(const std::int32_t& channelIndex, const std::int32_t& role) const
+//{
+//    try
+//    {
+//        const auto name         = _channels[channelIndex]->getDisplayName();
+//        const auto nameString   = name;
+//
+//        switch (role)
+//        {
+//            case Qt::DisplayRole:
+//                return nameString;
+//
+//            case Qt::EditRole:
+//                return name;
+//
+//            case Qt::ToolTipRole:
+//                return getTooltip(Column::ChannelNameStart + channelIndex, nameString);
+//
+//            default:
+//                return QVariant();
+//        }
+//    }
+//    catch (std::exception exception)
+//    {
+//        qDebug() << exception.what();
+//    }
+//
+//    return QVariant();
+//}
+//
+//Configuration::AffectedColumns Configuration::setChannelName(const std::int32_t& channelIndex, const QString& name)
+//{
+//    AffectedColumns affectedColumns{ Column::ChannelNameStart + channelIndex };
+//
+//    try
+//    {
+//        if (name == _channels[channelIndex]->getDisplayName())
+//            return affectedColumns;
+//
+//        _channels[channelIndex]->setDisplayName(name);
+//    }
+//    catch (std::exception exception)
+//    {
+//        qDebug() << exception.what();
+//    }
+//
+//    return affectedColumns;
+//}
+
+
+//QVariant Configuration::getChannelDatasetName(const std::int32_t& channelIndex, const std::int32_t& role) const
+//{
+//    try
+//    {
+//        const auto datasetName = _channels[channelIndex]->getDatasetName();
+//
+//        switch (role)
+//        {
+//            case Qt::DisplayRole:
+//                return datasetName;
+//
+//            case Qt::EditRole:
+//                return datasetName;
+//
+//            case Qt::ToolTipRole:
+//                return getTooltip(Column::ChannelDatasetNameStart + channelIndex, datasetName);
+//
+//            default:
+//                return QVariant();
+//        }
+//    }
+//    catch (std::exception exception)
+//    {
+//        qDebug() << exception.what();
+//    }
+//
+//	return QVariant();
+//}
+//
+//Configuration::AffectedColumns Configuration::setChannelDatasetName(const std::int32_t& channelIndex, const QString& datasetName)
+//{
+//    AffectedColumns affectedColumns{ Column::ChannelDatasetNameStart + channelIndex };
+//
+//	try
+//	{
+//        if (datasetName == _channels[channelIndex]->getDatasetName())
+//            return affectedColumns;
+//
+//		_channels[channelIndex]->setDatasetName(datasetName);
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//    return affectedColumns;
+//}
+//
+//QVariant Configuration::getChannelDataName(const std::int32_t& channelIndex, const std::int32_t& role) const
+//{
+//	try
+//	{
+//		const auto dataName = _channels[channelIndex]->getDataName();
+//
+//		switch (role)
+//		{
+//			case Qt::DisplayRole:
+//				return dataName;
+//
+//			case Qt::EditRole:
+//				return dataName;
+//
+//			case Qt::ToolTipRole:
+//                return getTooltip(Column::ChannelDataNameStart + channelIndex, dataName);
+//
+//			default:
+//				return QVariant();
+//		}
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//	return QVariant();
+//}
+//
+//QVariant Configuration::getChannelColor(const std::int32_t& channelIndex, const std::int32_t& role) const
+//{
+//	try
+//	{
+//		const auto color		= _channels[channelIndex]->getColor();
+//		const auto colorString	= QString("(%1, %2, %3)").arg(QString::number(color.red()), QString::number(color.green()), QString::number(color.blue()));
+//
+//		switch (role)
+//		{
+//			case Qt::DisplayRole:
+//				return colorString;
+//
+//			case Qt::EditRole:
+//				return color;
+//
+//			case Qt::ToolTipRole:
+//                return getTooltip(Column::ChannelColorStart + channelIndex, colorString);
+//
+//			default:
+//				return QVariant();
+//		}
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//	return QVariant();
+//}
+//
+//Configuration::AffectedColumns Configuration::setChannelColor(const std::int32_t& channelIndex, const QColor& color)
+//{
+//    AffectedColumns affectedColumns{ Column::ChannelColorStart + channelIndex };
+//
+//	try
+//	{
+//        if (color == _channels[channelIndex]->getColor())
+//            return affectedColumns;
+//
+//		_channels[channelIndex]->setColor(color);
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//    return affectedColumns;
+//}
+//
+//QVariant Configuration::getChannelOpacity(const std::int32_t& channelIndex, const std::int32_t& role) const
+//{
+//	try
+//	{
+//		const auto opacity			= _channels[channelIndex]->getOpacity();
+//		const auto opacityString	= QString::number(opacity, 'f', 1);
+//
+//		switch (role)
+//		{
+//			case Qt::DisplayRole:
+//				return opacityString;
+//
+//			case Qt::EditRole:
+//				return opacity;
+//
+//			case Qt::ToolTipRole:
+//                return getTooltip(Column::ChannelOpacityStart + channelIndex, opacityString);
+//
+//			default:
+//				return QVariant();
+//		}
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//	return QVariant();
+//}
+//
+//Configuration::AffectedColumns Configuration::setChannelOpacity(const std::int32_t& channelIndex, const float& opacity)
+//{
+//    AffectedColumns affectedColumns{ Column::ChannelOpacityStart + channelIndex };
+//
+//	try
+//	{
+//        if (opacity == _channels[channelIndex]->getOpacity())
+//            return affectedColumns;
+//
+//		_channels[channelIndex]->setOpacity(opacity);
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//    return affectedColumns;
+//}
+//
+//QVariant Configuration::getChannelProfileType(const std::int32_t& channelIndex, const std::int32_t& role) const
+//{
+//	try
+//	{
+//		const auto profileType			= _channels[channelIndex]->getProfileType();
+//		const auto profileTypeString	= Profile::getProfileTypeName(profileType);
+//
+//		switch (role)
+//		{
+//			case Qt::DisplayRole:
+//				return profileTypeString;
+//
+//			case Qt::EditRole:
+//				return static_cast<int>(profileType);
+//
+//			case Qt::ToolTipRole:
+//                return getTooltip(Column::ChannelProfileTypeStart + channelIndex, profileTypeString);
+//
+//			default:
+//				return QVariant();
+//		}
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//	return QVariant();
+//}
+//
+//Configuration::AffectedColumns Configuration::setChannelProfileType(const std::int32_t& channelIndex, const Profile::ProfileType& profileType)
+//{
+//    AffectedColumns affectedColumns{ Column::ChannelProfileTypeStart + channelIndex };
+//
+//	try
+//	{
+//        if (profileType == _channels[channelIndex]->getProfileType())
+//            return affectedColumns;
+//
+//		_channels[channelIndex]->setProfileType(profileType);
+//
+//        affectedColumns << Column::ChannelRangeTypeStart + channelIndex;
+//        affectedColumns << Column::ShowDimensionNames;
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//    return affectedColumns;
+//}
+//
+//QVariant Configuration::getChannelRangeType(const std::int32_t& channelIndex, const std::int32_t& role) const
+//{
+//	try
+//	{
+//		const auto rangeType        = _channels[channelIndex]->getRangeType();
+//		const auto rangeTypeString	= Profile::getRangeTypeName(rangeType);
+//
+//		switch (role)
+//		{
+//			case Qt::DisplayRole:
+//				return rangeTypeString;
+//
+//			case Qt::EditRole:
+//				return static_cast<int>(rangeType);
+//
+//			case Qt::ToolTipRole:
+//				return getTooltip(Column::ChannelRangeTypeStart + channelIndex, rangeTypeString);
+//
+//			default:
+//				return QVariant();
+//		}
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//	return QVariant();
+//}
+//
+//Configuration::AffectedColumns Configuration::setChannelRangeType(const std::int32_t& channelIndex, const Profile::RangeType& rangeType)
+//{
+//    AffectedColumns affectedColumns{ Column::ChannelRangeTypeStart + channelIndex };
+//
+//	try
+//	{
+//        if (rangeType == _channels[channelIndex]->getRangeType())
+//            return affectedColumns;
+//
+//		_channels[channelIndex]->setRangeType(rangeType);
+//
+//        affectedColumns << Column::ShowDimensionNames;
+//	}
+//	catch (std::exception exception)
+//	{
+//		qDebug() << exception.what();
+//	}
+//
+//    return affectedColumns;
+//}

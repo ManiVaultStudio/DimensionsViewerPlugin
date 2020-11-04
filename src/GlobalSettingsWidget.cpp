@@ -14,7 +14,7 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    /*auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
+    auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
     QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &GlobalSettingsWidget::updateData);
 
@@ -26,11 +26,11 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
         else {
             const auto first = selectedRows.first();
 
-            updateData(first.siblingAtColumn(static_cast<int>(Configuration::Column::Start)), first.siblingAtColumn(static_cast<int>(Configuration::Column::End)));
+            //updateData(first.siblingAtColumn(static_cast<int>(Configuration::Column::Start)), first.siblingAtColumn(static_cast<int>(Configuration::Column::End)));
         }
     });
 
-    QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this, &configurationsModel](bool state) {
+    /*QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this, &configurationsModel](bool state) {
         configurationsModel.setData(Configuration::Column::GlobalSettings, state);
     });
 
@@ -40,9 +40,9 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](QString currentText) {
         configurationsModel.setData(Configuration::Column::GlobalRangeType, currentText);
-    });
+    });*/
 
-	updateData(QModelIndex(), QModelIndex());*/
+	updateData(QModelIndex(), QModelIndex());
 }
 
 void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)

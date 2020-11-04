@@ -24,7 +24,7 @@ public: // Enumerations
 		End = Differential
 	};
     
-    /** Maps profile type name to profile type enum and */
+    /** Maps profile type name to profile type enum and vice versa */
     static QMap<QString, ProfileType> const profileTypes;
 
 	/** Get string representation of profile type enumeration */
@@ -36,7 +36,6 @@ public: // Enumerations
     static ProfileType getProfileTypeEnum(const QString& profileTypeName) {
         return profileTypes[profileTypeName];
     }
-
 
 	/** Dimension values range type */
 	enum class RangeType {

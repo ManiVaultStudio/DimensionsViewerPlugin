@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>503</width>
-    <height>209</height>
+    <height>507</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,6 +32,9 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
+   <item>
+    <widget class="QTreeView" name="treeView"/>
+   </item>
    <item>
     <layout class="QHBoxLayout" name="topHorizontalLayout">
      <item>

@@ -2,22 +2,15 @@
 
 #include "ModelItem.h"
 
-class Channel;
-
-#include <QObject>
-#include <QVector>
+class Configuration;
 
 /**
- * Channels class
+ * Model item interface class
  *
- * @author T. Kroes
+ * @author Thomas Kroes
  */
-class Channels : public ModelItem {
-
-protected: // Construction
-
-	Channels(ModelItem* parent, const QString& datasetName, const QString& dataName);
-
+class Configurations : public ModelItem
+{
 public: // ModelIndex: MVC
 
     /**
@@ -81,18 +74,11 @@ public: // ModelIndex: Hierarchy
     /** Returns the number of children */
     int getChildCount() const override;
 
-public: // Overloaded operators
-
-    Channel* operator [](int i) const { return _channels[i]; }
-
 public:
-    Channel* getChannelByDatasetName(const QString& datasetName);
-    QVector<std::uint32_t> getChannelsEnabled() const;
-    std::int32_t getNoChannelsEnabled() const;
-    std::int32_t getNoDisplayChannels() const;
 
-private:
-    QVector<Channel*>       _channels;
+    /** TODO */
+    void add(const QString& datasetName, const QString& dataName);
 
-    friend class Configuration;
+protected:
+    QVector<Configuration*>		_configurations;		/** Child tree items */
 };

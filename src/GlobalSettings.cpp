@@ -3,11 +3,21 @@
 
 #include <QDebug>
 
-GlobalSettings::GlobalSettings(QObject* parent) :
-    QObject(parent),
+GlobalSettings::GlobalSettings(ModelItem* parent) :
+    ModelItem(parent),
     _enabled(true),
     _profile(Profile::ProfileType::Mean)
 {
+}
+
+int GlobalSettings::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
+{
+    return 0;
+}
+
+int GlobalSettings::getColumnCount() const
+{
+    return 3;
 }
 
 Qt::ItemFlags GlobalSettings::getFlags(const QModelIndex& index) const
@@ -19,42 +29,33 @@ Qt::ItemFlags GlobalSettings::getFlags(const QModelIndex& index) const
 
 QVariant GlobalSettings::getData(const QModelIndex& index, const int& role) const
 {
-    /*if (column == Column::GlobalSettings)
-        return getGlobalSettings(role);
-
-    if (column == Column::GlobalProfileTypes)
-        return getGlobalProfileTypes(role);
-
-    if (column == Column::GlobalProfileType)
-        return getGlobalProfileType(role);
-
-    if (column == Column::GlobalRangeTypes)
-        return getGlobalRangeTypes(role);
-
-    if (column == Column::GlobalRangeType)
-        return getGlobalRangeType(role);*/
-
     return QVariant();
 }
 
-AffectedColumns GlobalSettings::setData(const QModelIndex& index, const QVariant& value, const int& role)
+QModelIndexList GlobalSettings::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    AffectedColumns affectedColumns;
-
-    return affectedColumns;
+    return QModelIndexList();
 }
 
-//if (index.column() == Column::GlobalSettings)
-//affectedColumns << setGlobalSettings(value.toBool());
-//
-//if (index.column() == Column::GlobalProfileType)
-//affectedColumns << setGlobalProfileType(Profile::getProfileTypeEnum(value.toString()));
-//
-//if (index.column() == Column::GlobalRangeType)
-//affectedColumns << setGlobalRangeType(Profile::getRangeTypeEnum(value.toString()));
+QModelIndex GlobalSettings::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
+{
+    return QModelIndex();
+}
 
+QModelIndex GlobalSettings::parent(const QModelIndex& index) const
+{
+    return QModelIndex();
+}
 
+ModelItem* GlobalSettings::getChild(const int& index) const
+{
+    return nullptr;
+}
 
+int GlobalSettings::getChildCount() const
+{
+    return 0;
+}
 
 QVariant GlobalSettings::getEnabled(const std::int32_t& role) const
 {
@@ -76,7 +77,7 @@ QVariant GlobalSettings::getEnabled(const std::int32_t& role) const
     return QVariant();
 }
 
-AffectedColumns GlobalSettings::setEnabled(const bool& enabled)
+GlobalSettings::AffectedColumns GlobalSettings::setEnabled(const bool& enabled)
 {
     AffectedColumns affectedColumns{ Column::Enabled };
 
@@ -133,7 +134,7 @@ QVariant GlobalSettings::getProfileType(const std::int32_t& role) const
     }
 }
 
-AffectedColumns GlobalSettings::setProfileType(const Profile::ProfileType& globalProfileType)
+GlobalSettings::AffectedColumns GlobalSettings::setProfileType(const Profile::ProfileType& globalProfileType)
 {
     AffectedColumns affectedColumns{ Column::ProfileType };
 
@@ -189,7 +190,7 @@ QVariant GlobalSettings::getRangeType(const std::int32_t& role) const
     }
 }
 
-AffectedColumns GlobalSettings::setRangeType(const Profile::RangeType& globalRangeType)
+GlobalSettings::AffectedColumns GlobalSettings::setRangeType(const Profile::RangeType& globalRangeType)
 {
     AffectedColumns affectedColumns{ Column::RangeType };
 

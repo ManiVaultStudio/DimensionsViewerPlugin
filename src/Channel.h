@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ModelItem.h"
 #include "Profile.h"
 
 #include <QObject>
@@ -12,13 +13,11 @@ class DimensionsViewerPlugin;
 class Configuration;
 
 /**
- * Channel class
+ * Channel model item class
  *
- * Class for reading/writing channel visualization properties and for synchronization with the JS Vega web view
- * 
  * @author T. Kroes
  */
-class Channel : public QObject {
+class Channel : public ModelItem {
 
 	Q_OBJECT
 
@@ -26,7 +25,7 @@ protected: // Construction
 
 	/**
 	 * Constructor
-	 * @param parent Parent object
+	 * @param parent Parent model item
 	 * @param index Channel index
 	 * @param displayName Channel name in the user interface
 	 * @param enabled Whether the channel is enabled
@@ -35,7 +34,70 @@ protected: // Construction
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 */
-	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f);
+	Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f);
+
+public: // ModelIndex: MVC
+
+    /**
+     * Returns the number of rows in the model
+     * @param parentIndex Parent index
+     */
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+
+    /** Returns the number of columns */
+    int getColumnCount() const override;
+
+    /**
+     * Returns the item flags for the given model index
+     * @param index Model index
+     * @return Item flags for the index
+     */
+    Qt::ItemFlags getFlags(const QModelIndex& index) const override;
+
+    /**
+     * Returns the data for the given model index and data role
+     * @param index Model index
+     * @param role Data role
+     * @return Data in variant form
+     */
+    QVariant getData(const QModelIndex& index, const int& role) const override;
+
+    /**
+     * Sets the data value for the given model index and data role
+     * @param index Model index
+     * @param value Data value in variant form
+     * @param role Data role
+     * @return Model indices that are affected by the operation
+     */
+    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
+
+    /**
+     * Returns the model index belonging to the given model row and column
+     * @param row Model row
+     * @param column Model column
+     * @param parent Parent model index
+     * @return Model index for the given model row and column
+     */
+    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
+
+    /**
+     * Returns the parent model index
+     * @param index Model index
+     * @return Parent model index for the given model index
+     */
+    QModelIndex parent(const QModelIndex& index) const override;
+
+public: // ModelIndex: Hierarchy
+
+    /**
+     * Returns a model item node by index
+     * @param index Index of the child model item
+     * @return Model item at index
+     */
+    ModelItem* getChild(const int& index) const override;
+
+    /** Returns the number of children */
+    int getChildCount() const override;
 
 public: // Getters/setters
 
@@ -171,8 +233,24 @@ private:
 	Points*					    _points;			            /** Pointer to points dataset */
 
 protected:
-	static DimensionsViewerPlugin* dimensionsViewerPlugin;
-
-	friend class DimensionsViewerPlugin;
 	friend class Channels;
 };
+
+//      ChannelNameStart,				                                    /** Channel name first column */
+        //      ChannelNameEnd = ChannelNameStart + noChannels,                     /** Channel name last column */
+              //ChannelEnabledStart,				                                /** Channel enabled first column */
+              //ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled last column */
+              //ChannelDatasetNameStart,			                                /** Channel dataset name first column */
+              //ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name last column */
+              //ChannelDataNameStart,				                                /** Channel data name first column */
+              //ChannelDataNameEnd = ChannelDataNameStart + noChannels,             /** Channel data name last column */
+              //ChannelColorStart,					                                /** Channel color first column */
+              //ChannelColorEnd = ChannelColorStart + noChannels,                   /** Channel color last column */
+              //ChannelOpacityStart,				                                /** Channel opacity first column */
+              //ChannelOpacityEnd = ChannelOpacityStart + noChannels,               /** Channel opacity last column */
+              //ChannelProfileTypeStart,			                                /** Channel profile type first column */
+              //ChannelProfileTypeEnd = ChannelProfileTypeStart + noChannels,       /** Channel profile type last column */
+        //      ChannelRangeTypeStart,				                                /** Channel range type first column */
+        //      ChannelRangeTypeEnd = ChannelRangeTypeStart + noChannels,           /** Channel range type last column */
+        //      ChannelSettingsStart,				                                /** Channel settings type first column */
+        //      ChannelSettingsEnd = ChannelSettingsStart + noChannels,             /** Channel settings type last column */

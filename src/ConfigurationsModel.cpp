@@ -1,5 +1,7 @@
 #include "ConfigurationsModel.h"
 #include "DimensionsViewerPlugin.h"
+#include "Configurations.h"
+#include "Configuration.h"
 
 #include "PointData.h"
 
@@ -7,33 +9,42 @@
 #include <QMessageBox>
 
 ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin) :
-	QAbstractListModel(static_cast<QObject*>(dimensionsViewerPlugin)),
+    QAbstractItemModel(static_cast<QObject*>(dimensionsViewerPlugin)),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
 	_configurations(),
 	_selectionModel(this)
 {
 }
 
-int ConfigurationsModel::rowCount(const QModelIndex& parentIndex /*= QModelIndex()*/) const
+int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-	return _configurations.count();
+    const auto parentItem = getItem(parent);
+
+    return parentItem ? parentItem->getChildCount() : 0;
 }
 
-int ConfigurationsModel::columnCount(const QModelIndex& parentIndex /*= QModelIndex()*/) const
+int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-	return static_cast<int>(Configuration::Column::End) + 1;
+    Q_UNUSED(parent);
+    return _configurations.getColumnCount();
 }
 
 QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole*/) const
 {
-	return getConfiguration(index)->getData(index, role);
+    if (!index.isValid())
+        return QVariant();
+
+    if (role != Qt::DisplayRole && role != Qt::EditRole)
+        return QVariant();
+
+    auto item = getItem(index);
+
+    return item->getData(index, role);
 }
 
 bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
 {
-	auto configuration = getConfiguration(index);
-
-	const auto affectedIndices = configuration->setData(index, value, role);
+	const auto affectedIndices = _configurations.setData(index, value, role);
 
 	for (auto affectedIndex : affectedIndices) {
 		emit dataChanged(affectedIndex, affectedIndex);
@@ -56,29 +67,48 @@ bool ConfigurationsModel::setData(const std::int32_t& column, const QVariant& va
 
 Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const
 {
-	return _configurations[index.row()]->getFlags(index);
+    return getItem(index)->getFlags(index);
 }
 
 QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
-	if (orientation == Qt::Horizontal) {
-		switch (role)
-		{
-			case Qt::DecorationRole:
-				break;
+    if (orientation == Qt::Horizontal) {
+        return Configuration::getColumnName(static_cast<Configuration::Column>(section));
+    }
 
-			case Qt::DisplayRole:
-				return Configuration::getColumnName(section);
+    return QVariant();
+}
 
-			case Qt::ToolTipRole:
-				break;
+QModelIndex ConfigurationsModel::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
+{
+    if (parent.isValid() && parent.column() != 0)
+        return QModelIndex();
 
-			default:
-				break;
-		}
-	}
+    auto parentItem = getItem(parent);
 
-	return QVariant();
+    if (!parentItem)
+        return QModelIndex();
+
+    auto childItem = parentItem->getChild(row);
+
+    if (childItem)
+        return createIndex(row, column, childItem);
+
+    return QModelIndex();
+}
+
+QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
+{
+    if (!index.isValid())
+        return QModelIndex();
+
+    auto childItem = getItem(index);
+    auto parentItem = childItem ? childItem->getParent() : nullptr;
+
+    if (parentItem == &_configurations || !parentItem)
+        return QModelIndex();
+
+    return createIndex(parentItem->getChildCount(), 0, parentItem);
 }
 
 void ConfigurationsModel::addDataset(const QString& datasetName)
@@ -102,25 +132,17 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 	//	setData(subsetsIndex, parentConfiguration->getSubsets(Qt::EditRole).toStringList() << datasetName);
 	//}
 	//else {
-		beginInsertRows(QModelIndex(), _configurations.size(), _configurations.size());
+        const auto noConfigurations = _configurations.getChildCount();
+
+		beginInsertRows(QModelIndex(), noConfigurations, noConfigurations);
 		{
-			_configurations << new Configuration(_dimensionsViewerPlugin, datasetName, dataName);
+            _configurations.add(datasetName, dataName);
 		}
 		endInsertRows();
 
-		if (_configurations.size() == 1)
+		if (_configurations.getChildCount() == 1)
 			selectRow(0);
 	//}
-}
-
-QStringList ConfigurationsModel::getConfigurationNames()
-{
-	QStringList configurationNames;
-
-	for (auto configuration : _configurations)
-		configurationNames << configuration->getChannels()[0]->getDatasetName();
-	
-	return configurationNames;
 }
 
 void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
@@ -131,7 +153,10 @@ void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
 
     try
     {
-        auto configuration = _configurations[rowIndex];
+        _selectionModel.select(index(rowIndex, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+
+        /* TODO
+        auto configuration = _configurations.getChild(rowIndex);
 
         const auto datasetName = configuration->getChannels()[0]->getDatasetName();
 
@@ -139,8 +164,8 @@ void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
             throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());
         }
         else {
-            _selectionModel.select(index(rowIndex), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-        }
+            _selectionModel.select(index(rowIndex, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        }*/
     }
     catch (std::exception e)
     {
@@ -153,18 +178,7 @@ void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
 
 Configuration* ConfigurationsModel::getConfiguration(const QModelIndex& index) const
 {
-	try
-	{
-		if (index.isValid()) {
-			return _configurations[index.row()];
-		}
-	}
-	catch (std::exception exception)
-	{
-		return nullptr;
-	}
-
-	return nullptr;
+    return reinterpret_cast<Configuration*>(_configurations.getChild(index.row()));
 }
 
 Configuration* ConfigurationsModel::getSelectedConfiguration() const
@@ -175,4 +189,16 @@ Configuration* ConfigurationsModel::getSelectedConfiguration() const
 		return nullptr;
 
 	return getConfiguration(selectedRows.first());
+}
+
+ModelItem* ConfigurationsModel::getItem(const QModelIndex &index) const
+{
+    if (index.isValid()) {
+        auto modelItem = static_cast<ModelItem*>(index.internalPointer());
+
+        if (modelItem)
+            return modelItem;
+    }
+
+    return static_cast<ModelItem*>(const_cast<Configurations*>(&_configurations));
 }

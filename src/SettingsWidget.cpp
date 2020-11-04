@@ -11,4 +11,6 @@ SettingsWidget::SettingsWidget(QWidget* parent) :
 	_ui->setupUi(this);
 
     _dimensionsViewerPlugin = dynamic_cast<DimensionsViewerPlugin*>(parent);
+
+    _ui->treeView->setModel(&_dimensionsViewerPlugin->getConfigurationsModel());
 }
