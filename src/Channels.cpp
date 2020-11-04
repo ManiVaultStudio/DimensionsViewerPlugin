@@ -18,11 +18,6 @@ int Channels::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
     return 4;
 }
 
-int Channels::getColumnCount() const
-{
-    return 0;
-}
-
 Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;

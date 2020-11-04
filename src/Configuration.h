@@ -72,9 +72,6 @@ public: // ModelIndex: MVC
      */
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
-    /** Returns the number of columns */
-    int getColumnCount() const override;
-
     /**
      * Returns the item flags for the given model index
      * @param index Model index

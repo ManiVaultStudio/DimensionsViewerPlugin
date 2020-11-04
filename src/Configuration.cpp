@@ -37,11 +37,6 @@ int Configuration::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
     return 0;
 }
 
-int Configuration::getColumnCount() const
-{
-    return static_cast<int>(Column::End) + 1;
-}
-
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
 	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;

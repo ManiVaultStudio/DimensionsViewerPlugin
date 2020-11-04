@@ -28,9 +28,6 @@ public: // MVC
      */
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const = 0;
 
-    /** Returns the number of columns */
-    virtual int getColumnCount() const = 0;
-
     /**
      * Returns the item flags for the given model index
      * @param index Model index

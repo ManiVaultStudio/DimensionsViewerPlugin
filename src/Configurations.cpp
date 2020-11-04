@@ -9,11 +9,6 @@ int Configurations::rowCount(const QModelIndex& parent /*= QModelIndex()*/) cons
     return parent.isValid() ? static_cast<ModelItem*>(parent.internalPointer())->getChildCount() : getChildCount();
 }
 
-int Configurations::getColumnCount() const
-{
-    return 5;
-}
-
 Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
 {
     return getChild(index.row())->getFlags(index);

@@ -15,11 +15,6 @@ int GlobalSettings::rowCount(const QModelIndex& parent /*= QModelIndex()*/) cons
     return 0;
 }
 
-int GlobalSettings::getColumnCount() const
-{
-    return 3;
-}
-
 Qt::ItemFlags GlobalSettings::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;

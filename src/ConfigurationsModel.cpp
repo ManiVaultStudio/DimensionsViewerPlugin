@@ -26,7 +26,7 @@ int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
 int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
     Q_UNUSED(parent);
-    return _configurations.getColumnCount();
+    return static_cast<int>(Configuration::Column::End);
 }
 
 QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole*/) const
