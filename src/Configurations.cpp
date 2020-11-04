@@ -56,7 +56,7 @@ QModelIndex Configurations::parent(const QModelIndex& index) const
 
 ModelItem* Configurations::getChild(const int& index) const
 {
-    if (index >= _configurations.size())
+    if (index < 0 || index >= _configurations.size())
         return nullptr;
 
     return _configurations[index];
@@ -91,4 +91,14 @@ void Configurations::add(const QString& datasetName, const QString& dataName)
     {
         presentError("Unhandled exception");
     }
+}
+
+QStringList Configurations::getNames() const
+{
+    QStringList names;
+
+    for (auto configuration : _configurations)
+        names << configuration->getName(Qt::EditRole).toString();
+
+    return names;
 }

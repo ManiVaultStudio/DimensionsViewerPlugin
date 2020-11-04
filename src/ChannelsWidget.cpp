@@ -6,10 +6,8 @@
 
 #include <QDebug>
 
-DimensionsViewerPlugin* ChannelsWidget::dimensionsViewerPlugin = nullptr;
-
 ChannelsWidget::ChannelsWidget(QWidget* parent) :
-    QWidget(parent),
+    ModelItemWidget(parent),
 	_ui{ std::make_unique<Ui::ChannelsWidget>() }
 {
 	_ui->setupUi(this);
@@ -23,5 +21,9 @@ ChannelsWidget::ChannelsWidget(QWidget* parent) :
 
 void ChannelsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
+}
 
+void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
+{
+    ModelItemWidget::setModelIndex(modelIndex);
 }

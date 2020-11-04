@@ -9,15 +9,15 @@
 class DimensionsViewerPlugin;
 
 namespace Ui {
-	class ChannelsWidget;
+	class ConfigurationWidget;
 }
 
 /**
- * Channels container widget class
+ * Configuration widget class
  *
  * @author T. Kroes
  */
-class ChannelsWidget : public ModelItemWidget
+class ConfigurationWidget : public ModelItemWidget
 {
 public: // Construction
 
@@ -25,7 +25,7 @@ public: // Construction
      * Constructor
      * @param parent Parent widget
      */
-	ChannelsWidget(QWidget* parent);
+	ConfigurationWidget(QWidget* parent);
 
 public: // Inherited from ModelItemWidget
 
@@ -44,5 +44,5 @@ public: // Inherited from ModelItemWidget
     void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-	std::unique_ptr<Ui::ChannelsWidget>		_ui;    /** UI from creator */
+	std::unique_ptr<Ui::ConfigurationWidget>    _ui;        /** UI from creator */
 };

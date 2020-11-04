@@ -28,3 +28,13 @@ void ModelItemWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
         updateData(modelIndex.sibling(0, 0), modelIndex.sibling(0, noColumns - 1));
     }
 }
+
+ConfigurationsModel& ModelItemWidget::getConfigurationsModel()
+{
+    return dimensionsViewerPlugin->getConfigurationsModel();
+}
+
+QItemSelectionModel& ModelItemWidget::getSelectionModel()
+{
+    return getConfigurationsModel().getSelectionModel();
+}

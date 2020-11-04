@@ -1,7 +1,7 @@
 #include "DimensionsViewerPlugin.h"
 #include "ModelItemWidget.h"
 #include "DimensionsViewerWidget.h"
-#include "SettingsWidget.h"
+#include "ConfigurationWidget.h"
 #include "ChannelsWidget.h"
 #include "ChannelSettingsWidget.h"
 #include "GlobalSettingsWidget.h"
@@ -17,7 +17,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 	ViewPlugin("Dimensions Viewer"),
 	_configurationsModel(this),
 	_dimensionsViewerWidget(),
-	_settingsWidget()
+	_configurationWidget()
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
@@ -25,7 +25,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
     ModelItemWidget::dimensionsViewerPlugin = this;
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
-	_settingsWidget = new SettingsWidget(this);
+	_configurationWidget = new ConfigurationWidget(this);
 }
 
 void DimensionsViewerPlugin::init()
@@ -33,7 +33,7 @@ void DimensionsViewerPlugin::init()
     auto mainLayout = new QVBoxLayout();
 
     mainLayout->addWidget(_dimensionsViewerWidget, 1);
-    mainLayout->addWidget(_settingsWidget);
+    mainLayout->addWidget(reinterpret_cast<QWidget*>(_configurationWidget));
 
     setMainLayout(mainLayout);
 }

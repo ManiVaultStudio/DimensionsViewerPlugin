@@ -32,6 +32,7 @@ public: // Enumerations
         SelectionStamp,             /** Auxiliary column for triggering synchronization */
         Channels,                   /** Channels model item */
         Global,                     /** Global settings model item */
+        DifferentialProfile,        /** Differential profile settings model item */
         Miscellaneous,              /** Miscellaneous settings model item */
 
         Start = Subsets,            /** Column start */

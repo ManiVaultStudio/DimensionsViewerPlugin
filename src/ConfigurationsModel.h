@@ -110,9 +110,6 @@ public: // Miscellaneous
 	/** Returns the selection model */
 	QItemSelectionModel& getSelectionModel() { return _selectionModel; }
 
-	/** Get configuration names */
-	QStringList getConfigurationNames();
-
 	/**
 	 * Select a single row
 	 * @param row Row identifier
@@ -125,8 +122,11 @@ public: // Miscellaneous
         /** TODO */
 	Configuration* getSelectedConfiguration() const;
 
+    /** Get configurations */
+    const Configurations& getConfigurations() const;
+
 private:
-    ModelItem* getItem(const QModelIndex &index) const;
+    ModelItem* getItem(const QModelIndex& index) const;
 
 private:
 	DimensionsViewerPlugin*		_dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */

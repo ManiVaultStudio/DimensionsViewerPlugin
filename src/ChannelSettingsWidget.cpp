@@ -19,26 +19,22 @@ ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent, const std::uint32_
 
  //   const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
 
- //   auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
+    if (_channelIndex == 0) {
+        const auto updateDatasetCombobox = [this]() {
+            _ui->datasetNameComboBox->blockSignals(true);
+            _ui->datasetNameComboBox->setModel(new QStringListModel(getConfigurationsModel().getConfigurations().getNames()));
+            _ui->datasetNameComboBox->setEnabled(getConfigurationsModel().rowCount() > 1);
+            _ui->datasetNameComboBox->blockSignals(false);
+        };
 
- //   if (_channelIndex == 0) {
- //       const auto updateDatasetCombobox = [this]() {
- //           auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
+        QObject::connect(&getConfigurationsModel(), &ConfigurationsModel::rowsInserted, [this, updateDatasetCombobox](const QModelIndex& parent, int first, int last) {
+            updateDatasetCombobox();
+        });
 
- //           _ui->datasetNameComboBox->blockSignals(true);
- //           _ui->datasetNameComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
- //           _ui->datasetNameComboBox->setEnabled(configurationsModel.rowCount() > 1);
- //           _ui->datasetNameComboBox->blockSignals(false);
- //       };
-
- //       QObject::connect(&configurationsModel, &ConfigurationsModel::rowsInserted, [this, updateDatasetCombobox](const QModelIndex& parent, int first, int last) {
- //           updateDatasetCombobox();
- //       });
-
- //       QObject::connect(&configurationsModel, &ConfigurationsModel::rowsRemoved, [this, updateDatasetCombobox](const QModelIndex& parent, int first, int last) {
- //           updateDatasetCombobox();
- //       });
- //   }
+        QObject::connect(&getConfigurationsModel(), &ConfigurationsModel::rowsRemoved, [this, updateDatasetCombobox](const QModelIndex& parent, int first, int last) {
+            updateDatasetCombobox();
+        });
+    }
 
  //   QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &ChannelSettingsWidget::updateData);
 
@@ -93,9 +89,9 @@ ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent, const std::uint32_
 
 void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-	/*const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
+	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
-	if (selectedRows.isEmpty()) {
+	if (begin == QModelIndex() && end == QModelIndex()) {
         _ui->enabledCheckBox->setEnabled(false);
         _ui->enabledCheckBox->setChecked(false);
         _ui->enabledCheckBox->setText(QString("Channel %1").arg(QString::number(_channelIndex + 1)));
@@ -111,7 +107,8 @@ void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelInd
 
 		return;
 	}
-    
+
+    /*
 	if (begin.row() != selectedRows.first().row())
 		return;
 
@@ -210,4 +207,9 @@ void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelInd
             }
         }
 	}*/
+}
+
+void ChannelSettingsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
+{
+    ModelItemWidget::setModelIndex(modelIndex);
 }

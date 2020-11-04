@@ -1,12 +1,13 @@
 #pragma once
 
+#include "ConfigurationsModel.h"
+
 #include <memory>
 
 #include <QWidget>
 #include <QPersistentModelIndex>
 
 class DimensionsViewerPlugin;
-class ConfigurationsModel;
 
 /**
  * Model item widget class
@@ -36,11 +37,18 @@ protected:
 	virtual void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>()) = 0;
 
     /**
-     * TODO
+     * Sets the model index for this model item widget
+     * @param modelIndex Persistent model index
      */
-    void setModelIndex(const QPersistentModelIndex& modelIndex);
+    virtual void setModelIndex(const QPersistentModelIndex& modelIndex) = 0;
 
-private:
+    /** TODO */
+    ConfigurationsModel& getConfigurationsModel();
+
+    /** TODO */
+    QItemSelectionModel& getSelectionModel();
+
+protected:
     QPersistentModelIndex       _modelIndex;    /** TODO */
 
 protected:

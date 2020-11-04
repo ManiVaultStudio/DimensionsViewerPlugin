@@ -38,6 +38,12 @@ public: // Inherited from ModelItemWidget
 	 */
 	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>()) override;
 
+    /**
+     * Sets the model index for this model item widget
+     * @param modelIndex Persistent model index
+     */
+    void setModelIndex(const QPersistentModelIndex& modelIndex) override;
+
 private:
 	std::unique_ptr<Ui::ChannelSettingsWidget>		_ui;                            /** UI from creator */
     std::uint32_t                                   _channelIndex;                  /** Channel index */

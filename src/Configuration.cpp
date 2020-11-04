@@ -11,13 +11,14 @@ const QMap<QString, Configuration::Column> Configuration::columns = {
     { "Selection stamp", Configuration::Column::SelectionStamp },
     { "Channels", Configuration::Column::Channels },
     { "Global", Configuration::Column::Global },
+    { "DifferentialProfile", Configuration::Column::DifferentialProfile },
     { "Miscellaneous", Configuration::Column::Miscellaneous }
 };
 
 Configuration::Configuration(ModelItem* parent, const QString& datasetName, const QString& dataName) :
     ModelItem(parent),
 	_index(noConfigurations),
-	_name(QString("Configuration %1").arg(QString::number(_index + 1))),
+	_name(datasetName),
 	_channels(this, datasetName, dataName),
 	_globalSettings(this),
 	_subsets(),

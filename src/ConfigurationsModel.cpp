@@ -44,7 +44,10 @@ QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::Di
 
 bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
 {
-	const auto affectedIndices = _configurations.setData(index, value, role);
+    if (index == QModelIndex())
+        return false;
+
+	const auto affectedIndices = getItem(index)->setData(index, value, role);
 
 	for (auto affectedIndex : affectedIndices) {
 		emit dataChanged(affectedIndex, affectedIndex);
@@ -194,7 +197,12 @@ Configuration* ConfigurationsModel::getSelectedConfiguration() const
 	return getConfiguration(selectedRows.first());
 }
 
-ModelItem* ConfigurationsModel::getItem(const QModelIndex &index) const
+const Configurations& ConfigurationsModel::getConfigurations() const
+{
+    return _configurations;
+}
+
+ModelItem* ConfigurationsModel::getItem(const QModelIndex& index) const
 {
     if (index.isValid()) {
         auto modelItem = static_cast<ModelItem*>(index.internalPointer());

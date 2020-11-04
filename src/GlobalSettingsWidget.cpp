@@ -13,36 +13,8 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
-
-    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &GlobalSettingsWidget::updateData);
-
-    QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
-        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
-
-        if (selectedRows.isEmpty())
-            updateData(QModelIndex(), QModelIndex());
-        else {
-            const auto first = selectedRows.first();
-
-            updateData(first.siblingAtColumn(static_cast<int>(GlobalSettings::Column::Start)), first.siblingAtColumn(static_cast<int>(GlobalSettings::Column::End)));
-        }
-    });
-
-    const auto setGlobalSetting = [&configurationsModel](const GlobalSettings::Column& column, const QVariant& value) {
-        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
-
-        if (!selectedRows.isEmpty()) {
-            const auto globalSettingIndex = selectedRows.first().siblingAtColumn(static_cast<int>(Configuration::Column::Global));
-            configurationsModel.setData(configurationsModel.index(0, static_cast<int>(column), globalSettingIndex), value);
-        }
-    };
-
-    QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this, &configurationsModel, setGlobalSetting](bool state) {
-        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
-
-        if (!selectedRows.isEmpty())
-            setGlobalSetting(GlobalSettings::Column::Enabled, state);
+    QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
+        getConfigurationsModel().setData(_modelIndex.sibling(0, static_cast<int>(GlobalSettings::Column::Enabled)), state);
     });
 
     _ui->profileTypeComboBox->addItem("A");
@@ -62,21 +34,13 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
 {
 	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
-	if (selectedRows.isEmpty()) {
-       // _ui->groupBox->setEnabled(false);
+    if (begin == QModelIndex() && end == QModelIndex()) {
+        _ui->groupBox->blockSignals(true);
+        //_ui->groupBox->setEnabled(false);
         _ui->groupBox->setChecked(false);
-
+        _ui->groupBox->blockSignals(false);
 		return;
 	}
-
-	if (begin.row() != selectedRows.first().row())
-		return;
-
-    if (begin.parent() != QModelIndex())
-        return;
-
-    if (begin.parent().column() != static_cast<int>(Configuration::Column::Global))
-        return;
 
     qDebug() << "asddasd";
     /*
@@ -119,4 +83,9 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
             _ui->rangeTypeComboBox->blockSignals(false);
         }
 	}*/
+}
+
+void GlobalSettingsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
+{
+    ModelItemWidget::setModelIndex(modelIndex);
 }

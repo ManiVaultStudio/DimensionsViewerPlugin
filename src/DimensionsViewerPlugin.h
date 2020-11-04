@@ -14,15 +14,11 @@ using hdps::plugin::ViewPluginFactory;
 using hdps::plugin::ViewPlugin;
 
 class DimensionsViewerWidget;
-class SettingsWidget;
+class ConfigurationWidget;
 
 class DimensionsViewerPlugin : public ViewPlugin
 {
 	Q_OBJECT
-
-public: // Aliases 
-
-	using Channels = QVector<Channel*>;
 
 public:
 	DimensionsViewerPlugin();
@@ -48,7 +44,7 @@ public:
 private:
 	ConfigurationsModel			_configurationsModel;           /** Configurations model */
 	DimensionsViewerWidget*		_dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
-	SettingsWidget*				_settingsWidget;                /** Settings widget */
+    ConfigurationWidget*		_configurationWidget;           /** Configuration widget */
 };
 
 class DimensionsViewerPluginFactory : public ViewPluginFactory

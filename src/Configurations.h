@@ -71,10 +71,17 @@ public: // ModelIndex: Hierarchy
     /** Returns the number of children */
     int getChildCount() const override;
 
-public:
+public: // Miscellaneous
 
-    /** TODO */
+    /**
+     * Add a configuration
+     * @param datasetName Name of the points dataset
+     * @param dataName Name of the points data
+     */
     void add(const QString& datasetName, const QString& dataName);
+
+    /** Get configuration names */
+    QStringList getNames() const;
 
 protected:
     QVector<Configuration*>		_configurations;		/** Child tree items */

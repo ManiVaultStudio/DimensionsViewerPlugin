@@ -59,3 +59,8 @@ void MiscellaneousSettingsWidget::updateData(const QModelIndex& begin, const QMo
         }
     }*/
 }
+
+void MiscellaneousSettingsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
+{
+    ModelItemWidget::setModelIndex(modelIndex);
+}
