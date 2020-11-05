@@ -68,13 +68,13 @@ const QMap<Channel::Column, std::function<QVariant(Channel* channel)>> Channel::
     { Channel::Column::Opacity, [](Channel* channel) { return channel->_opacity; }},
     { Channel::Column::ProfileType, [](Channel* channel) {
         if (channel->getGlobalSettings().getData(GlobalSettings::Column::Enabled, Qt::EditRole).toBool())
-            return channel->getGlobalSettings().getData(GlobalSettings::Column::ProfileType, Qt::EditRole).toString();
+            return channel->getGlobalSettings().getData(GlobalSettings::Column::ProfileType, Qt::DisplayRole).toString();
 
         return Profile::getProfileTypeName(channel->_profile.getProfileType());
     }},
     { Channel::Column::RangeType, [](Channel* channel) {
         if (channel->getGlobalSettings().getData(GlobalSettings::Column::Enabled, Qt::EditRole).toBool())
-            return channel->getGlobalSettings().getData(GlobalSettings::Column::RangeType, Qt::EditRole).toString();
+            return channel->getGlobalSettings().getData(GlobalSettings::Column::RangeType, Qt::DisplayRole).toString();
 
         return Profile::getRangeTypeName(channel->_profile.getRangeType());
     }}
@@ -202,7 +202,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
         case Column::RangeType:
         {
-            if (_enabled && _profile.getProfileType() != Profile::ProfileType::None && !getGlobalSettings().getData(GlobalSettings::Column::Enabled, Qt::EditRole).toBool())
+            if (_enabled && _profile.getProfileType() != Profile::ProfileType::None && _profile.getProfileType() != Profile::ProfileType::Differential && !getGlobalSettings().getData(GlobalSettings::Column::Enabled, Qt::EditRole).toBool())
                 flags |= Qt::ItemIsEnabled;
 
             break;

@@ -89,64 +89,6 @@ public: // ModelIndex: Hierarchy
      */
     int getChildIndex(ModelItem* child) const override;
 
-public: // Getters/setters
-
-    /**
-     * Gets enabled
-     * @param role Data role
-     * @return Global settings (on/off)
-     */
-     QVariant getEnabled(const std::int32_t& role) const;
-
-    /**
-     * Sets enabled
-     * @param enabled Global settings (on/off)
-     * @return Columns that are affected by the operation
-     */
-     QModelIndexList setEnabled(const bool& enabled);
-
-     /**
-     * Gets global profile types
-     * @param role Data role
-     * @return Global profile types in variant form
-     */
-     QVariant getProfileTypes(const std::int32_t& role) const;
-
-    /**
-     * Gets global profile type
-     * @param role Data role
-     * @return Global profile type in variant form
-     */
-     QVariant getProfileType(const std::int32_t& role) const;
-
-    /**
-     * Sets the global profile type
-     * @param profileType Global profile type
-     * @return Columns that are affected by the operation
-     */
-     QModelIndexList setProfileType(const Profile::ProfileType& globalProfileType);
-
-    /**
-     * Gets global range types
-     * @param role Data role
-     * @return Global range types in variant form
-     */
-     QVariant getRangeTypes(const std::int32_t& role) const;
-
-    /**
-     * Gets global range type
-     * @param role Data role
-     * @return Global range type in variant form
-     */
-     QVariant getRangeType(const std::int32_t& role) const;
-
-    /**
-     * Sets global range type
-     * @param rangeType Global range type
-     * @return Columns that are affected by the operation
-     */
-     QModelIndexList setRangeType(const Profile::RangeType& globalRangeType);
-
 private:
     bool        _enabled;       /** Whether whether global settings are on or off */
     Profile     _profile;       /** Global profile settings */

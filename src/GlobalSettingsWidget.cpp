@@ -14,15 +14,15 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
 	_ui->setupUi(this);
 
     QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
-        setData(static_cast<int>(GlobalSettings::Column::Enabled), state);
+        setData(GlobalSettings::Column::Enabled, state);
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(static_cast<int>(GlobalSettings::Column::ProfileType), currentText);
+        setData(GlobalSettings::Column::ProfileType, currentText);
     });
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(static_cast<int>(GlobalSettings::Column::RangeType), currentText);
+        setData(GlobalSettings::Column::RangeType, currentText);
     });
 
     reset();
