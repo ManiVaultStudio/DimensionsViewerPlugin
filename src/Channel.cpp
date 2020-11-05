@@ -9,6 +9,49 @@
 #include <QDebug>
 #include <QVariantList>
 
+const QMap<QString, Channel::Column> Channel::columns = {
+    { "Index", Channel::Column::Index },
+    { "Internal name", Channel::Column::InternalName },
+    { "Display name", Channel::Column::DisplayName },
+    { "Enabled", Channel::Column::Enabled },
+    { "Dataset names", Channel::Column::DatasetNames },
+    { "Dataset name", Channel::Column::DatasetName },
+    { "Data name", Channel::Column::DataName },
+    { "Color", Channel::Column::Color },
+    { "Opacity", Channel::Column::Opacity },
+    { "Profile type", Channel::Column::ProfileType },
+    { "Range type", Channel::Column::RangeType },
+    { "Settings", Channel::Column::Settings }
+};
+
+const QMap<Channel::Column, std::function<QVariant(const Channel* channel)>> Channel::getEditRoles = {
+    { Channel::Column::Index, [](const Channel* channel) { return channel->_index; }},
+    { Channel::Column::InternalName, [](const Channel* channel) { return channel->_internalName; }},
+    { Channel::Column::DisplayName, [](const Channel* channel) { return channel->_displayName; }},
+    { Channel::Column::Enabled, [](const Channel* channel) { return channel->_enabled; }},
+    { Channel::Column::DatasetNames, [](const Channel* channel) { return channel->_datasetNames; }},
+    { Channel::Column::DatasetName, [](const Channel* channel) { return channel->_datasetName; }},
+    { Channel::Column::DataName, [](const Channel* channel) { return channel->_dataName; }},
+    { Channel::Column::Color, [](const Channel* channel) { return channel->_color; }},
+    { Channel::Column::Opacity, [](const Channel* channel) { return channel->_opacity; }},
+    { Channel::Column::ProfileType, [](const Channel* channel) { return static_cast<int>(channel->_profile.getProfileType()); }},
+    { Channel::Column::RangeType, [](const Channel* channel) { return static_cast<int>(channel->_profile.getRangeType()); }}
+};
+
+const QMap<Channel::Column, std::function<QVariant(const Channel* channel)>> Channel::getDisplayRoles = {
+    { Channel::Column::Index, [](const Channel* channel) { return QString::number(channel->_index); }},
+    { Channel::Column::InternalName, [](const Channel* channel) { return channel->_internalName; }},
+    { Channel::Column::DisplayName, [](const Channel* channel) { return channel->_displayName; }},
+    { Channel::Column::Enabled, [](const Channel* channel) { return channel->_enabled; }},
+    { Channel::Column::DatasetNames, [](const Channel* channel) { return channel->_datasetNames; }},
+    { Channel::Column::DatasetName, [](const Channel* channel) { return channel->_datasetName; }},
+    { Channel::Column::DataName, [](const Channel* channel) { return channel->_dataName; }},
+    { Channel::Column::Color, [](const Channel* channel) { return channel->_color; }},
+    { Channel::Column::Opacity, [](const Channel* channel) { return channel->_opacity; }},
+    { Channel::Column::ProfileType, [](const Channel* channel) { return Profile::getProfileTypeName(channel->_profile.getProfileType()); }},
+    { Channel::Column::RangeType, [](const Channel* channel) { return Profile::getRangeTypeName(channel->_profile.getRangeType()); }}
+};
+
 Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
     ModelItem(parent),
     _configuration(dynamic_cast<Configuration*>(parent)),
@@ -16,6 +59,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),
 	_enabled(enabled),
+    _datasetNames(),
 	_datasetName(),
 	_dataName(dataName),
 	_color(color),
@@ -38,7 +82,6 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         case Column::Index:
         case Column::InternalName:
         case Column::DisplayName:
-        case Column::Subsets:
             break;
 
         case Column::Enabled: {
@@ -47,6 +90,9 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             break;
         }
         
+        case Column::DatasetNames:
+            break;
+
         case Column::DatasetName:
         case Column::Color:
         case Column::Opacity:
@@ -72,7 +118,32 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
 QVariant Channel::getData(const QModelIndex& index, const int& role) const
 {
-    return "CHANNEL_MODEL_ITEM";
+    const auto column = static_cast<Column>(index.column());
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            if (getDisplayRoles.contains(column))
+                return getEditRoles[column](this);
+
+            break;
+        }
+
+        case Qt::DisplayRole:
+        {
+            if (getDisplayRoles.contains(column))
+                return getDisplayRoles[column](this);
+
+            break;
+        }
+
+        default:
+            break;
+    }
+    
+
+    return QVariant();
 }
 
 QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value, const int& role)

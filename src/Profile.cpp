@@ -53,6 +53,7 @@ void Profile::setProfileType(const ProfileType& profileType)
 
         case ProfileType::Mean:
         {
+            _rangeTypes << RangeType::None;
             _rangeTypes << RangeType::StandardDeviation1;
             _rangeTypes << RangeType::StandardDeviation2;
             _rangeTypes << RangeType::StandardDeviation3;
@@ -66,6 +67,7 @@ void Profile::setProfileType(const ProfileType& profileType)
 
         case ProfileType::Median:
         {
+            _rangeTypes << Profile::RangeType::None;
             _rangeTypes << Profile::RangeType::Percentile5;
             _rangeTypes << Profile::RangeType::Percentile10;
 

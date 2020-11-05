@@ -23,13 +23,13 @@ class Channel : public ModelItem {
 
 public: // Columns
 
-    /** Data columns */
+    /** Column types */
     enum class Column {
         Index,
         InternalName,
         DisplayName,
-        Subsets,
         Enabled,
+        DatasetNames,
         DatasetName,
         DataName,
         Color,
@@ -41,6 +41,23 @@ public: // Columns
         Start = Index,
         End = Settings
     };
+
+    /** Maps column type name to column type enum and vice versa */
+    static QMap<QString, Column> const columns;
+
+    /** Get string representation of column type enumeration */
+    static QString getColumnTypeName(const Column& column) {
+        return columns.key(column);
+    }
+
+    /** Get enum representation from column type name */
+    static Column getColumnTypeEnum(const QString& columnName) {
+        return columns[columnName];
+    }
+
+    /** Data roles */
+    static QMap<Column, std::function<QVariant(const Channel* channel)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(const Channel* channel)>> const getDisplayRoles;
 
 protected: // Construction
 
@@ -221,38 +238,142 @@ signals:
     void specChanged(Channel* channel);
 
 private:
-    Configuration*              _configuration;                 /** Parent configuration */
-	const std::uint32_t		    _index;				            /** Channel index */
-	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
-	QString			            _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
-	bool					    _enabled;			            /** Whether the channel is enabled or not */
-	QString					    _datasetName;		            /** Channel dataset name */
-	QString					    _dataName;			            /** Channel data name */
-	QColor					    _color;				            /** Channel color */
-	float					    _opacity;			            /** Channel opacity */
-    Profile				        _profile;		                /** TODO */
-	QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
-	Points*					    _points;			            /** Pointer to points dataset */
+    Configuration*          _configuration;     /** Parent configuration */
+	const std::uint32_t		_index;				/** Index */
+	const QString			_internalName;		/** Internal name (e.g. channel1, channel2) */
+	QString			        _displayName;		/** Display name (e.g. dataset, Subset1 and Subset 2) */
+	bool					_enabled;			/** Whether the channel is enabled or not */
+	QStringList             _datasetNames;		/** Dataset names */
+	QString					_datasetName;		/** Dataset name */
+	QString					_dataName;			/** Data name */
+	QColor					_color;				/** Color */
+	float					_opacity;			/** Opacity */
+    Profile				    _profile;		    /** Profile */
+	QVariantMap				_spec;				/** Specification for use in JS visualization client (Vega) */
+	Points*					_points;			/** Pointer to points dataset */
 
 protected:
 	friend class Channels;
 };
 
-//      ChannelNameStart,				                                    /** Channel name first column */
-        //      ChannelNameEnd = ChannelNameStart + noChannels,                     /** Channel name last column */
-              //ChannelEnabledStart,				                                /** Channel enabled first column */
-              //ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled last column */
-              //ChannelDatasetNameStart,			                                /** Channel dataset name first column */
-              //ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name last column */
-              //ChannelDataNameStart,				                                /** Channel data name first column */
-              //ChannelDataNameEnd = ChannelDataNameStart + noChannels,             /** Channel data name last column */
-              //ChannelColorStart,					                                /** Channel color first column */
-              //ChannelColorEnd = ChannelColorStart + noChannels,                   /** Channel color last column */
-              //ChannelOpacityStart,				                                /** Channel opacity first column */
-              //ChannelOpacityEnd = ChannelOpacityStart + noChannels,               /** Channel opacity last column */
-              //ChannelProfileTypeStart,			                                /** Channel profile type first column */
-              //ChannelProfileTypeEnd = ChannelProfileTypeStart + noChannels,       /** Channel profile type last column */
-        //      ChannelRangeTypeStart,				                                /** Channel range type first column */
-        //      ChannelRangeTypeEnd = ChannelRangeTypeStart + noChannels,           /** Channel range type last column */
-        //      ChannelSettingsStart,				                                /** Channel settings type first column */
-        //      ChannelSettingsEnd = ChannelSettingsStart + noChannels,             /** Channel settings type last column */
+/**
+     * Gets channel enabled
+     * @param channelIndex Index of the channel
+     * @param role Data role
+     * @return Channel enabled in variant form
+     */
+     //QVariant isChannelEnabled(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+    /**
+     * Sets channel enabled
+     * @param channelIndex Index of the channel
+     * @param enabled Channel enabled for profile with \p profileIndex
+     * @return Columns that are affected by the operation
+     */
+     //AffectedColumns setChannelEnabled(const std::int32_t& channelIndex, const bool& enabled);
+
+    /**
+     * Gets channel name
+     * @param channelIndex Index of the channel
+     * @param role Data role
+     * @return Channel name
+     */
+     //QVariant getChannelName(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+    /**
+     * Sets channel name
+     * @param channelIndex Index of the channel
+     * @param name Channel name
+     * @return Columns that are affected by the operation
+     */
+     //AffectedColumns setChannelName(const std::int32_t& channelIndex, const QString& name);
+
+
+
+     /**
+      * Gets channel dataset name
+      * @param channelIndex Index of the channel
+      * @param role Data role
+      * @return Channel dataset name in variant form
+      */
+      //QVariant getChannelDatasetName(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+      /**
+       * Sets channel dataset name
+       * @param channelIndex Index of the channel
+       * @param datasetName Channel dataset name
+       * @return Columns that are affected by the operation
+       */
+       //AffectedColumns setChannelDatasetName(const std::int32_t& channelIndex, const QString& datasetName);
+
+      /**
+       * Gets a channel data name
+       * @param channelIndex Index of the channel
+       * @param role Data role
+       * @return Channel data name in variant form
+       */
+       //QVariant getChannelDataName(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+      /**
+       * Gets channel color
+       * @param channelIndex Index of the channel
+       * @param role Data role
+       * @return Channel color in variant form
+       */
+       //QVariant getChannelColor(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+      /**
+       * Sets channel color
+       * @param channelIndex Index of the channel
+       * @param color Channel color
+       * @return Columns that are affected by the operation
+       */
+       //AffectedColumns setChannelColor(const std::int32_t& channelIndex, const QColor& color);
+
+      /**
+       * Gets channel opacity
+       * @param channelIndex Index of the channel
+       * @param role Data role
+       * @return Channel opacity in variant form
+       */
+       //QVariant getChannelOpacity(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+      /**
+       * Sets the opacity of channel with \p channelIndex
+       * @param channelIndex Index of the channel
+       * @param opacity The opacity of channel with \p channelIndex
+       * @return Columns that are affected by the operation
+       */
+       //AffectedColumns setChannelOpacity(const std::int32_t& channelIndex, const float& opacity);
+
+      /**
+       * Gets channel profile type
+       * @param channelIndex Index of the channel
+       * @param role Data role
+       * @return Channel profile type in variant form
+       */
+       //QVariant getChannelProfileType(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+      /**
+       * Sets channel profile type
+       * @param channelIndex Index of the channel
+       * @param profileType Channel profile type
+       * @return Columns that are affected by the operation
+       */
+       //AffectedColumns setChannelProfileType(const std::int32_t& channelIndex, const Profile::ProfileType& profileType);
+
+      /**
+       * Gets channel range type
+       * @param channelIndex Index of the channel
+       * @param role Data role
+       * @return Channel range type in variant form
+       */
+       //QVariant getChannelRangeType(const std::int32_t& channelIndex, const std::int32_t& role) const;
+
+      /**
+       * Sets channel range type
+       * @param channelIndex Index of the channel
+       * @param rangeType Channel range type
+       * @return Columns that are affected by the operation
+       */
+       //AffectedColumns setChannelRangeType(const std::int32_t& channelIndex, const Profile::RangeType& rangeType);

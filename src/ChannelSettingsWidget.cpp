@@ -52,7 +52,7 @@ ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent) :
  //       configurationsModel.setData(Channel::Column::ChannelRangeTypeStart + _channelIndex, currentIndex);
  //   });
 
-	//updateData(QModelIndex(), QModelIndex());
+    reset();
 }
 
 void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)

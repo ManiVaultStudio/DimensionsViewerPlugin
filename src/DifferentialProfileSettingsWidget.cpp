@@ -40,7 +40,9 @@ DifferentialProfileSettingsWidget::DifferentialProfileSettingsWidget(QWidget* pa
         configurationsModel.setData(Configuration::Column::Profile2DatasetName, currentText);
     });
 
-	updateData(QModelIndex(), QModelIndex());*/
+	*/
+
+    reset();
 }
 
 void DifferentialProfileSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)

@@ -12,6 +12,8 @@ ChannelsWidget::ChannelsWidget(QWidget* parent) :
 	_ui{ std::make_unique<Ui::ChannelsWidget>() }
 {
 	_ui->setupUi(this);
+
+    reset();
 }
 
 void ChannelsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)

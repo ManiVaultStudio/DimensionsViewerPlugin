@@ -31,7 +31,9 @@ MiscellaneousSettingsWidget::MiscellaneousSettingsWidget(QWidget* parent) :
         configurationsModel.setData(Configuration::Column::ShowDimensionNames, state == Qt::Checked);
     });
 
-	updateData(QModelIndex(), QModelIndex());*/
+	*/
+
+    reset();
 }
 
 void MiscellaneousSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)

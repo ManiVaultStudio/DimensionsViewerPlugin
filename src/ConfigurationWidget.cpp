@@ -21,6 +21,8 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
         if (!selectedRows.isEmpty())
             setModelIndex(selectedRows.first());
     });
+
+    reset();
 }
 
 void ConfigurationWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
