@@ -92,9 +92,12 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 
 QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 {
-    const auto column = static_cast<Column>(index.column());
+    return getData(index.column(), role);
+}
 
-    switch (column)
+QVariant Configuration::getData(const int& column, const int& role) const
+{
+    switch (static_cast<Column>(column))
     {
         case Column::Name:
             return getName(role);

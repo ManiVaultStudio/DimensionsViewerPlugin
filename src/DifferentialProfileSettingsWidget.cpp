@@ -104,7 +104,7 @@ void DifferentialProfileSettingsWidget::updateData(const QModelIndex& begin, con
 	}*/
 }
 
-void DifferentialProfileSettingsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
+void DifferentialProfileSettingsWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setModelIndex(modelIndex);
+    ModelItemWidget::setPersistentModelIndex(modelIndex);
 }

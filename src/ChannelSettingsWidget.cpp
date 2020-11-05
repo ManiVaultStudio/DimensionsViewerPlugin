@@ -16,41 +16,37 @@ ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
- //   const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
+    const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
 
     QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
         setData(static_cast<int>(Channel::Column::Enabled), state);
     });
 
- //   QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
- //       if (_channelIndex == 0)
- //           configurationsModel.selectRow(currentIndex);
- //       else
- //           configurationsModel.setData(Channel::Column::ChannelDatasetNameStart + _channelIndex, _ui->datasetNameComboBox->currentText());
- //   });
+    QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
+        if (_persistentModelIndex.row() == 0)
+            getConfigurationsModel().selectRow(currentIndex);
+        else
+            setData(static_cast<int>(Channel::Column::DatasetName), _ui->datasetNameComboBox->currentText());
+    });
 
- //   _ui->colorPushButton->setShowText(false);
- //   _ui->colorPushButton->setColor(Qt::gray);
+    _ui->colorPushButton->setShowText(false);
+    _ui->colorPushButton->setColor(Qt::gray);
 
- //   QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel](const QColor& color) {
- //       configurationsModel.setData(Channel::Column::ChannelColorStart + _channelIndex, color);
- //   });
+    QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
+        setData(static_cast<int>(Channel::Column::Color), color);
+    });
 
- //   _ui->settingsPushButton->setFont(fontAwesome);
- //   _ui->settingsPushButton->setStyleSheet("text-align: center");
- //   _ui->settingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("cog"));
+    _ui->settingsPushButton->setFont(fontAwesome);
+    _ui->settingsPushButton->setStyleSheet("text-align: center");
+    _ui->settingsPushButton->setText(hdps::Application::getIconFont("FontAwesome").getIconCharacter("cog"));
 
- //   //_ui->profileTypeComboBox->setModel(new QStringListModel(Profile::getProfileTypeNames()));
+    QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
+        setData(static_cast<int>(Channel::Column::ProfileType), currentText);
+    });
 
- //   QObject::connect(_ui->profileTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
- //       configurationsModel.setData(Channel::Column::ChannelProfileTypeStart + _channelIndex, currentIndex);
- //   });
-
- //   //_ui->rangeTypeComboBox->setModel(new QStringListModel(Profile::getRangeTypeNames()));
-
- //   QObject::connect(_ui->rangeTypeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
- //       configurationsModel.setData(Channel::Column::ChannelRangeTypeStart + _channelIndex, currentIndex);
- //   });
+    QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
+        setData(static_cast<int>(Channel::Column::RangeType), currentText);
+    });
 
     reset();
 }
@@ -126,13 +122,25 @@ void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelInd
             _ui->colorPushButton->blockSignals(false);
 		}
         
-		if (column == static_cast<int>(Channel::Column::ProfileType)) {
+        if (column == static_cast<int>(Channel::Column::ProfileTypes)) {
+            _ui->profileTypeComboBox->blockSignals(true);
+            _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->profileTypeComboBox->blockSignals(false);
+        }
+
+        if (column == static_cast<int>(Channel::Column::ProfileType)) {
             _ui->profileTypeComboBox->blockSignals(true);
             _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profileTypeComboBox->setCurrentIndex(index.data(Qt::EditRole).toInt());
             _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->profileTypeComboBox->blockSignals(false);
-		}
+        }
+
+        if (column == static_cast<int>(Channel::Column::RangeTypes)) {
+            _ui->rangeTypeComboBox->blockSignals(true);
+            _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->rangeTypeComboBox->blockSignals(false);
+        }
         
 		if (column == static_cast<int>(Channel::Column::RangeType)) {
             _ui->rangeTypeComboBox->blockSignals(true);
@@ -151,9 +159,7 @@ void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelInd
 	}
 }
 
-void ChannelSettingsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
+void ChannelSettingsWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setModelIndex(modelIndex);
-
-    qDebug() << modelIndex;
+    ModelItemWidget::setPersistentModelIndex(modelIndex);
 }

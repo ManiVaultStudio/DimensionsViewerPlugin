@@ -29,6 +29,14 @@ public: // ModelIndex: MVC
     QVariant getData(const QModelIndex& index, const int& role) const override;
 
     /**
+     * Returns the data for the given column and data role
+     * @param index Model index
+     * @param role Data role
+     * @return Data in variant form
+     */
+    QVariant getData(const int& column, const int& role) const override;
+
+    /**
      * Sets the data value for the given model index and data role
      * @param index Model index
      * @param value Data value in variant form

@@ -1,7 +1,57 @@
 #include "GlobalSettings.h"
 #include "Configuration.h"
+#include "Channel.h"
 
 #include <QDebug>
+
+const QMap<GlobalSettings::Column, std::function<QVariant(GlobalSettings* globalSettings)>> GlobalSettings::getEditRoles = {
+    { GlobalSettings::Column::Enabled, [](GlobalSettings* globalSettings) { return globalSettings->_enabled; }},
+    { GlobalSettings::Column::ProfileTypes, [](GlobalSettings* globalSettings) { return globalSettings->_profile.getProfileTypeNames(); }},
+    { GlobalSettings::Column::ProfileType, [](GlobalSettings* globalSettings) { return static_cast<int>(globalSettings->_profile.getProfileType()); }},
+    { GlobalSettings::Column::RangeTypes, [](GlobalSettings* globalSettings) { return globalSettings->_profile.getRangeTypeNames(); }},
+    { GlobalSettings::Column::RangeType, [](GlobalSettings* globalSettings) { return static_cast<int>(globalSettings->_profile.getRangeType()); }},
+};
+
+const QMap<GlobalSettings::Column, std::function<QVariant(GlobalSettings* globalSettings)>> GlobalSettings::getDisplayRoles = {
+    { GlobalSettings::Column::Enabled, [](GlobalSettings* globalSettings) { return globalSettings->_enabled ? "on" : "off"; }},
+    { GlobalSettings::Column::ProfileTypes, [](GlobalSettings* globalSettings) { return globalSettings->_profile.getProfileTypeNames().join(","); }},
+    { GlobalSettings::Column::ProfileType, [](GlobalSettings* globalSettings) { return Profile::getProfileTypeName(globalSettings->_profile.getProfileType()); }},
+    { GlobalSettings::Column::RangeTypes, [](GlobalSettings* globalSettings) { return globalSettings->_profile.getRangeTypeNames().join(","); }},
+    { GlobalSettings::Column::RangeType, [](GlobalSettings* globalSettings) { return Profile::getRangeTypeName(globalSettings->_profile.getRangeType()); }},
+};
+
+const QMap<GlobalSettings::Column, std::function<QModelIndexList(GlobalSettings* globalSettings, const QVariant& value, const QModelIndex& index)>> GlobalSettings::setEditRoles = {
+    { GlobalSettings::Column::Enabled, [](GlobalSettings* globalSettings, const QVariant& value, const QModelIndex& index) {
+        globalSettings->_enabled = value.toBool();
+        
+        QModelIndexList affectedIndices;
+
+        const auto channelsChild = static_cast<int>(Configuration::Child::Channels);
+
+        for (int c = 0; c < 3; c++) {
+            affectedIndices << index.parent().child(channelsChild, 0).child(c, Channel::Column::ProfileTypes);
+            affectedIndices << index.parent().child(channelsChild, 0).child(c, Channel::Column::ProfileType);
+            affectedIndices << index.parent().child(channelsChild, 0).child(c, Channel::Column::RangeTypes);
+            affectedIndices << index.parent().child(channelsChild, 0).child(c, Channel::Column::RangeType);
+        }
+
+        return affectedIndices;
+    }},
+    { GlobalSettings::Column::ProfileType, [](GlobalSettings* globalSettings, const QVariant& value, const QModelIndex& index) {
+        globalSettings->_profile.setProfileType(Profile::getProfileTypeEnum(value.toString()));
+
+        QModelIndexList affectedIndices;
+
+        affectedIndices << index.siblingAtColumn(GlobalSettings::Column::RangeTypes);
+        affectedIndices << index.siblingAtColumn(GlobalSettings::Column::RangeType);
+
+        return affectedIndices;
+    }},
+    { GlobalSettings::Column::RangeType, [](GlobalSettings* globalSettings, const QVariant& value, const QModelIndex& index) {
+        globalSettings->_profile.setRangeType(Profile::getRangeTypeEnum(value.toString()));
+        return QModelIndexList();
+    }}
+};
 
 GlobalSettings::GlobalSettings(ModelItem* parent) :
     ModelItem(parent),
@@ -18,9 +68,6 @@ Qt::ItemFlags GlobalSettings::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
-        case Column::Title:
-            break;
-
         case Column::Enabled: {
             flags |= Qt::ItemIsEnabled;
             break;
@@ -53,27 +100,28 @@ Qt::ItemFlags GlobalSettings::getFlags(const QModelIndex& index) const
 
 QVariant GlobalSettings::getData(const QModelIndex& index, const int& role) const
 {
-    const auto column = static_cast<Column>(index.column());
+    return getData(index.column(), role);
+}
 
-    switch (column)
+QVariant GlobalSettings::getData(const int& column, const int& role) const
+{
+    switch (role)
     {
-        case Column::Title:
-            return "Global settings";
+        case Qt::EditRole:
+        {
+            if (getEditRoles.contains(static_cast<Column>(column)))
+                return getEditRoles[static_cast<Column>(column)](const_cast<GlobalSettings*>(this));
 
-        case Column::Enabled:
-            return getEnabled(role);
+            break;
+        }
 
-        case Column::ProfileTypes:
-            return getProfileTypes(role);
+        case Qt::DisplayRole:
+        {
+            if (getDisplayRoles.contains(static_cast<Column>(column)))
+                return getDisplayRoles[static_cast<Column>(column)](const_cast<GlobalSettings*>(this));
 
-        case Column::ProfileType:
-            return getProfileType(role);
-
-        case Column::RangeTypes:
-            return getRangeTypes(role);
-
-        case Column::RangeType:
-            return getRangeType(role);
+            break;
+        }
 
         default:
             break;
@@ -84,33 +132,19 @@ QVariant GlobalSettings::getData(const QModelIndex& index, const int& role) cons
 
 QModelIndexList GlobalSettings::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    QModelIndexList affectedIndices{ index };
-
-    _modelIndex = index;
-
     const auto column = static_cast<Column>(index.column());
 
-    switch (column)
+    QModelIndexList affectedIndices{ index };
+
+    switch (role)
     {
-        case Column::Title:
-            break;
+        case Qt::EditRole:
+        {
+            if (setEditRoles.contains(column))
+                affectedIndices << setEditRoles[column](const_cast<GlobalSettings*>(this), value, index);
 
-        case Column::Enabled:
-            affectedIndices << setEnabled(value.toBool());
             break;
-
-        case Column::ProfileTypes:
-            break;
-
-        case Column::ProfileType:
-            affectedIndices << setProfileType(Profile::getProfileTypeEnum(value.toString()));
-            break;
-
-        case Column::RangeTypes:
-            break;
-
-        case Column::RangeType:
-            affectedIndices << setRangeType(Profile::getRangeTypeEnum(value.toString()));
+        }
 
         default:
             break;

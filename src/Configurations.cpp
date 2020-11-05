@@ -14,6 +14,11 @@ QVariant Configurations::getData(const QModelIndex& index, const int& role) cons
     return getChild(index.row())->getData(index, role);
 }
 
+QVariant Configurations::getData(const int& column, const int& role) const
+{
+    return QVariant();
+}
+
 QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
     return getChild(index.row())->setData(index, value, role);

@@ -81,7 +81,7 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
 	}
 }
 
-void GlobalSettingsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
+void GlobalSettingsWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setModelIndex(modelIndex);
+    ModelItemWidget::setPersistentModelIndex(modelIndex);
 }

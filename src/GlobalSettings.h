@@ -17,7 +17,6 @@ public: // Columns
 
     /** Data columns */
     enum Column {
-        Title,
         Enabled,
         ProfileTypes,
         ProfileType,
@@ -27,6 +26,12 @@ public: // Columns
         Start = Enabled,
         End = RangeType
     };
+
+public: // Get/set data roles
+
+    static QMap<Column, std::function<QVariant(GlobalSettings* channel)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(GlobalSettings* channel)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(GlobalSettings* channel, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
 protected: // Construction
 
@@ -48,6 +53,14 @@ public: // ModelIndex: MVC
      * @return Data in variant form
      */
     QVariant getData(const QModelIndex& index, const int& role) const override;
+
+    /**
+     * Returns the data for the given column and data role
+     * @param index Model index
+     * @param role Data role
+     * @return Data in variant form
+     */
+    QVariant getData(const int& column, const int& role) const override;
 
     /**
      * Sets the data value for the given model index and data role

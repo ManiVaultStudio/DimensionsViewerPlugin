@@ -1,5 +1,6 @@
 #include "Channels.h"
 #include "Channel.h"
+#include "Configuration.h"
 
 #include <QDebug>
 
@@ -21,13 +22,13 @@ Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
 
 QVariant Channels::getData(const QModelIndex& index, const int& role) const
 {
-    const auto column = static_cast<Column>(index.column());
+    return getData(index.column(), role);
+}
 
-    switch (column)
+QVariant Channels::getData(const int& column, const int& role) const
+{
+    switch (static_cast<Column>(column))
     {
-        case Column::Title:
-            return "Channels";
-
         default:
             break;
     }
@@ -67,10 +68,15 @@ int Channels::getChildIndex(ModelItem* child) const
     return _channels.indexOf(channel);
 }
 
+Configuration* Channels::getConfiguration() const
+{
+    return dynamic_cast<Configuration*>(parent());
+}
+
 Channel* Channels::getChannelByDatasetName(const QString& datasetName)
 {
     for (auto channel : _channels) {
-        if (datasetName == channel->getDatasetName())
+        if (datasetName == channel->getData(Channel::DatasetName, Qt::EditRole).toString())
             return channel;
     }
 
@@ -82,8 +88,8 @@ QVector<std::uint32_t> Channels::getChannelsEnabled() const
     QVector<std::uint32_t> channelsEnabled;
 
     for (auto channel : _channels) {
-        if (channel->isEnabled())
-            channelsEnabled << channel->getIndex();
+        if (channel->getData(Channel::Enabled, Qt::EditRole).toBool())
+            channelsEnabled << channel->getData(Channel::Index, Qt::EditRole).toInt();
     }
 
     return channelsEnabled;
@@ -94,7 +100,7 @@ std::int32_t Channels::getNoChannelsEnabled() const
     auto noChannelsEnabled = 0;
 
     for (auto channel : _channels) {
-        if (channel->isEnabled())
+        if (channel->getData(Channel::Enabled, Qt::EditRole).toBool())
             noChannelsEnabled++;
     }
 
