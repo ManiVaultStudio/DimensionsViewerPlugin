@@ -2,12 +2,6 @@
 #include "ModelItemWidget.h"
 #include "DimensionsViewerWidget.h"
 #include "ConfigurationWidget.h"
-#include "ChannelsWidget.h"
-#include "ChannelSettingsWidget.h"
-#include "GlobalSettingsWidget.h"
-#include "DifferentialProfileSettingsWidget.h"
-#include "MiscellaneousSettingsWidget.h"
-#include "Channel.h"
 
 #include <QDebug>
 

@@ -1,8 +1,8 @@
-#include "ChannelSettingsWidget.h"
+#include "ChannelWidget.h"
 #include "DimensionsViewerPlugin.h"
 #include "Application.h"
 
-#include "ui_ChannelSettingsWidget.h"
+#include "ui_ChannelWidget.h"
 
 #include <QDebug>
 #include <QComboBox>
@@ -10,9 +10,9 @@
 #include <QLabel>
 #include <QStringListModel>
 
-ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent) :
+ChannelWidget::ChannelWidget(QWidget* parent) :
     ModelItemWidget(parent),
-	_ui{ std::make_unique<Ui::ChannelSettingsWidget>() }
+	_ui{ std::make_unique<Ui::ChannelWidget>() }
 {
 	_ui->setupUi(this);
 
@@ -51,7 +51,7 @@ ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent) :
     reset();
 }
 
-void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
+void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
 	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
@@ -150,7 +150,7 @@ void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelInd
 	}
 }
 
-void ChannelSettingsWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void ChannelWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setPersistentModelIndex(modelIndex);
 }

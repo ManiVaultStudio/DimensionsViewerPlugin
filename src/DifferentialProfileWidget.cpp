@@ -1,20 +1,20 @@
-#include "DifferentialProfileSettingsWidget.h"
+#include "DifferentialProfileWidget.h"
 #include "DimensionsViewerPlugin.h"
 
-#include "ui_DifferentialProfileSettingsWidget.h"
+#include "ui_DifferentialProfileWidget.h"
 
 #include <QDebug>
 #include <QStringListModel>
 
-DifferentialProfileSettingsWidget::DifferentialProfileSettingsWidget(QWidget* parent) :
+DifferentialProfileWidget::DifferentialProfileWidget(QWidget* parent) :
     ModelItemWidget(parent),
-	_ui{ std::make_unique<Ui::DifferentialProfileSettingsWidget>() }
+	_ui{ std::make_unique<Ui::DifferentialProfileWidget>() }
 {
 	_ui->setupUi(this);
 
     /*auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
-    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &DifferentialProfileSettingsWidget::updateData);
+    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &DifferentialProfileWidget::updateData);
 
     QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
@@ -45,7 +45,7 @@ DifferentialProfileSettingsWidget::DifferentialProfileSettingsWidget(QWidget* pa
     reset();
 }
 
-void DifferentialProfileSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
+void DifferentialProfileWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
 	/*const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
@@ -104,7 +104,7 @@ void DifferentialProfileSettingsWidget::updateData(const QModelIndex& begin, con
 	}*/
 }
 
-void DifferentialProfileSettingsWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void DifferentialProfileWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setPersistentModelIndex(modelIndex);
 }

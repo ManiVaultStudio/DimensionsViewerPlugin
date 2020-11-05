@@ -1,5 +1,5 @@
 #include "ChannelsWidget.h"
-#include "ChannelSettingsWidget.h"
+#include "ChannelWidget.h"
 #include "DimensionsViewerPlugin.h"
 #include "Channels.h"
 

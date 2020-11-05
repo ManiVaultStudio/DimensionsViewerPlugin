@@ -4,20 +4,20 @@
 
 #include <memory>
 
-#include <QWidget>
+#include <QWidget.h>
 
 class DimensionsViewerPlugin;
 
 namespace Ui {
-	class GlobalSettingsWidget;
+	class MiscellaneousWidget;
 }
 
 /**
- * Global settings widget class
+ * Miscellaneous settings widget class
  *
  * @author T. Kroes
  */
-class GlobalSettingsWidget : public ModelItemWidget
+class MiscellaneousWidget : public ModelItemWidget
 {
 public: // Construction
 
@@ -25,7 +25,7 @@ public: // Construction
      * Constructor
      * @param parent Parent widget
      */
-    GlobalSettingsWidget(QWidget* parent);
+    MiscellaneousWidget(QWidget* parent);
 
 public: // Inherited from ModelItemWidget
 
@@ -44,5 +44,5 @@ public: // Inherited from ModelItemWidget
     void setPersistentModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-	std::unique_ptr<Ui::GlobalSettingsWidget>	_ui;            /** UI from creator */
+	std::unique_ptr<Ui::MiscellaneousWidget>	_ui;    /** UI from creator */
 };

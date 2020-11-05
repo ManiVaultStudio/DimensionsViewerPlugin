@@ -5,20 +5,19 @@
 #include <memory>
 
 #include <QWidget.h>
-#include <QVector.h>
 
 class DimensionsViewerPlugin;
 
 namespace Ui {
-	class DifferentialProfileSettingsWidget;
+	class ChannelWidget;
 }
 
 /**
- * Differential profile widget class
+ * Channel widget class
  *
  * @author T. Kroes
  */
-class DifferentialProfileSettingsWidget : public ModelItemWidget
+class ChannelWidget : public ModelItemWidget
 {
 public: // Construction
 
@@ -26,7 +25,7 @@ public: // Construction
      * Constructor
      * @param parent Parent widget
      */
-    DifferentialProfileSettingsWidget(QWidget* parent);
+    ChannelWidget(QWidget* parent);
 
 public: // Inherited from ModelItemWidget
 
@@ -45,5 +44,5 @@ public: // Inherited from ModelItemWidget
     void setPersistentModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-	std::unique_ptr<Ui::DifferentialProfileSettingsWidget>  _ui;    /** UI from creator */
+	std::unique_ptr<Ui::ChannelWidget>		_ui;        /** UI from creator */
 };

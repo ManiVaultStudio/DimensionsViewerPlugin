@@ -52,7 +52,7 @@
       </widget>
      </item>
      <item>
-      <widget class="GlobalSettingsWidget" name="globalSettingsWidget" native="true"/>
+      <widget class="GlobalWidget" name="globalSettingsWidget" native="true"/>
      </item>
     </layout>
    </item>
@@ -62,10 +62,10 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="DifferentialProfileSettingsWidget" name="differentialProfileSettingsWidget" native="true"/>
+      <widget class="DifferentialProfileWidget" name="differentialProfileSettingsWidget" native="true"/>
      </item>
      <item>
-      <widget class="MiscellaneousSettingsWidget" name="miscellaneousSettingsWidget" native="true">
+      <widget class="MiscellaneousWidget" name="miscellaneousSettingsWidget" native="true">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -80,15 +80,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>DifferentialProfileSettingsWidget</class>
+   <class>DifferentialProfileWidget</class>
    <extends>QWidget</extends>
-   <header>DifferentialProfileSettingsWidget.h</header>
+   <header>DifferentialProfileWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>MiscellaneousSettingsWidget</class>
+   <class>MiscellaneousWidget</class>
    <extends>QWidget</extends>
-   <header>MiscellaneousSettingsWidget.h</header>
+   <header>MiscellaneousWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -98,9 +98,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>GlobalSettingsWidget</class>
+   <class>GlobalWidget</class>
    <extends>QWidget</extends>
-   <header>GlobalSettingsWidget.h</header>
+   <header>GlobalWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

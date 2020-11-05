@@ -1,19 +1,19 @@
-#include "MiscellaneousSettingsWidget.h"
+#include "MiscellaneousWidget.h"
 #include "DimensionsViewerPlugin.h"
 
-#include "ui_MiscellaneousSettingsWidget.h"
+#include "ui_MiscellaneousWidget.h"
 
 #include <QDebug>
 
-MiscellaneousSettingsWidget::MiscellaneousSettingsWidget(QWidget* parent) :
+MiscellaneousWidget::MiscellaneousWidget(QWidget* parent) :
     ModelItemWidget(parent),
-	_ui{ std::make_unique<Ui::MiscellaneousSettingsWidget>() }
+	_ui{ std::make_unique<Ui::MiscellaneousWidget>() }
 {
 	_ui->setupUi(this);
 
     /*auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
-    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &MiscellaneousSettingsWidget::updateData);
+    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, this, &MiscellaneousWidget::updateData);
 
     QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
@@ -36,7 +36,7 @@ MiscellaneousSettingsWidget::MiscellaneousSettingsWidget(QWidget* parent) :
     reset();
 }
 
-void MiscellaneousSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
+void MiscellaneousWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
     /*const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
@@ -62,7 +62,7 @@ void MiscellaneousSettingsWidget::updateData(const QModelIndex& begin, const QMo
     }*/
 }
 
-void MiscellaneousSettingsWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void MiscellaneousWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setPersistentModelIndex(modelIndex);
 }

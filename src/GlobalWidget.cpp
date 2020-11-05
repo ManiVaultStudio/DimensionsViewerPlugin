@@ -1,15 +1,15 @@
-#include "GlobalSettingsWidget.h"
+#include "GlobalWidget.h"
 #include "DimensionsViewerPlugin.h"
 #include "Configuration.h"
 
-#include "ui_GlobalSettingsWidget.h"
+#include "ui_GlobalWidget.h"
 
 #include <QDebug>
 #include <QStringListModel>
 
-GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
+GlobalWidget::GlobalWidget(QWidget* parent) :
     ModelItemWidget(parent),
-	_ui{ std::make_unique<Ui::GlobalSettingsWidget>() }
+	_ui{ std::make_unique<Ui::GlobalWidget>() }
 {
 	_ui->setupUi(this);
 
@@ -28,7 +28,7 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
     reset();
 }
 
-void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
+void GlobalWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
 	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
@@ -81,7 +81,7 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
 	}
 }
 
-void GlobalSettingsWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void GlobalWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setPersistentModelIndex(modelIndex);
 }
