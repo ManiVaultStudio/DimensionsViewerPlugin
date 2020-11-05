@@ -14,20 +14,16 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
 	_ui->setupUi(this);
 
     QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
-        getConfigurationsModel().setData(_modelIndex.sibling(0, static_cast<int>(GlobalSettings::Column::Enabled)), state);
+        setData(static_cast<int>(GlobalSettings::Column::Enabled), state);
     });
 
-    _ui->profileTypeComboBox->addItem("A");
-    _ui->profileTypeComboBox->addItem("B");
-    /*QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](QString currentText) {
-        configurationsModel.setData(Configuration::Column::GlobalProfileType, currentText);
+    QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
+        setData(static_cast<int>(GlobalSettings::Column::ProfileType), currentText);
     });
 
-    QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this, &configurationsModel](QString currentText) {
-        configurationsModel.setData(Configuration::Column::GlobalRangeType, currentText);
-    });*/
-
-	updateData(QModelIndex(), QModelIndex());
+    QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
+        setData(static_cast<int>(GlobalSettings::Column::RangeType), currentText);
+    });
 }
 
 void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
@@ -42,12 +38,12 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
 		return;
 	}
 
-    qDebug() << "asddasd";
-    /*
+    //qDebug() << "Update data";
+
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
 
-        if (column == Configuration::Column::GlobalSettings) {
+        if (column == GlobalSettings::Column::Enabled) {
             _ui->groupBox->blockSignals(true);
             _ui->groupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->groupBox->setChecked(index.data(Qt::EditRole).toBool());
@@ -55,13 +51,13 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
             _ui->groupBox->blockSignals(false);
         }
 
-        if (column == Configuration::Column::GlobalProfileTypes) {
+        if (column == GlobalSettings::Column::ProfileTypes) {
             _ui->profileTypeComboBox->blockSignals(true);
             _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
             _ui->profileTypeComboBox->blockSignals(false);
         }
 
-        if (column == Configuration::Column::GlobalProfileType) {
+        if (column == GlobalSettings::Column::ProfileType) {
             _ui->profileTypeComboBox->blockSignals(true);
             _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
@@ -69,20 +65,20 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
             _ui->profileTypeComboBox->blockSignals(false);
         }
 
-        if (column == Configuration::Column::GlobalRangeTypes) {
+        if (column == GlobalSettings::Column::RangeTypes) {
             _ui->rangeTypeComboBox->blockSignals(true);
             _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
             _ui->rangeTypeComboBox->blockSignals(false);
         }
 
-        if (column == Configuration::Column::GlobalRangeType) {
+        if (column == GlobalSettings::Column::RangeType) {
             _ui->rangeTypeComboBox->blockSignals(true);
             _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
             _ui->rangeTypeComboBox->blockSignals(false);
         }
-	}*/
+	}
 }
 
 void GlobalSettingsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)

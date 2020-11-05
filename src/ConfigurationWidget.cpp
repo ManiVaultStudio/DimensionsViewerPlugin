@@ -4,13 +4,16 @@
 
 #include "ui_ConfigurationWidget.h"
 
+#include <QDebug>
+
 ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
     ModelItemWidget(parent),
 	_ui{ std::make_unique<Ui::ConfigurationWidget>() }
 {
 	_ui->setupUi(this);
 
-    _ui->treeView->setModel(&dimensionsViewerPlugin->getConfigurationsModel());
+    _ui->treeView->setModel(&getConfigurationsModel());
+    _ui->treeView->setSelectionModel(&getSelectionModel());
 
     QObject::connect(&getSelectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto selectedRows = getSelectionModel().selectedRows();
@@ -28,8 +31,8 @@ void ConfigurationWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 
-    _ui->channelsWidget->setModelIndex(modelIndex.sibling(0, static_cast<int>(Configuration::Column::Channels)));
-    _ui->globalSettingsWidget->setModelIndex(modelIndex.sibling(0, static_cast<int>(Configuration::Column::Global)));
-    _ui->differentialProfileSettingsWidget->setModelIndex(modelIndex.sibling(0, static_cast<int>(Configuration::Column::DifferentialProfile)));
-    _ui->miscellaneousSettingsWidget->setModelIndex(modelIndex.sibling(0, static_cast<int>(Configuration::Column::Miscellaneous)));
+    _ui->channelsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::Channels)));
+    _ui->globalSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::GlobalSettings)));
+    _ui->differentialProfileSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::DifferentialProfileSettings)));
+    _ui->miscellaneousSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::MiscellaneousSettings)));
 }

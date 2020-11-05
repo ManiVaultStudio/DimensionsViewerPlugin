@@ -7,12 +7,10 @@ std::int32_t Configuration::maxNoDimensions = 100;
 std::int32_t Configuration::noConfigurations = 0;
 
 const QMap<QString, Configuration::Column> Configuration::columns = {
+    { "Index", Configuration::Column::Index },
+    { "Name", Configuration::Column::Name },
     { "Subsets", Configuration::Column::Subsets },
-    { "Selection stamp", Configuration::Column::SelectionStamp },
-    { "Channels", Configuration::Column::Channels },
-    { "Global", Configuration::Column::Global },
-    { "DifferentialProfile", Configuration::Column::DifferentialProfile },
-    { "Miscellaneous", Configuration::Column::Miscellaneous }
+    { "Selection stamp", Configuration::Column::SelectionStamp }
 };
 
 Configuration::Configuration(ModelItem* parent, const QString& datasetName, const QString& dataName) :
@@ -31,11 +29,6 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
     noConfigurations++;
 
     _spec["modified"] = 0;
-}
-
-int Configuration::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
-{
-    return 0;
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
@@ -103,26 +96,17 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
     switch (column)
     {
-        case Column::Index:
-            return getIndex(role);
-
         case Column::Name:
             return getName(role);
+
+        case Column::Index:
+            return getIndex(role);
 
         case Column::Subsets:
             return getSubsets(role);
 
         case Column::SelectionStamp:
             return "Selection stamp";
-
-        case Column::Channels:
-            return "Channels";
-
-        case Column::Global:
-            return "Global settings";
-
-        case Column::Miscellaneous:
-            return "Miscellaneous settings";
 
         default:
             break;
@@ -133,7 +117,7 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-	AffectedColumns affectedColumns;
+    QModelIndexList affectedIndices{index};
 
     const auto column = static_cast<Column>(index.column());
 
@@ -143,56 +127,57 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
             break;
 
         case Column::Name:
-            affectedColumns << setName(value.toString());
+            affectedIndices << setName(value.toString());
 
         case Column::Subsets:
-            affectedColumns << setSubsets(value.toStringList());
+            affectedIndices << setSubsets(value.toStringList());
 
         case Column::SelectionStamp:
-            break;
-
-        case Column::Channels:
-            _channels.setData(index, value, role);
-            break;
-
-        case Column::Global:
-            _globalSettings.setData(index, value, role);
-            break;
-
-        case Column::Miscellaneous:
             break;
 
         default:
             break;
     }
 
-    QModelIndexList affectedIndices;
-
-    //auto affectedColumnsSet = QSet(affectedColumns.begin(), affectedColumns.end());
-
-    //for (auto affectedColumn : affectedColumnsSet)
-    //    affectedIndices << index.siblingAtColumn(static_cast<int>(affectedColumn));
-
 	return affectedIndices;
-}
-
-QModelIndex Configuration::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
-{
-    return QModelIndex();
-}
-
-QModelIndex Configuration::parent(const QModelIndex& index) const
-{
-    return QModelIndex();
 }
 
 ModelItem* Configuration::getChild(const int& index) const
 {
+    switch (static_cast<Child>(index))
+    {
+        case Child::Channels:
+            return const_cast<Channels*>(&_channels);
+
+        case Child::GlobalSettings:
+            return const_cast<GlobalSettings*>(&_globalSettings);
+
+        case Child::DifferentialProfileSettings:
+            return nullptr;
+
+        case Child::MiscellaneousSettings:
+            return nullptr;
+
+        default:
+            break;
+    }
+
     return nullptr;
 }
 
 int Configuration::getChildCount() const
 {
+    return static_cast<int>(Child::End);
+}
+
+int Configuration::getChildIndex(ModelItem* child) const
+{
+    if (dynamic_cast<Channels*>(child))
+        return static_cast<int>(Child::Channels);
+
+    if (dynamic_cast<GlobalSettings*>(child))
+        return static_cast<int>(Child::GlobalSettings);
+
     return 0;
 }
 
@@ -224,16 +209,16 @@ QVariant Configuration::getName(const std::int32_t& role) const
     }
 }
 
-Configuration::AffectedColumns Configuration::setName(const QString& name)
+QModelIndexList Configuration::setName(const QString& name)
 {
-    AffectedColumns affectedColumns{ Column::Name };
+    QModelIndexList affectedIndices;
 
     if (name == _name)
-        return affectedColumns;
+        return affectedIndices;
 
     _name = name;
 
-    return affectedColumns;
+    return affectedIndices;
 }
 
 QVariant Configuration::getSubsets(const std::int32_t& role) const
@@ -253,9 +238,9 @@ QVariant Configuration::getSubsets(const std::int32_t& role) const
 	}
 }
 
-Configuration::AffectedColumns Configuration::setSubsets(const QStringList& subsets)
+QModelIndexList Configuration::setSubsets(const QStringList& subsets)
 {
-    AffectedColumns affectedColumns{ Column::Subsets };
+    QModelIndexList affectedIndices;
 
     /*if (subsets == _subsets)
         return affectedColumns;
@@ -295,7 +280,7 @@ Configuration::AffectedColumns Configuration::setSubsets(const QStringList& subs
     affectedColumns << setGlobalSettings(getNoDisplayChannels() > 0);
     affectedColumns << updateDifferentialProfile(); */
 
-    return affectedColumns;
+    return affectedIndices;
 }
 
 

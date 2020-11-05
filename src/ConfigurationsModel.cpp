@@ -26,7 +26,7 @@ int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
 int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
     Q_UNUSED(parent);
-    return static_cast<int>(Configuration::Column::End);
+    return 100;// static_cast<int>(Configuration::Column::End);
 }
 
 QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole*/) const
@@ -84,18 +84,15 @@ QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientatio
 
 QModelIndex ConfigurationsModel::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    /*if (parent.isValid() && parent.column() != 0)
-        return QModelIndex();*/
-
-    if (parent.isValid()) {}
-        return createIndex(row, column, getItem(parent));
+    if (parent.isValid() && parent.column() != 0)
+        return QModelIndex();
 
     auto parentItem = getItem(parent);
 
     if (!parentItem)
         return QModelIndex();
 
-    auto childItem = parentItem->getChild(row);
+    auto childItem = parentItem->isLeaf() ? parentItem : parentItem->getChild(row);
 
     if (childItem)
         return createIndex(row, column, childItem);
@@ -114,7 +111,7 @@ QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
     if (parentItem == &_configurations || !parentItem)
         return QModelIndex();
 
-    return createIndex(parentItem->getChildCount(), 0, parentItem);
+    return createIndex(parentItem->getChildIndex(), 0, parentItem);
 }
 
 void ConfigurationsModel::addDataset(const QString& datasetName)

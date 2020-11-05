@@ -13,35 +13,31 @@ Channels::Channels(ModelItem* parent, const QString& datasetName, const QString&
 {
 }
 
-int Channels::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
-{
-    return 4;
-}
-
 Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
 {
-    Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
+    Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     return flags;
 }
 
 QVariant Channels::getData(const QModelIndex& index, const int& role) const
 {
-    return "CHANNELS_MODEL_ITEM";
+    const auto column = static_cast<Column>(index.column());
+
+    switch (column)
+    {
+        case Column::Title:
+            return "Channels";
+
+        default:
+            break;
+    }
+
+    return QVariant();
 }
 
 QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
     return QModelIndexList();
-}
-
-QModelIndex Channels::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
-{
-    return QModelIndex();
-}
-
-QModelIndex Channels::parent(const QModelIndex& index) const
-{
-    return QModelIndex();
 }
 
 ModelItem* Channels::getChild(const int& index) const
@@ -59,6 +55,16 @@ ModelItem* Channels::getChild(const int& index) const
 int Channels::getChildCount() const
 {
     return _channels.size();
+}
+
+int Channels::getChildIndex(ModelItem* child) const
+{
+    const auto channel = dynamic_cast<Channel*>(child);
+
+    if (channel == nullptr)
+        return 0;
+
+    return _channels.indexOf(channel);
 }
 
 Channel* Channels::getChannelByDatasetName(const QString& datasetName)

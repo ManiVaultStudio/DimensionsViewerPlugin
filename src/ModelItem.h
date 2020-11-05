@@ -23,12 +23,6 @@ public: // Construction
 public: // MVC
 
     /**
-     * Returns the number of rows in the model
-     * @param parentIndex Parent index
-     */
-    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const = 0;
-
-    /**
      * Returns the item flags for the given model index
      * @param index Model index
      * @return Item flags for the index
@@ -52,22 +46,6 @@ public: // MVC
      */
     virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) = 0;
 
-    /**
-     * Returns the model index belonging to the given model row and column
-     * @param row Model row
-     * @param column Model column
-     * @param parent Parent model index
-     * @return Model index for the given model row and column
-     */
-    virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const = 0;
-
-    /**
-     * Returns the parent model index
-     * @param index Model index
-     * @return Parent model index for the given model index
-     */
-    virtual QModelIndex parent(const QModelIndex& index) const = 0;
-
 public: // Hierarchy
 
     /**
@@ -80,11 +58,24 @@ public: // Hierarchy
     /** Returns the number of children */
     virtual int getChildCount() const = 0;
 
+    /**
+     * Returns the child index
+     * @param child Pointer to child model item
+     */
+    virtual int getChildIndex(ModelItem* child) const = 0;
+
+    /** Returns the child index of this model item w.r.t. its parent */
+    int getChildIndex() const;
+
     /** Returns the parent */
     ModelItem* getParent();
 
+    /** Returns whether the model item is a leaf node */
+    bool isLeaf() const;
+
 protected:
     ModelItem*      _parent;		/** Parent model item */
+    QModelIndex     _modelIndex;    /** TODO */
 
 protected:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;

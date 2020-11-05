@@ -48,8 +48,17 @@ protected:
     /** TODO */
     QItemSelectionModel& getSelectionModel();
 
+    /** TODO */
+    QPersistentModelIndex getSiblingModelIndex(const std::int32_t& row, const std::int32_t& column = 0);
+
+    /** TODO */
+    QModelIndex getModelIndex() const;
+
+    /** TODO */
+    void setData(const std::int32_t& column, const QVariant& value);
+
 protected:
-    QPersistentModelIndex       _modelIndex;    /** TODO */
+    QPersistentModelIndex       _persistentModelIndex;    /** TODO */
 
 protected:
     static DimensionsViewerPlugin*  dimensionsViewerPlugin;     /** Pointer to an instance of the dimensions viewer plugin */

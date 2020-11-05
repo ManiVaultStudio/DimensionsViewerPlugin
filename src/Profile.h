@@ -81,6 +81,8 @@ public: // Getters/setters
 
     QStringList getRangeTypeNames() const;
 
+    QVector<RangeType> getRangeTypes() const;
+
     bool canDisplay() const;
 
 private:

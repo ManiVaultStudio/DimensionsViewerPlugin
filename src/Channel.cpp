@@ -27,11 +27,6 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	setDatasetName(datasetName);
 }
 
-int Channel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
-{
-    return 0;
-}
-
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
@@ -48,22 +43,17 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
     return QModelIndexList();
 }
 
-QModelIndex Channel::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
-{
-    return QModelIndex();
-}
-
-QModelIndex Channel::parent(const QModelIndex& index) const
-{
-    return QModelIndex();
-}
-
 ModelItem* Channel::getChild(const int& index) const
 {
     return nullptr;
 }
 
 int Channel::getChildCount() const
+{
+    return 0;
+}
+
+int Channel::getChildIndex(ModelItem* child) const
 {
     return 0;
 }

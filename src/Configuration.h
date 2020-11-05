@@ -26,17 +26,13 @@ public: // Enumerations
 
     /** Data columns */
     enum class Column {
-        Index,                      /** Index */
         Name,                       /** Name */
+        Index,                      /** Index */
         Subsets,                    /** The subset(s) parameter of the first dataset */
         SelectionStamp,             /** Auxiliary column for triggering synchronization */
-        Channels,                   /** Channels model item */
-        Global,                     /** Global settings model item */
-        DifferentialProfile,        /** Differential profile settings model item */
-        Miscellaneous,              /** Miscellaneous settings model item */
 
-        Start = Subsets,            /** Column start */
-        End = Miscellaneous         /** Column end */
+        Start = Name,               /** Column start */
+        End = SelectionStamp        /** Column end */
     };
 
     /** Maps column name to column enum and vice versa */
@@ -52,8 +48,16 @@ public: // Enumerations
         return columns[columnName];
     }
 
-    /** Denotes which columns are affected by a change in model data */
-    using AffectedColumns = QVector<Column>;
+    /** TODO */
+    enum class Child {
+        Channels,                       /** Channels model item */
+        GlobalSettings,                 /** Global settings model item */
+        DifferentialProfileSettings,    /** Differential profile settings model item */
+        MiscellaneousSettings,          /** Miscellaneous settings model item */
+
+        Start = Channels,               /** Column start */
+        End = MiscellaneousSettings     /** Column end */
+    };
 
 public: // Construction
 
@@ -66,12 +70,6 @@ public: // Construction
 	Configuration(ModelItem* parent, const QString& datasetName, const QString& dataName);
 
 public: // ModelIndex: MVC
-
-    /**
-     * Returns the number of rows in the model
-     * @param parentIndex Parent index
-     */
-    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
     /**
      * Returns the item flags for the given model index
@@ -97,22 +95,6 @@ public: // ModelIndex: MVC
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
 
-    /**
-     * Returns the model index belonging to the given model row and column
-     * @param row Model row
-     * @param column Model column
-     * @param parent Parent model index
-     * @return Model index for the given model row and column
-     */
-    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
-
-    /**
-     * Returns the parent model index
-     * @param index Model index
-     * @return Parent model index for the given model index
-     */
-    QModelIndex parent(const QModelIndex& index) const override;
-
 public: // ModelIndex: Hierarchy
 
     /**
@@ -124,6 +106,12 @@ public: // ModelIndex: Hierarchy
 
     /** Returns the number of children */
     int getChildCount() const override;
+
+    /**
+     * Returns the child index
+     * @param child Pointer to child model item
+     */
+    int getChildIndex(ModelItem* child) const override;
 
 public: //Getters/setters
 
@@ -146,7 +134,7 @@ public: //Getters/setters
      * @param name Name
      * @return Columns that are affected by the operation
      */
-    AffectedColumns setName(const QString& name);
+    QModelIndexList setName(const QString& name);
 
     /**
      * Returns subsets
@@ -160,7 +148,7 @@ public: //Getters/setters
      * @param subsets Subsets
      * @return Columns that are affected by the operation
      */
-    AffectedColumns setSubsets(const QStringList& subsets);
+    QModelIndexList setSubsets(const QStringList& subsets);
 
 public: // Miscellaneous
 

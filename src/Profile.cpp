@@ -78,8 +78,6 @@ void Profile::setProfileType(const ProfileType& profileType)
         default:
             break;
     }
-
-    
 }
 
 Profile::RangeType Profile::getRangeType() const
@@ -114,6 +112,11 @@ QStringList Profile::getRangeTypeNames() const
         rangeTypeNames << getRangeTypeName(rangeType);
 
     return rangeTypeNames;
+}
+
+QVector<Profile::RangeType> Profile::getRangeTypes() const
+{
+    return _rangeTypes;
 }
 
 bool Profile::canDisplay() const

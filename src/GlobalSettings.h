@@ -16,15 +16,16 @@ class GlobalSettings : public ModelItem {
 public: // Columns
 
     /** Data columns */
-    enum class Column {
+    enum Column {
+        Title,
         Enabled,
         ProfileTypes,
         ProfileType,
-        RangeType,
         RangeTypes,
+        RangeType,
 
         Start = Enabled,
-        End = RangeTypes
+        End = RangeType
     };
 
     /** Denotes which columns are affected by a change in model data */
@@ -35,12 +36,6 @@ protected: // Construction
 	GlobalSettings(ModelItem* parent);
 
 public: // ModelIndex: MVC
-
-    /**
-     * Returns the number of rows in the model
-     * @param parentIndex Parent index
-     */
-    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
     /**
      * Returns the item flags for the given model index
@@ -66,22 +61,6 @@ public: // ModelIndex: MVC
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
 
-    /**
-     * Returns the model index belonging to the given model row and column
-     * @param row Model row
-     * @param column Model column
-     * @param parent Parent model index
-     * @return Model index for the given model row and column
-     */
-    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
-
-    /**
-     * Returns the parent model index
-     * @param index Model index
-     * @return Parent model index for the given model index
-     */
-    QModelIndex parent(const QModelIndex& index) const override;
-
 public: // ModelIndex: Hierarchy
 
     /**
@@ -93,6 +72,12 @@ public: // ModelIndex: Hierarchy
 
     /** Returns the number of children */
     int getChildCount() const override;
+
+    /**
+     * Returns the child index
+     * @param child Pointer to child model item
+     */
+    int getChildIndex(ModelItem* child) const override;
 
 public: // Getters/setters
 
@@ -108,7 +93,7 @@ public: // Getters/setters
      * @param enabled Global settings (on/off)
      * @return Columns that are affected by the operation
      */
-     AffectedColumns setEnabled(const bool& enabled);
+     QModelIndexList setEnabled(const bool& enabled);
 
      /**
      * Gets global profile types
@@ -129,7 +114,7 @@ public: // Getters/setters
      * @param profileType Global profile type
      * @return Columns that are affected by the operation
      */
-     AffectedColumns setProfileType(const Profile::ProfileType& globalProfileType);
+     QModelIndexList setProfileType(const Profile::ProfileType& globalProfileType);
 
     /**
      * Gets global range types
@@ -150,7 +135,7 @@ public: // Getters/setters
      * @param rangeType Global range type
      * @return Columns that are affected by the operation
      */
-     AffectedColumns setRangeType(const Profile::RangeType& globalRangeType);
+     QModelIndexList setRangeType(const Profile::RangeType& globalRangeType);
 
 private:
     bool        _enabled;       /** Whether whether global settings are on or off */

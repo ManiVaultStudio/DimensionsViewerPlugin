@@ -14,17 +14,21 @@ class Channel;
  */
 class Channels : public ModelItem {
 
+public: // Columns
+
+    /** Data columns */
+    enum class Column {
+        Title,
+
+        Start = Title,
+        End = Title
+    };
+
 protected: // Construction
 
 	Channels(ModelItem* parent, const QString& datasetName, const QString& dataName);
 
 public: // ModelIndex: MVC
-
-    /**
-     * Returns the number of rows in the model
-     * @param parentIndex Parent index
-     */
-    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
     /**
      * Returns the item flags for the given model index
@@ -50,22 +54,6 @@ public: // ModelIndex: MVC
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
 
-    /**
-     * Returns the model index belonging to the given model row and column
-     * @param row Model row
-     * @param column Model column
-     * @param parent Parent model index
-     * @return Model index for the given model row and column
-     */
-    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
-
-    /**
-     * Returns the parent model index
-     * @param index Model index
-     * @return Parent model index for the given model index
-     */
-    QModelIndex parent(const QModelIndex& index) const override;
-
 public: // ModelIndex: Hierarchy
 
     /**
@@ -77,6 +65,12 @@ public: // ModelIndex: Hierarchy
 
     /** Returns the number of children */
     int getChildCount() const override;
+
+    /**
+     * Returns the child index
+     * @param child Pointer to child model item
+     */
+    int getChildIndex(ModelItem* child) const override;
 
 public: // Overloaded operators
 

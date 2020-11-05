@@ -4,11 +4,6 @@
 
 #include <QMessageBox>
 
-int Configurations::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
-{
-    return parent.isValid() ? static_cast<ModelItem*>(parent.internalPointer())->getChildCount() : getChildCount();
-}
-
 Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
 {
     return getChild(index.row())->getFlags(index);
@@ -24,36 +19,6 @@ QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant
     return getChild(index.row())->setData(index, value, role);
 }
 
-QModelIndex Configurations::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
-{
-    if (parent.isValid() && parent.column() != 0)
-        return QModelIndex();
-
-    auto childLayer = getChild(row);
-
-    if (childLayer)
-        return dimensionsViewerPlugin->getConfigurationsModel().createIndex(row, column, childLayer);
-
-    return QModelIndex();
-}
-
-QModelIndex Configurations::parent(const QModelIndex& index) const
-{
-    return QModelIndex();
-
-    /*
-    if (!index.isValid())
-        return QModelIndex();
-
-    auto childLayer     = reinterpret_cast<Configuration*>(index.row());
-    auto parentLayer    = childLayer ? childLayer->getParent() : nullptr;
-
-    if (parentLayer == _root || !parentLayer)
-        return QModelIndex();
-    
-    return createIndex(parentLayer->getChildIndex(), 0, parentLayer);*/
-}
-
 ModelItem* Configurations::getChild(const int& index) const
 {
     if (index < 0 || index >= _configurations.size())
@@ -65,6 +30,16 @@ ModelItem* Configurations::getChild(const int& index) const
 int Configurations::getChildCount() const
 {
     return _configurations.size();
+}
+
+int Configurations::getChildIndex(ModelItem* child) const
+{
+    const auto configuration = dynamic_cast<Configuration*>(child);
+
+    if (configuration)
+        return _configurations.indexOf(configuration);
+
+    return 0;
 }
 
 void Configurations::add(const QString& datasetName, const QString& dataName)
