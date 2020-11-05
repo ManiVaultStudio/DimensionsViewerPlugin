@@ -24,7 +24,7 @@ class Channel : public ModelItem {
 public: // Columns
 
     /** Column types */
-    enum class Column {
+    enum Column {
         Index,
         InternalName,
         DisplayName,
@@ -55,9 +55,10 @@ public: // Columns
         return columns[columnName];
     }
 
-    /** Data roles */
-    static QMap<Column, std::function<QVariant(const Channel* channel)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(const Channel* channel)>> const getDisplayRoles;
+    /** Get/set data roles */
+    static QMap<Column, std::function<QVariant(Channel* channel)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Channel* channel)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(Channel* channel, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
 protected: // Construction
 

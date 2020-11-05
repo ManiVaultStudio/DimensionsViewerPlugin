@@ -12,7 +12,7 @@ ModelItemWidget::ModelItemWidget(QWidget* parent) :
     auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
     QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
-        if (topLeft.parent().isValid() && topLeft.parent() == _persistentModelIndex.parent())
+        if (topLeft.parent().isValid() && topLeft.parent() == _persistentModelIndex.parent() && topLeft.row() == _persistentModelIndex.row())
             updateData(topLeft, bottomRight, roles);
     });
 }

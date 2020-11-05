@@ -24,32 +24,88 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Settings", Channel::Column::Settings }
 };
 
-const QMap<Channel::Column, std::function<QVariant(const Channel* channel)>> Channel::getEditRoles = {
-    { Channel::Column::Index, [](const Channel* channel) { return channel->_index; }},
-    { Channel::Column::InternalName, [](const Channel* channel) { return channel->_internalName; }},
-    { Channel::Column::DisplayName, [](const Channel* channel) { return channel->_displayName; }},
-    { Channel::Column::Enabled, [](const Channel* channel) { return channel->_enabled; }},
-    { Channel::Column::DatasetNames, [](const Channel* channel) { return channel->_datasetNames; }},
-    { Channel::Column::DatasetName, [](const Channel* channel) { return channel->_datasetName; }},
-    { Channel::Column::DataName, [](const Channel* channel) { return channel->_dataName; }},
-    { Channel::Column::Color, [](const Channel* channel) { return channel->_color; }},
-    { Channel::Column::Opacity, [](const Channel* channel) { return channel->_opacity; }},
-    { Channel::Column::ProfileType, [](const Channel* channel) { return static_cast<int>(channel->_profile.getProfileType()); }},
-    { Channel::Column::RangeType, [](const Channel* channel) { return static_cast<int>(channel->_profile.getRangeType()); }}
+const QMap<Channel::Column, std::function<QVariant(Channel* channel)>> Channel::getEditRoles = {
+    { Channel::Column::Index, [](Channel* channel) { return channel->_index; }},
+    { Channel::Column::InternalName, [](Channel* channel) { return channel->_internalName; }},
+    { Channel::Column::DisplayName, [](Channel* channel) { return channel->_displayName; }},
+    { Channel::Column::Enabled, [](Channel* channel) { return channel->_enabled; }},
+    { Channel::Column::DatasetNames, [](Channel* channel) { return channel->_datasetNames; }},
+    { Channel::Column::DatasetName, [](Channel* channel) { return channel->_datasetName; }},
+    { Channel::Column::DataName, [](Channel* channel) { return channel->_dataName; }},
+    { Channel::Column::Color, [](Channel* channel) { return channel->_color; }},
+    { Channel::Column::Opacity, [](Channel* channel) { return channel->_opacity; }},
+    { Channel::Column::ProfileType, [](Channel* channel) { return static_cast<int>(channel->_profile.getProfileType()); }},
+    { Channel::Column::RangeType, [](Channel* channel) { return static_cast<int>(channel->_profile.getRangeType()); }}
 };
 
-const QMap<Channel::Column, std::function<QVariant(const Channel* channel)>> Channel::getDisplayRoles = {
-    { Channel::Column::Index, [](const Channel* channel) { return QString::number(channel->_index); }},
-    { Channel::Column::InternalName, [](const Channel* channel) { return channel->_internalName; }},
-    { Channel::Column::DisplayName, [](const Channel* channel) { return channel->_displayName; }},
-    { Channel::Column::Enabled, [](const Channel* channel) { return channel->_enabled; }},
-    { Channel::Column::DatasetNames, [](const Channel* channel) { return channel->_datasetNames; }},
-    { Channel::Column::DatasetName, [](const Channel* channel) { return channel->_datasetName; }},
-    { Channel::Column::DataName, [](const Channel* channel) { return channel->_dataName; }},
-    { Channel::Column::Color, [](const Channel* channel) { return channel->_color; }},
-    { Channel::Column::Opacity, [](const Channel* channel) { return channel->_opacity; }},
-    { Channel::Column::ProfileType, [](const Channel* channel) { return Profile::getProfileTypeName(channel->_profile.getProfileType()); }},
-    { Channel::Column::RangeType, [](const Channel* channel) { return Profile::getRangeTypeName(channel->_profile.getRangeType()); }}
+const QMap<Channel::Column, std::function<QVariant(Channel* channel)>> Channel::getDisplayRoles = {
+    { Channel::Column::Index, [](Channel* channel) { return QString::number(channel->_index); }},
+    { Channel::Column::InternalName, [](Channel* channel) { return channel->_internalName; }},
+    { Channel::Column::DisplayName, [](Channel* channel) { return channel->_displayName; }},
+    { Channel::Column::Enabled, [](Channel* channel) { return channel->_enabled; }},
+    { Channel::Column::DatasetNames, [](Channel* channel) { return channel->_datasetNames; }},
+    { Channel::Column::DatasetName, [](Channel* channel) { return channel->_datasetName; }},
+    { Channel::Column::DataName, [](Channel* channel) { return channel->_dataName; }},
+    { Channel::Column::Color, [](Channel* channel) { return channel->_color; }},
+    { Channel::Column::Opacity, [](Channel* channel) { return channel->_opacity; }},
+    { Channel::Column::ProfileType, [](Channel* channel) { return Profile::getProfileTypeName(channel->_profile.getProfileType()); }},
+    { Channel::Column::RangeType, [](Channel* channel) { return Profile::getRangeTypeName(channel->_profile.getRangeType()); }}
+};
+
+const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, const QVariant& value, const QModelIndex& index)>> Channel::setEditRoles = {
+    { Channel::Column::DisplayName, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_displayName = value.toString();
+        return QModelIndexList();
+    }},
+    { Channel::Column::Enabled, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_enabled = value.toBool();
+
+        QModelIndexList affectedIndices;
+
+        affectedIndices << index.siblingAtColumn(Channel::Column::DatasetNames);
+        affectedIndices << index.siblingAtColumn(Channel::Column::DatasetName);
+        affectedIndices << index.siblingAtColumn(Channel::Column::DataName);
+        affectedIndices << index.siblingAtColumn(Channel::Column::Color);
+        affectedIndices << index.siblingAtColumn(Channel::Column::Opacity);
+        affectedIndices << index.siblingAtColumn(Channel::Column::ProfileType);
+        affectedIndices << index.siblingAtColumn(Channel::Column::RangeType);
+        affectedIndices << index.siblingAtColumn(Channel::Column::Settings);
+
+        return affectedIndices;
+    }},
+    { Channel::Column::DatasetNames, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_datasetNames = value.toStringList();
+        return QModelIndexList();
+    }},
+    { Channel::Column::DatasetName, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_datasetName = value.toString();
+        return QModelIndexList();
+    }},
+    { Channel::Column::DataName, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_dataName = value.toString();
+        return QModelIndexList();
+    }},
+    { Channel::Column::Color, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_color = value.value<QColor>();
+        return QModelIndexList();
+    }},
+    { Channel::Column::Opacity, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_opacity = value.toFloat();
+        return QModelIndexList();
+    }},
+    { Channel::Column::ProfileType, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_profile.setProfileType(Profile::getProfileTypeEnum(value.toString()));
+        
+        QModelIndexList affectedIndices;
+
+        affectedIndices << index.siblingAtColumn(Channel::Column::RangeType);
+
+        return affectedIndices;
+    }},
+    { Channel::Column::RangeType, [](Channel* channel, const QVariant& value, const QModelIndex& index) {
+        channel->_profile.setRangeType(Profile::getRangeTypeEnum(value.toString()));
+        return QModelIndexList();
+    }}
 };
 
 Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
@@ -125,7 +181,7 @@ QVariant Channel::getData(const QModelIndex& index, const int& role) const
         case Qt::EditRole:
         {
             if (getDisplayRoles.contains(column))
-                return getEditRoles[column](this);
+                return getEditRoles[column](const_cast<Channel*>(this));
 
             break;
         }
@@ -133,7 +189,7 @@ QVariant Channel::getData(const QModelIndex& index, const int& role) const
         case Qt::DisplayRole:
         {
             if (getDisplayRoles.contains(column))
-                return getDisplayRoles[column](this);
+                return getDisplayRoles[column](const_cast<Channel*>(this));
 
             break;
         }
@@ -141,14 +197,31 @@ QVariant Channel::getData(const QModelIndex& index, const int& role) const
         default:
             break;
     }
-    
 
     return QVariant();
 }
 
 QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    return QModelIndexList();
+    const auto column = static_cast<Column>(index.column());
+
+    QModelIndexList affectedIndices;
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            if (setEditRoles.contains(column))
+                affectedIndices << setEditRoles[column](const_cast<Channel*>(this), value, index);
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return affectedIndices;
 }
 
 ModelItem* Channel::getChild(const int& index) const

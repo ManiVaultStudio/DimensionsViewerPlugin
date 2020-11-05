@@ -12,7 +12,8 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
     QAbstractItemModel(static_cast<QObject*>(dimensionsViewerPlugin)),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
 	_configurations(),
-	_selectionModel(this)
+	_selectionModel(this),
+    _datasetNames()
 {
 }
 
@@ -146,6 +147,17 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 		if (_configurations.getChildCount() == 1)
 			selectRow(0);
 	//}
+
+        _datasetNames << datasetName;
+
+    for (int row = 0; row < rowCount(); row++)
+    {
+        const auto configurationIndex   = index(row, 0);
+        const auto channelsIndex        = index(static_cast<int>(Configuration::Child::Channels), 0, configurationIndex);
+        const auto channelIndex         = index(0, Channel::Column::DatasetNames, channelsIndex);
+
+        setData(channelIndex, _datasetNames);
+    }
 }
 
 void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)

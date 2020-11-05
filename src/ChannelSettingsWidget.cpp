@@ -18,9 +18,9 @@ ChannelSettingsWidget::ChannelSettingsWidget(QWidget* parent) :
 
  //   const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
 
- //   QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
- //       configurationsModel.setData(Channel::Column::ChannelEnabledStart + _channelIndex, state == Qt::Checked);
- //   });
+    QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
+        setData(static_cast<int>(Channel::Column::Enabled), state);
+    });
 
  //   QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &configurationsModel](int currentIndex) {
  //       if (_channelIndex == 0)
@@ -104,6 +104,12 @@ void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelInd
             _ui->enabledCheckBox->blockSignals(false);
         }
         
+        if (column == static_cast<int>(Channel::Column::DatasetNames)) {
+            _ui->datasetNameComboBox->blockSignals(true);
+            _ui->datasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->datasetNameComboBox->blockSignals(false);
+        }
+
 		if (column == static_cast<int>(Channel::Column::DatasetName)) {
             _ui->datasetNameComboBox->blockSignals(true);
             _ui->datasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
@@ -148,4 +154,6 @@ void ChannelSettingsWidget::updateData(const QModelIndex& begin, const QModelInd
 void ChannelSettingsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
+
+    qDebug() << modelIndex;
 }
