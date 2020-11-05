@@ -54,3 +54,8 @@ void ModelItemWidget::setData(const std::int32_t& column, const QVariant& value)
 {
     getConfigurationsModel().setData(getModelIndex().siblingAtColumn(column), value);
 }
+
+void ModelItemWidget::reset()
+{
+    updateData(QModelIndex(), QModelIndex());
+}

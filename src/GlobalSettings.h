@@ -28,9 +28,6 @@ public: // Columns
         End = RangeType
     };
 
-    /** Denotes which columns are affected by a change in model data */
-    using AffectedColumns = QVector<Column>;
-
 protected: // Construction
 
 	GlobalSettings(ModelItem* parent);
@@ -143,10 +140,3 @@ private:
 
     friend class Configuration;
 };
-
-
-//GlobalSettings,                 /** Whether whether global settings are on or off */
-//GlobalProfileTypes,                                                 /** Global profile types */
-//GlobalProfileType,                                                  /** Global profile type */
-//GlobalRangeTypes,                                                   /** Global range types */
-//GlobalRangeType,                                                    /** Global range type */

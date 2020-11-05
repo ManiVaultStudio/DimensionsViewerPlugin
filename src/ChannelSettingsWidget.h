@@ -24,9 +24,8 @@ public: // Construction
     /**
      * Constructor
      * @param parent Parent widget
-     * @param channelIndex Channel index
      */
-    ChannelSettingsWidget(QWidget* parent, const std::uint32_t& channelIndex);
+    ChannelSettingsWidget(QWidget* parent);
 
 public: // Inherited from ModelItemWidget
 
@@ -45,6 +44,5 @@ public: // Inherited from ModelItemWidget
     void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-	std::unique_ptr<Ui::ChannelSettingsWidget>		_ui;                            /** UI from creator */
-    std::uint32_t                                   _channelIndex;                  /** Channel index */
+	std::unique_ptr<Ui::ChannelSettingsWidget>		_ui;        /** UI from creator */
 };

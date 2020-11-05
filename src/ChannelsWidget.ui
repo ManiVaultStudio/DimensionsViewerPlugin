@@ -45,13 +45,27 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QVBoxLayout" name="channelsLayout"/>
+       <widget class="ChannelSettingsWidget" name="channel1SettingsWidget" native="true"/>
+      </item>
+      <item>
+       <widget class="ChannelSettingsWidget" name="channel2SettingsWidget" native="true"/>
+      </item>
+      <item>
+       <widget class="ChannelSettingsWidget" name="channel3SettingsWidget" native="true"/>
       </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ChannelSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>ChannelSettingsWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

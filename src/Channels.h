@@ -24,6 +24,16 @@ public: // Columns
         End = Title
     };
 
+    /** TODO */
+    enum class Child {
+        Channel1,
+        Channel2,
+        Channel3,
+
+        Start = Channel1,
+        End = Channel3
+    };
+
 protected: // Construction
 
 	Channels(ModelItem* parent, const QString& datasetName, const QString& dataName);

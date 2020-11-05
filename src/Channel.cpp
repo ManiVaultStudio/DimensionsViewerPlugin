@@ -29,7 +29,44 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 {
-    Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable;
+    Qt::ItemFlags flags = Qt::ItemIsSelectable;
+
+    const auto column = static_cast<Column>(index.column());
+
+    switch (column)
+    {
+        case Column::Index:
+        case Column::InternalName:
+        case Column::DisplayName:
+        case Column::Subsets:
+            break;
+
+        case Column::Enabled: {
+            flags |= Qt::ItemIsEnabled;
+
+            break;
+        }
+        
+        case Column::DatasetName:
+        case Column::Color:
+        case Column::Opacity:
+        case Column::ProfileType:
+        case Column::RangeType:
+        case Column::Settings:
+        {
+            if (_enabled)
+                flags |= Qt::ItemIsEnabled;
+            
+            break;
+        }
+
+        case Column::DataName:
+            break;
+
+        default:
+            break;
+    }
+
     return flags;
 }
 

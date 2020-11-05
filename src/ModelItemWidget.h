@@ -57,6 +57,9 @@ protected:
     /** TODO */
     void setData(const std::int32_t& column, const QVariant& value);
 
+    /** TODO */
+    void reset();
+
 protected:
     QPersistentModelIndex       _persistentModelIndex;    /** TODO */
 

@@ -1,6 +1,7 @@
 #include "ChannelsWidget.h"
 #include "ChannelSettingsWidget.h"
 #include "DimensionsViewerPlugin.h"
+#include "Channels.h"
 
 #include "ui_ChannelsWidget.h"
 
@@ -11,12 +12,6 @@ ChannelsWidget::ChannelsWidget(QWidget* parent) :
 	_ui{ std::make_unique<Ui::ChannelsWidget>() }
 {
 	_ui->setupUi(this);
-
-    if (parent == nullptr)
-        return;
-
-    for (int channelIndex = 0; channelIndex < 3; channelIndex++)
-        _ui->channelsLayout->addWidget(new ChannelSettingsWidget(this, channelIndex));
 }
 
 void ChannelsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
@@ -26,4 +21,8 @@ void ChannelsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
+
+    _ui->channel1SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Child::Channel1)));
+    _ui->channel2SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Child::Channel2)));
+    _ui->channel3SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Child::Channel3)));
 }

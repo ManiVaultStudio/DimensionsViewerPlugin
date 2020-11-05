@@ -19,7 +19,28 @@ class Configuration;
  */
 class Channel : public ModelItem {
 
-	Q_OBJECT
+    Q_OBJECT
+
+public: // Columns
+
+    /** Data columns */
+    enum class Column {
+        Index,
+        InternalName,
+        DisplayName,
+        Subsets,
+        Enabled,
+        DatasetName,
+        DataName,
+        Color,
+        Opacity,
+        ProfileType,
+        RangeType,
+        Settings,
+
+        Start = Index,
+        End = Settings
+    };
 
 protected: // Construction
 

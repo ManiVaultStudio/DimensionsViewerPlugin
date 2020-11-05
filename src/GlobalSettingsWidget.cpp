@@ -24,6 +24,8 @@ GlobalSettingsWidget::GlobalSettingsWidget(QWidget* parent) :
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         setData(static_cast<int>(GlobalSettings::Column::RangeType), currentText);
     });
+
+    reset();
 }
 
 void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
@@ -32,13 +34,11 @@ void GlobalSettingsWidget::updateData(const QModelIndex& begin, const QModelInde
 
     if (begin == QModelIndex() && end == QModelIndex()) {
         _ui->groupBox->blockSignals(true);
-        //_ui->groupBox->setEnabled(false);
+        _ui->groupBox->setEnabled(false);
         _ui->groupBox->setChecked(false);
         _ui->groupBox->blockSignals(false);
 		return;
 	}
-
-    //qDebug() << "Update data";
 
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
