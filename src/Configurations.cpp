@@ -10,19 +10,29 @@ const QMap<QString, Configurations::Column> Configurations::columns = {
 
 const QMap<Configurations::Column, std::function<QVariant(Configurations* configurations)>> Configurations::getEditRoles = {
     { Configurations::Column::DatasetNames, [](Configurations* configurations) {
-        return QVariant();
+        QStringList datasetNames;
+
+        for (auto configuration : configurations->_configurations)
+            datasetNames << configuration->_datasetName;
+
+        return datasetNames;
     }}
 };
 
 const QMap<Configurations::Column, std::function<QVariant(Configurations* configurations)>> Configurations::getDisplayRoles = {
     { Configurations::Column::DatasetNames, [](Configurations* configurations) {
-        return QVariant();
+        return getEditRoles[Configurations::Column::DatasetNames](configurations).toStringList().join(", ");
     }}
 };
 
 const QMap<Configurations::Column, std::function<QModelIndexList(Configurations* configurations, const QVariant& value, const QModelIndex& index)>> Configurations::setEditRoles = {
     { Configurations::Column::DatasetNames, [](Configurations* configurations, const QVariant& value, const QModelIndex& index) {
-        return QModelIndexList();
+        QModelIndexList affectedIndices;
+
+        for (auto configuration : configurations->_configurations)
+            affectedIndices << index.sibling(configurations->getChildIndex(configuration), Configurations::Column::DatasetNames);
+
+        return affectedIndices;
     }}
 };
 
@@ -93,14 +103,4 @@ void Configurations::add(const QString& datasetName, const QString& dataName)
     {
         presentError("Unhandled exception");
     }
-}
-
-QStringList Configurations::getNames() const
-{
-    QStringList names;
-
-    for (auto configuration : _configurations)
-        names << configuration->getName(Qt::EditRole).toString();
-
-    return names;
 }

@@ -99,9 +99,6 @@ public: // Miscellaneous
      */
     void add(const QString& datasetName, const QString& dataName);
 
-    /** Get configuration names */
-    QStringList getNames() const;
-
 protected:
     QVector<Configuration*>		_configurations;		/** Child tree items */
 };
