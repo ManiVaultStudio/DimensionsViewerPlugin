@@ -26,10 +26,11 @@ public: // Columns
     };
 
     /** TODO */
-    enum class Child {
+    enum Child {
         Channel1,
         Channel2,
         Channel3,
+        DifferentialProfile,
 
         Start = Channel1,
         End = Channel3

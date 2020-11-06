@@ -4,6 +4,28 @@
 
 #include <QMessageBox>
 
+const QMap<QString, Configurations::Column> Configurations::columns = {
+    { "Dataset names", Configurations::Column::DatasetNames }
+};
+
+const QMap<Configurations::Column, std::function<QVariant(Configurations* configurations)>> Configurations::getEditRoles = {
+    { Configurations::Column::DatasetNames, [](Configurations* configurations) {
+        return QVariant();
+    }}
+};
+
+const QMap<Configurations::Column, std::function<QVariant(Configurations* configurations)>> Configurations::getDisplayRoles = {
+    { Configurations::Column::DatasetNames, [](Configurations* configurations) {
+        return QVariant();
+    }}
+};
+
+const QMap<Configurations::Column, std::function<QModelIndexList(Configurations* configurations, const QVariant& value, const QModelIndex& index)>> Configurations::setEditRoles = {
+    { Configurations::Column::DatasetNames, [](Configurations* configurations, const QVariant& value, const QModelIndex& index) {
+        return QModelIndexList();
+    }}
+};
+
 Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
 {
     return getChild(index.row())->getFlags(index);

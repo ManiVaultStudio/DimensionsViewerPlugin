@@ -12,8 +12,7 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
     QAbstractItemModel(static_cast<QObject*>(dimensionsViewerPlugin)),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
 	_configurations(),
-	_selectionModel(this),
-    _datasetNames()
+	_selectionModel(this)
 {
 }
 
@@ -119,45 +118,44 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 {
     auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
 
-    //TODO
-	//Configuration* parentConfiguration = false;
+    const auto hits = match(index(0, Channel::Column::DataName), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
 
-	//for (auto configuration : _configurations) {
-	//	if (dataName == configuration->getChannelDataName(0, Qt::EditRole).toString()) {
-	//		parentConfiguration = configuration;
-	//		break;
-	//	}
-	//}
+    if (hits.isEmpty()) {
+        /*const auto firstConfigurationIndex  = index(0, 0);
+        const auto channelsIndex            = index(0, 0, firstConfigurationIndex);
+        const auto firstChannelIndex        = index(0, 0, channelsIndex);
 
-	//if (parentConfiguration) {
-	//	const auto configurationIndex	= _configurations.indexOf(parentConfiguration);
-	//	const auto subsetsIndex			= index(configurationIndex, static_cast<int>(Configuration::Column::Subsets));
+        auto datasetNames = data(firstChannelIndex.siblingAtColumn(Channel::Column::DatasetNames)).toStringList();
 
-	//	setData(subsetsIndex, parentConfiguration->getSubsets(Qt::EditRole).toStringList() << datasetName);
-	//}
-	//else {
+        datasetNames << datasetName;
+
+        const auto channels = match(index(0, Channel::Column::Index), Qt::DisplayRole, 0, -1, Qt::MatchExactly | Qt::MatchRecursive);
+        
+        for (auto channel : channels)
+            setData(channel.siblingAtColumn(Channel::Column::DatasetNames), datasetNames);*/
+
         const auto noConfigurations = _configurations.getChildCount();
 
-		beginInsertRows(QModelIndex(), noConfigurations, noConfigurations);
-		{
+        beginInsertRows(QModelIndex(), noConfigurations, noConfigurations);
+        {
             _configurations.add(datasetName, dataName);
-		}
-		endInsertRows();
+        }
+        endInsertRows();
 
-		if (_configurations.getChildCount() == 1)
-			selectRow(0);
-	//}
+        if (_configurations.getChildCount() == 1)
+            selectRow(0);
+    } else {
+        auto datasetNames = hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames).data(Qt::EditRole).toStringList();
 
-        _datasetNames << datasetName;
+        datasetNames << datasetName;
 
-    for (int row = 0; row < rowCount(); row++)
-    {
-        const auto configurationIndex   = index(row, 0);
-        const auto channelsIndex        = index(static_cast<int>(Configuration::Child::Channels), 0, configurationIndex);
-        const auto channelIndex         = index(0, Channel::Column::DatasetNames, channelsIndex);
+        qDebug() << hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames).data(Qt::EditRole).toStringList();
 
-        setData(channelIndex, _datasetNames);
-    }
+        setData(hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames), datasetNames);
+        setData(hits.first().siblingAtRow(Channels::Child::Channel3).siblingAtColumn(Channel::Column::DatasetNames), datasetNames);
+
+        qDebug() << hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames).data(Qt::EditRole).toStringList();
+    } 
 }
 
 void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)

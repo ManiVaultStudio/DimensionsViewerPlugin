@@ -26,12 +26,13 @@ public: // Enumerations
 
     /** Data columns */
     enum class Column {
-        Name,                       /** Name */
         Index,                      /** Index */
+        Name,                       /** Name */
+        DatasetName,                /** TODO */
         Subsets,                    /** The subset(s) parameter of the first dataset */
         SelectionStamp,             /** Auxiliary column for triggering synchronization */
 
-        Start = Name,               /** Column start */
+        Start = Index,               /** Column start */
         End = SelectionStamp        /** Column end */
     };
 
@@ -201,7 +202,7 @@ private: // Internal
      */
      //AffectedColumns updateDifferentialProfile();
 
-private:
+protected:
     std::int32_t            _index;                         /** TODO */
     QString                 _name;                          /** TODO */
     Channels		        _channels;                      /** TODO */

@@ -11,6 +11,33 @@ class Configuration;
  */
 class Configurations : public ModelItem
 {
+    /** Column types */
+    enum Column {
+        DatasetNames,
+
+        Start = DatasetNames,
+        End = DatasetNames
+    };
+
+    /** Maps column type name to column type enum and vice versa */
+    static QMap<QString, Column> const columns;
+
+    /** Get string representation of column type enumeration */
+    static QString getColumnTypeName(const Column& column) {
+        return columns.key(column);
+    }
+
+    /** Get enum representation from column type name */
+    static Column getColumnTypeEnum(const QString& columnName) {
+        return columns[columnName];
+    }
+
+public: // Get/set data roles
+
+    static QMap<Column, std::function<QVariant(Configurations* configurations)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Configurations* configurations)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(Configurations* configurations, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
+
 public: // ModelIndex: MVC
 
     /**
