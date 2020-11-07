@@ -58,7 +58,9 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
     if (index == QModelIndex())
         return false;
 
-    const auto affectedIndices = getItem(index)->setData(index, value, role);
+    auto item = index.parent().isValid() ? getItem(index) : &_configurations;
+
+    const auto affectedIndices = item->setData(index, value, role);
 
     for (auto affectedIndex : affectedIndices) {
         emit dataChanged(affectedIndex, affectedIndex);
@@ -147,23 +149,16 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
         }
         endInsertRows();
 
-        /**/
-        const auto datasetNamesIndex = configurationsIndex.siblingAtColumn(Configurations::Column::DatasetNames);
-
-        auto datasetNames = datasetNamesIndex.data(Qt::EditRole).toStringList();
+        auto datasetNames = index(0, Configurations::Column::DatasetNames).data(Qt::EditRole).toStringList();
         
         datasetNames << datasetName;
 
-        setData(index(0, Configurations::Column::Name), "Test");
         setData(index(0, Configurations::Column::DatasetNames), datasetNames);
 
-        qDebug() << index(0, Configurations::Column::Name).data(Qt::EditRole).toString();
-        //qDebug() << configurationsIndex.siblingAtColumn(Configurations::Column::DatasetNames).data(Qt::EditRole).toStringList();
+        qDebug() << data(index(0, Configurations::Column::DatasetNames), Qt::EditRole).toStringList();
 
         if (_configurations.getChildCount() == 1)
             selectRow(0);
-
-        //qDebug() << data(index(0, Configurations::Column::DatasetNames), Qt::EditRole).toStringList();
     } else {
         auto datasetNames = hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames).data(Qt::EditRole).toStringList();
 

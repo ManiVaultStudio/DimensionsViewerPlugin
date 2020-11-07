@@ -104,6 +104,7 @@ public: // Miscellaneous
 
 protected:
     QVector<Configuration*>		_configurations;		/** Child tree items */
+    QStringList                 _datasetNames;          /** Available dataset names */
 
     friend class ConfigurationsModel;
 };

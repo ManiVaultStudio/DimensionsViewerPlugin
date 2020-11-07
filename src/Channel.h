@@ -172,7 +172,6 @@ private:
 	const QString			_internalName;		/** Internal name (e.g. channel1, channel2) */
 	QString			        _displayName;		/** Display name (e.g. dataset, Subset1 and Subset 2) */
 	bool					_enabled;			/** Whether the channel is enabled or not */
-	QStringList             _datasetNames;		/** Dataset names */
 	QString					_datasetName;		/** Dataset name */
 	QColor					_color;				/** Color */
 	float					_opacity;			/** Opacity */

@@ -34,17 +34,26 @@ const QMap<Configurations::Column, std::function<QVariant(Configurations* config
 
 const QMap<Configurations::Column, std::function<QModelIndexList(Configurations* configurations, const QVariant& value, const QModelIndex& index)>> Configurations::setEditRoles = {
     { Configurations::Column::DatasetNames, [](Configurations* configurations, const QVariant& value, const QModelIndex& index) {
+        configurations->_datasetNames = value.toStringList();
+
         QModelIndexList affectedIndices;
 
-        for (auto configuration : configurations->_configurations)
-            affectedIndices << index.sibling(configurations->getChildIndex(configuration), Configurations::Column::DatasetNames);
+        for (auto configuration : configurations->_configurations) {
+            const auto configurationIndex   = index.siblingAtRow(configurations->getChildIndex(configuration));
+            const auto channelsIndex        = configurationIndex.siblingAtRow(0);
+            const auto firstChannelIndex    = channelsIndex.siblingAtRow(0);
+
+            affectedIndices << firstChannelIndex.siblingAtColumn(Channel::Column::DatasetNames);
+        }
 
         return affectedIndices;
     }}
 };
 
 Configurations::Configurations() :
-    ModelItem("Configurations")
+    ModelItem("Configurations"),
+    _configurations(),
+    _datasetNames()
 {
 }
 

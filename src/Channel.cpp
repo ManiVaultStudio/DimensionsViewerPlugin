@@ -43,7 +43,7 @@ const QMap<Channel::Column, std::function<QVariant(Channel* channel, const QMode
         return channel->_enabled;
     }},
     { Channel::Column::DatasetNames, [](Channel* channel, const QModelIndex& index) {
-        return channel->_datasetNames;
+        return channel->dimensionsViewerPlugin->getConfigurationsModel().index(0, 0).siblingAtColumn(Configurations::Column::DatasetNames);
     }},
     { Channel::Column::DatasetName, [](Channel* channel, const QModelIndex& index) {
         return channel->_datasetName;
@@ -160,10 +160,6 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
 
         return affectedIndices;
     }},
-    { Channel::Column::DatasetNames, [](Channel* channel, const QModelIndex& index, const QVariant& value) {
-        channel->_datasetNames = value.toStringList();
-        return QModelIndexList();
-    }},
     { Channel::Column::DatasetName, [](Channel* channel, const QModelIndex& index, const QVariant& value) {
         channel->_datasetName = value.toString();
 
@@ -203,7 +199,6 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),
 	_enabled(enabled),
-    _datasetNames(),
 	_datasetName(datasetName),
 	_color(color),
 	_opacity(opacity),
