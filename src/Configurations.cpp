@@ -5,10 +5,14 @@
 #include <QMessageBox>
 
 const QMap<QString, Configurations::Column> Configurations::columns = {
+    { "Name", Configurations::Column::Name },
     { "Dataset names", Configurations::Column::DatasetNames }
 };
 
 const QMap<Configurations::Column, std::function<QVariant(Configurations* configurations)>> Configurations::getEditRoles = {
+    { Configurations::Column::Name, [](Configurations* configurations) {
+        return configurations->_name;
+    }},
     { Configurations::Column::DatasetNames, [](Configurations* configurations) {
         QStringList datasetNames;
 
@@ -20,6 +24,9 @@ const QMap<Configurations::Column, std::function<QVariant(Configurations* config
 };
 
 const QMap<Configurations::Column, std::function<QVariant(Configurations* configurations)>> Configurations::getDisplayRoles = {
+    { Configurations::Column::Name, [](Configurations* configurations) {
+        return getEditRoles[Configurations::Column::Name](configurations);
+    }},
     { Configurations::Column::DatasetNames, [](Configurations* configurations) {
         return getEditRoles[Configurations::Column::DatasetNames](configurations).toStringList().join(", ");
     }}
@@ -36,6 +43,16 @@ const QMap<Configurations::Column, std::function<QModelIndexList(Configurations*
     }}
 };
 
+Configurations::Configurations() :
+    ModelItem("Configurations")
+{
+}
+
+int Configurations::columnCount() const 
+{
+    return Column::End + 1;
+}
+
 Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
 {
     return getChild(index.row())->getFlags(index);
@@ -43,17 +60,57 @@ Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
 
 QVariant Configurations::getData(const QModelIndex& index, const int& role) const
 {
-    return getChild(index.row())->getData(index, role);
-}
+    const auto column = index.column();
 
-QVariant Configurations::getData(const int& column, const int& role) const
-{
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            if (getEditRoles.contains(static_cast<Column>(column)))
+                return getEditRoles[static_cast<Column>(column)](const_cast<Configurations*>(this));
+
+            break;
+        }
+
+        case Qt::DisplayRole:
+        {
+            if (getDisplayRoles.contains(static_cast<Column>(column)))
+                return getDisplayRoles[static_cast<Column>(column)](const_cast<Configurations*>(this));
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
     return QVariant();
 }
 
 QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    return getChild(index.row())->setData(index, value, role);
+    //if (index.parent().isValid())
+    //    return getChild(index.row())->setData(index, value, role);
+
+    const auto column = static_cast<Column>(index.column());
+
+    QModelIndexList affectedIndices{ index };
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            if (setEditRoles.contains(column))
+                affectedIndices << setEditRoles[column](const_cast<Configurations*>(this), value, index);
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return affectedIndices;
 }
 
 ModelItem* Configurations::getChild(const int& index) const
@@ -61,7 +118,7 @@ ModelItem* Configurations::getChild(const int& index) const
     if (index < 0 || index >= _configurations.size())
         return nullptr;
 
-    return _configurations[index];
+    return _configurations.at(index);
 }
 
 int Configurations::getChildCount() const

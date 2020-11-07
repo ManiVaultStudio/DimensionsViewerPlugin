@@ -17,30 +17,50 @@ class Channels : public ModelItem {
 
 public: // Columns
 
-    /** Data columns */
-    enum class Column {
-        Title,
+    /** TODO */
+    enum Column {
+        Name,
 
-        Start = Title,
-        End = Title
+        Start = Name,
+        End = Name
     };
+
+    /** Maps column type name to column type enum and vice versa */
+    static QMap<QString, Column> const columns;
+
+    /** Get string representation of column type enumeration */
+    static QString getColumnTypeName(const Column& column) {
+        return columns.key(column);
+    }
+
+    /** Get enum representation from column type name */
+    static int getColumnTypeEnum(const QString& columnName) {
+        return columns[columnName];
+    }
 
     /** TODO */
     enum Child {
         Channel1,
         Channel2,
         Channel3,
-        DifferentialProfile,
-
-        Start = Channel1,
-        End = Channel3
+        DifferentialProfile
     };
+
+public: // Get/set data roles
+
+    static QMap<Column, std::function<QVariant(Channels* channels)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Channels* channels)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(Channels* channels, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
 protected: // Construction
 
+    /** TODO */
 	Channels(ModelItem* parent, const QString& datasetName, const QString& dataName);
 
 public: // ModelIndex: MVC
+
+    /** Returns the number of columns in the item */
+    int columnCount() const override;
 
     /**
      * Returns the item flags for the given model index
@@ -56,14 +76,6 @@ public: // ModelIndex: MVC
      * @return Data in variant form
      */
     QVariant getData(const QModelIndex& index, const int& role) const override;
-
-    /**
-     * Returns the data for the given column and data role
-     * @param index Model index
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const int& column, const int& role) const override;
 
     /**
      * Sets the data value for the given model index and data role

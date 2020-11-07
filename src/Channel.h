@@ -2,7 +2,7 @@
 
 #include "ModelItem.h"
 #include "Profile.h"
-#include "GlobalSettings.h"
+#include "Global.h"
 
 #include <QObject>
 #include <QVector>
@@ -25,15 +25,15 @@ class Channel : public ModelItem {
 
 public: // Columns
 
-    /** Column types */
+    /** TODO */
     enum Column {
+        Name,
         Index,
         InternalName,
         DisplayName,
         Enabled,
         DatasetNames,
         DatasetName,
-        DataName,
         Color,
         Opacity,
         ProfileTypes,
@@ -42,7 +42,7 @@ public: // Columns
         RangeType,
         Settings,
 
-        Start = Index,
+        Start = Name,
         End = Settings
     };
 
@@ -55,15 +55,15 @@ public: // Columns
     }
 
     /** Get enum representation from column type name */
-    static Column getColumnTypeEnum(const QString& columnName) {
+    static int getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(Channel* channel)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Channel* channel)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(Channel* channel, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
+    static QMap<Column, std::function<QVariant(Channel* channel, const QModelIndex& index)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Channel* channel, const QModelIndex& index)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(Channel* channel, const QModelIndex& modelIndex, const QVariant& value)>> const setEditRoles;
 
 protected: // Construction
 
@@ -82,6 +82,9 @@ protected: // Construction
 
 public: // ModelIndex: MVC
 
+    /** Returns the number of columns in the item */
+    int columnCount() const override;
+
     /**
      * Returns the item flags for the given model index
      * @param index Model index
@@ -96,14 +99,6 @@ public: // ModelIndex: MVC
      * @return Data in variant form
      */
     QVariant getData(const QModelIndex& index, const int& role) const override;
-
-    /**
-     * Returns the data for the given column and data role
-     * @param index Model index
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const int& column, const int& role) const override;
 
     /**
      * Sets the data value for the given model index and data role
@@ -132,6 +127,14 @@ public: // ModelIndex: Hierarchy
      */
     int getChildIndex(ModelItem* child) const override;
 
+protected: // Utility methods for obtaining model indices
+
+    /** Get configuration model index */
+    static QModelIndex getConfigurationModelIndex(const QModelIndex& index);
+
+    /** Get global model index */
+    static QModelIndex getGlobalModelIndex(const QModelIndex& index);
+
 public: // Getters/setters
 
     /** Returns whether the channel can be displayed in the viewer */
@@ -152,12 +155,6 @@ public: // Points wrapper functions
 
 protected: // Miscellaneous
 	
-    /** Returns parent channels */
-    Channels* getChannels() const;
-
-    /** Returns the global channel settings */
-    GlobalSettings& getGlobalSettings() const;
-
 	/** Returns if the referenced dataset is a subset */
 	bool isSubset() const;
 
@@ -177,7 +174,6 @@ private:
 	bool					_enabled;			/** Whether the channel is enabled or not */
 	QStringList             _datasetNames;		/** Dataset names */
 	QString					_datasetName;		/** Dataset name */
-	QString					_dataName;			/** Data name */
 	QColor					_color;				/** Color */
 	float					_opacity;			/** Opacity */
     Profile				    _profile;		    /** Profile */

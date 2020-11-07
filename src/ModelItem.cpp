@@ -2,8 +2,9 @@
 
 DimensionsViewerPlugin* ModelItem::dimensionsViewerPlugin = nullptr;
 
-ModelItem::ModelItem(ModelItem* parent /*= nullptr*/) :
+ModelItem::ModelItem(const QString& name, ModelItem* parent /*= nullptr*/) :
     QObject(parent),
+    _name(name),
     _parent(parent)
 {
 }

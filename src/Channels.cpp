@@ -4,8 +4,26 @@
 
 #include <QDebug>
 
+const QMap<QString, Channels::Column> Channels::columns = {
+    { "Name", Channels::Column::Name }
+};
+
+const QMap<Channels::Column, std::function<QVariant(Channels* channels)>> Channels::getEditRoles = {
+    { Channels::Column::Name, [](Channels* channels) {
+        return channels->_name;
+    }}
+};
+
+const QMap<Channels::Column, std::function<QVariant(Channels* channels)>> Channels::getDisplayRoles = {
+    { Channels::Column::Name, [](Channels* channels) {
+        return channels->_name;
+    }},
+};
+
+const QMap<Channels::Column, std::function<QModelIndexList(Channels* channel, const QVariant& value, const QModelIndex& index)>> Channels::setEditRoles = {};
+
 Channels::Channels(ModelItem* parent, const QString& datasetName, const QString& dataName) :
-    ModelItem(parent),
+    ModelItem("Channels", parent),
     _channels({
         new Channel(this, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.25f),
         new Channel(this, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.25f),
@@ -14,21 +32,38 @@ Channels::Channels(ModelItem* parent, const QString& datasetName, const QString&
 {
 }
 
+int Channels::columnCount() const
+{
+    return 20;// Column::End + 1;
+}
+
 Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
 {
-    Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-    return flags;
+    return Qt::NoItemFlags;
 }
 
 QVariant Channels::getData(const QModelIndex& index, const int& role) const
 {
-    return getData(index.column(), role);
-}
+    const auto column = index.column();
 
-QVariant Channels::getData(const int& column, const int& role) const
-{
-    switch (static_cast<Column>(column))
+    switch (role)
     {
+        case Qt::EditRole:
+        {
+            if (getEditRoles.contains(static_cast<Column>(column)))
+                return getEditRoles[static_cast<Column>(column)](const_cast<Channels*>(this));
+
+            break;
+        }
+
+        case Qt::DisplayRole:
+        {
+            if (getDisplayRoles.contains(static_cast<Column>(column)))
+                return getDisplayRoles[static_cast<Column>(column)](const_cast<Channels*>(this));
+
+            break;
+        }
+
         default:
             break;
     }
@@ -38,7 +73,25 @@ QVariant Channels::getData(const int& column, const int& role) const
 
 QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    return QModelIndexList();
+    const auto column = static_cast<Column>(index.column());
+
+    QModelIndexList affectedIndices{ index };
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            if (setEditRoles.contains(column))
+                affectedIndices << setEditRoles[column](const_cast<Channels*>(this), value, index);
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return affectedIndices;
 }
 
 ModelItem* Channels::getChild(const int& index) const
@@ -75,10 +128,10 @@ Configuration* Channels::getConfiguration() const
 
 Channel* Channels::getChannelByDatasetName(const QString& datasetName)
 {
-    for (auto channel : _channels) {
+    /*for (auto channel : _channels) {
         if (datasetName == channel->getData(Channel::DatasetName, Qt::EditRole).toString())
             return channel;
-    }
+    }*/
 
     return nullptr;
 }
@@ -87,10 +140,10 @@ QVector<std::uint32_t> Channels::getChannelsEnabled() const
 {
     QVector<std::uint32_t> channelsEnabled;
 
-    for (auto channel : _channels) {
+    /*for (auto channel : _channels) {
         if (channel->getData(Channel::Enabled, Qt::EditRole).toBool())
             channelsEnabled << channel->getData(Channel::Index, Qt::EditRole).toInt();
-    }
+    }*/
 
     return channelsEnabled;
 }
@@ -99,10 +152,10 @@ std::int32_t Channels::getNoChannelsEnabled() const
 {
     auto noChannelsEnabled = 0;
 
-    for (auto channel : _channels) {
+    /*for (auto channel : _channels) {
         if (channel->getData(Channel::Enabled, Qt::EditRole).toBool())
             noChannelsEnabled++;
-    }
+    }*/
 
     return noChannelsEnabled;
 }

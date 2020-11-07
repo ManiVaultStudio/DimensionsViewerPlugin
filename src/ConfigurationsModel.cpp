@@ -18,15 +18,26 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    const auto parentItem = getItem(parent);
+    ModelItem *parentItem;
 
-    return parentItem ? parentItem->getChildCount() : 0;
+    if (parent.column() > 0)
+        return 0;
+
+    if (!parent.isValid())
+        parentItem = const_cast<Configurations*>(&_configurations);
+    else
+        parentItem = static_cast<ModelItem*>(parent.internalPointer());
+
+    return parentItem->getChildCount();
 }
 
 int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    Q_UNUSED(parent);
-    return 100;// static_cast<int>(Configuration::Column::End);
+    return 20;//
+    if (parent.isValid())
+        return static_cast<ModelItem*>(parent.internalPointer())->columnCount();
+    
+    return _configurations.columnCount();
 }
 
 QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole*/) const
@@ -47,13 +58,13 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
     if (index == QModelIndex())
         return false;
 
-	const auto affectedIndices = getItem(index)->setData(index, value, role);
+    const auto affectedIndices = getItem(index)->setData(index, value, role);
 
-	for (auto affectedIndex : affectedIndices) {
-		emit dataChanged(affectedIndex, affectedIndex);
-	}
+    for (auto affectedIndex : affectedIndices) {
+        emit dataChanged(affectedIndex, affectedIndex);
+    }
 
-	return true;
+    return true;
 }
 
 bool ConfigurationsModel::setData(const std::int32_t& column, const QVariant& value, int role /*= Qt::EditRole*/)
@@ -70,6 +81,9 @@ bool ConfigurationsModel::setData(const std::int32_t& column, const QVariant& va
 
 Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const
 {
+    if (!index.isValid())
+        return Qt::NoItemFlags;
+
     return getItem(index)->getFlags(index);
 }
 
@@ -84,15 +98,17 @@ QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientatio
 
 QModelIndex ConfigurationsModel::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    if (parent.isValid() && parent.column() != 0)
+    if (!hasIndex(row, column, parent))
         return QModelIndex();
 
-    auto parentItem = getItem(parent);
+    ModelItem* parentItem = nullptr;
 
-    if (!parentItem)
-        return QModelIndex();
+    if (!parent.isValid())
+        parentItem = const_cast<Configurations*>(&_configurations);
+    else
+        parentItem = static_cast<ModelItem*>(parent.internalPointer());
 
-    auto childItem = parentItem->isLeaf() ? parentItem : parentItem->getChild(row);
+    auto childItem = parentItem->getChild(row);
 
     if (childItem)
         return createIndex(row, column, childItem);
@@ -105,8 +121,8 @@ QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
     if (!index.isValid())
         return QModelIndex();
 
-    auto childItem = getItem(index);
-    auto parentItem = childItem ? childItem->getParent() : nullptr;
+    auto childItem  = getItem(index);
+    auto parentItem = childItem->getParent();
 
     if (parentItem == &_configurations || !parentItem)
         return QModelIndex();
@@ -118,22 +134,11 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 {
     auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
 
-    const auto hits = match(index(0, Channel::Column::DataName), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
+    const auto hits = match(index(0, Configuration::Column::DataName), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
+
+    const auto configurationsIndex = index(0, Configurations::Column::Name);
 
     if (hits.isEmpty()) {
-        /*const auto firstConfigurationIndex  = index(0, 0);
-        const auto channelsIndex            = index(0, 0, firstConfigurationIndex);
-        const auto firstChannelIndex        = index(0, 0, channelsIndex);
-
-        auto datasetNames = data(firstChannelIndex.siblingAtColumn(Channel::Column::DatasetNames)).toStringList();
-
-        datasetNames << datasetName;
-
-        const auto channels = match(index(0, Channel::Column::Index), Qt::DisplayRole, 0, -1, Qt::MatchExactly | Qt::MatchRecursive);
-        
-        for (auto channel : channels)
-            setData(channel.siblingAtColumn(Channel::Column::DatasetNames), datasetNames);*/
-
         const auto noConfigurations = _configurations.getChildCount();
 
         beginInsertRows(QModelIndex(), noConfigurations, noConfigurations);
@@ -142,8 +147,23 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
         }
         endInsertRows();
 
+        /**/
+        const auto datasetNamesIndex = configurationsIndex.siblingAtColumn(Configurations::Column::DatasetNames);
+
+        auto datasetNames = datasetNamesIndex.data(Qt::EditRole).toStringList();
+        
+        datasetNames << datasetName;
+
+        setData(index(0, Configurations::Column::Name), "Test");
+        setData(index(0, Configurations::Column::DatasetNames), datasetNames);
+
+        qDebug() << index(0, Configurations::Column::Name).data(Qt::EditRole).toString();
+        //qDebug() << configurationsIndex.siblingAtColumn(Configurations::Column::DatasetNames).data(Qt::EditRole).toStringList();
+
         if (_configurations.getChildCount() == 1)
             selectRow(0);
+
+        //qDebug() << data(index(0, Configurations::Column::DatasetNames), Qt::EditRole).toStringList();
     } else {
         auto datasetNames = hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames).data(Qt::EditRole).toStringList();
 

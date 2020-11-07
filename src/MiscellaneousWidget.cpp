@@ -38,6 +38,11 @@ MiscellaneousWidget::MiscellaneousWidget(QWidget* parent) :
 
 void MiscellaneousWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
+    QVector<QSharedPointer<QSignalBlocker>> signalBlockers;
+
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->groupBox);
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->showDimensionNamesCheckBox);
+
     /*const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
     if (selectedRows.isEmpty()) {
@@ -53,11 +58,9 @@ void MiscellaneousWidget::updateData(const QModelIndex& begin, const QModelIndex
         const auto index = begin.siblingAtColumn(column);
 
         if (column == Configuration::Column::ShowDimensionNames) {
-            _ui->showDimensionNamesCheckBox->blockSignals(true);
             _ui->showDimensionNamesCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->showDimensionNamesCheckBox->setChecked(index.data(Qt::EditRole).toBool());
             _ui->showDimensionNamesCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-            _ui->showDimensionNamesCheckBox->blockSignals(false);
         }
     }*/
 }

@@ -35,7 +35,7 @@
    <item>
     <widget class="QTreeView" name="treeView">
      <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectItems</enum>
+      <enum>QAbstractItemView::SelectRows</enum>
      </property>
     </widget>
    </item>

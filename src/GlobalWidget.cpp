@@ -14,15 +14,15 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
 	_ui->setupUi(this);
 
     QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
-        setData(GlobalSettings::Column::Enabled, state);
+        setData(Global::Column::Enabled, state);
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(GlobalSettings::Column::ProfileType, currentText);
+        setData(Global::Column::ProfileType, currentText);
     });
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(GlobalSettings::Column::RangeType, currentText);
+        setData(Global::Column::RangeType, currentText);
     });
 
     reset();
@@ -30,53 +30,46 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
 
 void GlobalWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
+    QVector<QSharedPointer<QSignalBlocker>> signalBlockers;
+
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->groupBox);
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->profileTypeComboBox);
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->rangeTypeComboBox);
 
     if (begin == QModelIndex() && end == QModelIndex()) {
-        _ui->groupBox->blockSignals(true);
         _ui->groupBox->setEnabled(false);
         _ui->groupBox->setChecked(false);
-        _ui->groupBox->blockSignals(false);
-		return;
+
+        return;
 	}
 
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
 
-        if (column == GlobalSettings::Column::Enabled) {
-            _ui->groupBox->blockSignals(true);
+        if (column == Global::Column::Enabled) {
             _ui->groupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->groupBox->setChecked(index.data(Qt::EditRole).toBool());
             _ui->groupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-            _ui->groupBox->blockSignals(false);
         }
 
-        if (column == GlobalSettings::Column::ProfileTypes) {
-            _ui->profileTypeComboBox->blockSignals(true);
+        if (column == Global::Column::ProfileTypes) {
             _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-            _ui->profileTypeComboBox->blockSignals(false);
         }
 
-        if (column == GlobalSettings::Column::ProfileType) {
-            _ui->profileTypeComboBox->blockSignals(true);
+        if (column == Global::Column::ProfileType) {
             _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-            _ui->profileTypeComboBox->blockSignals(false);
         }
 
-        if (column == GlobalSettings::Column::RangeTypes) {
-            _ui->rangeTypeComboBox->blockSignals(true);
+        if (column == Global::Column::RangeTypes) {
             _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-            _ui->rangeTypeComboBox->blockSignals(false);
         }
 
-        if (column == GlobalSettings::Column::RangeType) {
-            _ui->rangeTypeComboBox->blockSignals(true);
+        if (column == Global::Column::RangeType) {
             _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-            _ui->rangeTypeComboBox->blockSignals(false);
         }
 	}
 }

@@ -2,7 +2,7 @@
 
 #include "ModelItem.h"
 #include "Channels.h"
-#include "GlobalSettings.h"
+#include "Global.h"
 
 #include <QStringList>
 #include <QColor>
@@ -22,17 +22,20 @@ public: // Constants
     /** The number of channels in the configuration */
     static const std::int32_t noChannels = 3;
 
-public: // Enumerations
+public: // Columns
 
-    /** Data columns */
-    enum class Column {
+    /** TODO */
+    enum Column {
+        Name,                       /** TODO */
         Index,                      /** Index */
         DatasetName,                /** TODO */
+        DataName,                   /** TODO */
         Subsets,                    /** The subset(s) parameter of the first dataset */
         SelectionStamp,             /** Auxiliary column for triggering synchronization */
+        ShowDimensionNames,         /** Whether to show dimension names in the viewer */
 
-        Start = Index,               /** Column start */
-        End = SelectionStamp        /** Column end */
+        Start = Name,               /** Column start */
+        End = ShowDimensionNames    /** Column end */
     };
 
     /** Maps column name to column enum and vice versa */
@@ -51,7 +54,7 @@ public: // Enumerations
     /** TODO */
     enum class Child {
         Channels,                       /** Channels model item */
-        GlobalSettings,                 /** Global settings model item */
+        Global,                         /** Global settings model item */
         DifferentialProfileSettings,    /** Differential profile settings model item */
         MiscellaneousSettings,          /** Miscellaneous settings model item */
 
@@ -61,8 +64,8 @@ public: // Enumerations
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getDisplayRoles;
+    static QMap<Column, std::function<QVariant(Configuration* configuration, const QModelIndex& index)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Configuration* configuration, const QModelIndex& index)>> const getDisplayRoles;
     static QMap<Column, std::function<QModelIndexList(Configuration* configuration, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
 public: // Construction
@@ -76,6 +79,9 @@ public: // Construction
 	Configuration(ModelItem* parent, const QString& datasetName, const QString& dataName);
 
 public: // ModelIndex: MVC
+
+    /** Returns the number of columns in the item */
+    int columnCount() const override;
 
     /**
      * Returns the item flags for the given model index
@@ -91,14 +97,6 @@ public: // ModelIndex: MVC
      * @return Data in variant form
      */
     QVariant getData(const QModelIndex& index, const int& role) const override;
-
-    /**
-     * Returns the data for the given column and data role
-     * @param index Model index
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const int& column, const int& role) const override;
 
     /**
      * Sets the data value for the given model index and data role
@@ -128,13 +126,6 @@ public: // ModelIndex: Hierarchy
     int getChildIndex(ModelItem* child) const override;
 
 public: // Miscellaneous
-
-	/** Get channels */
-    Channels& getChannels() { return _channels; };
-
-    /** Get global settings */
-    GlobalSettings& getGlobalSettings() { return _globalSettings; };
-
 	/**
 	 * Returns whether dataset with name \p datasetName exists in the configuration
 	 * @param datasetName Name of the dataset to search for
@@ -173,8 +164,9 @@ private: // Internal
 protected:
     std::int32_t            _index;                         /** TODO */
     QString                 _datasetName;                   /** TODO */
+    QString					_dataName;			            /** Name of the points data */
     Channels		        _channels;                      /** TODO */
-    GlobalSettings          _globalSettings;                /** TODO */
+    Global                  _global;                        /** TODO */
     QStringList		        _subsets;                       /** Subsets of the primary dataset (selected in the first channel) */
     bool		            _showDifferentialProfile;       /** Whether to show the differential profile in the viewer */
     QStringList             _profileDatasetNames[2];        /** Profile 1-2 dataset names (for differential profile) */

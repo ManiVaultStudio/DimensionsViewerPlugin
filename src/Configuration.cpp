@@ -7,33 +7,47 @@ std::int32_t Configuration::maxNoDimensions = 100;
 std::int32_t Configuration::noConfigurations = 0;
 
 const QMap<QString, Configuration::Column> Configuration::columns = {
+    { "Name", Configuration::Column::Name },
     { "Index", Configuration::Column::Index },
     { "Dataset name", Configuration::Column::DatasetName },
+    { "Data name", Configuration::Column::DataName },
     { "Subsets", Configuration::Column::Subsets },
     { "Selection stamp", Configuration::Column::SelectionStamp }
 };
 
-const QMap<Configuration::Column, std::function<QVariant(Configuration* configuration)>> Configuration::getEditRoles = {
-    { Configuration::Column::Index, [](Configuration* configuration) {
+const QMap<Configuration::Column, std::function<QVariant(Configuration* configuration, const QModelIndex& index)>> Configuration::getEditRoles = {
+    { Configuration::Column::Name, [](Configuration* configuration, const QModelIndex& index) {
+        return configuration->_name;
+    }},
+    { Configuration::Column::Index, [](Configuration* configuration, const QModelIndex& index) {
         return configuration->_index;
     }},
-    { Configuration::Column::DatasetName, [](Configuration* configuration) {
+    { Configuration::Column::DatasetName, [](Configuration* configuration, const QModelIndex& index) {
         return configuration->_datasetName;
     }},
-    { Configuration::Column::Subsets, [](Configuration* configuration) {
+    { Configuration::Column::DataName, [](Configuration* configuration, const QModelIndex& index) {
+        return configuration->_dataName;
+    }},
+    { Configuration::Column::Subsets, [](Configuration* configuration, const QModelIndex& index) {
         return configuration->_subsets;
     }}
 };
 
-const QMap<Configuration::Column, std::function<QVariant(Configuration* configuration)>> Configuration::getDisplayRoles = {
-    { Configuration::Column::Index, [](Configuration* configuration) {
-        return QString::number(configuration->_index);
+const QMap<Configuration::Column, std::function<QVariant(Configuration* configuration, const QModelIndex& index)>> Configuration::getDisplayRoles = {
+    { Configuration::Column::Name, [](Configuration* configuration, const QModelIndex& index) {
+        return getEditRoles[Configuration::Column::Name](configuration, index);
     }},
-    { Configuration::Column::DatasetName, [](Configuration* configuration) {
-        return configuration->_datasetName;
+    { Configuration::Column::Index, [](Configuration* configuration, const QModelIndex& index) {
+        return QString::number(getEditRoles[Configuration::Column::Index](configuration, index).toInt());
     }},
-    { Configuration::Column::Subsets, [](Configuration* configuration) {
-        return configuration->_subsets.join(", ");
+    { Configuration::Column::DatasetName, [](Configuration* configuration, const QModelIndex& index) {
+        return getEditRoles[Configuration::Column::DatasetName](configuration, index);
+    }},
+    { Configuration::Column::DataName, [](Configuration* configuration, const QModelIndex& index) {
+        return getEditRoles[Configuration::Column::DataName](configuration, index);
+    }},
+    { Configuration::Column::Subsets, [](Configuration* configuration, const QModelIndex& index) {
+        return getEditRoles[Configuration::Column::Subsets](configuration, index).toStringList().join(", ");
     }}
 };
 
@@ -48,16 +62,31 @@ const QMap<Configuration::Column, std::function<QModelIndexList(Configuration* c
     }},
     { Configuration::Column::Subsets, [](Configuration* configuration, const QVariant& value, const QModelIndex& index) {
         configuration->_subsets = value.toStringList();
-        return QModelIndexList();
+
+        QModelIndexList affectedIndices;
+
+        for (int channelIndex = 0; channelIndex < 3; channelIndex++) {
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::Enabled);
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::Color);
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::Opacity);
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileTypes);
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileType);
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeTypes);
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeType);
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::Settings);
+        }
+
+        return affectedIndices;
     }}
 };
 
 Configuration::Configuration(ModelItem* parent, const QString& datasetName, const QString& dataName) :
-    ModelItem(parent),
+    ModelItem("Configuration", parent),
 	_index(noConfigurations),
     _datasetName(datasetName),
+    _dataName(dataName),
 	_channels(this, datasetName, dataName),
-	_globalSettings(this),
+	_global(this),
 	_subsets(),
     _showDifferentialProfile(false),
     _profileDatasetNames(),
@@ -70,78 +99,36 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
     _spec["modified"] = 0;
 }
 
+int Configuration::columnCount() const 
+{
+    return Column::End + 1;
+}
+
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
-	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
     const auto column = static_cast<Column>(index.column());
 
-	/*
-
-	if (index.column() >= Column::ChannelOpacityStart && index.column() < Column::ChannelOpacityEnd) {
-		const auto channelIndex = index.column() - Column::ChannelOpacityStart;
-
-		if (channelIndex == 0) {
-			flags |= Qt::ItemIsEnabled;
-		}
-		else {
-			if (_channels[channelIndex]->isEnabled() && _subsets.size() >= channelIndex)
-				flags |= Qt::ItemIsEnabled;
-		}
-	}
-
-    if (column == Column::ShowDimensionNames) {
-        if (getNoDisplayChannels() > 0)
-            flags |= Qt::ItemIsEnabled;
+    switch (column)
+    {
+        default:
+            break;
     }
 
-    if (column == Column::GlobalSettings) {
-        if (getNoDisplayChannels() > 0)
-            flags |= Qt::ItemIsEnabled;
-    }
-
-    if (column == Column::GlobalProfileType) {
-        if (_globalSettings && !_globalProfile.getProfileTypeNames().isEmpty())
-            flags |= Qt::ItemIsEnabled;
-    }
-
-    if (column == Column::GlobalRangeType) {
-        if (_globalSettings && !_globalProfile.getRangeTypeNames().isEmpty())
-            flags |= Qt::ItemIsEnabled;
-    }
-    
-    if (column == Column::ShowDifferentialProfile) {
-        if (canShowDifferentialProfile())
-            flags |= Qt::ItemIsEnabled;
-    }
-
-    if (column == Column::Profile1DatasetName) {
-        if (canShowDifferentialProfile() && _showDifferentialProfile && getNoChannelsEnabled() > 2)
-            flags |= Qt::ItemIsEnabled;
-    }
-
-    if (column == Column::Profile2DatasetName) {
-        if (canShowDifferentialProfile() && _showDifferentialProfile && getNoChannelsEnabled() > 2)
-            flags |= Qt::ItemIsEnabled;
-    }
-    */
-
-	return flags;
+    return flags;
 }
 
 QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 {
-    return getData(index.column(), role);
-}
+    const auto column = index.column();
 
-QVariant Configuration::getData(const int& column, const int& role) const
-{
     switch (role)
     {
         case Qt::EditRole:
         {
             if (getEditRoles.contains(static_cast<Column>(column)))
-                return getEditRoles[static_cast<Column>(column)](const_cast<Configuration*>(this));
+                return getEditRoles[static_cast<Column>(column)](const_cast<Configuration*>(this), index);
 
             break;
         }
@@ -149,7 +136,7 @@ QVariant Configuration::getData(const int& column, const int& role) const
         case Qt::DisplayRole:
         {
             if (getDisplayRoles.contains(static_cast<Column>(column)))
-                return getDisplayRoles[static_cast<Column>(column)](const_cast<Configuration*>(this));
+                return getDisplayRoles[static_cast<Column>(column)](const_cast<Configuration*>(this), index);
 
             break;
         }
@@ -191,8 +178,8 @@ ModelItem* Configuration::getChild(const int& index) const
         case Child::Channels:
             return const_cast<Channels*>(&_channels);
 
-        case Child::GlobalSettings:
-            return const_cast<GlobalSettings*>(&_globalSettings);
+        case Child::Global:
+            return const_cast<Global*>(&_global);
 
         case Child::DifferentialProfileSettings:
             return nullptr;
@@ -217,8 +204,8 @@ int Configuration::getChildIndex(ModelItem* child) const
     if (dynamic_cast<Channels*>(child))
         return static_cast<int>(Child::Channels);
 
-    if (dynamic_cast<GlobalSettings*>(child))
-        return static_cast<int>(Child::GlobalSettings);
+    if (dynamic_cast<Global*>(child))
+        return static_cast<int>(Child::Global);
 
     return 0;
 }

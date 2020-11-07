@@ -18,8 +18,13 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
     QObject::connect(&getSelectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto selectedRows = getSelectionModel().selectedRows();
 
-        if (!selectedRows.isEmpty())
-            setPersistentModelIndex(selectedRows.first());
+        if (!selectedRows.isEmpty()) {
+            const auto firstRowIndex = selectedRows.first();
+
+            if (firstRowIndex.parent() == QModelIndex())
+                setPersistentModelIndex(firstRowIndex);
+        }
+            
     });
 
     reset();
@@ -34,7 +39,7 @@ void ConfigurationWidget::setPersistentModelIndex(const QPersistentModelIndex& m
     ModelItemWidget::setPersistentModelIndex(modelIndex);
 
     _ui->channelsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::Channels)));
-    _ui->globalSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::GlobalSettings)));
+    _ui->globalSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::Global)));
     _ui->differentialProfileSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::DifferentialProfileSettings)));
     _ui->miscellaneousSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::MiscellaneousSettings)));
 }

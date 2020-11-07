@@ -11,11 +11,14 @@ class Configuration;
  */
 class Configurations : public ModelItem
 {
-    /** Column types */
+public: // Columns
+
+    /** TODO */
     enum Column {
+        Name,
         DatasetNames,
 
-        Start = DatasetNames,
+        Start = Name,
         End = DatasetNames
     };
 
@@ -38,7 +41,15 @@ public: // Get/set data roles
     static QMap<Column, std::function<QVariant(Configurations* configurations)>> const getDisplayRoles;
     static QMap<Column, std::function<QModelIndexList(Configurations* configurations, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
+protected: // Construction
+
+    /** Default constructor */
+    Configurations();
+
 public: // ModelIndex: MVC
+
+    /** Returns the number of columns in the item */
+    int columnCount() const override;
 
     /**
      * Returns the item flags for the given model index
@@ -54,14 +65,6 @@ public: // ModelIndex: MVC
      * @return Data in variant form
      */
     QVariant getData(const QModelIndex& index, const int& role) const override;
-
-    /**
-     * Returns the data for the given column and data role
-     * @param index Model index
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const int& column, const int& role) const override;
 
     /**
      * Sets the data value for the given model index and data role
@@ -101,4 +104,6 @@ public: // Miscellaneous
 
 protected:
     QVector<Configuration*>		_configurations;		/** Child tree items */
+
+    friend class ConfigurationsModel;
 };
