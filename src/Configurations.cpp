@@ -5,57 +5,27 @@
 #include <QMessageBox>
 
 const QMap<QString, Configurations::Column> Configurations::columns = {
-    { "Name", Configurations::Column::Name },
-    { "Dataset names", Configurations::Column::DatasetNames }
+    { "Name", Configurations::Column::Name }
 };
 
 const QMap<Configurations::Column, std::function<QVariant(Configurations* configurations)>> Configurations::getEditRoles = {
     { Configurations::Column::Name, [](Configurations* configurations) {
         return configurations->_name;
-    }},
-    { Configurations::Column::DatasetNames, [](Configurations* configurations) {
-        QStringList datasetNames;
-
-        for (auto configuration : configurations->_configurations)
-            datasetNames << configuration->_datasetName;
-
-        return datasetNames;
     }}
 };
 
 const QMap<Configurations::Column, std::function<QVariant(Configurations* configurations)>> Configurations::getDisplayRoles = {
     { Configurations::Column::Name, [](Configurations* configurations) {
         return getEditRoles[Configurations::Column::Name](configurations);
-    }},
-    { Configurations::Column::DatasetNames, [](Configurations* configurations) {
-        return getEditRoles[Configurations::Column::DatasetNames](configurations).toStringList().join(", ");
     }}
 };
 
 const QMap<Configurations::Column, std::function<QModelIndexList(Configurations* configurations, const QVariant& value, const QModelIndex& index)>> Configurations::setEditRoles = {
-    { Configurations::Column::DatasetNames, [](Configurations* configurations, const QVariant& value, const QModelIndex& index) {
-        configurations->_datasetNames = value.toStringList();
-
-        QModelIndexList affectedIndices;
-
-        const auto configurationsModel  = configurations->getConfigurationsModel();
-
-        for (auto configuration : configurations->_configurations) {
-            const auto configurationIndex   = configurationsModel->index(configuration->_index, 0);
-            const auto channelsIndex        = configurationsModel->index(0, 0, configurationIndex);
-            const auto firstChannelIndex    = configurationsModel->index(0, 0, channelsIndex);
-
-            affectedIndices << firstChannelIndex.siblingAtColumn(Channel::Column::DatasetNames);
-        }
-
-        return affectedIndices;
-    }}
 };
 
 Configurations::Configurations() :
     ModelItem("Configurations"),
-    _configurations(),
-    _datasetNames()
+    _configurations()
 {
 }
 

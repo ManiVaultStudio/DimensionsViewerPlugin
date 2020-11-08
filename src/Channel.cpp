@@ -44,9 +44,9 @@ const QMap<Channel::Column, std::function<QVariant(Channel* channel, const QMode
     }},
     { Channel::Column::DatasetNames, [](Channel* channel, const QModelIndex& index) {
         if (channel->_index == 0)
-            return channel->getConfigurationsModel()->index(0, 0).siblingAtColumn(Configurations::Column::DatasetNames).data(Qt::EditRole).toStringList();
-        
-        return index.parent().parent().siblingAtColumn(Configuration::Column::Subsets).data(Qt::EditRole).toStringList();
+            return channel->getConfigurationsModel()->getDatasetNames();
+
+        return channel->getChannels()->getConfiguration()->getSubsets();
     }},
     { Channel::Column::DatasetName, [](Channel* channel, const QModelIndex& index) {
         return channel->_datasetName;
@@ -151,15 +151,18 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
 
         QModelIndexList affectedIndices;
 
-        affectedIndices << index.siblingAtColumn(Channel::Column::DatasetNames);
-        affectedIndices << index.siblingAtColumn(Channel::Column::DatasetName);
-        affectedIndices << index.siblingAtColumn(Channel::Column::Color);
-        affectedIndices << index.siblingAtColumn(Channel::Column::Opacity);
-        affectedIndices << index.siblingAtColumn(Channel::Column::ProfileTypes);
-        affectedIndices << index.siblingAtColumn(Channel::Column::ProfileType);
-        affectedIndices << index.siblingAtColumn(Channel::Column::RangeTypes);
-        affectedIndices << index.siblingAtColumn(Channel::Column::RangeType);
-        affectedIndices << index.siblingAtColumn(Channel::Column::Settings);
+        for (int column = Channel::Column::Start; column <= Channel::Column::End; column++)
+            affectedIndices << index.siblingAtColumn(column);
+
+        return affectedIndices;
+    }},
+    { Channel::Column::DatasetNames, [](Channel* channel, const QModelIndex& index, const QVariant& value) {
+        channel->_datasetNames = value.toStringList();
+
+        QModelIndexList affectedIndices;
+
+        for (int column = Channel::Column::Start; column <= Channel::Column::End; column++)
+            affectedIndices << index.siblingAtColumn(column);
 
         return affectedIndices;
     }},
@@ -202,6 +205,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),
 	_enabled(enabled),
+    _datasetNames(),
 	_datasetName(datasetName),
 	_color(color),
 	_opacity(opacity),
@@ -388,14 +392,6 @@ QModelIndex Channel::getGlobalModelIndex(const QModelIndex& index)
     return getConfigurationsModel()->index(static_cast<int>(Configuration::Child::Global), 0, getConfigurationModelIndex(index));
 }
 
-bool Channel::canDisplay() const
-{
-    if (!_enabled)
-        return false;
-
-    return _profile.canDisplay();
-}
-
 std::int32_t Channel::getNoDimensions() const
 {
     return _points->getNumDimensions();
@@ -404,6 +400,19 @@ std::int32_t Channel::getNoDimensions() const
 std::int32_t Channel::getNoPoints() const
 {
     return _points->getNumPoints();
+}
+
+Channels* Channel::getChannels()
+{
+    return dynamic_cast<Channels*>(_parent);
+}
+
+bool Channel::canDisplay() const
+{
+    if (!_enabled)
+        return false;
+
+    return _profile.canDisplay();
 }
 
 bool Channel::isSubset() const
@@ -539,4 +548,9 @@ void Channel::updateSpec()
 	_spec["canDisplay"]		= canDisplay();
 
     emit specChanged(this);
+}
+
+QVariantMap Channel::getSpec()
+{
+    return _spec;
 }

@@ -110,6 +110,9 @@ public: // Miscellaneous
 	/** Returns the selection model */
 	QItemSelectionModel& getSelectionModel() { return _selectionModel; }
 
+    /** Returns the dataset names */
+    QStringList getDatasetNames() const { return _datasetNames; }
+
 	/**
 	 * Select a single row
 	 * @param row Row identifier
@@ -132,6 +135,7 @@ private:
 	DimensionsViewerPlugin*		_dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
     Configurations		        _configurations;				/** Configurations data source */
 	QItemSelectionModel			_selectionModel;				/** Selection model */
+    QStringList                 _datasetNames;                  /** Dataset names */
 
     friend class Configurations;
 };

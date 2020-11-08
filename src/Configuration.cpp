@@ -65,15 +65,16 @@ const QMap<Configuration::Column, std::function<QModelIndexList(Configuration* c
 
         QModelIndexList affectedIndices;
 
-        for (int channelIndex = 0; channelIndex < 3; channelIndex++) {
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::Enabled);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::Color);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::Opacity);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileTypes);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileType);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeTypes);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeType);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::Settings);
+        QVector<std::int32_t> channels;
+
+        channels << Channels::Child::Channel2;
+        channels << Channels::Child::Channel3;
+
+        const auto channelsIndex = configuration->index(0, 0, index.siblingAtColumn(0));
+
+        for (auto channel : channels) {
+            for (int column = Channel::Column::Start; column <= Channel::Column::End; column++)
+                affectedIndices << configuration->index(channel, 0, channelsIndex).siblingAtColumn(column);
         }
 
         return affectedIndices;
@@ -88,9 +89,6 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
 	_channels(this, datasetName, dataName),
 	_global(this),
 	_subsets(),
-    _showDifferentialProfile(false),
-    _profileDatasetNames(),
-    _profileDatasetName(),
     _showDimensionNames(false),
     _spec()
 {

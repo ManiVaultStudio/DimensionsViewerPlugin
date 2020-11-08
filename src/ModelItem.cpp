@@ -14,6 +14,11 @@ ModelItem::ModelItem(const QString& name, ModelItem* parent /*= nullptr*/) :
 {
 }
 
+QModelIndex ModelItem::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
+{
+    return getConfigurationsModel()->index(row, column, parent);
+}
+
 int ModelItem::getChildIndex() const
 {
     if (_parent)

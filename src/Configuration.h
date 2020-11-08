@@ -126,6 +126,10 @@ public: // ModelIndex: Hierarchy
     int getChildIndex(ModelItem* child) const override;
 
 public: // Miscellaneous
+
+    /** Returns the subset names */
+    QStringList getSubsets() const { return _subsets; }
+
 	/**
 	 * Returns whether dataset with name \p datasetName exists in the configuration
 	 * @param datasetName Name of the dataset to search for
@@ -161,9 +165,6 @@ protected:
     Channels		        _channels;                      /** TODO */
     Global                  _global;                        /** TODO */
     QStringList		        _subsets;                       /** Subsets of the primary dataset (selected in the first channel) */
-    bool		            _showDifferentialProfile;       /** Whether to show the differential profile in the viewer */
-    QStringList             _profileDatasetNames[2];        /** Profile 1-2 dataset names (for differential profile) */
-    QString                 _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
     bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
@@ -174,5 +175,4 @@ protected:
     friend class ConfigurationsModel;
     friend class Configurations;
     friend class Channels;
-    friend class Channel;
 };

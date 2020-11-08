@@ -12,7 +12,8 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
     QAbstractItemModel(static_cast<QObject*>(dimensionsViewerPlugin)),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
 	_configurations(),
-	_selectionModel(this)
+	_selectionModel(this),
+    _datasetNames()
 {
 }
 
@@ -50,7 +51,7 @@ QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::Di
 
     const auto item = index.parent().isValid() ? getItem(index) : &_configurations;
 
-    return item->getData(index, role);
+    return getItem(index)->getData(index, role);
 }
 
 bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
@@ -58,9 +59,7 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
     if (index == QModelIndex())
         return false;
 
-    const auto item = index.parent().isValid() ? getItem(index) : &_configurations;
-
-    const auto affectedIndices = item->setData(index, value, role);
+    const auto affectedIndices = getItem(index)->setData(index, value, role);
 
     for (auto affectedIndex : affectedIndices) {
         emit dataChanged(affectedIndex, affectedIndex);
@@ -91,8 +90,8 @@ Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const
 
 QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
-    if (orientation == Qt::Horizontal) {
-        return Configuration::getColumnName(static_cast<Configuration::Column>(section));
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole && section == 0) {
+        return "Name";
     }
 
     return QVariant();
@@ -145,15 +144,17 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
             _configurations.add(datasetName, dataName);
         }
         endInsertRows();
-
-        const auto datasetNamesIndex = index(0, Configurations::Column::DatasetNames);
-
-        auto datasetNames = datasetNamesIndex.data(Qt::EditRole).toStringList();
         
-        datasetNames << datasetName;
+        _datasetNames << datasetName;
 
-        setData(datasetNamesIndex, datasetNames);
-        
+        for (auto configuration : _configurations._configurations) {
+            const auto configurationIndex   = index(configuration->_index, 0);
+            const auto channelsIndex        = index(0, 0, configurationIndex);
+            const auto firstChannelIndex    = index(0, 0, channelsIndex);
+
+            setData(firstChannelIndex.siblingAtColumn(Channel::Column::DatasetNames), _datasetNames);
+        }
+
         if (_configurations.getChildCount() == 1)
             selectRow(0);
 

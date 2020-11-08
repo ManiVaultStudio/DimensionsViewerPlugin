@@ -16,10 +16,9 @@ public: // Columns
     /** TODO */
     enum Column {
         Name,
-        DatasetNames,
 
         Start = Name,
-        End = DatasetNames
+        End = Name
     };
 
     /** Maps column type name to column type enum and vice versa */
@@ -104,7 +103,6 @@ public: // Miscellaneous
 
 protected:
     QVector<Configuration*>		_configurations;		/** Child tree items */
-    QStringList                 _datasetNames;          /** Available dataset names */
 
     friend class ConfigurationsModel;
 };

@@ -2,24 +2,28 @@
 
 #include "ModelItem.h"
 
-class Channel;
 class Configuration;
 
 #include <QObject>
 #include <QVector>
 
 /**
- * Channels class
+ * Differential profile class
  *
  * @author T. Kroes
  */
-class Channels : public ModelItem {
+class DifferentialProfile : public ModelItem {
 
 public: // Columns
 
     /** TODO */
     enum Column {
         Name,
+        Enabled,
+        DatasetNames1,
+        DatasetNames2,
+        DatasetName1,
+        DatasetName2,
 
         Start = Name,
         End = Name
@@ -38,24 +42,16 @@ public: // Columns
         return columns[columnName];
     }
 
-    /** TODO */
-    enum Child {
-        Channel1,
-        Channel2,
-        Channel3,
-        DifferentialProfile
-    };
-
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(Channels* channels)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Channels* channels)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(Channels* channels, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
+    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
 protected: // Construction
 
     /** TODO */
-	Channels(ModelItem* parent, const QString& datasetName, const QString& dataName);
+	DifferentialProfile(ModelItem* parent);
 
 public: // ModelIndex: MVC
 
@@ -104,24 +100,15 @@ public: // ModelIndex: Hierarchy
      */
     int getChildIndex(ModelItem* child) const override;
 
-public: // Overloaded operators
-
-    Channel* operator [](int i) const { return _channels[i]; }
-
 protected: // Miscellaneous
 
     /** Returns parent configuration model item */
     Configuration* getConfiguration() const;
 
-public:
-    Channel* getChannelByDatasetName(const QString& datasetName);
-    QVector<std::uint32_t> getChannelsEnabled() const;
-    std::int32_t getNoChannelsEnabled() const;
-    std::int32_t getNoDisplayChannels() const;
-
 private:
-    QVector<Channel*>       _channels;
+    bool            _enabled;                       /** Whether to show the differential profile in the viewer */
+    QStringList     _profileDatasetNames[2];        /** Profile 1-2 dataset names (for differential profile) */
+    QString         _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
 
     friend class Configuration;
-    friend class Channel;
 };

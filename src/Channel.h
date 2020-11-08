@@ -135,16 +135,6 @@ protected: // Utility methods for obtaining model indices
     /** Get global model index */
     static QModelIndex getGlobalModelIndex(const QModelIndex& index);
 
-public: // Getters/setters
-
-    /** Returns whether the channel can be displayed in the viewer */
-    bool canDisplay() const;
-
-	/** Returns the visualization specification */
-	QVariantMap getSpec() {
-		return _spec;
-	};
-
 public: // Points wrapper functions
 
     /** Returns the number of dimensions */
@@ -155,11 +145,20 @@ public: // Points wrapper functions
 
 protected: // Miscellaneous
 	
+    /** Get parent channels model item */
+    Channels* getChannels();
+
+    /** Returns whether the channel can be displayed in the viewer */
+    bool canDisplay() const;
+
 	/** Returns if the referenced dataset is a subset */
 	bool isSubset() const;
 
 	/** Updates the visualization specification */
 	void updateSpec();
+
+    /** Returns the visualization specification */
+    QVariantMap getSpec();
 
 signals:
 
@@ -172,6 +171,7 @@ private:
 	const QString			_internalName;		/** Internal name (e.g. channel1, channel2) */
 	QString			        _displayName;		/** Display name (e.g. dataset, Subset1 and Subset 2) */
 	bool					_enabled;			/** Whether the channel is enabled or not */
+	QStringList             _datasetNames;		/** Dataset names */
 	QString					_datasetName;		/** Dataset name */
 	QColor					_color;				/** Color */
 	float					_opacity;			/** Opacity */

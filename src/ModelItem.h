@@ -26,7 +26,7 @@ public: // Construction
      */
     ModelItem(const QString& name, ModelItem* parent = nullptr);
 
-public: // MVC
+public: // Model
 
     /** Returns the number of columns in the item */
     virtual int columnCount() const = 0;
@@ -54,6 +54,15 @@ public: // MVC
      * @return Model indices that are affected by the operation
      */
     virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) = 0;
+
+    /**
+     * Returns the model index belonging to the given model row and column (wraps the model index())
+     * @param row Model row
+     * @param column Model column
+     * @param parent Parent model index
+     * @return Model index for the given model row and column
+     */
+    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
 
 public: // Hierarchy
 
