@@ -92,7 +92,7 @@ Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const
 QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
     if (orientation == Qt::Horizontal) {
-        return "asdasdsd";// Configuration::getColumnName(static_cast<Configuration::Column>(section));
+        return Configuration::getColumnName(static_cast<Configuration::Column>(section));
     }
 
     return QVariant();

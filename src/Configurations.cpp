@@ -38,10 +38,12 @@ const QMap<Configurations::Column, std::function<QModelIndexList(Configurations*
 
         QModelIndexList affectedIndices;
 
+        const auto configurationsModel  = configurations->getConfigurationsModel();
+
         for (auto configuration : configurations->_configurations) {
-            const auto configurationIndex   = configurations->getConfigurationsModel()->index(configurations->_configurations.indexOf(configuration), 0, index);
-            const auto channelsIndex        = configurations->getConfigurationsModel()->index(0, 0, configurationIndex);
-            const auto firstChannelIndex    = configurations->getConfigurationsModel()->index(0, 0, channelsIndex);
+            const auto configurationIndex   = configurationsModel->index(configuration->_index, 0);
+            const auto channelsIndex        = configurationsModel->index(0, 0, configurationIndex);
+            const auto firstChannelIndex    = configurationsModel->index(0, 0, channelsIndex);
 
             affectedIndices << firstChannelIndex.siblingAtColumn(Channel::Column::DatasetNames);
         }
