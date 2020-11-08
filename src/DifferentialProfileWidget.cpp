@@ -54,10 +54,6 @@ void DifferentialProfileWidget::updateData(const QModelIndex& begin, const QMode
             _ui->groupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->groupBox->setChecked(index.data(Qt::EditRole).toBool());
             _ui->groupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-            
-            _ui->compareLabel->setEnabled(index.data(Qt::EditRole).toBool());
-            _ui->withLabel->setEnabled(index.data(Qt::EditRole).toBool());
-            _ui->colorPushButton->setEnabled(index.data(Qt::EditRole).toBool());
         }
 
         if (column == to_ul(DifferentialProfile::Column::DatasetName1)) {
@@ -69,13 +65,11 @@ void DifferentialProfileWidget::updateData(const QModelIndex& begin, const QMode
         }
 
         if (column == to_ul(DifferentialProfile::Column::DatasetNames1)) {
-            _ui->profile1DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profile1DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
             _ui->profile1DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         }
 
         if (column == to_ul(DifferentialProfile::Column::DatasetNames2)) {
-            _ui->profile2DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profile2DatasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
             _ui->profile2DatasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         }

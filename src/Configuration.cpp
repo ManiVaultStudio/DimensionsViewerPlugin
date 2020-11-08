@@ -180,10 +180,10 @@ ModelItem* Configuration::getChild(const int& index) const
         case Child::Global:
             return const_cast<Global*>(&_global);
 
-        case Child::DifferentialProfileSettings:
-            return nullptr;
+        case Child::DifferentialProfile:
+            return const_cast<DifferentialProfile*>(&_differentialProfile);
 
-        case Child::MiscellaneousSettings:
+        case Child::Miscellaneous:
             return nullptr;
 
         default:
@@ -206,6 +206,9 @@ int Configuration::getChildIndex(ModelItem* child) const
     if (dynamic_cast<Global*>(child))
         return static_cast<int>(Child::Global);
 
+    if (dynamic_cast<DifferentialProfile*>(child))
+        return static_cast<int>(Child::DifferentialProfile);
+
     return 0;
 }
 
@@ -224,78 +227,6 @@ const DifferentialProfile* Configuration::getDifferentialProfile() const
     return &_differentialProfile;
 }
 
-//QVariant Configuration::getShowDimensionNames(const std::int32_t& role) const
-//{
-//    const auto showDimensionNames       = _showDimensionNames;
-//    const auto showDimensionNamesString = showDimensionNames ? "on" : "off";
-//
-//    switch (role)
-//    {
-//        case Qt::DisplayRole:
-//            return showDimensionNamesString;
-//
-//        case Qt::EditRole:
-//            return showDimensionNames;
-//
-//        case Qt::ToolTipRole:
-//            return getTooltip(Column::ShowDimensionNames, showDimensionNamesString);
-//
-//        default:
-//            return QVariant();
-//    }
-//
-//    return QVariant();
-//}
-//
-//Configuration::AffectedColumns Configuration::setShowDimensionNames(const bool& showDimensionNames)
-//{
-//    AffectedColumns affectedColumns{ Column::ShowDimensionNames };
-//
-//    if (showDimensionNames == _showDimensionNames)
-//        return affectedColumns;
-//
-//    _showDimensionNames = showDimensionNames;
-//    _spec["modified"] = _spec["modified"].toInt() + 1;
-//
-//    return affectedColumns;
-//}
-
-//QVariant Configuration::getShowDifferentialProfile(const std::int32_t& role) const
-//{
-//    const auto showDifferentialProfile          = _showDifferentialProfile;
-//    const auto showDifferentialProfileString    = showDifferentialProfile ? "on" : "off";
-//
-//    switch (role)
-//    {
-//        case Qt::DisplayRole:
-//            return showDifferentialProfileString;
-//
-//        case Qt::EditRole:
-//            return showDifferentialProfile;
-//
-//        case Qt::ToolTipRole:
-//            return getTooltip(Column::ShowDifferentialProfile, showDifferentialProfileString);
-//
-//        default:
-//            return QVariant();
-//    }
-//
-//    return QVariant();
-//}
-//
-//Configuration::AffectedColumns Configuration::setShowDifferentialProfile(const bool& showDifferentialProfile)
-//{
-//    AffectedColumns affectedColumns{ Column::ShowDifferentialProfile };
-//
-//    if (showDifferentialProfile == _showDifferentialProfile)
-//        return affectedColumns;
-//
-//    _showDifferentialProfile = showDifferentialProfile;
-//
-//    affectedColumns << updateDifferentialProfile();
-//
-//    return affectedColumns;
-//}
 //
 //QVariant Configuration::getProfileDatasetNames(const std::int32_t& profileIndex, const std::int32_t& role) const
 //{
@@ -394,11 +325,6 @@ const DifferentialProfile* Configuration::getDifferentialProfile() const
 //    return affectedColumns;
 //}
 
-bool Configuration::hasDataset(const QString& datasetName) const
-{
-	return const_cast<Configuration*>(this)->_channels.getChannelByDatasetName(datasetName) != nullptr;
-}
-
 void Configuration::updateSpec()
 {
     /*QVariantMap channels;
@@ -424,10 +350,6 @@ std::int32_t Configuration::getModified() const
     return _spec["modified"].toInt();
 }
 
-bool Configuration::canShowDifferentialProfile() const
-{
-    return _channels.getNoDisplayChannels() >= 2;
-}
 
 //Configuration::AffectedColumns Configuration::updateDifferentialProfile()
 //{

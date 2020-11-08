@@ -155,6 +155,11 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
         for (int column = to_ul(Channel::Column::Start); column <= to_ul(Channel::Column::End); column++)
             affectedIndices << index.siblingAtColumn(column);
 
+        const auto differentialProfileIndex = channel->index(to_ul(Configuration::Child::DifferentialProfile), 0, index.parent().parent());
+
+        for (int column = to_ul(DifferentialProfile::Column::Start); column <= to_ul(DifferentialProfile::Column::End); column++)
+            affectedIndices << differentialProfileIndex.siblingAtColumn(column);
+
         return affectedIndices;
     }},
     { Channel::Column::DatasetNames, [](Channel* channel, const QModelIndex& index, const QVariant& value) {

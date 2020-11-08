@@ -26,7 +26,7 @@ public: // Columns
         DatasetName2,       /** TODO */
 
         Start = Name,
-        End = Name
+        End = DatasetName2
     };
 
     /** Maps column name to column enum and vice versa */
@@ -46,7 +46,7 @@ public: // Get/set data roles
 
     static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getEditRoles;
     static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
+    static QMap<Column, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 protected: // Construction
 

@@ -19,7 +19,7 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,           /** TODO */
+        Name,               /** TODO */
 
         Start = Name,
         End = Name
@@ -104,20 +104,15 @@ public: // ModelIndex: Hierarchy
      */
     int getChildIndex(ModelItem* child) const override;
 
-public: // Overloaded operators
-
-    //Channel* operator [](int i) const { return _channels[i]; }
-
 protected: // Miscellaneous
 
     /** Returns parent configuration model item */
     const Configuration* getConfiguration() const;
 
 public:
-    Channel* getChannelByDatasetName(const QString& datasetName);
-    QVector<std::uint32_t> getChannelsEnabled() const;
+
+    /** Get number of enabled channels */
     std::int32_t getNoChannelsEnabled() const;
-    std::int32_t getNoDisplayChannels() const;
 
 private:
     QVector<Channel*>       _channels;

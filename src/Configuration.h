@@ -56,11 +56,11 @@ public: // Columns
     enum class Child {
         Channels,                       /** Channels model item */
         Global,                         /** Global settings model item */
-        DifferentialProfileSettings,    /** Differential profile settings model item */
-        MiscellaneousSettings,          /** Miscellaneous settings model item */
+        DifferentialProfile,    /** Differential profile settings model item */
+        Miscellaneous,          /** Miscellaneous settings model item */
 
         Start = Channels,               /** Column start */
-        End = MiscellaneousSettings     /** Column end */
+        End = Miscellaneous     /** Column end */
     };
 
 public: // Get/set data roles
@@ -140,12 +140,6 @@ public: // Miscellaneous
     /** Returns the subset names */
     QStringList getSubsets() const { return _subsets; }
 
-	/**
-	 * Returns whether dataset with name \p datasetName exists in the configuration
-	 * @param datasetName Name of the dataset to search for
-	 */
-	bool hasDataset(const QString& datasetName) const;
-
 public: // Spec
 
     /** Update configuration spec */
@@ -158,9 +152,6 @@ public: // Spec
     std::int32_t getModified() const;
 
 private: // Internal
-
-    /** Returns whether a differential profile can be shown */
-    bool canShowDifferentialProfile() const;
 
     /**
      * Updates the differential profile settings

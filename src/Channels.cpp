@@ -16,8 +16,8 @@ const QMap<Channels::Column, std::function<QVariant(Channels* channels)>> Channe
 
 const QMap<Channels::Column, std::function<QVariant(Channels* channels)>> Channels::getDisplayRoles = {
     { Channels::Column::Name, [](Channels* channels) {
-        return channels->_name;
-    }},
+        return getEditRoles[Channels::Column::Name](channels);
+    }}
 };
 
 const QMap<Channels::Column, std::function<QModelIndexList(Channels* channel, const QVariant& value, const QModelIndex& index)>> Channels::setEditRoles = {};
@@ -126,48 +126,13 @@ const Configuration* Channels::getConfiguration() const
     return dynamic_cast<Configuration*>(parent());
 }
 
-Channel* Channels::getChannelByDatasetName(const QString& datasetName)
-{
-    /*for (auto channel : _channels) {
-        if (datasetName == channel->getData(Channel::DatasetName, Qt::EditRole).toString())
-            return channel;
-    }*/
-
-    return nullptr;
-}
-
-QVector<std::uint32_t> Channels::getChannelsEnabled() const
-{
-    QVector<std::uint32_t> channelsEnabled;
-
-    /*for (auto channel : _channels) {
-        if (channel->getData(Channel::Enabled, Qt::EditRole).toBool())
-            channelsEnabled << channel->getData(Channel::Index, Qt::EditRole).toInt();
-    }*/
-
-    return channelsEnabled;
-}
-
 std::int32_t Channels::getNoChannelsEnabled() const
 {
     auto noChannelsEnabled = 0;
 
-    /*for (auto channel : _channels) {
-        if (channel->getData(Channel::Enabled, Qt::EditRole).toBool())
+    for (auto channel : _channels)
+        if (channel->_enabled)
             noChannelsEnabled++;
-    }*/
 
     return noChannelsEnabled;
-}
-
-std::int32_t Channels::getNoDisplayChannels() const
-{
-    auto noDisplayChannels = 0;
-
-    for (auto channel : _channels) {
-        if (channel->canDisplay())
-            noDisplayChannels++;
-    }
-
-    return noDisplayChannels;
 }
