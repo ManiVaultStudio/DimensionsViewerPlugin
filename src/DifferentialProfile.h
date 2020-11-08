@@ -18,12 +18,12 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,
-        Enabled,
-        DatasetNames1,
-        DatasetNames2,
-        DatasetName1,
-        DatasetName2,
+        Name,               /** TODO */
+        Enabled,            /** TODO */
+        DatasetNames1,      /** TODO */
+        DatasetNames2,      /** TODO */
+        DatasetName1,       /** TODO */
+        DatasetName2,       /** TODO */
 
         Start = Name,
         End = Name

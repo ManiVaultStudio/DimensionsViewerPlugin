@@ -27,20 +27,20 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,
-        Index,
-        InternalName,
-        DisplayName,
-        Enabled,
-        DatasetNames,
-        DatasetName,
-        Color,
-        Opacity,
-        ProfileTypes,
-        ProfileType,
-        RangeTypes,
-        RangeType,
-        Settings,
+        Name,               /** TODO */
+        Index,              /** TODO */
+        InternalName,       /** TODO */
+        DisplayName,        /** TODO */
+        Enabled,            /** TODO */
+        DatasetNames,       /** TODO */
+        DatasetName,        /** TODO */
+        Color,              /** TODO */
+        Opacity,            /** TODO */
+        ProfileTypes,       /** TODO */
+        ProfileType,        /** TODO */
+        RangeTypes,         /** TODO */
+        RangeType,          /** TODO */
+        Settings,           /** TODO */
 
         Start = Name,
         End = Settings

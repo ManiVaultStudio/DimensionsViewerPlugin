@@ -15,7 +15,7 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,
+        Name,           /** TODO */
 
         Start = Name,
         End = Name

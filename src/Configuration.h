@@ -35,8 +35,8 @@ public: // Columns
         SelectionStamp,             /** Auxiliary column for triggering synchronization */
         ShowDimensionNames,         /** Whether to show dimension names in the viewer */
 
-        Start = Name,               /** Column start */
-        End = ShowDimensionNames    /** Column end */
+        Start = Name,
+        End = ShowDimensionNames
     };
 
     /** Maps column name to column enum and vice versa */
