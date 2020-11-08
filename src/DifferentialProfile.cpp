@@ -74,7 +74,32 @@ int DifferentialProfile::columnCount() const
 
 Qt::ItemFlags DifferentialProfile::getFlags(const QModelIndex& index) const
 {
-    return Qt::NoItemFlags;
+    Qt::ItemFlags flags;
+
+    const auto column       = static_cast<Column>(index.column());
+    const auto noSubsets    = getConfiguration()->getSubsets().count();
+
+    switch (column)
+    {
+        case Column::Enabled:
+        {
+            if (_enabled && noSubsets >= 2)
+                flags |= Qt::ItemIsEnabled;
+
+            break;
+        }
+
+        case Column::DatasetNames1:
+        case Column::DatasetNames2:
+        case Column::DatasetName1:
+        case Column::DatasetName2:
+            break;
+
+        default:
+            break;
+    }
+
+    return flags;
 }
 
 QVariant DifferentialProfile::getData(const QModelIndex& index, const int& role) const
