@@ -43,7 +43,10 @@ const QMap<Channel::Column, std::function<QVariant(Channel* channel, const QMode
         return channel->_enabled;
     }},
     { Channel::Column::DatasetNames, [](Channel* channel, const QModelIndex& index) {
-        return channel->getConfigurationsModel()->index(0, 0).siblingAtColumn(Configurations::Column::DatasetNames);
+        if (channel->_index == 0)
+            return channel->getConfigurationsModel()->index(0, 0).siblingAtColumn(Configurations::Column::DatasetNames).data(Qt::EditRole).toStringList();
+        
+        return index.parent().parent().siblingAtColumn(Configuration::Column::Subsets).data(Qt::EditRole).toStringList();
     }},
     { Channel::Column::DatasetName, [](Channel* channel, const QModelIndex& index) {
         return channel->_datasetName;
