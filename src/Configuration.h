@@ -149,13 +149,6 @@ private: // Internal
     bool canShowDifferentialProfile() const;
 
     /**
-     * Get tooltip for \p column
-     * @param column Column
-     * @param description Description
-     */
-    QString getTooltip(const std::int32_t& column, const QString& description) const;
-
-    /**
      * Updates the differential profile settings
      * @return Columns that are affected by the operation
      */

@@ -101,7 +101,7 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
 
 int Configuration::columnCount() const 
 {
-    return Column::End + 1;
+    return ModelItem::maxNoColumns;
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
@@ -209,13 +209,6 @@ int Configuration::getChildIndex(ModelItem* child) const
 
     return 0;
 }
-
-
-
-
-
-//
-
 
 //QVariant Configuration::getShowDimensionNames(const std::int32_t& role) const
 //{
@@ -420,16 +413,6 @@ std::int32_t Configuration::getModified() const
 bool Configuration::canShowDifferentialProfile() const
 {
     return _channels.getNoDisplayChannels() >= 2;
-}
-
-QString Configuration::getTooltip(const std::int32_t& column, const QString& description) const
-{
-    const auto columnName = getColumnName(static_cast<Configuration::Column>(column));
-
-    if (description.isEmpty())
-        return columnName;
-
-    return QString("%1: %2").arg(columnName, description);
 }
 
 //Configuration::AffectedColumns Configuration::updateDifferentialProfile()

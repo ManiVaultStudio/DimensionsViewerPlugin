@@ -102,6 +102,8 @@ protected:
     QString         _name;          /** Name */
     ModelItem*      _parent;		/** Parent model item */
 
+    static std::int32_t maxNoColumns;
+
 private:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;
 

@@ -123,7 +123,7 @@ Global::Global(ModelItem* parent) :
 
 int Global::columnCount() const 
 {
-    return Column::End + 1;
+    return ModelItem::maxNoColumns;
 }
 
 Qt::ItemFlags Global::getFlags(const QModelIndex& index) const

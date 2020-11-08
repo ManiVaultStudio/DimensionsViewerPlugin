@@ -34,7 +34,7 @@ Channels::Channels(ModelItem* parent, const QString& datasetName, const QString&
 
 int Channels::columnCount() const
 {
-    return 20;// Column::End + 1;
+    return ModelItem::maxNoColumns;
 }
 
 Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const

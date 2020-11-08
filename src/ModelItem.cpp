@@ -4,6 +4,7 @@
 
 #include "CoreInterface.h"
 
+std::int32_t ModelItem::maxNoColumns = 25;
 DimensionsViewerPlugin* ModelItem::dimensionsViewerPlugin = nullptr;
 
 ModelItem::ModelItem(const QString& name, ModelItem* parent /*= nullptr*/) :
