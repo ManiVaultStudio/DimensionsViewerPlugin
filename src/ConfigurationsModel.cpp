@@ -169,7 +169,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
     } 
 }
 
-void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
+void ConfigurationsModel::selectRow(const std::int32_t& row)
 {
     const auto presentWarning = [](const QString& reason) {
         QMessageBox::warning(nullptr, "Unable to visualize dataset dimensions", reason);
@@ -177,19 +177,17 @@ void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
 
     try
     {
-        _selectionModel.select(index(rowIndex, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        const auto configurationIndex   = index(row, 0);
+        const auto channelsIndex        = index(0, 0, configurationIndex);
+        const auto firstChannelIndex    = index(0, 0, channelsIndex);
 
-        /* TODO
-        auto configuration = _configurations.getChild(rowIndex);
-
-        const auto datasetName = configuration->getChannels()[0]->getDatasetName();
-
-        if (configuration->getChannels()[0]->getNoDimensions() > Configuration::maxNoDimensions) {
+        if (firstChannelIndex.siblingAtColumn(to_ul(Channel::Column::NoDimensions)).data(Qt::EditRole).toInt() > Configuration::maxNoDimensions) {
+            const auto datasetName = configurationIndex.siblingAtColumn(to_ul(Configuration::Column::DatasetName)).data(Qt::EditRole).toString();
             throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());
         }
         else {
-            _selectionModel.select(index(rowIndex, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-        }*/
+            _selectionModel.select(configurationIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        }
     }
     catch (std::exception e)
     {
@@ -198,6 +196,15 @@ void ConfigurationsModel::selectRow(const std::int32_t& rowIndex)
     catch (...) {
         presentWarning("An unhandled exception occurred");
     }
+}
+
+void ConfigurationsModel::selectRow(const QString& datasetName)
+{
+    const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
+    const auto hits     = match(index(0, to_ul(Configuration::Column::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
+
+    if (!hits.isEmpty())
+        selectRow(hits.first().row());
 }
 
 Configuration* ConfigurationsModel::getConfiguration(const QModelIndex& index) const

@@ -1,5 +1,6 @@
 #include "DimensionsViewerWidget.h"
 #include "DimensionsViewerPlugin.h"
+#include "Configuration.h"
 
 #include <QFileInfo>
 #include <QWebChannel>
@@ -27,9 +28,9 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 
 void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
 {
-	const auto items = dragEnterEvent->mimeData()->text().split("\n");
-	const auto datasetName = items.at(0);
-	const auto datasetType = items.at(1);
+	const auto items        = dragEnterEvent->mimeData()->text().split("\n");
+	const auto datasetName  = items.at(0);
+	const auto datasetType  = items.at(1);
 
 	if (datasetType == "Points")
 		dragEnterEvent->acceptProposedAction();
@@ -37,18 +38,8 @@ void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
 
 void DimensionsViewerWidget::dropEvent(QDropEvent* dropEvent)
 {
-    //TODO
-	//const auto items        = dropEvent->mimeData()->text().split("\n");
-	//const auto datasetName  = items.at(0);
+	const auto items        = dropEvent->mimeData()->text().split("\n");
+	const auto datasetName  = items.at(0);
 
-	//auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
-
-	//for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
-	//	const auto hits = configurationsModel.match(configurationsModel.index(0, Configuration::Column::ChannelDatasetNameStart + channelIndex), Qt::DisplayRole, datasetName, -1, Qt::MatchExactly);
-
-	//	if (!hits.isEmpty()) {
-	//		configurationsModel.selectRow(hits.first().row());
-	//		break;
-	//	}
-	//}
+    _dimensionsViewerPlugin->getConfigurationsModel().selectRow(datasetName);
 }

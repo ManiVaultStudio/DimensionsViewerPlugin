@@ -105,6 +105,20 @@ public: // Dataset management
 	 */
 	void addDataset(const QString& datasetName);
 
+public: // Row selection
+
+    /**
+     * Select configuration by index
+     * @param row Row index
+     */
+    void selectRow(const std::int32_t& row);
+
+    /**
+     * Select configuration by datasetName
+     * @param datasetName Dataset name
+     */
+    void selectRow(const QString& datasetName);
+
 public: // Miscellaneous
 
 	/** Returns the selection model */
@@ -112,12 +126,6 @@ public: // Miscellaneous
 
     /** Returns the dataset names */
     QStringList getDatasetNames() const { return _datasetNames; }
-
-	/**
-	 * Select a single row
-	 * @param row Row identifier
-	 */
-	void selectRow(const std::int32_t& rowIndex);
 
     /** TODO */
     Configuration* getConfiguration(const QModelIndex& index) const;

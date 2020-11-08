@@ -79,7 +79,7 @@ public: // Construction
 	 */
 	Configuration(ModelItem* parent, const QString& datasetName, const QString& dataName);
 
-public: // ModelIndex: MVC
+public: // ModelIndex: Model
 
     /** Returns the number of columns in the item */
     int columnCount() const override;

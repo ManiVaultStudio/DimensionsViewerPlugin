@@ -51,7 +51,7 @@ protected: // Construction
 
 	Global(ModelItem* parent);
 
-public: // ModelIndex: MVC
+public: // ModelIndex: Model
 
     /** Returns the number of columns in the item */
     int columnCount() const override;

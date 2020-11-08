@@ -34,6 +34,8 @@ public: // Columns
         Enabled,            /** TODO */
         DatasetNames,       /** TODO */
         DatasetName,        /** TODO */
+        NoDimensions,       /** TODO */
+        NoPoints,           /** TODO */
         Color,              /** TODO */
         Opacity,            /** TODO */
         ProfileTypes,       /** TODO */
@@ -80,7 +82,7 @@ protected: // Construction
 	 */
 	Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f);
 
-public: // ModelIndex: MVC
+public: // ModelIndex: Model
 
     /** Returns the number of columns in the item */
     int columnCount() const override;
@@ -127,13 +129,16 @@ public: // ModelIndex: Hierarchy
      */
     int getChildIndex(ModelItem* child) const override;
 
-public: // Points wrapper functions
+public: // Points data functions
 
     /** Returns the number of dimensions */
     std::int32_t getNoDimensions() const;
 
     /** Returns the number of points */
     std::int32_t getNoPoints() const;
+
+    /** Resolved points data based on points dataset name */
+    void resolvePoints();
 
 protected: // Miscellaneous
 	

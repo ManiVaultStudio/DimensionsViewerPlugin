@@ -52,6 +52,12 @@ const QMap<Channel::Column, std::function<QVariant(Channel* channel)>> Channel::
     { Channel::Column::DatasetName, [](Channel* channel) {
         return channel->_datasetName;
     }},
+    { Channel::Column::NoDimensions, [](Channel* channel) {
+        return channel->getNoDimensions();
+    }},
+    { Channel::Column::NoPoints, [](Channel* channel) {
+        return channel->getNoPoints();
+    }},
     { Channel::Column::Color, [](Channel* channel) {
         return QVariant::fromValue(channel->_color);
     }},
@@ -120,6 +126,12 @@ const QMap<Channel::Column, std::function<QVariant(Channel* channel)>> Channel::
     { Channel::Column::DatasetName, [](Channel* channel) { 
         return getEditRoles[Channel::Column::DatasetName](channel).toString();
     }},
+    { Channel::Column::NoDimensions, [](Channel* channel) {
+        return QString::number(getEditRoles[Channel::Column::NoDimensions](channel).toInt());
+    }},
+    { Channel::Column::NoPoints, [](Channel* channel) {
+        return QString::number(getEditRoles[Channel::Column::NoPoints](channel).toInt());
+    }},
     { Channel::Column::Color, [](Channel* channel) {
         return getEditRoles[Channel::Column::Color](channel).value<QColor>().name();
     }},
@@ -175,8 +187,7 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
     { Channel::Column::DatasetName, [](Channel* channel, const QModelIndex& index, const QVariant& value) {
         channel->_datasetName = value.toString();
 
-        if (!channel->_datasetName.isEmpty())
-            channel->_points = &dynamic_cast<Points&>(channel->getCore()->requestData(channel->_datasetName));
+        channel->resolvePoints();
 
         return QModelIndexList();
     }},
@@ -219,6 +230,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_spec(),
     _points(nullptr)
 {
+    resolvePoints();
 }
 
 int Channel::columnCount() const 
@@ -396,6 +408,12 @@ std::int32_t Channel::getNoDimensions() const
 std::int32_t Channel::getNoPoints() const
 {
     return _points->getNumPoints();
+}
+
+void Channel::resolvePoints()
+{
+    if (!_datasetName.isEmpty())
+        _points = &dynamic_cast<Points&>(getCore()->requestData(_datasetName));
 }
 
 const Channels* Channel::getChannels() const

@@ -57,7 +57,7 @@ protected: // Construction
     /** TODO */
 	Channels(ModelItem* parent, const QString& datasetName, const QString& dataName);
 
-public: // ModelIndex: MVC
+public: // ModelIndex: Model
 
     /** Returns the number of columns in the item */
     int columnCount() const override;
@@ -113,6 +113,10 @@ public:
 
     /** Get number of enabled channels */
     std::int32_t getNoChannelsEnabled() const;
+
+public: // Overloaded operators
+
+    Channel* operator [](int i) const { return _channels[i]; }
 
 private:
     QVector<Channel*>       _channels;
