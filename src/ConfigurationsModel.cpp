@@ -146,27 +146,25 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
         }
         endInsertRows();
 
-        auto datasetNames = index(0, Configurations::Column::DatasetNames).data(Qt::EditRole).toStringList();
+        const auto datasetNamesIndex = index(0, Configurations::Column::DatasetNames);
+
+        auto datasetNames = datasetNamesIndex.data(Qt::EditRole).toStringList();
         
         datasetNames << datasetName;
 
-        setData(index(0, Configurations::Column::DatasetNames), datasetNames);
-
-        qDebug() << data(index(0, Configurations::Column::DatasetNames), Qt::EditRole).toStringList();
-
+        setData(datasetNamesIndex, datasetNames);
+        
         if (_configurations.getChildCount() == 1)
             selectRow(0);
+
     } else {
-        auto datasetNames = hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames).data(Qt::EditRole).toStringList();
+        const auto subsetsIndex = hits.first().siblingAtColumn(Configuration::Column::Subsets);
 
-        datasetNames << datasetName;
+        auto subsets = subsetsIndex.data(Qt::EditRole).toStringList();
 
-        qDebug() << hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames).data(Qt::EditRole).toStringList();
+        subsets << datasetName;
 
-        setData(hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames), datasetNames);
-        setData(hits.first().siblingAtRow(Channels::Child::Channel3).siblingAtColumn(Channel::Column::DatasetNames), datasetNames);
-
-        qDebug() << hits.first().siblingAtRow(Channels::Child::Channel2).siblingAtColumn(Channel::Column::DatasetNames).data(Qt::EditRole).toStringList();
+        setData(subsetsIndex, subsets);
     } 
 }
 
