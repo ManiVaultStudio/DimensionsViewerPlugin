@@ -48,7 +48,7 @@ QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::Di
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
 
-    auto item = getItem(index);
+    const auto item = index.parent().isValid() ? getItem(index) : &_configurations;
 
     return item->getData(index, role);
 }
@@ -58,7 +58,7 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
     if (index == QModelIndex())
         return false;
 
-    auto item = index.parent().isValid() ? getItem(index) : &_configurations;
+    const auto item = index.parent().isValid() ? getItem(index) : &_configurations;
 
     const auto affectedIndices = item->setData(index, value, role);
 
@@ -92,7 +92,7 @@ Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const
 QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
     if (orientation == Qt::Horizontal) {
-        return Configuration::getColumnName(static_cast<Configuration::Column>(section));
+        return "asdasdsd";// Configuration::getColumnName(static_cast<Configuration::Column>(section));
     }
 
     return QVariant();
