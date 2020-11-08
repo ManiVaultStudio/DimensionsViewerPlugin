@@ -73,7 +73,7 @@ const QMap<Configuration::Column, std::function<QModelIndexList(Configuration* c
         const auto channelsIndex = configuration->index(0, 0, index.siblingAtColumn(0));
 
         for (auto channel : channels) {
-            for (int column = Channel::Column::Start; column <= Channel::Column::End; column++)
+            for (int column = to_ul(Channel::Column::Start); column <= to_ul(Channel::Column::End); column++)
                 affectedIndices << configuration->index(channel, 0, channelsIndex).siblingAtColumn(column);
         }
 
@@ -88,6 +88,7 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
     _dataName(dataName),
 	_channels(this, datasetName, dataName),
 	_global(this),
+	_differentialProfile(this),
 	_subsets(),
     _showDimensionNames(false),
     _spec()

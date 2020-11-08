@@ -134,7 +134,7 @@ QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
-    const auto hits     = match(index(0, Configuration::Column::DataName), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
+    const auto hits     = match(index(0, to_ul(Configuration::Column::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
 
     if (hits.isEmpty()) {
         const auto noConfigurations = _configurations.getChildCount();
@@ -152,14 +152,14 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
             const auto channelsIndex        = index(0, 0, configurationIndex);
             const auto firstChannelIndex    = index(0, 0, channelsIndex);
 
-            setData(firstChannelIndex.siblingAtColumn(Channel::Column::DatasetNames), _datasetNames);
+            setData(firstChannelIndex.siblingAtColumn(to_ul(Channel::Column::DatasetNames)), _datasetNames);
         }
 
         if (_configurations.getChildCount() == 1)
             selectRow(0);
 
     } else {
-        const auto subsetsIndex = hits.first().siblingAtColumn(Configuration::Column::Subsets);
+        const auto subsetsIndex = hits.first().siblingAtColumn(to_ul(Configuration::Column::Subsets));
 
         auto subsets = subsetsIndex.data(Qt::EditRole).toStringList();
 

@@ -151,7 +151,7 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
 
         QModelIndexList affectedIndices;
 
-        for (int column = Channel::Column::Start; column <= Channel::Column::End; column++)
+        for (int column = to_ul(Channel::Column::Start); column <= to_ul(Channel::Column::End); column++)
             affectedIndices << index.siblingAtColumn(column);
 
         return affectedIndices;
@@ -161,7 +161,7 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
 
         QModelIndexList affectedIndices;
 
-        for (int column = Channel::Column::Start; column <= Channel::Column::End; column++)
+        for (int column = to_ul(Channel::Column::Start); column <= to_ul(Channel::Column::End); column++)
             affectedIndices << index.siblingAtColumn(column);
 
         return affectedIndices;
@@ -187,8 +187,8 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
         
         QModelIndexList affectedIndices;
 
-        affectedIndices << index.siblingAtColumn(Channel::Column::RangeTypes);
-        affectedIndices << index.siblingAtColumn(Channel::Column::RangeType);
+        affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
+        affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeType));
 
         return affectedIndices;
     }},
@@ -226,7 +226,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
     const auto column           = static_cast<Column>(index.column());
     const auto globalEnabled    = getGlobalModelIndex(index).siblingAtColumn(Global::Column::Enabled).data(Qt::EditRole).toBool();
-    const auto subsets          = getConfigurationModelIndex(index).siblingAtColumn(Configuration::Column::Subsets).data(Qt::EditRole).toStringList();
+    const auto subsets          = getConfigurationModelIndex(index).siblingAtColumn(to_ul(Configuration::Column::Subsets)).data(Qt::EditRole).toStringList();
 
     switch (column)
     {

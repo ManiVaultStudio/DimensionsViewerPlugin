@@ -3,6 +3,7 @@
 #include "ModelItem.h"
 #include "Channels.h"
 #include "Global.h"
+#include "DifferentialProfile.h"
 
 #include <QStringList>
 #include <QColor>
@@ -24,8 +25,8 @@ public: // Constants
 
 public: // Columns
 
-    /** TODO */
-    enum Column {
+    /** Data columns */
+    enum class Column {
         Name,                       /** TODO */
         Index,                      /** Index */
         DatasetName,                /** TODO */
@@ -164,6 +165,7 @@ protected:
     QString					_dataName;			            /** Name of the points data */
     Channels		        _channels;                      /** TODO */
     Global                  _global;                        /** TODO */
+    DifferentialProfile     _differentialProfile;           /** TODO */
     QStringList		        _subsets;                       /** Subsets of the primary dataset (selected in the first channel) */
     bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */

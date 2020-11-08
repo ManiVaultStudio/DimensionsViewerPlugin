@@ -16,8 +16,8 @@ class DifferentialProfile : public ModelItem {
 
 public: // Columns
 
-    /** TODO */
-    enum Column {
+    /** Data columns */
+    enum class Column {
         Name,
         Enabled,
         DatasetNames1,
@@ -38,7 +38,7 @@ public: // Columns
     }
 
     /** Get enum representation from column type name */
-    static int getColumnTypeEnum(const QString& columnName) {
+    static Column getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 

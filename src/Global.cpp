@@ -69,10 +69,10 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
         affectedIndices << index.siblingAtColumn(Global::Column::RangeType);
         
         for (int channelIndex = 0; channelIndex < 3; channelIndex++) {
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileTypes);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileType);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeTypes);
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeType);
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileTypes));
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileType));
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeTypes));
+            affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeType));
         }
 
         return affectedIndices;
@@ -87,10 +87,10 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 
         if (global->_enabled) {
             for (int channelIndex = 0; channelIndex < 3; channelIndex++) {
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileTypes);
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileType);
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeTypes);
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeType);
+                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileTypes));
+                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileType));
+                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeTypes));
+                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeType));
             }
         }
 
@@ -103,10 +103,10 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 
         if (global->_enabled) {
             for (int channelIndex = 0; channelIndex < 3; channelIndex++) {
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileTypes);
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::ProfileType);
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeTypes);
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, Channel::Column::RangeType);
+                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileTypes));
+                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileType));
+                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeTypes));
+                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeType));
             }
         }
 
