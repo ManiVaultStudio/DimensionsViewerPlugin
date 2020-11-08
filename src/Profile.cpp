@@ -15,13 +15,13 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
     { "2 StdDev", Profile::RangeType::StandardDeviation2 },
     { "3 StdDev", Profile::RangeType::StandardDeviation3 },
     { "MinMax", Profile::RangeType::MinMax },
-    { "5% - 95% percentile", Profile::RangeType::Percentile5 },
-    { "10% - 90% percentile", Profile::RangeType::Percentile10 }
+    { "5/95 perc.", Profile::RangeType::Percentile5 },
+    { "10/90 perc.", Profile::RangeType::Percentile10 }
 };
 
 Profile::Profile(const ProfileType& profileType) :
     _profileType(ProfileType::None),
-    _rangeType(RangeType::None),
+    _rangeType(RangeType::MinMax),
     _rangeTypes()
 {
     setProfileType(ProfileType::Mean);
@@ -53,6 +53,7 @@ void Profile::setProfileType(const ProfileType& profileType)
 
         case ProfileType::Mean:
         {
+            _rangeTypes << RangeType::None;
             _rangeTypes << RangeType::StandardDeviation1;
             _rangeTypes << RangeType::StandardDeviation2;
             _rangeTypes << RangeType::StandardDeviation3;

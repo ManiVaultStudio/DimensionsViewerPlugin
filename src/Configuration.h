@@ -27,16 +27,15 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,                       /** TODO */
+        Name,                       /** Name of the model item */
         Index,                      /** Index */
         DatasetName,                /** TODO */
         DataName,                   /** TODO */
         Subsets,                    /** The subset(s) parameter of the first dataset */
         SelectionStamp,             /** Auxiliary column for triggering synchronization */
-        ShowDimensionNames,         /** Whether to show dimension names in the viewer */
 
         Start = Name,
-        End = ShowDimensionNames
+        End = SelectionStamp
     };
 
     /** Maps column name to column enum and vice versa */
@@ -52,22 +51,22 @@ public: // Columns
         return columns[columnName];
     }
 
-    /** TODO */
+    /** Child model items */
     enum class Child {
-        Channels,                       /** Channels model item */
-        Global,                         /** Global settings model item */
-        DifferentialProfile,    /** Differential profile settings model item */
-        Miscellaneous,          /** Miscellaneous settings model item */
+        Channels,                   /** Channels model item */
+        Global,                     /** Global settings model item */
+        DifferentialProfile,        /** Differential profile settings model item */
+        Miscellaneous,              /** Miscellaneous settings model item */
 
-        Start = Channels,               /** Column start */
-        End = Miscellaneous     /** Column end */
+        Start = Channels,
+        End = Miscellaneous
     };
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(Configuration* configuration, const QModelIndex& index)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Configuration* configuration, const QModelIndex& index)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(Configuration* configuration, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
+    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(Configuration* configuration, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 public: // Construction
 
@@ -167,7 +166,6 @@ protected:
     Global                  _global;                        /** TODO */
     DifferentialProfile     _differentialProfile;           /** TODO */
     QStringList		        _subsets;                       /** Subsets of the primary dataset (selected in the first channel) */
-    bool                    _showDimensionNames;            /** Whether to show dimension names in the viewer */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:

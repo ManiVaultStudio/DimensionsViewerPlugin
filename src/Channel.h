@@ -27,7 +27,7 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,               /** TODO */
+        Name,               /** Name of the model item */
         Index,              /** TODO */
         InternalName,       /** TODO */
         DisplayName,        /** TODO */

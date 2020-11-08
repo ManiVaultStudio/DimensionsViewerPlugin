@@ -41,5 +41,5 @@ void ConfigurationWidget::setPersistentModelIndex(const QPersistentModelIndex& m
     _ui->channelsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::Channels)));
     _ui->globalSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::Global)));
     _ui->differentialProfileSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::DifferentialProfile)));
-    _ui->miscellaneousSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::Miscellaneous)));
+    _ui->miscellaneousSettingsWidget->setPersistentModelIndex(modelIndex.sibling(static_cast<int>(Configuration::Child::Miscellaneous), 0));
 }

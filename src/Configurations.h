@@ -15,7 +15,7 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,           /** TODO */
+        Name,           /** Name of the model item */
 
         Start = Name,
         End = Name

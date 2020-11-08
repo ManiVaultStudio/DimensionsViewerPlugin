@@ -2,31 +2,25 @@
 
 #include "ModelItem.h"
 
-class Configuration;
-
 #include <QObject>
-#include <QVector>
+#include <QModelIndexList>
 
 /**
- * Differential profile class
+ * Miscellaneous settings class
  *
  * @author T. Kroes
  */
-class DifferentialProfile : public ModelItem {
+class Miscellaneous : public ModelItem {
 
 public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,               /** Name of the model item */
-        Enabled,            /** TODO */
-        DatasetNames1,      /** TODO */
-        DatasetNames2,      /** TODO */
-        DatasetName1,       /** TODO */
-        DatasetName2,       /** TODO */
+        Name,                   /** Name of the model item */
+        ShowDimensionNames,     /** Whether to show dimension names in the viewer */
 
         Start = Name,
-        End = DatasetName2
+        End = ShowDimensionNames
     };
 
     /** Maps column name to column enum and vice versa */
@@ -44,9 +38,9 @@ public: // Columns
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
+    static QMap<Column, std::function<QVariant(Miscellaneous* miscellaneous)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Miscellaneous* miscellaneous)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(Miscellaneous* miscellaneous, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 protected: // Construction
 
@@ -54,7 +48,7 @@ protected: // Construction
      * Constructor
      * @param parent Parent model item
      */
-	DifferentialProfile(ModelItem* parent);
+	Miscellaneous(ModelItem* parent);
 
 public: // ModelIndex: Model
 
@@ -92,26 +86,26 @@ public: // ModelIndex: Hierarchy
      * @param index Index of the child model item
      * @return Model item at index
      */
-    ModelItem* getChild(const int& index) const override;
+    ModelItem* getChild(const int& index) const override {
+        return nullptr;
+    };
 
     /** Returns the number of children */
-    int getChildCount() const override;
+    int getChildCount() const override {
+        return 0;
+    };
 
     /**
      * Returns the child index
      * @param child Pointer to child model item
      */
-    int getChildIndex(ModelItem* child) const override;
+    int getChildIndex(ModelItem* child) const override {
+        return 0;
+    };
 
-protected: // Miscellaneous
-
-    /** Returns parent configuration model item */
-    Configuration* getConfiguration() const;
-
-private:
-    bool            _enabled;                       /** Whether to show the differential profile in the viewer */
-    QStringList     _profileDatasetNames[2];        /** Profile 1-2 dataset names (for differential profile) */
-    QString         _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
+protected:
+    bool        _showDimensionNames;    /** Whether to show dimension names in the viewer */
 
     friend class Configuration;
+    friend class Channel;
 };

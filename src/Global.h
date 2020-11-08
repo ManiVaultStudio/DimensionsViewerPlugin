@@ -17,12 +17,12 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,               /** TODO */
-        Enabled,            /** TODO */
-        ProfileTypes,       /** TODO */
-        ProfileType,        /** TODO */
-        RangeTypes,         /** TODO */
-        RangeType,          /** TODO */
+        Name,               /** Name of the model item */
+        Enabled,            /** Whether global settings are enabled */
+        ProfileTypes,       /** Available profile types */
+        ProfileType,        /** Selected profile type */
+        RangeTypes,         /** Available range types */
+        RangeType,          /** Selected range type */
 
         Start = Name,
         End = RangeType
@@ -49,6 +49,10 @@ public: // Get/set data roles
 
 protected: // Construction
 
+    /**
+     * Constructor
+     * @param parent Parent model item
+     */
 	Global(ModelItem* parent);
 
 public: // ModelIndex: Model
@@ -87,27 +91,22 @@ public: // ModelIndex: Hierarchy
      * @param index Index of the child model item
      * @return Model item at index
      */
-    ModelItem* getChild(const int& index) const override;
+    ModelItem* getChild(const int& index) const override {
+        return nullptr;
+    }
 
     /** Returns the number of children */
-    int getChildCount() const override;
+    int getChildCount() const override {
+        return 0;
+    }
 
     /**
      * Returns the child index
      * @param child Pointer to child model item
      */
-    int getChildIndex(ModelItem* child) const override;
-
-protected: // Utility methods for obtaining model indices
-
-    /** Get configuration model index */
-    static QModelIndex getConfigurationModelIndex(const QModelIndex& index);
-
-    /** Get channels model index */
-    static QModelIndex getChannelsModelIndex(const QModelIndex& index);
-
-    /** Get channel model index */
-    static QModelIndex getChannelModelIndex(const QModelIndex& index, const std::int32_t& row, const std::int32_t& column);
+    int getChildIndex(ModelItem* child) const override {
+        return 0;
+    }
 
 protected:
     bool        _enabled;       /** Whether whether global settings are on or off */

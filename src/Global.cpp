@@ -68,11 +68,22 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
         affectedIndices << index.siblingAtColumn(to_ul(Global::Column::RangeTypes));
         affectedIndices << index.siblingAtColumn(to_ul(Global::Column::RangeType));
         
-        for (int channelIndex = 0; channelIndex < 3; channelIndex++) {
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileTypes));
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileType));
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeTypes));
-            affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeType));
+        const auto configurationIndex   = index.parent();
+        const auto channelsIndex        = global->index(0, 0, configurationIndex);
+
+        QVector<std::int32_t> channels;
+
+        channels << Channels::Child::Channel1;
+        channels << Channels::Child::Channel2;
+        channels << Channels::Child::Channel3;
+
+        for (auto channel : channels) {
+            const auto channelIndex = global->index(channel, 0, channelsIndex);
+
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeType));
         }
 
         return affectedIndices;
@@ -85,13 +96,22 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
         affectedIndices << index.siblingAtColumn(to_ul(Global::Column::RangeTypes));
         affectedIndices << index.siblingAtColumn(to_ul(Global::Column::RangeType));
 
-        if (global->_enabled) {
-            for (int channelIndex = 0; channelIndex < 3; channelIndex++) {
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileTypes));
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileType));
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeTypes));
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeType));
-            }
+        const auto configurationIndex = index.parent();
+        const auto channelsIndex = global->index(0, 0, configurationIndex);
+
+        QVector<std::int32_t> channels;
+
+        channels << Channels::Child::Channel1;
+        channels << Channels::Child::Channel2;
+        channels << Channels::Child::Channel3;
+
+        for (auto channel : channels) {
+            const auto channelIndex = global->index(channel, 0, channelsIndex);
+
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeType));
         }
 
         return affectedIndices;
@@ -101,13 +121,22 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
         
         QModelIndexList affectedIndices;
 
-        if (global->_enabled) {
-            for (int channelIndex = 0; channelIndex < 3; channelIndex++) {
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileTypes));
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::ProfileType));
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeTypes));
-                affectedIndices << Global::getChannelModelIndex(index, channelIndex, to_ul(Channel::Column::RangeType));
-            }
+        const auto configurationIndex = index.parent();
+        const auto channelsIndex = global->index(0, 0, configurationIndex);
+
+        QVector<std::int32_t> channels;
+
+        channels << Channels::Child::Channel1;
+        channels << Channels::Child::Channel2;
+        channels << Channels::Child::Channel3;
+
+        for (auto channel : channels) {
+            const auto channelIndex = global->index(channel, 0, channelsIndex);
+
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeType));
         }
 
         return affectedIndices;
@@ -216,34 +245,4 @@ QModelIndexList Global::setData(const QModelIndex& index, const QVariant& value,
     }
 
     return affectedIndices;
-}
-
-ModelItem* Global::getChild(const int& index) const
-{
-    return nullptr;
-}
-
-int Global::getChildCount() const
-{
-    return 0;
-}
-
-int Global::getChildIndex(ModelItem* child) const
-{
-    return 0;
-}
-
-QModelIndex Global::getConfigurationModelIndex(const QModelIndex& index)
-{
-    return index.parent();
-}
-
-QModelIndex Global::getChannelsModelIndex(const QModelIndex& index)
-{
-    return getConfigurationsModel()->index(0, 0, getConfigurationModelIndex(index));
-}
-
-QModelIndex Global::getChannelModelIndex(const QModelIndex& index, const std::int32_t& row, const std::int32_t& column)
-{
-    return getConfigurationsModel()->index(row, column, getChannelsModelIndex(index));
 }

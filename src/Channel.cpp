@@ -1,6 +1,7 @@
 #include "Channel.h"
 #include "DimensionsViewerPlugin.h"
 #include "Configuration.h"
+#include "Miscellaneous.h"
 #include "Channels.h"
 
 #include "PointData.h"
@@ -172,6 +173,8 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
         for (int column = to_ul(DifferentialProfile::Column::Start); column <= to_ul(DifferentialProfile::Column::End); column++)
             affectedIndices << differentialProfileIndex.siblingAtColumn(column);
 
+        affectedIndices << index.parent().parent().siblingAtColumn(to_ul(Miscellaneous::Column::ShowDimensionNames));
+
         return affectedIndices;
     }},
     { Channel::Column::DatasetNames, [](Channel* channel, const QModelIndex& index, const QVariant& value) {
@@ -251,7 +254,11 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         case Column::Index:
         case Column::InternalName:
         case Column::DisplayName:
+        {
+            flags |= Qt::ItemIsEnabled;
+
             break;
+        }
 
         case Column::Enabled: {
             switch (_index)
@@ -279,19 +286,42 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                 default:
                     break;
             }
-            if (_index == 0) {
-                
-            }
-            else {
 
-            }
             break;
         }
         
         case Column::DatasetNames:
-            break;
-
         case Column::DatasetName:
+        {
+            switch (_index)
+            {
+                case Channels::Child::Channel1: {
+                    flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Child::Channel2: {
+                    if (_enabled && subsets.count() >= 1)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Child::Channel3: {
+                    if (_enabled && subsets.count() >= 2)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
         case Column::Color:
         case Column::Opacity:
         {

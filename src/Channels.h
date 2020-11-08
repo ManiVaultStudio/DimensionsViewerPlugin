@@ -19,7 +19,7 @@ public: // Columns
 
     /** Data columns */
     enum class Column {
-        Name,               /** TODO */
+        Name,               /** Name of the model item */
 
         Start = Name,
         End = Name
@@ -54,7 +54,12 @@ public: // Get/set data roles
 
 protected: // Construction
 
-    /** TODO */
+    /**
+     * Constructor
+     * @param parent Parent model item
+     * @param datasetName Name of the primary dataset
+     * @param dataName Name of the primary data
+     */
 	Channels(ModelItem* parent, const QString& datasetName, const QString& dataName);
 
 public: // ModelIndex: Model
