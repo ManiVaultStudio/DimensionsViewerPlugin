@@ -46,15 +46,15 @@ public: // Columns
         End = Settings
     };
 
-    /** Maps column type name to column type enum and vice versa */
+    /** Maps column name to column enum */
     static QMap<QString, Column> const columns;
 
-    /** Get string representation of column type enumeration */
+    /** Get column name from column enum */
     static QString getColumnTypeName(const Column& column) {
         return columns.key(column);
     }
 
-    /** Get enum representation from column type name */
+    /** Get column enum from column name */
     static Column getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }

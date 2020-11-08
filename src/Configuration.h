@@ -42,13 +42,13 @@ public: // Columns
     /** Maps column name to column enum and vice versa */
     static QMap<QString, Column> const columns;
 
-	/** Get column name from column enum */
-	static QString getColumnName(const Column& column) {
+    /** Get string representation of column enum */
+    static QString getColumnTypeName(const Column& column) {
         return columns.key(column);
-	}
+    }
 
-    /** Get column enum from column name */
-    static Column getColumnEnum(const QString& columnName) {
+    /** Get enum representation from column type name */
+    static Column getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
