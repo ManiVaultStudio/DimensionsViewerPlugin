@@ -164,7 +164,7 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
         channel->_datasetName = value.toString();
 
         if (!channel->_datasetName.isEmpty())
-            channel->_points = &dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestData(channel->_datasetName));
+            channel->_points = &dynamic_cast<Points&>(channel->getCore()->requestData(channel->_datasetName));
 
         return QModelIndexList();
     }},
@@ -382,7 +382,7 @@ QModelIndex Channel::getConfigurationModelIndex(const QModelIndex& index)
 
 QModelIndex Channel::getGlobalModelIndex(const QModelIndex& index)
 {
-    return dimensionsViewerPlugin->getConfigurationsModel().index(static_cast<int>(Configuration::Child::Global), 0, getConfigurationModelIndex(index));
+    return getConfigurationsModel()->index(static_cast<int>(Configuration::Child::Global), 0, getConfigurationModelIndex(index));
 }
 
 bool Channel::canDisplay() const
@@ -418,7 +418,7 @@ void Channel::updateSpec()
 
 	//qDebug() << "Updating dimensions for" << _points->getName();
 
-	const auto& selection = dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestSelection(_points->getDataName()));
+	const auto& selection = dynamic_cast<Points&>(getCore()->requestSelection(_points->getDataName()));
 	
 	std::vector<std::uint32_t> pointIndices;
 	

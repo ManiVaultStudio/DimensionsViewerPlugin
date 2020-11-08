@@ -2,6 +2,8 @@
 #include "DimensionsViewerPlugin.h"
 #include "ConfigurationsModel.h"
 
+#include "CoreInterface.h"
+
 DimensionsViewerPlugin* ModelItem::dimensionsViewerPlugin = nullptr;
 
 ModelItem::ModelItem(const QString& name, ModelItem* parent /*= nullptr*/) :
@@ -32,4 +34,14 @@ bool ModelItem::isLeaf() const
 ConfigurationsModel* ModelItem::getConfigurationsModel()
 {
     return &dimensionsViewerPlugin->getConfigurationsModel();
+}
+
+void ModelItem::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
+{
+    ModelItem::dimensionsViewerPlugin = dimensionsViewerPlugin;
+}
+
+hdps::CoreInterface* ModelItem::getCore()
+{
+    return dimensionsViewerPlugin->getCore();
 }

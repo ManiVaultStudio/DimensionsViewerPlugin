@@ -5,6 +5,11 @@
 
 class DimensionsViewerPlugin;
 class ConfigurationsModel;
+class CoreInterface;
+
+namespace hdps {
+    class CoreInterface;
+}
 
 /**
  * Model item class
@@ -83,10 +88,21 @@ public:
     static ConfigurationsModel* getConfigurationsModel();
 
 protected:
+
+    /**
+     * Sets the pointer to the dimensions viewer plugin
+     * @param Pointer to the dimensions viewer plugin
+     */
+    static void setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin);
+
+    /** Get HDPS core pointer */
+    static hdps::CoreInterface* getCore();
+
+protected:
     QString         _name;          /** Name */
     ModelItem*      _parent;		/** Parent model item */
 
-protected:
+private:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;
 
     friend class DimensionsViewerPlugin;
