@@ -4,6 +4,7 @@
 #include <QModelIndex>
 
 class DimensionsViewerPlugin;
+class ConfigurationsModel;
 
 /**
  * Model item class
@@ -75,6 +76,11 @@ public: // Hierarchy
 
     /** Returns whether the model item is a leaf node */
     bool isLeaf() const;
+
+public:
+
+    /** Get the configurations model */
+    static ConfigurationsModel* getConfigurationsModel();
 
 protected:
     QString         _name;          /** Name */

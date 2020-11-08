@@ -1,4 +1,6 @@
 #include "ModelItem.h"
+#include "DimensionsViewerPlugin.h"
+#include "ConfigurationsModel.h"
 
 DimensionsViewerPlugin* ModelItem::dimensionsViewerPlugin = nullptr;
 
@@ -25,4 +27,9 @@ ModelItem* ModelItem::getParent()
 bool ModelItem::isLeaf() const
 {
     return getChildCount() == 0;
+}
+
+ConfigurationsModel* ModelItem::getConfigurationsModel()
+{
+    return &dimensionsViewerPlugin->getConfigurationsModel();
 }

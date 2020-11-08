@@ -240,10 +240,10 @@ QModelIndex Global::getConfigurationModelIndex(const QModelIndex& index)
 
 QModelIndex Global::getChannelsModelIndex(const QModelIndex& index)
 {
-    return dimensionsViewerPlugin->getConfigurationsModel().index(0, 0, getConfigurationModelIndex(index));
+    return getConfigurationsModel()->index(0, 0, getConfigurationModelIndex(index));
 }
 
 QModelIndex Global::getChannelModelIndex(const QModelIndex& index, const std::int32_t& row, const std::int32_t& column)
 {
-    return dimensionsViewerPlugin->getConfigurationsModel().index(row, column, getChannelsModelIndex(index));
+    return getConfigurationsModel()->index(row, column, getChannelsModelIndex(index));
 }

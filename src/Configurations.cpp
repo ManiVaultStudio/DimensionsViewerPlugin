@@ -39,7 +39,7 @@ const QMap<Configurations::Column, std::function<QModelIndexList(Configurations*
         QModelIndexList affectedIndices;
 
         for (auto configuration : configurations->_configurations) {
-            const auto configurationIndex   = index.siblingAtRow(configurations->getChildIndex(configuration));
+            const auto configurationIndex   = configurations->getConfigurationsModel()->index(configurations->getChildIndex(configuration), 0, index);
             const auto channelsIndex        = configurationIndex.siblingAtRow(0);
             const auto firstChannelIndex    = channelsIndex.siblingAtRow(0);
 

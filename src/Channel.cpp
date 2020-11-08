@@ -43,7 +43,7 @@ const QMap<Channel::Column, std::function<QVariant(Channel* channel, const QMode
         return channel->_enabled;
     }},
     { Channel::Column::DatasetNames, [](Channel* channel, const QModelIndex& index) {
-        return channel->dimensionsViewerPlugin->getConfigurationsModel().index(0, 0).siblingAtColumn(Configurations::Column::DatasetNames);
+        return channel->getConfigurationsModel()->index(0, 0).siblingAtColumn(Configurations::Column::DatasetNames);
     }},
     { Channel::Column::DatasetName, [](Channel* channel, const QModelIndex& index) {
         return channel->_datasetName;
