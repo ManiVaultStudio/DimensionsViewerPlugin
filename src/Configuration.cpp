@@ -209,6 +209,21 @@ int Configuration::getChildIndex(ModelItem* child) const
     return 0;
 }
 
+const Channels* Configuration::getChannels() const
+{
+    return &_channels;
+}
+
+const Global* Configuration::getGlobal() const
+{
+    return &_global;
+}
+
+const DifferentialProfile* Configuration::getDifferentialProfile() const
+{
+    return &_differentialProfile;
+}
+
 //QVariant Configuration::getShowDimensionNames(const std::int32_t& role) const
 //{
 //    const auto showDimensionNames       = _showDimensionNames;

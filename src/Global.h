@@ -15,14 +15,14 @@ class Global : public ModelItem {
 
 public: // Columns
 
-    /** TODO */
-    enum Column {
-        Name,
-        Enabled,
-        ProfileTypes,
-        ProfileType,
-        RangeTypes,
-        RangeType,
+    /** Data columns */
+    enum class Column {
+        Name,               /** TODO */
+        Enabled,            /** TODO */
+        ProfileTypes,       /** TODO */
+        ProfileType,        /** TODO */
+        RangeTypes,         /** TODO */
+        RangeType,          /** TODO */
 
         Start = Name,
         End = RangeType

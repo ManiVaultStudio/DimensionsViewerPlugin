@@ -61,8 +61,8 @@ public: // Columns
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(Channel* channel, const QModelIndex& index)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Channel* channel, const QModelIndex& index)>> const getDisplayRoles;
+    static QMap<Column, std::function<QVariant(Channel* channel)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Channel* channel)>> const getDisplayRoles;
     static QMap<Column, std::function<QModelIndexList(Channel* channel, const QModelIndex& modelIndex, const QVariant& value)>> const setEditRoles;
 
 protected: // Construction
@@ -127,14 +127,6 @@ public: // ModelIndex: Hierarchy
      */
     int getChildIndex(ModelItem* child) const override;
 
-protected: // Utility methods for obtaining model indices
-
-    /** Get configuration model index */
-    static QModelIndex getConfigurationModelIndex(const QModelIndex& index);
-
-    /** Get global model index */
-    static QModelIndex getGlobalModelIndex(const QModelIndex& index);
-
 public: // Points wrapper functions
 
     /** Returns the number of dimensions */
@@ -146,7 +138,7 @@ public: // Points wrapper functions
 protected: // Miscellaneous
 	
     /** Get parent channels model item */
-    Channels* getChannels();
+    const Channels* getChannels() const;
 
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;

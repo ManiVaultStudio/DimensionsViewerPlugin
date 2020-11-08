@@ -13,15 +13,15 @@ class Configurations : public ModelItem
 {
 public: // Columns
 
-    /** TODO */
-    enum Column {
+    /** Data columns */
+    enum class Column {
         Name,
 
         Start = Name,
         End = Name
     };
 
-    /** Maps column type name to column type enum and vice versa */
+    /** Maps column name to column enum and vice versa */
     static QMap<QString, Column> const columns;
 
     /** Get string representation of column type enumeration */

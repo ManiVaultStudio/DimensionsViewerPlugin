@@ -128,6 +128,15 @@ public: // ModelIndex: Hierarchy
 
 public: // Miscellaneous
 
+    /** Get channels model item */
+    const Channels* getChannels() const;
+
+    /** Get global model item */
+    const Global* getGlobal() const;
+
+    /** Get differential profile model item */
+    const DifferentialProfile* getDifferentialProfile() const;
+
     /** Returns the subset names */
     QStringList getSubsets() const { return _subsets; }
 

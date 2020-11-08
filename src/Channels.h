@@ -17,8 +17,8 @@ class Channels : public ModelItem {
 
 public: // Columns
 
-    /** TODO */
-    enum Column {
+    /** Data columns */
+    enum class Column {
         Name,
 
         Start = Name,
@@ -34,7 +34,7 @@ public: // Columns
     }
 
     /** Get enum representation from column type name */
-    static int getColumnTypeEnum(const QString& columnName) {
+    static Column getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
@@ -106,12 +106,12 @@ public: // ModelIndex: Hierarchy
 
 public: // Overloaded operators
 
-    Channel* operator [](int i) const { return _channels[i]; }
+    //Channel* operator [](int i) const { return _channels[i]; }
 
 protected: // Miscellaneous
 
     /** Returns parent configuration model item */
-    Configuration* getConfiguration() const;
+    const Configuration* getConfiguration() const;
 
 public:
     Channel* getChannelByDatasetName(const QString& datasetName);

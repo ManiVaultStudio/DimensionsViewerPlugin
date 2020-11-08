@@ -121,7 +121,7 @@ int Channels::getChildIndex(ModelItem* child) const
     return _channels.indexOf(channel);
 }
 
-Configuration* Channels::getConfiguration() const
+const Configuration* Channels::getConfiguration() const
 {
     return dynamic_cast<Configuration*>(parent());
 }
