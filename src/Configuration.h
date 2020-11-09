@@ -23,10 +23,10 @@ public: // Constants
     /** The number of channels in the configuration */
     static const std::int32_t noChannels = 3;
 
-public: // Columns
+public: // Columns and rows
 
     /** Model item columns */
-    enum class Columns {
+    enum class Column {
         Name,
         Index,
         DatasetName,
@@ -39,20 +39,20 @@ public: // Columns
     };
 
     /** Maps column name to column enum and vice versa */
-    static QMap<QString, Columns> const columns;
+    static QMap<QString, Column> const columns;
 
     /** Get string representation of column enum */
-    static QString getColumnTypeName(const Columns& column) {
+    static QString getColumnTypeName(const Column& column) {
         return columns.key(column);
     }
 
     /** Get enum representation from column type name */
-    static Columns getColumnTypeEnum(const QString& columnName) {
+    static Column getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
     /** Model item rows */
-    enum class Rows {
+    enum class Row {
         Channels,
         Global,
         DifferentialProfile,
@@ -64,9 +64,9 @@ public: // Columns
 
 public: // Get/set data roles
 
-    static QMap<Columns, std::function<QVariant(Configuration* configuration)>> const getEditRoles;
-    static QMap<Columns, std::function<QVariant(Configuration* configuration)>> const getDisplayRoles;
-    static QMap<Columns, std::function<QModelIndexList(Configuration* configuration, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
+    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(Configuration* configuration, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 public: // Construction
 

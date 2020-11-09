@@ -14,15 +14,15 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
 	_ui->setupUi(this);
 
     QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
-        setData(to_ul(Global::Columns::Enabled), state);
+        setData(to_ul(Global::Column::Enabled), state);
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Global::Columns::ProfileType), currentText);
+        setData(to_ul(Global::Column::ProfileType), currentText);
     });
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Global::Columns::RangeType), currentText);
+        setData(to_ul(Global::Column::RangeType), currentText);
     });
 
     reset();
@@ -46,27 +46,27 @@ void GlobalWidget::updateData(const QModelIndex& begin, const QModelIndex& end, 
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
 
-        if (column == to_ul(Global::Columns::Enabled)) {
+        if (column == to_ul(Global::Column::Enabled)) {
             _ui->groupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->groupBox->setChecked(index.data(Qt::EditRole).toBool());
             _ui->groupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         }
 
-        if (column == to_ul(Global::Columns::ProfileTypes)) {
+        if (column == to_ul(Global::Column::ProfileTypes)) {
             _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
         }
 
-        if (column == to_ul(Global::Columns::ProfileType)) {
+        if (column == to_ul(Global::Column::ProfileType)) {
             _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         }
 
-        if (column == to_ul(Global::Columns::RangeTypes)) {
+        if (column == to_ul(Global::Column::RangeTypes)) {
             _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
         }
 
-        if (column == to_ul(Global::Columns::RangeType)) {
+        if (column == to_ul(Global::Column::RangeType)) {
             _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());

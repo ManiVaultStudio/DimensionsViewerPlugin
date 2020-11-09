@@ -11,11 +11,11 @@ class Configuration;
  */
 class Configurations : public ModelItem
 {
-public: // Columns
+public: // Columns and rows
 
-    /** Data columns */
+    /** Model item columns */
     enum class Column {
-        Name,           /** Name of the model item */
+        Name,
 
         Start = Name,
         End = Name

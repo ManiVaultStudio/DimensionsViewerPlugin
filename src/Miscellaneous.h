@@ -12,12 +12,12 @@
  */
 class Miscellaneous : public ModelItem {
 
-public: // Columns
+public: // Columns and rows
 
     /** Data columns */
     enum class Column {
-        Name,                   /** Name of the model item */
-        ShowDimensionNames,     /** Whether to show dimension names in the viewer */
+        Name,
+        ShowDimensionNames,
 
         Start = Name,
         End = ShowDimensionNames

@@ -14,10 +14,10 @@ class Configuration;
  */
 class DifferentialProfile : public ModelItem {
 
-public: // Columns
+public: // Columns and rows
 
-    /** Data columns */
-    enum class Columns {
+    /** Model item columns */
+    enum class Column {
         Name,
         Enabled,
         DatasetNames1,
@@ -30,23 +30,23 @@ public: // Columns
     };
 
     /** Maps column name to column enum and vice versa */
-    static QMap<QString, Columns> const columns;
+    static QMap<QString, Column> const columns;
 
     /** Get string representation of column enum */
-    static QString getColumnTypeName(const Columns& column) {
+    static QString getColumnTypeName(const Column& column) {
         return columns.key(column);
     }
 
     /** Get enum representation from column type name */
-    static Columns getColumnTypeEnum(const QString& columnName) {
+    static Column getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
 public: // Get/set data roles
 
-    static QMap<Columns, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getEditRoles;
-    static QMap<Columns, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getDisplayRoles;
-    static QMap<Columns, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
+    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 protected: // Construction
 

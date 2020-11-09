@@ -19,29 +19,29 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
 
     QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
-        setData(to_ul(Channel::Columns::Enabled), state);
+        setData(to_ul(Channel::Column::Enabled), state);
     });
 
     QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
         if (_persistentModelIndex.row() == 0)
             getConfigurationsModel().selectRow(currentIndex);
         else
-            setData(to_ul(Channel::Columns::DatasetName), _ui->datasetNameComboBox->currentText());
+            setData(to_ul(Channel::Column::DatasetName), _ui->datasetNameComboBox->currentText());
     });
 
     _ui->colorPushButton->setShowText(false);
     _ui->colorPushButton->setColor(Qt::gray);
 
     QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
-        setData(to_ul(Channel::Columns::Color), color);
+        setData(to_ul(Channel::Column::Color), color);
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Channel::Columns::ProfileType), currentText);
+        setData(to_ul(Channel::Column::ProfileType), currentText);
     });
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Channel::Columns::RangeType), currentText);
+        setData(to_ul(Channel::Column::RangeType), currentText);
     });
 
     reset();
@@ -77,58 +77,58 @@ void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
 
-		if (column == to_ul(Channel::Columns::Enabled)) {
+		if (column == to_ul(Channel::Column::Enabled)) {
             _ui->enabledCheckBox->setVisible(index.flags() & Qt::ItemIsEditable);
             _ui->enabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->enabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
             _ui->enabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 		}
 
-        if (column == to_ul(Channel::Columns::DisplayName)) {
+        if (column == to_ul(Channel::Column::DisplayName)) {
             _ui->enabledCheckBox->setText(index.data(Qt::EditRole).toString());
         }
         
-        if (column == to_ul(Channel::Columns::DatasetNames)) {
+        if (column == to_ul(Channel::Column::DatasetNames)) {
             _ui->datasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
         }
 
-		if (column == to_ul(Channel::Columns::DatasetName)) {
+		if (column == to_ul(Channel::Column::DatasetName)) {
             _ui->datasetNameComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
             _ui->datasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->datasetNameComboBox->setCurrentText(index.data(Qt::EditRole).toString());
             _ui->datasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 		}
         
-		if (column == to_ul(Channel::Columns::Color)) {
+		if (column == to_ul(Channel::Column::Color)) {
             _ui->colorPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
             _ui->colorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->colorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
             _ui->colorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
 		}
         
-        if (column == to_ul(Channel::Columns::ProfileTypes)) {
+        if (column == to_ul(Channel::Column::ProfileTypes)) {
             _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
         }
 
-        if (column == to_ul(Channel::Columns::ProfileType)) {
+        if (column == to_ul(Channel::Column::ProfileType)) {
             _ui->profileTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
             _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         }
 
-        if (column == to_ul(Channel::Columns::RangeTypes)) {
+        if (column == to_ul(Channel::Column::RangeTypes)) {
             _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
         }
         
-		if (column == to_ul(Channel::Columns::RangeType)) {
+		if (column == to_ul(Channel::Column::RangeType)) {
             _ui->rangeTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
             _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
 		}
 
-        if (column == to_ul(Channel::Columns::Settings)) {
+        if (column == to_ul(Channel::Column::Settings)) {
             _ui->stylingPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
             _ui->stylingPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->stylingPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());

@@ -4,23 +4,23 @@
 
 #include <QDebug>
 
-const QMap<QString, Channels::Columns> Channels::columns = {
-    { "Name", Channels::Columns::Name }
+const QMap<QString, Channels::Column> Channels::columns = {
+    { "Name", Channels::Column::Name }
 };
 
-const QMap<Channels::Columns, std::function<QVariant(Channels* channels)>> Channels::getEditRoles = {
-    { Channels::Columns::Name, [](Channels* channels) {
+const QMap<Channels::Column, std::function<QVariant(Channels* channels)>> Channels::getEditRoles = {
+    { Channels::Column::Name, [](Channels* channels) {
         return channels->_name;
     }}
 };
 
-const QMap<Channels::Columns, std::function<QVariant(Channels* channels)>> Channels::getDisplayRoles = {
-    { Channels::Columns::Name, [](Channels* channels) {
-        return getEditRoles[Channels::Columns::Name](channels);
+const QMap<Channels::Column, std::function<QVariant(Channels* channels)>> Channels::getDisplayRoles = {
+    { Channels::Column::Name, [](Channels* channels) {
+        return getEditRoles[Channels::Column::Name](channels);
     }}
 };
 
-const QMap<Channels::Columns, std::function<QModelIndexList(Channels* channel, const QVariant& value, const QModelIndex& index)>> Channels::setEditRoles = {};
+const QMap<Channels::Column, std::function<QModelIndexList(Channels* channel, const QVariant& value, const QModelIndex& index)>> Channels::setEditRoles = {};
 
 Channels::Channels(ModelItem* parent, const QString& datasetName, const QString& dataName) :
     ModelItem("Channels", parent),
@@ -50,16 +50,16 @@ QVariant Channels::getData(const QModelIndex& index, const int& role) const
     {
         case Qt::EditRole:
         {
-            if (getEditRoles.contains(static_cast<Columns>(column)))
-                return getEditRoles[static_cast<Columns>(column)](const_cast<Channels*>(this));
+            if (getEditRoles.contains(static_cast<Column>(column)))
+                return getEditRoles[static_cast<Column>(column)](const_cast<Channels*>(this));
 
             break;
         }
 
         case Qt::DisplayRole:
         {
-            if (getDisplayRoles.contains(static_cast<Columns>(column)))
-                return getDisplayRoles[static_cast<Columns>(column)](const_cast<Channels*>(this));
+            if (getDisplayRoles.contains(static_cast<Column>(column)))
+                return getDisplayRoles[static_cast<Column>(column)](const_cast<Channels*>(this));
 
             break;
         }
@@ -73,7 +73,7 @@ QVariant Channels::getData(const QModelIndex& index, const int& role) const
 
 QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    const auto column = static_cast<Columns>(index.column());
+    const auto column = static_cast<Column>(index.column());
 
     QModelIndexList affectedIndices{ index };
 

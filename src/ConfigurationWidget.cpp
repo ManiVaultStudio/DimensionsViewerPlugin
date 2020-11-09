@@ -38,8 +38,8 @@ void ConfigurationWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 
-    _ui->channelsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Rows::Channels)));
-    _ui->globalSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Rows::Global)));
-    _ui->differentialProfileSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Rows::DifferentialProfile)));
-    _ui->miscellaneousSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Rows::Miscellaneous)));
+    _ui->channelsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Row::Channels)));
+    _ui->globalSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Row::Global)));
+    _ui->differentialProfileSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Row::DifferentialProfile)));
+    _ui->miscellaneousSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Row::Miscellaneous)));
 }
