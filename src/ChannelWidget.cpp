@@ -21,7 +21,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
         setData(to_ul(Channel::Column::Enabled), state);
     });
-
+    /*
     QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
         if (_persistentModelIndex.row() == 0)
             getConfigurationsModel().selectRow(currentIndex);
@@ -42,7 +42,9 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         setData(to_ul(Channel::Column::RangeType), currentText);
-    });
+    });*/
+
+    
 
     reset();
 }
@@ -75,14 +77,7 @@ void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
 	}
 
 	for (int column = begin.column(); column <= end.column(); column++) {
-		const auto index = begin.siblingAtColumn(column);
-
-		if (column == to_ul(Channel::Column::Enabled)) {
-            _ui->enabledCheckBox->setVisible(index.flags() & Qt::ItemIsEditable);
-            _ui->enabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->enabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-            _ui->enabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-		}
+		/*const auto index = begin.siblingAtColumn(column);
 
         if (column == to_ul(Channel::Column::DisplayName)) {
             _ui->enabledCheckBox->setText(index.data(Qt::EditRole).toString());
@@ -132,7 +127,7 @@ void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
             _ui->stylingPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
             _ui->stylingPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->stylingPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-        }
+        }*/
 	}
 }
 
@@ -141,4 +136,19 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     ModelItemWidget::setModelIndex(modelIndex);
 
     _ui->stylingPushButton->setModelIndex(getSiblingModelIndex(static_cast<int>(Channel::Row::Styling)));
+
+    addMapper(getSiblingModelIndex(0, to_ul(Channel::Column::Enabled)), [this](const QModelIndex& index) {
+        QSignalBlocker signalBlocker(_ui->enabledCheckBox);
+
+        _ui->enabledCheckBox->setVisible(index.flags() & Qt::ItemIsEditable);
+        _ui->enabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->enabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+        _ui->enabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+    });
+
+    addMapper(getSiblingModelIndex(0, to_ul(Channel::Column::DatasetNames)), [this](const QModelIndex& index) {
+        QSignalBlocker signalBlocker(_ui->datasetNameComboBox);
+
+        _ui->datasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+    });
 }

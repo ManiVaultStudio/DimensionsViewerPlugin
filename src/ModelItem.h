@@ -22,6 +22,10 @@ class ModelItem : public QObject
 {
     Q_OBJECT
 
+public: // Aliases
+
+    using AffectedColumns = QVector<std::int32_t>;
+
 public: // Construction
 
     /**
@@ -43,21 +47,38 @@ public: // Model
     virtual Qt::ItemFlags getFlags(const QModelIndex& index) const = 0;
 
     /**
-     * Returns the data for the given model index and data role
+     * Get data
      * @param index Model index
      * @param role Data role
      * @return Data in variant form
      */
-    virtual QVariant getData(const QModelIndex& index, const int& role) const = 0;
+    QVariant getData(const QModelIndex& index, const int& role) const;
 
     /**
-     * Sets the data value for the given model index and data role
+     * Sets data
      * @param index Model index
      * @param value Data value in variant form
      * @param role Data role
      * @return Model indices that are affected by the operation
      */
-    virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) = 0;
+    virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
+
+    /**
+     * Get data
+     * @param column Data column
+     * @param role Data role
+     * @return Data in variant form
+     */
+    virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const = 0;
+
+    /**
+     * Set data
+     * @param column Data column
+     * @param value Data value in variant form
+     * @param role Data role
+     * @return Columns which are affected by the operation
+     */
+    virtual AffectedColumns setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role) = 0;
 
     /**
      * Returns the model index belonging to the given model row and column (wraps the model index())
@@ -95,15 +116,7 @@ public: // Hierarchy
     /** Returns whether the model item is a leaf node */
     bool isLeaf() const;
 
-signals:
-
-    /**
-     * Signals that the model item has changed
-     * @param index Model index
-     */
-    void changed(const QModelIndex& index);
-
-public:
+public: // Miscellaneous
 
     /** Get the configurations model */
     static ConfigurationsModel* getConfigurationsModel();

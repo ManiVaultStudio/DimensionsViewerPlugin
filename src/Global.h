@@ -19,13 +19,10 @@ public: // Columns and rows
     enum class Column {
         Name,
         Enabled,
-        ProfileTypes,
-        ProfileType,
-        RangeTypes,
-        RangeType,
 
-        Start = Name,
-        End = RangeType
+        Start   = Name,
+        End     = Enabled,
+        Count   = End + 1
     };
 
     /** Maps column name to column enum and vice versa */
@@ -40,12 +37,6 @@ public: // Columns and rows
     static Column getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
-
-public: // Get/set data roles
-
-    static QMap<Column, std::function<QVariant(Global* global)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Global* global)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(Global* global, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
 protected: // Construction
 
@@ -68,21 +59,21 @@ public: // ModelIndex: Model
     Qt::ItemFlags getFlags(const QModelIndex& index) const override;
 
     /**
-     * Returns the data for the given model index and data role
-     * @param index Model index
+     * Get data role
+     * @param column Column to fetch data from
      * @param role Data role
      * @return Data in variant form
      */
-    QVariant getData(const QModelIndex& index, const int& role) const override;
+    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
 
     /**
-     * Sets the data value for the given model index and data role
-     * @param index Model index
+     * Set data
+     * @param column Data column
      * @param value Data value in variant form
      * @param role Data role
      * @return Model indices that are affected by the operation
      */
-    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
+    AffectedColumns setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
 protected:
     bool        _enabled;       /** Whether whether global settings are on or off */

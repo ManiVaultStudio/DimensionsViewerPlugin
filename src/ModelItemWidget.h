@@ -60,8 +60,19 @@ protected:
     /** TODO */
     void reset();
 
+public:
+
+    /**
+     * Add mapper
+     * @param index Model index to respond to
+     * @param mapper Callback function
+     */
+    void addMapper(const QModelIndex& index, std::function<void(const QModelIndex& index)> mapper);
+
 protected:
-    QPersistentModelIndex       _persistentModelIndex;    /** TODO */
+    QPersistentModelIndex       _persistentModelIndex;    /** Persistent model index */
+
+    QMap<QModelIndex, std::function<void(const QModelIndex& index)>> _mappers;
 
 protected:
     static DimensionsViewerPlugin*  dimensionsViewerPlugin;     /** Pointer to an instance of the dimensions viewer plugin */

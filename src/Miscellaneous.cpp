@@ -7,32 +7,6 @@ const QMap<QString, Miscellaneous::Column> Miscellaneous::columns = {
     { "Show dimension names", Miscellaneous::Column::ShowDimensionNames }
 };
 
-const QMap<Miscellaneous::Column, std::function<QVariant(Miscellaneous* miscellaneous)>> Miscellaneous::getEditRoles = {
-    { Miscellaneous::Column::Name, [](Miscellaneous* miscellaneous) {
-        return miscellaneous->_name;
-    }},
-    { Miscellaneous::Column::ShowDimensionNames, [](Miscellaneous* miscellaneous) {
-        return miscellaneous->_showDimensionNames;
-    }}
-};
-
-const QMap<Miscellaneous::Column, std::function<QVariant(Miscellaneous* miscellaneous)>> Miscellaneous::getDisplayRoles = {
-    { Miscellaneous::Column::Name, [](Miscellaneous* miscellaneous) {
-        return getEditRoles[Miscellaneous::Column::Name](miscellaneous).toString();
-    }},
-    { Miscellaneous::Column::ShowDimensionNames, [](Miscellaneous* miscellaneous) {
-        return getEditRoles[Miscellaneous::Column::ShowDimensionNames](miscellaneous).toBool() ? "on" : "off";
-    }}
-};
-
-const QMap<Miscellaneous::Column, std::function<QModelIndexList(Miscellaneous* miscellaneous, const QModelIndex& index, const QVariant& value)>> Miscellaneous::setEditRoles = {
-    { Miscellaneous::Column::ShowDimensionNames, [](Miscellaneous* miscellaneous, const QModelIndex& index, const QVariant& value) {
-        miscellaneous->_showDimensionNames = value.toBool();
-
-        return QModelIndexList();
-    }}
-};
-
 Miscellaneous::Miscellaneous(ModelItem* parent) :
     ModelItem("Miscellaneous", parent),
     _showDimensionNames(false)
@@ -72,24 +46,40 @@ Qt::ItemFlags Miscellaneous::getFlags(const QModelIndex& index) const
     return flags;
 }
 
-QVariant Miscellaneous::getData(const QModelIndex& index, const int& role) const
+QVariant Miscellaneous::getData(const std::int32_t& column, const std::int32_t& role) const
 {
-    const auto column = index.column();
-
     switch (role)
     {
-        case Qt::EditRole:
-        {
-            if (getEditRoles.contains(static_cast<Column>(column)))
-                return getEditRoles[static_cast<Column>(column)](const_cast<Miscellaneous*>(this));
+        case Qt::EditRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Miscellaneous::Column::Name:
+                    return _name;
+
+                case Miscellaneous::Column::ShowDimensionNames:
+                    return _showDimensionNames;
+
+                default:
+                    break;
+            }
 
             break;
         }
 
-        case Qt::DisplayRole:
-        {
-            if (getDisplayRoles.contains(static_cast<Column>(column)))
-                return getDisplayRoles[static_cast<Column>(column)](const_cast<Miscellaneous*>(this));
+        case Qt::DisplayRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Miscellaneous::Column::Name:
+                    return getData(column, Qt::EditRole);
+
+                case Miscellaneous::Column::ShowDimensionNames:
+                    return getData(column, Qt::EditRole).toBool() ? "on" : "off";
+
+                default:
+                    break;
+            }
 
             break;
         }
@@ -101,18 +91,24 @@ QVariant Miscellaneous::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-QModelIndexList Miscellaneous::setData(const QModelIndex& index, const QVariant& value, const int& role)
+ModelItem::AffectedColumns Miscellaneous::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    const auto column = static_cast<Column>(index.column());
-
-    QModelIndexList affectedIndices{ index };
+    AffectedColumns affectedColunns{ column };
 
     switch (role)
     {
-        case Qt::EditRole:
-        {
-            if (setEditRoles.contains(column))
-                affectedIndices << setEditRoles[column](const_cast<Miscellaneous*>(this), index, value);
+        case Qt::EditRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Miscellaneous::Column::ShowDimensionNames: {
+                    _showDimensionNames = value.toBool();
+                    break;
+                }
+
+                default:
+                    break;
+            }
 
             break;
         }
@@ -121,5 +117,5 @@ QModelIndexList Miscellaneous::setData(const QModelIndex& index, const QVariant&
             break;
     }
 
-    return affectedIndices;
+    return affectedColunns;
 }

@@ -7,13 +7,18 @@ DimensionsViewerPlugin* ModelItemWidget::dimensionsViewerPlugin = nullptr;
 
 ModelItemWidget::ModelItemWidget(QWidget* parent) :
 	QWidget(parent),
-    _persistentModelIndex()
+    _persistentModelIndex(),
+    _mappers()
 {
     auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
 
     QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
-        if (topLeft.parent().isValid() && topLeft.parent() == _persistentModelIndex.parent() && topLeft.row() == _persistentModelIndex.row())
+        if (topLeft.parent().isValid() && topLeft.parent() == _persistentModelIndex.parent() && topLeft.row() == _persistentModelIndex.row()) {
             updateData(topLeft, bottomRight, roles);
+
+            if (_mappers.contains(topLeft))
+                _mappers[topLeft](topLeft);
+        }
     });
 }
 
@@ -58,4 +63,9 @@ void ModelItemWidget::setData(const std::int32_t& column, const QVariant& value)
 void ModelItemWidget::reset()
 {
     updateData(QModelIndex(), QModelIndex());
+}
+
+void ModelItemWidget::addMapper(const QModelIndex& index, std::function<void(const QModelIndex& index)> mapper)
+{
+    _mappers[index] = mapper;
 }

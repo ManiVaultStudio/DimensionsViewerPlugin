@@ -5,7 +5,6 @@
 class Configuration;
 
 #include <QObject>
-#include <QVector>
 
 /**
  * Differential profile class
@@ -25,8 +24,9 @@ public: // Columns and rows
         DatasetName1,
         DatasetName2,
 
-        Start = Name,
-        End = DatasetName2
+        Start   = Name,
+        End     = DatasetName2,
+        Count   = End + 1
     };
 
     /** Maps column name to column enum and vice versa */
@@ -41,12 +41,6 @@ public: // Columns and rows
     static Column getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
-
-public: // Get/set data roles
-
-    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 protected: // Construction
 
@@ -69,21 +63,21 @@ public: // ModelIndex: Model
     Qt::ItemFlags getFlags(const QModelIndex& index) const override;
 
     /**
-     * Returns the data for the given model index and data role
-     * @param index Model index
+     * Get data role
+     * @param column Column to fetch data from
      * @param role Data role
      * @return Data in variant form
      */
-    QVariant getData(const QModelIndex& index, const int& role) const override;
+    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
 
     /**
-     * Sets the data value for the given model index and data role
-     * @param index Model index
+     * Set data
+     * @param column Data column
      * @param value Data value in variant form
      * @param role Data role
      * @return Model indices that are affected by the operation
      */
-    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
+    AffectedColumns setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
 public: // ModelIndex: Hierarchy
 
@@ -92,16 +86,22 @@ public: // ModelIndex: Hierarchy
      * @param index Index of the child model item
      * @return Model item at index
      */
-    ModelItem* getChild(const int& index) const override;
+    ModelItem* getChild(const int& index) const override {
+        return nullptr;
+    }
 
     /** Returns the number of children */
-    int getChildCount() const override;
+    int getChildCount() const override {
+        return 0;
+    }
 
     /**
      * Returns the child index
      * @param child Pointer to child model item
      */
-    int getChildIndex(ModelItem* child) const override;
+    int getChildIndex(ModelItem* child) const override {
+        return 0;
+    }
 
 protected: // Miscellaneous
 

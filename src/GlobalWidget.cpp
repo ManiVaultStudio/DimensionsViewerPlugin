@@ -13,7 +13,7 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
+    /*QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
         setData(to_ul(Global::Column::Enabled), state);
     });
 
@@ -23,7 +23,7 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         setData(to_ul(Global::Column::RangeType), currentText);
-    });
+    });*/
 
     reset();
 }
@@ -46,7 +46,7 @@ void GlobalWidget::updateData(const QModelIndex& begin, const QModelIndex& end, 
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
 
-        if (column == to_ul(Global::Column::Enabled)) {
+        /*if (column == to_ul(Global::Column::Enabled)) {
             _ui->groupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->groupBox->setChecked(index.data(Qt::EditRole).toBool());
             _ui->groupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
@@ -70,7 +70,7 @@ void GlobalWidget::updateData(const QModelIndex& begin, const QModelIndex& end, 
             _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
             _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-        }
+        }*/
 	}
 }
 

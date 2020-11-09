@@ -34,8 +34,9 @@ public: // Columns and rows
         Subsets,
         SelectionStamp,
 
-        Start = Name,
-        End = SelectionStamp
+        Start   = Name,
+        End     = SelectionStamp,
+        Count   = End + 1
     };
 
     /** Maps column name to column enum and vice versa */
@@ -58,15 +59,10 @@ public: // Columns and rows
         DifferentialProfile,
         Miscellaneous,
 
-        Start = Channels,
-        End = Miscellaneous
+        Start   = Channels,
+        End     = Miscellaneous,
+        Count   = End + 1
     };
-
-public: // Get/set data roles
-
-    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(Configuration* configuration, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 public: // Construction
 
@@ -91,21 +87,21 @@ public: // ModelIndex: Model
     Qt::ItemFlags getFlags(const QModelIndex& index) const override;
 
     /**
-     * Returns the data for the given model index and data role
-     * @param index Model index
+     * Get data role
+     * @param column Column to fetch data from
      * @param role Data role
      * @return Data in variant form
      */
-    QVariant getData(const QModelIndex& index, const int& role) const override;
+    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
 
     /**
-     * Sets the data value for the given model index and data role
-     * @param index Model index
+     * Set data
+     * @param column Data column
      * @param value Data value in variant form
      * @param role Data role
      * @return Model indices that are affected by the operation
      */
-    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
+    AffectedColumns setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
 public: // ModelIndex: Hierarchy
 

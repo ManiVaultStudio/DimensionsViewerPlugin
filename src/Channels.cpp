@@ -8,20 +8,6 @@ const QMap<QString, Channels::Column> Channels::columns = {
     { "Name", Channels::Column::Name }
 };
 
-const QMap<Channels::Column, std::function<QVariant(Channels* channels)>> Channels::getEditRoles = {
-    { Channels::Column::Name, [](Channels* channels) {
-        return channels->_name;
-    }}
-};
-
-const QMap<Channels::Column, std::function<QVariant(Channels* channels)>> Channels::getDisplayRoles = {
-    { Channels::Column::Name, [](Channels* channels) {
-        return getEditRoles[Channels::Column::Name](channels);
-    }}
-};
-
-const QMap<Channels::Column, std::function<QModelIndexList(Channels* channel, const QVariant& value, const QModelIndex& index)>> Channels::setEditRoles = {};
-
 Channels::Channels(ModelItem* parent, const QString& datasetName, const QString& dataName) :
     ModelItem("Channels", parent),
     _channels({
@@ -42,24 +28,34 @@ Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
     return Qt::NoItemFlags;
 }
 
-QVariant Channels::getData(const QModelIndex& index, const int& role) const
+QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role) const
 {
-    const auto column = index.column();
-
     switch (role)
     {
-        case Qt::EditRole:
-        {
-            if (getEditRoles.contains(static_cast<Column>(column)))
-                return getEditRoles[static_cast<Column>(column)](const_cast<Channels*>(this));
+        case Qt::EditRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Channels::Column::Name:
+                    return _name;
+
+                default:
+                    break;
+            }
 
             break;
         }
 
-        case Qt::DisplayRole:
-        {
-            if (getDisplayRoles.contains(static_cast<Column>(column)))
-                return getDisplayRoles[static_cast<Column>(column)](const_cast<Channels*>(this));
+        case Qt::DisplayRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Channels::Column::Name:
+                    return getData(column, Qt::EditRole);
+
+                default:
+                    break;
+            }
 
             break;
         }
@@ -71,18 +67,22 @@ QVariant Channels::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const int& role)
+ModelItem::AffectedColumns Channels::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    const auto column = static_cast<Column>(index.column());
-
-    QModelIndexList affectedIndices{ index };
+    AffectedColumns affectedColunns{ column };
 
     switch (role)
     {
-        case Qt::EditRole:
-        {
-            if (setEditRoles.contains(column))
-                affectedIndices << setEditRoles[column](const_cast<Channels*>(this), value, index);
+        case Qt::EditRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Channels::Column::Name:
+                    break;
+
+                default:
+                    break;
+            }
 
             break;
         }
@@ -91,7 +91,7 @@ QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& valu
             break;
     }
 
-    return affectedIndices;
+    return affectedColunns;
 }
 
 ModelItem* Channels::getChild(const int& index) const

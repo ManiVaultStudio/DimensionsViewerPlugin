@@ -19,53 +19,6 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
     { "10/90 perc.", Profile::RangeType::Percentile10 }
 };
 
-const QMap<Profile::Column, std::function<QVariant(Profile* profile)>> Profile::getEditRoles = {
-    { Profile::Column::Name, [](Profile* profile) {
-        return profile->_name;
-    }},
-    { Profile::Column::ProfileTypes, [](Profile* profile) {
-        return profile->getProfileTypeNames();
-    }},
-    { Profile::Column::ProfileType, [](Profile* profile) {
-        return to_ul(profile->getProfileType());
-    }},
-    { Profile::Column::RangeTypes, [](Profile* profile) {
-        return profile->getRangeTypeNames();
-    }},
-    { Profile::Column::RangeType, [](Profile* profile) {
-        return to_ul(profile->getRangeType());
-    }}
-};
-
-const QMap<Profile::Column, std::function<QVariant(Profile* profile)>> Profile::getDisplayRoles = {
-    { Profile::Column::Name, [](Profile* profile) {
-        return getEditRoles[Profile::Column::Name](profile);
-    }},
-    { Profile::Column::ProfileTypes, [](Profile* profile) {
-        return getEditRoles[Profile::Column::ProfileTypes](profile).toStringList().join(", ");
-    }},
-    { Profile::Column::ProfileType, [](Profile* profile) {
-        return QString::number(getEditRoles[Profile::Column::ProfileType](profile).toInt());
-    }},
-    { Profile::Column::RangeTypes, [](Profile* profile) {
-        return getEditRoles[Profile::Column::RangeTypes](profile).toStringList().join(", ");
-    }},
-    { Profile::Column::RangeType, [](Profile* profile) {
-        return QString::number(getEditRoles[Profile::Column::RangeType](profile).toInt());
-    }}
-};
-
-const QMap<Profile::Column, std::function<QModelIndexList(Profile* profile, const QModelIndex& index, const QVariant& value)>> Profile::setEditRoles = {
-    { Profile::Column::ProfileType, [](Profile* profile, const QModelIndex& index, const QVariant& value) {
-        profile->setProfileType(static_cast<Profile::ProfileType>(value.toInt()));
-        return QModelIndexList();
-    }},
-    { Profile::Column::RangeType, [](Profile* profile, const QModelIndex& index, const QVariant& value) {
-        profile->setRangeType(static_cast<Profile::RangeType>(value.toInt()));
-        return QModelIndexList();
-    }}
-};
-
 Profile::Profile(ModelItem* parent, const ProfileType& profileType) :
     ModelItem("Profile", parent),
     _profileType(ProfileType::None),
@@ -106,24 +59,58 @@ Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
     return flags;
 }
 
-QVariant Profile::getData(const QModelIndex& index, const int& role) const
+QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) const
 {
-    const auto column = index.column();
-
     switch (role)
     {
-        case Qt::EditRole:
-        {
-            if (getEditRoles.contains(static_cast<Column>(column)))
-                return getEditRoles[static_cast<Column>(column)](const_cast<Profile*>(this));
+        case Qt::EditRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Profile::Column::Name:
+                    return _name;
+
+                case Profile::Column::ProfileTypes:
+                    return getProfileTypeNames();
+
+                case Profile::Column::ProfileType:
+                    return getProfileTypeName(_profileType);
+
+                case Profile::Column::RangeTypes:
+                    return getRangeTypeNames();
+
+                case Profile::Column::RangeType:
+                    return getRangeTypeName(_rangeType);
+
+                default:
+                    break;
+            }
 
             break;
         }
 
-        case Qt::DisplayRole:
-        {
-            if (getDisplayRoles.contains(static_cast<Column>(column)))
-                return getDisplayRoles[static_cast<Column>(column)](const_cast<Profile*>(this));
+        case Qt::DisplayRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Profile::Column::Name:
+                    return getData(column, Qt::EditRole);
+
+                case Profile::Column::ProfileTypes:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Profile::Column::ProfileType:
+                    return getData(column, Qt::EditRole);
+
+                case Profile::Column::RangeTypes:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Profile::Column::RangeType:
+                    return getData(column, Qt::EditRole);
+
+                default:
+                    break;
+            }
 
             break;
         }
@@ -135,18 +122,29 @@ QVariant Profile::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value, const int& role)
+ModelItem::AffectedColumns Profile::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    const auto column = static_cast<Column>(index.column());
-
-    QModelIndexList affectedIndices{ index };
+    AffectedColumns affectedColunns{ column };
 
     switch (role)
     {
-        case Qt::EditRole:
-        {
-            if (setEditRoles.contains(column))
-                affectedIndices << setEditRoles[column](const_cast<Profile*>(this), index, value);
+        case Qt::EditRole: {
+
+            switch (static_cast<Column>(column))
+            {
+                case Profile::Column::ProfileType: {
+                    setProfileType(getProfileTypeEnum(value.toString()));
+                    break;
+                }
+
+                case Profile::Column::RangeType: {
+                    setRangeType(getRangeTypeEnum(value.toString()));
+                    break;
+                }
+
+                default:
+                    break;
+            }
 
             break;
         }
@@ -155,7 +153,7 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
             break;
     }
 
-    return affectedIndices;
+    return affectedColunns;
 }
 
 Profile::ProfileType Profile::getProfileType() const
@@ -249,15 +247,4 @@ QStringList Profile::getRangeTypeNames() const
 QVector<Profile::RangeType> Profile::getRangeTypes() const
 {
     return _rangeTypes;
-}
-
-bool Profile::canDisplay() const
-{
-    if (_profileType != ProfileType::None && _profileType != ProfileType::Differential)
-        return true;
-    
-    if (_rangeType != RangeType::None)
-        return true;
-
-    return false;
 }
