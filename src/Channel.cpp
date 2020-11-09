@@ -230,6 +230,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_color(color),
 	_opacity(opacity),
 	_profile(this, Profile::ProfileType::Mean),
+	_styling(this),
 	_spec(),
     _points(nullptr)
 {
@@ -424,6 +425,9 @@ ModelItem* Channel::getChild(const int& index) const
         case Row::Profile:
             return const_cast<Profile*>(&_profile);
 
+        case Row::Styling:
+            return const_cast<Styling*>(&_styling);
+
         default:
             break;
     }
@@ -440,16 +444,25 @@ int Channel::getChildIndex(ModelItem* child) const
     if (dynamic_cast<Profile*>(child))
         return to_ul(Row::Profile);
 
+    if (dynamic_cast<Styling*>(child))
+        return to_ul(Row::Styling);
+
     return 0;
 }
 
 std::int32_t Channel::getNoDimensions() const
 {
+    if (_points == nullptr)
+        return 0;
+
     return _points->getNumDimensions();
 }
 
 std::int32_t Channel::getNoPoints() const
 {
+    if (_points == nullptr)
+        return 0;
+
     return _points->getNumPoints();
 }
 

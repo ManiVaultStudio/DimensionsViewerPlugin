@@ -2,7 +2,7 @@
 
 #include "ModelItem.h"
 #include "Profile.h"
-#include "Global.h"
+#include "Styling.h"
 
 #include <QObject>
 #include <QVector>
@@ -44,9 +44,9 @@ public: // Columns and rows
         RangeType,
         Settings,
 
-        Start = Name,
-        End = Settings,
-        Count = End + 1
+        Start   = Name,
+        End     = Settings,
+        Count   = End + 1
     };
 
     /** Maps column name to column enum */
@@ -67,9 +67,9 @@ public: // Columns and rows
         Profile,
         Styling,
 
-        Start = Profile,
-        End = Styling,
-        Count = End + 1
+        Start   = Profile,
+        End     = Styling,
+        Count   = End + 1
     };
 
 public: // Get/set data roles
@@ -183,7 +183,8 @@ private:
 	QString					_datasetName;		/** Dataset name */
 	QColor					_color;				/** Color */
 	float					_opacity;			/** Opacity */
-    Profile				    _profile;		    /** Profile */
+    Profile				    _profile;		    /** Profile settings */
+    Styling				    _styling;		    /** Style settings */
 	QVariantMap				_spec;				/** Specification for use in JS visualization client (Vega) */
 	Points*					_points;			/** Pointer to points dataset */
 
