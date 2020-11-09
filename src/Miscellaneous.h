@@ -79,30 +79,6 @@ public: // ModelIndex: Model
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
 
-public: // ModelIndex: Hierarchy
-
-    /**
-     * Returns a model item node by index
-     * @param index Index of the child model item
-     * @return Model item at index
-     */
-    ModelItem* getChild(const int& index) const override {
-        return nullptr;
-    };
-
-    /** Returns the number of children */
-    int getChildCount() const override {
-        return 0;
-    };
-
-    /**
-     * Returns the child index
-     * @param child Pointer to child model item
-     */
-    int getChildIndex(ModelItem* child) const override {
-        return 0;
-    };
-
 protected:
     bool        _showDimensionNames;    /** Whether to show dimension names in the viewer */
 

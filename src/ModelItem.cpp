@@ -19,11 +19,26 @@ QModelIndex ModelItem::index(int row, int column, const QModelIndex& parent /*= 
     return getConfigurationsModel()->index(row, column, parent);
 }
 
+ModelItem* ModelItem::getChild(const int& index) const
+{
+    return nullptr;
+}
+
+int ModelItem::getChildCount() const
+{
+    return 0;
+}
+
 int ModelItem::getChildIndex() const
 {
     if (_parent)
         return _parent->getChildIndex(const_cast<ModelItem*>(this));
 
+    return 0;
+}
+
+int ModelItem::getChildIndex(ModelItem* child) const
+{
     return 0;
 }
 

@@ -146,8 +146,9 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 Global::Global(ModelItem* parent) :
     ModelItem("Global", parent),
     _enabled(true),
-    _profile(Profile::ProfileType::Mean)
+    _profile(this, Profile::ProfileType::Mean)
 {
+    //dimensionsViewerPlugin->getConfigurationsModel()
 }
 
 int Global::columnCount() const 

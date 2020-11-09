@@ -45,7 +45,8 @@ public: // Columns and rows
         Settings,
 
         Start = Name,
-        End = Settings
+        End = Settings,
+        Count = End + 1
     };
 
     /** Maps column name to column enum */
@@ -67,7 +68,8 @@ public: // Columns and rows
         Styling,
 
         Start = Profile,
-        End = Styling
+        End = Styling,
+        Count = End + 1
     };
 
 public: // Get/set data roles

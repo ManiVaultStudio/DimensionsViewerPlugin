@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.h"
+#include "ModelItem.h"
 
 #include <QObject>
 #include <QMap>
@@ -10,7 +10,38 @@
  *
  * @author T. Kroes
  */
-class Profile {
+class Profile : public ModelItem {
+
+public: // Columns and rows
+
+    /** Model item columns */
+    enum class Column {
+        Name,               /** Name of the model item */
+        ProfileTypes,       /** Available profile types */
+        ProfileType,        /** Current profile type */
+        RangeTypes,         /** Available range types */
+        RangeType,          /** Current range type */
+
+        Start = Name,
+        End = RangeType,
+        Count = End + 1
+    };
+
+    /** Maps column name to column enum */
+    static QMap<QString, Column> const columns;
+
+    /** Get column name from column enum */
+    static QString getColumnTypeName(const Column& column) {
+        return columns.key(column);
+    }
+
+    /** Get column enum from column name */
+    static Column getColumnTypeEnum(const QString& columnName) {
+        return columns[columnName];
+    }
+
+    /** Model item rows */
+    enum class Row {};
 
 public: // Enumerations
 
@@ -21,6 +52,7 @@ public: // Enumerations
 		Median,             /** Display statistical median */
 		Differential,       /** Display differential profile (difference between two profiles) */
 
+        Start = None,
 		End = Differential
 	};
     
@@ -47,6 +79,7 @@ public: // Enumerations
 		Percentile5,            /** 5% and 95% percentile (median profile type) */
 		Percentile10,           /** 10% and 90% percentile (median profile type) */
 
+        Start = None,
 		End = Percentile10
 	};
 
@@ -63,9 +96,49 @@ public: // Enumerations
         return rangeTypes[rangeTypeName];
     }
 
+public: // Get/set data roles
+
+    static QMap<Column, std::function<QVariant(Profile* profile)>> const getEditRoles;
+    static QMap<Column, std::function<QVariant(Profile* profile)>> const getDisplayRoles;
+    static QMap<Column, std::function<QModelIndexList(Profile* profile, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
+
 public: // Construction
 
-    Profile(const ProfileType& profileType);
+    /**
+     * Constructor
+     * @param parent Parent model item
+     * @param profileType Profile type
+     */
+    Profile(ModelItem* parent, const ProfileType& profileType);
+
+public: // ModelIndex: Model
+
+    /** Returns the number of columns in the item */
+    int columnCount() const override;
+
+    /**
+     * Returns the item flags for the given model index
+     * @param index Model index
+     * @return Item flags for the index
+     */
+    Qt::ItemFlags getFlags(const QModelIndex& index) const override;
+
+    /**
+     * Returns the data for the given model index and data role
+     * @param index Model index
+     * @param role Data role
+     * @return Data in variant form
+     */
+    QVariant getData(const QModelIndex& index, const int& role) const override;
+
+    /**
+     * Sets the data value for the given model index and data role
+     * @param index Model index
+     * @param value Data value in variant form
+     * @param role Data role
+     * @return Model indices that are affected by the operation
+     */
+    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const int& role) override;
 
 public: // Getters/setters
 
@@ -86,7 +159,7 @@ public: // Getters/setters
     bool canDisplay() const;
 
 private:
-    ProfileType             _profileType;
-    RangeType               _rangeType;
-    QVector<RangeType>      _rangeTypes;
+    ProfileType             _profileType;       /** Current profile type */
+    RangeType               _rangeType;         /** Current range type */
+    QVector<RangeType>      _rangeTypes;        /** Range types (depends on the current profile type) */
 };

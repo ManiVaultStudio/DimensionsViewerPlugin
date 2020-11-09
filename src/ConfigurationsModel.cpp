@@ -59,7 +59,9 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
     if (index == QModelIndex())
         return false;
 
-    const auto affectedIndices = getItem(index)->setData(index, value, role);
+    auto item = getItem(index);
+
+    const auto affectedIndices = item->setData(index, value, role);
 
     for (auto affectedIndex : affectedIndices) {
         emit dataChanged(affectedIndex, affectedIndex);

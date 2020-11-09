@@ -56,13 +56,6 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="stylingLabel">
-          <property name="text">
-           <string>Styling</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="rangeTypeComboBox"/>
         </item>
@@ -75,26 +68,6 @@
            <string>Profile</string>
           </property>
          </widget>
-        </item>
-        <item row="2" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item alignment="Qt::AlignLeft">
-           <widget class="StylingPushButton" name="stylingPushButton" native="true">
-            <property name="minimumSize">
-             <size>
-              <width>22</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>22</width>
-              <height>22</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </item>
        </layout>
       </item>
@@ -119,14 +92,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>StylingPushButton</class>
-   <extends>QWidget</extends>
-   <header>StylingPushButton.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

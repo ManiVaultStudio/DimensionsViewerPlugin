@@ -20,6 +20,8 @@ namespace hdps {
  */
 class ModelItem : public QObject
 {
+    Q_OBJECT
+
 public: // Construction
 
     /**
@@ -69,20 +71,20 @@ public: // Model
 public: // Hierarchy
 
     /**
-     * Returns a child model item by index
+     * Returns a model item node by index
      * @param index Index of the child model item
      * @return Model item at index
      */
-    virtual ModelItem* getChild(const int& index) const = 0;
+    virtual ModelItem* getChild(const int& index) const;
 
     /** Returns the number of children */
-    virtual int getChildCount() const = 0;
+    virtual int getChildCount() const;
 
     /**
      * Returns the child index
      * @param child Pointer to child model item
      */
-    virtual int getChildIndex(ModelItem* child) const = 0;
+    virtual int getChildIndex(ModelItem* child) const;
 
     /** Returns the child index of this model item w.r.t. its parent */
     int getChildIndex() const;
@@ -92,6 +94,14 @@ public: // Hierarchy
 
     /** Returns whether the model item is a leaf node */
     bool isLeaf() const;
+
+signals:
+
+    /**
+     * Signals that the model item has changed
+     * @param index Model index
+     */
+    void changed(const QModelIndex& index);
 
 public:
 

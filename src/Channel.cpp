@@ -229,7 +229,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_datasetName(datasetName),
 	_color(color),
 	_opacity(opacity),
-	_profile(Profile::ProfileType::Mean),
+	_profile(this, Profile::ProfileType::Mean),
 	_spec(),
     _points(nullptr)
 {
@@ -419,16 +419,27 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
 ModelItem* Channel::getChild(const int& index) const
 {
+    switch (static_cast<Row>(index))
+    {
+        case Row::Profile:
+            return const_cast<Profile*>(&_profile);
+
+        default:
+            break;
+    }
     return nullptr;
 }
 
 int Channel::getChildCount() const
 {
-    return 0;
+    return to_ul(Row::Count);
 }
 
 int Channel::getChildIndex(ModelItem* child) const
 {
+    if (dynamic_cast<Profile*>(child))
+        return to_ul(Row::Profile);
+
     return 0;
 }
 
