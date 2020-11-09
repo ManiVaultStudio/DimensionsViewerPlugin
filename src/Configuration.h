@@ -26,7 +26,7 @@ public: // Constants
 public: // Columns
 
     /** Model item columns */
-    enum class Column {
+    enum class Columns {
         Name,
         Index,
         DatasetName,
@@ -39,24 +39,24 @@ public: // Columns
     };
 
     /** Maps column name to column enum and vice versa */
-    static QMap<QString, Column> const columns;
+    static QMap<QString, Columns> const columns;
 
     /** Get string representation of column enum */
-    static QString getColumnTypeName(const Column& column) {
+    static QString getColumnTypeName(const Columns& column) {
         return columns.key(column);
     }
 
     /** Get enum representation from column type name */
-    static Column getColumnTypeEnum(const QString& columnName) {
+    static Columns getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
     /** Model item rows */
     enum class Rows {
-        Channels,                   /** Channels model item */
-        Global,                     /** Global settings model item */
-        DifferentialProfile,        /** Differential profile settings model item */
-        Miscellaneous,              /** Miscellaneous settings model item */
+        Channels,
+        Global,
+        DifferentialProfile,
+        Miscellaneous,
 
         Start = Channels,
         End = Miscellaneous
@@ -64,9 +64,9 @@ public: // Columns
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Configuration* configuration)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(Configuration* configuration, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
+    static QMap<Columns, std::function<QVariant(Configuration* configuration)>> const getEditRoles;
+    static QMap<Columns, std::function<QVariant(Configuration* configuration)>> const getDisplayRoles;
+    static QMap<Columns, std::function<QModelIndexList(Configuration* configuration, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 public: // Construction
 

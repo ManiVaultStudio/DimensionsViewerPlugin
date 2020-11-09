@@ -16,36 +16,36 @@ class Global : public ModelItem {
 public: // Columns
 
     /** Data columns */
-    enum class Column {
-        Name,               /** Name of the model item */
-        Enabled,            /** Whether global settings are enabled */
-        ProfileTypes,       /** Available profile types */
-        ProfileType,        /** Selected profile type */
-        RangeTypes,         /** Available range types */
-        RangeType,          /** Selected range type */
+    enum class Columns {
+        Name,
+        Enabled,
+        ProfileTypes,
+        ProfileType,
+        RangeTypes,
+        RangeType,
 
         Start = Name,
         End = RangeType
     };
 
     /** Maps column name to column enum and vice versa */
-    static QMap<QString, Column> const columns;
+    static QMap<QString, Columns> const columns;
 
     /** Get string representation of column enum */
-    static QString getColumnTypeName(const Column& column) {
+    static QString getColumnTypeName(const Columns& column) {
         return columns.key(column);
     }
 
     /** Get enum representation from column type name */
-    static Column getColumnTypeEnum(const QString& columnName) {
+    static Columns getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(Global* global)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Global* global)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(Global* global, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
+    static QMap<Columns, std::function<QVariant(Global* global)>> const getEditRoles;
+    static QMap<Columns, std::function<QVariant(Global* global)>> const getDisplayRoles;
+    static QMap<Columns, std::function<QModelIndexList(Global* global, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
 protected: // Construction
 

@@ -170,7 +170,7 @@ const QMap<Channel::Columns, std::function<QModelIndexList(Channel* channel, con
 
         const auto differentialProfileIndex = channel->index(to_ul(Configuration::Rows::DifferentialProfile), 0, index.parent().parent());
 
-        for (int column = to_ul(DifferentialProfile::Column::Start); column <= to_ul(DifferentialProfile::Column::End); column++)
+        for (int column = to_ul(DifferentialProfile::Columns::Start); column <= to_ul(DifferentialProfile::Columns::End); column++)
             affectedIndices << differentialProfileIndex.siblingAtColumn(column);
 
         affectedIndices << index.parent().parent().siblingAtColumn(to_ul(Miscellaneous::Column::ShowDimensionNames));

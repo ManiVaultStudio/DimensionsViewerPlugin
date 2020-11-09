@@ -6,61 +6,61 @@
 std::int32_t Configuration::maxNoDimensions = 100;
 std::int32_t Configuration::noConfigurations = 0;
 
-const QMap<QString, Configuration::Column> Configuration::columns = {
-    { "Name", Configuration::Column::Name },
-    { "Index", Configuration::Column::Index },
-    { "Dataset name", Configuration::Column::DatasetName },
-    { "Data name", Configuration::Column::DataName },
-    { "Subsets", Configuration::Column::Subsets },
-    { "Selection stamp", Configuration::Column::SelectionStamp }
+const QMap<QString, Configuration::Columns> Configuration::columns = {
+    { "Name", Configuration::Columns::Name },
+    { "Index", Configuration::Columns::Index },
+    { "Dataset name", Configuration::Columns::DatasetName },
+    { "Data name", Configuration::Columns::DataName },
+    { "Subsets", Configuration::Columns::Subsets },
+    { "Selection stamp", Configuration::Columns::SelectionStamp }
 };
 
-const QMap<Configuration::Column, std::function<QVariant(Configuration* configuration)>> Configuration::getEditRoles = {
-    { Configuration::Column::Name, [](Configuration* configuration) {
+const QMap<Configuration::Columns, std::function<QVariant(Configuration* configuration)>> Configuration::getEditRoles = {
+    { Configuration::Columns::Name, [](Configuration* configuration) {
         return configuration->_name;
     }},
-    { Configuration::Column::Index, [](Configuration* configuration) {
+    { Configuration::Columns::Index, [](Configuration* configuration) {
         return configuration->_index;
     }},
-    { Configuration::Column::DatasetName, [](Configuration* configuration) {
+    { Configuration::Columns::DatasetName, [](Configuration* configuration) {
         return configuration->_datasetName;
     }},
-    { Configuration::Column::DataName, [](Configuration* configuration) {
+    { Configuration::Columns::DataName, [](Configuration* configuration) {
         return configuration->_dataName;
     }},
-    { Configuration::Column::Subsets, [](Configuration* configuration) {
+    { Configuration::Columns::Subsets, [](Configuration* configuration) {
         return configuration->_subsets;
     }}
 };
 
-const QMap<Configuration::Column, std::function<QVariant(Configuration* configuration)>> Configuration::getDisplayRoles = {
-    { Configuration::Column::Name, [](Configuration* configuration) {
-        return getEditRoles[Configuration::Column::Name](configuration);
+const QMap<Configuration::Columns, std::function<QVariant(Configuration* configuration)>> Configuration::getDisplayRoles = {
+    { Configuration::Columns::Name, [](Configuration* configuration) {
+        return getEditRoles[Configuration::Columns::Name](configuration);
     }},
-    { Configuration::Column::Index, [](Configuration* configuration) {
-        return QString::number(getEditRoles[Configuration::Column::Index](configuration).toInt());
+    { Configuration::Columns::Index, [](Configuration* configuration) {
+        return QString::number(getEditRoles[Configuration::Columns::Index](configuration).toInt());
     }},
-    { Configuration::Column::DatasetName, [](Configuration* configuration) {
-        return getEditRoles[Configuration::Column::DatasetName](configuration);
+    { Configuration::Columns::DatasetName, [](Configuration* configuration) {
+        return getEditRoles[Configuration::Columns::DatasetName](configuration);
     }},
-    { Configuration::Column::DataName, [](Configuration* configuration) {
-        return getEditRoles[Configuration::Column::DataName](configuration);
+    { Configuration::Columns::DataName, [](Configuration* configuration) {
+        return getEditRoles[Configuration::Columns::DataName](configuration);
     }},
-    { Configuration::Column::Subsets, [](Configuration* configuration) {
-        return getEditRoles[Configuration::Column::Subsets](configuration).toStringList().join(", ");
+    { Configuration::Columns::Subsets, [](Configuration* configuration) {
+        return getEditRoles[Configuration::Columns::Subsets](configuration).toStringList().join(", ");
     }}
 };
 
-const QMap<Configuration::Column, std::function<QModelIndexList(Configuration* configuration, const QModelIndex& index, const QVariant& value)>> Configuration::setEditRoles = {
-    { Configuration::Column::Index, [](Configuration* configuration, const QModelIndex& index, const QVariant& value) {
+const QMap<Configuration::Columns, std::function<QModelIndexList(Configuration* configuration, const QModelIndex& index, const QVariant& value)>> Configuration::setEditRoles = {
+    { Configuration::Columns::Index, [](Configuration* configuration, const QModelIndex& index, const QVariant& value) {
         configuration->_index = value.toInt();
         return QModelIndexList();
     }},
-    { Configuration::Column::DatasetName, [](Configuration* configuration, const QModelIndex& index, const QVariant& value) {
+    { Configuration::Columns::DatasetName, [](Configuration* configuration, const QModelIndex& index, const QVariant& value) {
         configuration->_datasetName = value.toString();
         return QModelIndexList();
     }},
-    { Configuration::Column::Subsets, [](Configuration* configuration, const QModelIndex& index, const QVariant& value) {
+    { Configuration::Columns::Subsets, [](Configuration* configuration, const QModelIndex& index, const QVariant& value) {
         configuration->_subsets = value.toStringList();
 
         QModelIndexList affectedIndices;
@@ -106,16 +106,16 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-    const auto column = static_cast<Column>(index.column());
+    const auto column = static_cast<Columns>(index.column());
 
     switch (column)
     {
-        case Column::Name:
-        case Column::Index:
-        case Column::DatasetName:
-        case Column::DataName:
-        case Column::Subsets:
-        case Column::SelectionStamp:
+        case Columns::Name:
+        case Columns::Index:
+        case Columns::DatasetName:
+        case Columns::DataName:
+        case Columns::Subsets:
+        case Columns::SelectionStamp:
         {
             flags |= Qt::ItemIsEnabled;
 
@@ -137,16 +137,16 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
     {
         case Qt::EditRole:
         {
-            if (getEditRoles.contains(static_cast<Column>(column)))
-                return getEditRoles[static_cast<Column>(column)](const_cast<Configuration*>(this));
+            if (getEditRoles.contains(static_cast<Columns>(column)))
+                return getEditRoles[static_cast<Columns>(column)](const_cast<Configuration*>(this));
 
             break;
         }
 
         case Qt::DisplayRole:
         {
-            if (getDisplayRoles.contains(static_cast<Column>(column)))
-                return getDisplayRoles[static_cast<Column>(column)](const_cast<Configuration*>(this));
+            if (getDisplayRoles.contains(static_cast<Columns>(column)))
+                return getDisplayRoles[static_cast<Columns>(column)](const_cast<Configuration*>(this));
 
             break;
         }
@@ -160,7 +160,7 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    const auto column = static_cast<Column>(index.column());
+    const auto column = static_cast<Columns>(index.column());
 
     QModelIndexList affectedIndices{ index };
 

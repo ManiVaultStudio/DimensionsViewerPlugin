@@ -17,36 +17,36 @@ class DifferentialProfile : public ModelItem {
 public: // Columns
 
     /** Data columns */
-    enum class Column {
-        Name,               /** Name of the model item */
-        Enabled,            /** TODO */
-        DatasetNames1,      /** TODO */
-        DatasetNames2,      /** TODO */
-        DatasetName1,       /** TODO */
-        DatasetName2,       /** TODO */
+    enum class Columns {
+        Name,
+        Enabled,
+        DatasetNames1,
+        DatasetNames2,
+        DatasetName1,
+        DatasetName2,
 
         Start = Name,
         End = DatasetName2
     };
 
     /** Maps column name to column enum and vice versa */
-    static QMap<QString, Column> const columns;
+    static QMap<QString, Columns> const columns;
 
     /** Get string representation of column enum */
-    static QString getColumnTypeName(const Column& column) {
+    static QString getColumnTypeName(const Columns& column) {
         return columns.key(column);
     }
 
     /** Get enum representation from column type name */
-    static Column getColumnTypeEnum(const QString& columnName) {
+    static Columns getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
+    static QMap<Columns, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getEditRoles;
+    static QMap<Columns, std::function<QVariant(DifferentialProfile* differentialProfile)>> const getDisplayRoles;
+    static QMap<Columns, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> const setEditRoles;
 
 protected: // Construction
 

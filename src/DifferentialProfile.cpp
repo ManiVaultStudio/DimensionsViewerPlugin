@@ -5,75 +5,75 @@
 
 #include <QDebug>
 
-const QMap<QString, DifferentialProfile::Column> DifferentialProfile::columns = {
-    { "Name", DifferentialProfile::Column::Name },
-    { "Enabled", DifferentialProfile::Column::Enabled },
-    { "Dataset names 1", DifferentialProfile::Column::DatasetNames2 },
-    { "Dataset names 2", DifferentialProfile::Column::DatasetNames2 },
-    { "Dataset name 1", DifferentialProfile::Column::DatasetName1 },
-    { "Dataset name 2", DifferentialProfile::Column::DatasetName1 }
+const QMap<QString, DifferentialProfile::Columns> DifferentialProfile::columns = {
+    { "Name", DifferentialProfile::Columns::Name },
+    { "Enabled", DifferentialProfile::Columns::Enabled },
+    { "Dataset names 1", DifferentialProfile::Columns::DatasetNames2 },
+    { "Dataset names 2", DifferentialProfile::Columns::DatasetNames2 },
+    { "Dataset name 1", DifferentialProfile::Columns::DatasetName1 },
+    { "Dataset name 2", DifferentialProfile::Columns::DatasetName1 }
 };
 
-const QMap<DifferentialProfile::Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> DifferentialProfile::getEditRoles = {
-    { DifferentialProfile::Column::Name, [](DifferentialProfile* differentialProfile) {
+const QMap<DifferentialProfile::Columns, std::function<QVariant(DifferentialProfile* differentialProfile)>> DifferentialProfile::getEditRoles = {
+    { DifferentialProfile::Columns::Name, [](DifferentialProfile* differentialProfile) {
         return differentialProfile->_name;
     }},
-    { DifferentialProfile::Column::Enabled, [](DifferentialProfile* differentialProfile) {
+    { DifferentialProfile::Columns::Enabled, [](DifferentialProfile* differentialProfile) {
         return differentialProfile->_enabled && differentialProfile->getConfiguration()->getChannels()->getNoChannelsEnabled() >= 2;
     }},
-    { DifferentialProfile::Column::DatasetNames1, [](DifferentialProfile* differentialProfile) {
+    { DifferentialProfile::Columns::DatasetNames1, [](DifferentialProfile* differentialProfile) {
         return differentialProfile->getConfigurationsModel()->getDatasetNames();
     }},
-    { DifferentialProfile::Column::DatasetNames2, [](DifferentialProfile* differentialProfile) {
+    { DifferentialProfile::Columns::DatasetNames2, [](DifferentialProfile* differentialProfile) {
         return differentialProfile->getConfigurationsModel()->getDatasetNames();
     }},
-    { DifferentialProfile::Column::DatasetName1, [](DifferentialProfile* differentialProfile) {
+    { DifferentialProfile::Columns::DatasetName1, [](DifferentialProfile* differentialProfile) {
         return differentialProfile->_profileDatasetName[0];
     }},
-    { DifferentialProfile::Column::DatasetName2, [](DifferentialProfile* differentialProfile) {
+    { DifferentialProfile::Columns::DatasetName2, [](DifferentialProfile* differentialProfile) {
         return differentialProfile->_profileDatasetName[1];
     }}
 };
 
-const QMap<DifferentialProfile::Column, std::function<QVariant(DifferentialProfile* differentialProfile)>> DifferentialProfile::getDisplayRoles = {
-    { DifferentialProfile::Column::Name, [](DifferentialProfile* differentialProfile) {
-        return getEditRoles[DifferentialProfile::Column::Name](differentialProfile);
+const QMap<DifferentialProfile::Columns, std::function<QVariant(DifferentialProfile* differentialProfile)>> DifferentialProfile::getDisplayRoles = {
+    { DifferentialProfile::Columns::Name, [](DifferentialProfile* differentialProfile) {
+        return getEditRoles[DifferentialProfile::Columns::Name](differentialProfile);
     }},
-    { DifferentialProfile::Column::Enabled, [](DifferentialProfile* differentialProfile) {
-        return getEditRoles[DifferentialProfile::Column::Enabled](differentialProfile).toBool() ? "on" : "off";
+    { DifferentialProfile::Columns::Enabled, [](DifferentialProfile* differentialProfile) {
+        return getEditRoles[DifferentialProfile::Columns::Enabled](differentialProfile).toBool() ? "on" : "off";
     }},
-    { DifferentialProfile::Column::DatasetNames1, [](DifferentialProfile* differentialProfile) {
-        return getEditRoles[DifferentialProfile::Column::DatasetNames1](differentialProfile);
+    { DifferentialProfile::Columns::DatasetNames1, [](DifferentialProfile* differentialProfile) {
+        return getEditRoles[DifferentialProfile::Columns::DatasetNames1](differentialProfile);
     }},
-    { DifferentialProfile::Column::DatasetNames2, [](DifferentialProfile* differentialProfile) {
-        return getEditRoles[DifferentialProfile::Column::DatasetNames2](differentialProfile);
+    { DifferentialProfile::Columns::DatasetNames2, [](DifferentialProfile* differentialProfile) {
+        return getEditRoles[DifferentialProfile::Columns::DatasetNames2](differentialProfile);
     }},
-    { DifferentialProfile::Column::DatasetName1, [](DifferentialProfile* differentialProfile) {
-        return getEditRoles[DifferentialProfile::Column::DatasetName1](differentialProfile);
+    { DifferentialProfile::Columns::DatasetName1, [](DifferentialProfile* differentialProfile) {
+        return getEditRoles[DifferentialProfile::Columns::DatasetName1](differentialProfile);
     }},
-    { DifferentialProfile::Column::DatasetName2, [](DifferentialProfile* differentialProfile) {
-        return getEditRoles[DifferentialProfile::Column::DatasetName2](differentialProfile);
+    { DifferentialProfile::Columns::DatasetName2, [](DifferentialProfile* differentialProfile) {
+        return getEditRoles[DifferentialProfile::Columns::DatasetName2](differentialProfile);
     }}
 };
 
-const QMap<DifferentialProfile::Column, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> DifferentialProfile::setEditRoles = {
-    { DifferentialProfile::Column::Enabled, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
+const QMap<DifferentialProfile::Columns, std::function<QModelIndexList(DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value)>> DifferentialProfile::setEditRoles = {
+    { DifferentialProfile::Columns::Enabled, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
         differentialProfile->_enabled = value.toBool();
         return QModelIndexList();
     }},
-    { DifferentialProfile::Column::DatasetNames1, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
+    { DifferentialProfile::Columns::DatasetNames1, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
         differentialProfile->_profileDatasetNames[0] = value.toStringList();
         return QModelIndexList();
     }},
-    { DifferentialProfile::Column::DatasetNames2, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
+    { DifferentialProfile::Columns::DatasetNames2, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
         differentialProfile->_profileDatasetNames[1] = value.toStringList();
         return QModelIndexList();
     }},
-    { DifferentialProfile::Column::DatasetName1, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
+    { DifferentialProfile::Columns::DatasetName1, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
         differentialProfile->_profileDatasetName[0] = value.toString();
         return QModelIndexList();
     }},
-    { DifferentialProfile::Column::DatasetName2, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
+    { DifferentialProfile::Columns::DatasetName2, [](DifferentialProfile* differentialProfile, const QModelIndex& index, const QVariant& value) {
         differentialProfile->_profileDatasetName[1] = value.toString();
         return QModelIndexList();
     }}
@@ -96,13 +96,13 @@ Qt::ItemFlags DifferentialProfile::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags;
 
-    const auto column               = static_cast<Column>(index.column());
+    const auto column               = static_cast<Columns>(index.column());
     const auto noChannelsEnabled    = getConfiguration()->getChannels()->getNoChannelsEnabled();
     const auto noDatasets           = getConfiguration()->getSubsets().count() + 1;
 
     switch (column)
     {
-        case Column::Enabled:
+        case Columns::Enabled:
         {
             if (noChannelsEnabled >= 2)
                 flags |= Qt::ItemIsEnabled;
@@ -110,10 +110,10 @@ Qt::ItemFlags DifferentialProfile::getFlags(const QModelIndex& index) const
             break;
         }
 
-        case Column::DatasetNames1:
-        case Column::DatasetNames2:
-        case Column::DatasetName1:
-        case Column::DatasetName2:
+        case Columns::DatasetNames1:
+        case Columns::DatasetNames2:
+        case Columns::DatasetName1:
+        case Columns::DatasetName2:
         {
             if (noDatasets > 2)
                 flags |= Qt::ItemIsEnabled;
@@ -136,16 +136,16 @@ QVariant DifferentialProfile::getData(const QModelIndex& index, const int& role)
     {
         case Qt::EditRole:
         {
-            if (getEditRoles.contains(static_cast<Column>(column)))
-                return getEditRoles[static_cast<Column>(column)](const_cast<DifferentialProfile*>(this));
+            if (getEditRoles.contains(static_cast<Columns>(column)))
+                return getEditRoles[static_cast<Columns>(column)](const_cast<DifferentialProfile*>(this));
 
             break;
         }
 
         case Qt::DisplayRole:
         {
-            if (getDisplayRoles.contains(static_cast<Column>(column)))
-                return getDisplayRoles[static_cast<Column>(column)](const_cast<DifferentialProfile*>(this));
+            if (getDisplayRoles.contains(static_cast<Columns>(column)))
+                return getDisplayRoles[static_cast<Columns>(column)](const_cast<DifferentialProfile*>(this));
 
             break;
         }
@@ -159,7 +159,7 @@ QVariant DifferentialProfile::getData(const QModelIndex& index, const int& role)
 
 QModelIndexList DifferentialProfile::setData(const QModelIndex& index, const QVariant& value, const int& role)
 {
-    const auto column = static_cast<Column>(index.column());
+    const auto column = static_cast<Columns>(index.column());
 
     QModelIndexList affectedIndices{ index };
 

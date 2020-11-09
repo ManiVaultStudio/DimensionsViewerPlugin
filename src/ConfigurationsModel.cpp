@@ -134,7 +134,7 @@ QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
-    const auto hits     = match(index(0, to_ul(Configuration::Column::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
+    const auto hits     = match(index(0, to_ul(Configuration::Columns::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
 
     if (hits.isEmpty()) {
         const auto noConfigurations = _configurations.getChildCount();
@@ -159,7 +159,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
             selectRow(0);
 
     } else {
-        const auto subsetsIndex = hits.first().siblingAtColumn(to_ul(Configuration::Column::Subsets));
+        const auto subsetsIndex = hits.first().siblingAtColumn(to_ul(Configuration::Columns::Subsets));
 
         auto subsets = subsetsIndex.data(Qt::EditRole).toStringList();
 
@@ -182,7 +182,7 @@ void ConfigurationsModel::selectRow(const std::int32_t& row)
         const auto firstChannelIndex    = index(0, 0, channelsIndex);
 
         if (firstChannelIndex.siblingAtColumn(to_ul(Channel::Columns::NoDimensions)).data(Qt::EditRole).toInt() > Configuration::maxNoDimensions) {
-            const auto datasetName = configurationIndex.siblingAtColumn(to_ul(Configuration::Column::DatasetName)).data(Qt::EditRole).toString();
+            const auto datasetName = configurationIndex.siblingAtColumn(to_ul(Configuration::Columns::DatasetName)).data(Qt::EditRole).toString();
             throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());
         }
         else {
@@ -201,7 +201,7 @@ void ConfigurationsModel::selectRow(const std::int32_t& row)
 void ConfigurationsModel::selectRow(const QString& datasetName)
 {
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
-    const auto hits     = match(index(0, to_ul(Configuration::Column::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
+    const auto hits     = match(index(0, to_ul(Configuration::Columns::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
 
     if (!hits.isEmpty())
         selectRow(hits.first().row());
