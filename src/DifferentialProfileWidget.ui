@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>485</width>
-    <height>55</height>
+    <width>557</width>
+    <height>57</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -142,6 +142,22 @@
          </widget>
         </item>
         <item>
+         <widget class="StylingPushButton" name="stylingPushButton" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -166,6 +182,12 @@
    <class>ColorPickerPushButton</class>
    <extends>QPushButton</extends>
    <header>widgets/ColorPickerPushButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>StylingPushButton</class>
+   <extends>QWidget</extends>
+   <header>StylingPushButton.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>158</width>
-    <height>51</height>
+    <width>239</width>
+    <height>56</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -42,6 +42,20 @@
        <widget class="QCheckBox" name="showDimensionNamesCheckBox">
         <property name="text">
          <string>Show dimension names</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="exportPdfPushButton">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="exportImagePushButton">
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>

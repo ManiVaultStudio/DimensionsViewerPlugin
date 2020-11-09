@@ -22,7 +22,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
             const auto firstRowIndex = selectedRows.first();
 
             if (firstRowIndex.parent() == QModelIndex())
-                setPersistentModelIndex(firstRowIndex);
+                setModelIndex(firstRowIndex);
         }
             
     });
@@ -34,12 +34,12 @@ void ConfigurationWidget::updateData(const QModelIndex& begin, const QModelIndex
 {
 }
 
-void ConfigurationWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void ConfigurationWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setPersistentModelIndex(modelIndex);
+    ModelItemWidget::setModelIndex(modelIndex);
 
-    _ui->channelsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::Channels)));
-    _ui->globalSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::Global)));
-    _ui->differentialProfileSettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Child::DifferentialProfile)));
-    _ui->miscellaneousSettingsWidget->setPersistentModelIndex(modelIndex.sibling(static_cast<int>(Configuration::Child::Miscellaneous), 0));
+    _ui->channelsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Rows::Channels)));
+    _ui->globalSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Rows::Global)));
+    _ui->differentialProfileSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Rows::DifferentialProfile)));
+    _ui->miscellaneousSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Rows::Miscellaneous)));
 }

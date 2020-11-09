@@ -98,6 +98,7 @@ Qt::ItemFlags DifferentialProfile::getFlags(const QModelIndex& index) const
 
     const auto column               = static_cast<Column>(index.column());
     const auto noChannelsEnabled    = getConfiguration()->getChannels()->getNoChannelsEnabled();
+    const auto noDatasets           = getConfiguration()->getSubsets().count() + 1;
 
     switch (column)
     {
@@ -113,7 +114,12 @@ Qt::ItemFlags DifferentialProfile::getFlags(const QModelIndex& index) const
         case Column::DatasetNames2:
         case Column::DatasetName1:
         case Column::DatasetName2:
+        {
+            if (noDatasets > 2)
+                flags |= Qt::ItemIsEnabled;
+
             break;
+        }
 
         default:
             break;

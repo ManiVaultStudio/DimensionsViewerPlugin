@@ -80,6 +80,40 @@
     </widget>
    </item>
    <item>
+    <widget class="ColorPickerPushButton" name="colorPushButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QComboBox" name="profileTypeComboBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -124,51 +158,11 @@
     </widget>
    </item>
    <item>
-    <widget class="ColorPickerPushButton" name="colorPushButton">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
+    <widget class="StylingPushButton" name="stylingPushButton" native="true">
      <property name="minimumSize">
       <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="settingsPushButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>20</width>
-       <height>20</height>
+       <width>22</width>
+       <height>22</height>
       </size>
      </property>
      <property name="maximumSize">
@@ -176,9 +170,6 @@
        <width>22</width>
        <height>22</height>
       </size>
-     </property>
-     <property name="text">
-      <string/>
      </property>
     </widget>
    </item>
@@ -189,6 +180,12 @@
    <class>ColorPickerPushButton</class>
    <extends>QPushButton</extends>
    <header>widgets/ColorPickerPushButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>StylingPushButton</class>
+   <extends>QWidget</extends>
+   <header>StylingPushButton.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -17,9 +17,9 @@ class Channels : public ModelItem {
 
 public: // Columns
 
-    /** Data columns */
+    /** Model item columns */
     enum class Column {
-        Name,               /** Name of the model item */
+        Name,
 
         Start = Name,
         End = Name
@@ -38,8 +38,8 @@ public: // Columns
         return columns[columnName];
     }
 
-    /** TODO */
-    enum Child {
+    /** Model item rows */
+    enum Row {
         Channel1,
         Channel2,
         Channel3,

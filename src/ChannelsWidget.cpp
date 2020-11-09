@@ -20,11 +20,11 @@ void ChannelsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 {
 }
 
-void ChannelsWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setPersistentModelIndex(modelIndex);
+    ModelItemWidget::setModelIndex(modelIndex);
 
-    _ui->channel1SettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Child::Channel1)));
-    _ui->channel2SettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Child::Channel2)));
-    _ui->channel3SettingsWidget->setPersistentModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Child::Channel3)));
+    _ui->channel1SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Row::Channel1)));
+    _ui->channel2SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Row::Channel2)));
+    _ui->channel3SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Row::Channel3)));
 }

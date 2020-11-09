@@ -40,7 +40,7 @@ protected:
      * Sets the model index for this model item widget
      * @param modelIndex Persistent model index
      */
-    virtual void setPersistentModelIndex(const QPersistentModelIndex& modelIndex) = 0;
+    virtual void setModelIndex(const QPersistentModelIndex& modelIndex) = 0;
 
     /** TODO */
     ConfigurationsModel& getConfigurationsModel();

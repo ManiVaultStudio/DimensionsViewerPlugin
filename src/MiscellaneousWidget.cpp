@@ -43,7 +43,7 @@ void MiscellaneousWidget::updateData(const QModelIndex& begin, const QModelIndex
     }
 }
 
-void MiscellaneousWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void MiscellaneousWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setPersistentModelIndex(modelIndex);
+    ModelItemWidget::setModelIndex(modelIndex);
 }

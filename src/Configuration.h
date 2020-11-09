@@ -25,14 +25,14 @@ public: // Constants
 
 public: // Columns
 
-    /** Data columns */
+    /** Model item columns */
     enum class Column {
-        Name,                       /** Name of the model item */
-        Index,                      /** Index */
-        DatasetName,                /** TODO */
-        DataName,                   /** TODO */
-        Subsets,                    /** The subset(s) parameter of the first dataset */
-        SelectionStamp,             /** Auxiliary column for triggering synchronization */
+        Name,
+        Index,
+        DatasetName,
+        DataName,
+        Subsets,
+        SelectionStamp,
 
         Start = Name,
         End = SelectionStamp
@@ -51,8 +51,8 @@ public: // Columns
         return columns[columnName];
     }
 
-    /** Child model items */
-    enum class Child {
+    /** Model item rows */
+    enum class Rows {
         Channels,                   /** Channels model item */
         Global,                     /** Global settings model item */
         DifferentialProfile,        /** Differential profile settings model item */

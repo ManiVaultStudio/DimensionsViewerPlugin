@@ -73,17 +73,17 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 
         QVector<std::int32_t> channels;
 
-        channels << Channels::Child::Channel1;
-        channels << Channels::Child::Channel2;
-        channels << Channels::Child::Channel3;
+        channels << Channels::Row::Channel1;
+        channels << Channels::Row::Channel2;
+        channels << Channels::Row::Channel3;
 
         for (auto channel : channels) {
             const auto channelIndex = global->index(channel, 0, channelsIndex);
 
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileTypes));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileType));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::ProfileTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::ProfileType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::RangeTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::RangeType));
         }
 
         return affectedIndices;
@@ -101,17 +101,17 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 
         QVector<std::int32_t> channels;
 
-        channels << Channels::Child::Channel1;
-        channels << Channels::Child::Channel2;
-        channels << Channels::Child::Channel3;
+        channels << Channels::Row::Channel1;
+        channels << Channels::Row::Channel2;
+        channels << Channels::Row::Channel3;
 
         for (auto channel : channels) {
             const auto channelIndex = global->index(channel, 0, channelsIndex);
 
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileTypes));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileType));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::ProfileTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::ProfileType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::RangeTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::RangeType));
         }
 
         return affectedIndices;
@@ -126,17 +126,17 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 
         QVector<std::int32_t> channels;
 
-        channels << Channels::Child::Channel1;
-        channels << Channels::Child::Channel2;
-        channels << Channels::Child::Channel3;
+        channels << Channels::Row::Channel1;
+        channels << Channels::Row::Channel2;
+        channels << Channels::Row::Channel3;
 
         for (auto channel : channels) {
             const auto channelIndex = global->index(channel, 0, channelsIndex);
 
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileTypes));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::ProfileType));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
-            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Column::RangeType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::ProfileTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::ProfileType));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::RangeTypes));
+            affectedIndices << channelIndex.siblingAtColumn(to_ul(Channel::Columns::RangeType));
         }
 
         return affectedIndices;

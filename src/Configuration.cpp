@@ -67,13 +67,13 @@ const QMap<Configuration::Column, std::function<QModelIndexList(Configuration* c
 
         QVector<std::int32_t> channels;
 
-        channels << Channels::Child::Channel2;
-        channels << Channels::Child::Channel3;
+        channels << Channels::Row::Channel2;
+        channels << Channels::Row::Channel3;
 
         const auto channelsIndex = configuration->index(0, 0, index.siblingAtColumn(0));
 
         for (auto channel : channels) {
-            for (int column = to_ul(Channel::Column::Start); column <= to_ul(Channel::Column::End); column++)
+            for (int column = to_ul(Channel::Columns::Start); column <= to_ul(Channel::Columns::End); column++)
                 affectedIndices << configuration->index(channel, 0, channelsIndex).siblingAtColumn(column);
         }
 
@@ -183,18 +183,18 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
 ModelItem* Configuration::getChild(const int& index) const
 {
-    switch (static_cast<Child>(index))
+    switch (static_cast<Rows>(index))
     {
-        case Child::Channels:
+        case Rows::Channels:
             return const_cast<Channels*>(&_channels);
 
-        case Child::Global:
+        case Rows::Global:
             return const_cast<Global*>(&_global);
 
-        case Child::DifferentialProfile:
+        case Rows::DifferentialProfile:
             return const_cast<DifferentialProfile*>(&_differentialProfile);
 
-        case Child::Miscellaneous:
+        case Rows::Miscellaneous:
             return nullptr;
 
         default:
@@ -206,19 +206,19 @@ ModelItem* Configuration::getChild(const int& index) const
 
 int Configuration::getChildCount() const
 {
-    return static_cast<int>(Child::End);
+    return static_cast<int>(Rows::End);
 }
 
 int Configuration::getChildIndex(ModelItem* child) const
 {
     if (dynamic_cast<Channels*>(child))
-        return static_cast<int>(Child::Channels);
+        return static_cast<int>(Rows::Channels);
 
     if (dynamic_cast<Global*>(child))
-        return static_cast<int>(Child::Global);
+        return static_cast<int>(Rows::Global);
 
     if (dynamic_cast<DifferentialProfile*>(child))
-        return static_cast<int>(Child::DifferentialProfile);
+        return static_cast<int>(Rows::DifferentialProfile);
 
     return 0;
 }

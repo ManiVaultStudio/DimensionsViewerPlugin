@@ -41,7 +41,7 @@ public: // Inherited from ModelItemWidget
      * Sets the model index for this model item widget
      * @param modelIndex Persistent model index
      */
-    void setPersistentModelIndex(const QPersistentModelIndex& modelIndex) override;
+    void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
 	std::unique_ptr<Ui::ChannelWidget>		_ui;        /** UI from creator */

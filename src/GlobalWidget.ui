@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>121</width>
-    <height>97</height>
+    <width>131</width>
+    <height>178</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -49,8 +49,25 @@
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <layout class="QGridLayout" name="gridLayout">
+        <item row="1" column="0">
+         <widget class="QLabel" name="profileTypeLabel">
+          <property name="text">
+           <string>Range</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="stylingLabel">
+          <property name="text">
+           <string>Styling</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="rangeTypeComboBox"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="profileTypeComboBox"/>
         </item>
         <item row="0" column="0">
          <widget class="QLabel" name="rangeTypeLabel">
@@ -59,15 +76,25 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="profileTypeComboBox"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="profileTypeLabel">
-          <property name="text">
-           <string>Range</string>
-          </property>
-         </widget>
+        <item row="2" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item alignment="Qt::AlignLeft">
+           <widget class="StylingPushButton" name="stylingPushButton" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>22</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>22</width>
+              <height>22</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
@@ -92,6 +119,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>StylingPushButton</class>
+   <extends>QWidget</extends>
+   <header>StylingPushButton.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

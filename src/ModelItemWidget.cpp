@@ -17,7 +17,7 @@ ModelItemWidget::ModelItemWidget(QWidget* parent) :
     });
 }
 
-void ModelItemWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void ModelItemWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     _persistentModelIndex = modelIndex;
 

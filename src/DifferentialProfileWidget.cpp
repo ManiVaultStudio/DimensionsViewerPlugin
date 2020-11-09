@@ -57,10 +57,12 @@ void DifferentialProfileWidget::updateData(const QModelIndex& begin, const QMode
         }
 
         if (column == to_ul(DifferentialProfile::Column::DatasetName1)) {
+            _ui->profile1DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profile1DatasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
         }
 
         if (column == to_ul(DifferentialProfile::Column::DatasetName2)) {
+            _ui->profile2DatasetNameComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
             _ui->profile2DatasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
         }
 
@@ -76,7 +78,7 @@ void DifferentialProfileWidget::updateData(const QModelIndex& begin, const QMode
 	}
 }
 
-void DifferentialProfileWidget::setPersistentModelIndex(const QPersistentModelIndex& modelIndex)
+void DifferentialProfileWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setPersistentModelIndex(modelIndex);
+    ModelItemWidget::setModelIndex(modelIndex);
 }

@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include <QWidget.h>
+#include <QWidget>
 
 class DimensionsViewerPlugin;
 
@@ -41,7 +41,7 @@ public: // Inherited from ModelItemWidget
      * Sets the model index for this model item widget
      * @param modelIndex Persistent model index
      */
-    void setPersistentModelIndex(const QPersistentModelIndex& modelIndex) override;
+    void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
 	std::unique_ptr<Ui::ConfigurationWidget>    _ui;        /** UI from creator */
