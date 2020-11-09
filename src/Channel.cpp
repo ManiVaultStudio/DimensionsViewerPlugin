@@ -220,7 +220,6 @@ const QMap<Channel::Column, std::function<QModelIndexList(Channel* channel, cons
 
 Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
     ModelItem("Channel", parent),
-    _configuration(dynamic_cast<Configuration*>(parent)),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),

@@ -174,7 +174,6 @@ signals:
     void specChanged(Channel* channel);
 
 private:
-    Configuration*          _configuration;     /** Parent configuration */
 	const std::uint32_t		_index;				/** Index */
 	const QString			_internalName;		/** Internal name (e.g. channel1, channel2) */
 	QString			        _displayName;		/** Display name (e.g. dataset, Subset1 and Subset 2) */

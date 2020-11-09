@@ -19,19 +19,51 @@ endif(MSVC)
 find_package(OpenGL REQUIRED)
 find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
-file(GLOB H src/*.h)
-file(GLOB CPP src/*.cpp)
-file(GLOB WIDGETS src/*Widget.*)
+file(GLOB PLUGIN
+	src/Common.h
+	src/*Plugin.*
+	src/SpecSynchronizer.*
+)
+
+file(GLOB MODEL 
+	src/Channel.*
+	src/Channels.*
+	src/Configuration.*
+	src/Configurations.*
+	src/ConfigurationsModel.*
+	src/DifferentialProfile.*
+	src/Global.*
+	src/Miscellaneous.*
+	src/ModelItem.*
+	src/Profile.*
+	src/Styling.*
+)
+
+file(GLOB WIDGETS
+	src/ChannelsWidget.*
+	src/ChannelWidget.*
+	src/ConfigurationWidget.*
+	src/DifferentialProfileWidget.*
+	src/DimensionsViewerWidget.*
+	src/GlobalWidget.*
+	src/MiscellaneousWidget.*
+	src/ModelItemWidget.*
+	src/StylingWidget.*
+	src/StylingPushButton.*
+)
+
 file(GLOB UIS src/*.ui)
 file(GLOB WEB src/res/web/*.html src/res/web/*.js)
 file(GLOB JSON src/*.json)
 file(GLOB QRC src/*.qrc)
 
-set(SOURCES ${H} ${CPP})
+set(SOURCES ${PLUGIN} ${MODEL} ${WIDGETS})
+
 set(WEB ${WEB})
 set(AUX ${JSON} ${QRC})
 
-source_group(Plugin FILES ${SOURCES})
+source_group(Plugin FILES ${PLUGIN})
+source_group(Model FILES ${MODEL})
 source_group(Widgets FILES ${WIDGETS})
 source_group(UI FILES ${UIS})
 source_group(Web FILES ${WEB})

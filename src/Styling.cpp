@@ -82,7 +82,7 @@ Styling::Styling(ModelItem* parent) :
 
 int Styling::columnCount() const
 {
-    return ModelItem::maxNoColumns;
+    return to_ul(Column::Count);
 }
 
 Qt::ItemFlags Styling::getFlags(const QModelIndex& index) const
