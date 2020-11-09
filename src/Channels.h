@@ -18,7 +18,7 @@ class Channels : public ModelItem {
 public: // Columns
 
     /** Model item columns */
-    enum class Column {
+    enum class Columns {
         Name,
 
         Start = Name,
@@ -26,20 +26,20 @@ public: // Columns
     };
 
     /** Maps column name to column enum and vice versa */
-    static QMap<QString, Column> const columns;
+    static QMap<QString, Columns> const columns;
 
     /** Get string representation of column enum */
-    static QString getColumnTypeName(const Column& column) {
+    static QString getColumnTypeName(const Columns& column) {
         return columns.key(column);
     }
 
     /** Get enum representation from column type name */
-    static Column getColumnTypeEnum(const QString& columnName) {
+    static Columns getColumnTypeEnum(const QString& columnName) {
         return columns[columnName];
     }
 
     /** Model item rows */
-    enum Row {
+    enum Rows {
         Channel1,
         Channel2,
         Channel3,
@@ -48,9 +48,9 @@ public: // Columns
 
 public: // Get/set data roles
 
-    static QMap<Column, std::function<QVariant(Channels* channels)>> const getEditRoles;
-    static QMap<Column, std::function<QVariant(Channels* channels)>> const getDisplayRoles;
-    static QMap<Column, std::function<QModelIndexList(Channels* channels, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
+    static QMap<Columns, std::function<QVariant(Channels* channels)>> const getEditRoles;
+    static QMap<Columns, std::function<QVariant(Channels* channels)>> const getDisplayRoles;
+    static QMap<Columns, std::function<QModelIndexList(Channels* channels, const QVariant& value, const QModelIndex& index)>> const setEditRoles;
 
 protected: // Construction
 

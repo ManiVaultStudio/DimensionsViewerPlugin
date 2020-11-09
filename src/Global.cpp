@@ -73,9 +73,9 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 
         QVector<std::int32_t> channels;
 
-        channels << Channels::Row::Channel1;
-        channels << Channels::Row::Channel2;
-        channels << Channels::Row::Channel3;
+        channels << Channels::Rows::Channel1;
+        channels << Channels::Rows::Channel2;
+        channels << Channels::Rows::Channel3;
 
         for (auto channel : channels) {
             const auto channelIndex = global->index(channel, 0, channelsIndex);
@@ -101,9 +101,9 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 
         QVector<std::int32_t> channels;
 
-        channels << Channels::Row::Channel1;
-        channels << Channels::Row::Channel2;
-        channels << Channels::Row::Channel3;
+        channels << Channels::Rows::Channel1;
+        channels << Channels::Rows::Channel2;
+        channels << Channels::Rows::Channel3;
 
         for (auto channel : channels) {
             const auto channelIndex = global->index(channel, 0, channelsIndex);
@@ -126,9 +126,9 @@ const QMap<Global::Column, std::function<QModelIndexList(Global* global, const Q
 
         QVector<std::int32_t> channels;
 
-        channels << Channels::Row::Channel1;
-        channels << Channels::Row::Channel2;
-        channels << Channels::Row::Channel3;
+        channels << Channels::Rows::Channel1;
+        channels << Channels::Rows::Channel2;
+        channels << Channels::Rows::Channel3;
 
         for (auto channel : channels) {
             const auto channelIndex = global->index(channel, 0, channelsIndex);

@@ -67,8 +67,8 @@ const QMap<Configuration::Column, std::function<QModelIndexList(Configuration* c
 
         QVector<std::int32_t> channels;
 
-        channels << Channels::Row::Channel2;
-        channels << Channels::Row::Channel3;
+        channels << Channels::Rows::Channel2;
+        channels << Channels::Rows::Channel3;
 
         const auto channelsIndex = configuration->index(0, 0, index.siblingAtColumn(0));
 

@@ -263,20 +263,20 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         case Columns::Enabled: {
             switch (_index)
             {
-                case Channels::Row::Channel1: {
+                case Channels::Rows::Channel1: {
                     flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel2: {
+                case Channels::Rows::Channel2: {
                     if (noSubsets >= 1)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel3: {
+                case Channels::Rows::Channel3: {
                     if (noSubsets >= 2)
                         flags |= Qt::ItemIsEnabled;
 
@@ -295,20 +295,20 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             switch (_index)
             {
-                case Channels::Row::Channel1: {
+                case Channels::Rows::Channel1: {
                     flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel2: {
+                case Channels::Rows::Channel2: {
                     if (_enabled && noSubsets >= 1)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel3: {
+                case Channels::Rows::Channel3: {
                     if (_enabled && noSubsets >= 2)
                         flags |= Qt::ItemIsEnabled;
 

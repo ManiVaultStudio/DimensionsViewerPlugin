@@ -24,7 +24,7 @@ void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 
-    _ui->channel1SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Row::Channel1)));
-    _ui->channel2SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Row::Channel2)));
-    _ui->channel3SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Row::Channel3)));
+    _ui->channel1SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Rows::Channel1)));
+    _ui->channel2SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Rows::Channel2)));
+    _ui->channel3SettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Channels::Rows::Channel3)));
 }
