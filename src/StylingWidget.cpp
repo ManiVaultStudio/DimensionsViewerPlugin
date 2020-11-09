@@ -1,8 +1,10 @@
 #include "StylingWidget.h"
+#include "Styling.h"
 
 #include "ui_StylingWidget.h"
 
 #include <QDebug>
+#include <QStringListModel>
 
 StylingWidget::StylingWidget(QWidget* parent) :
     ModelItemWidget(parent),
@@ -16,15 +18,33 @@ StylingWidget::StylingWidget(QWidget* parent) :
     _ui->setupUi(this);
 
     move(parent->mapToGlobal(parent->rect().bottomRight()) - QPoint(width(), 0));
+
+    QObject::connect(_ui->lineTypeProfileComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
+        setData(to_ul(Styling::Column::LineTypeProfile), currentText);
+    });
+
+    QObject::connect(_ui->lineTypeRangeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
+        setData(to_ul(Styling::Column::LineTypeRange), currentText);
+    });
+
+    QObject::connect(_ui->opacitySpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        setData(to_ul(Styling::Column::Opacity), value);
+    });
+
+    QObject::connect(_ui->opacitySlider, &QSlider::valueChanged, [this](int value) {
+        setData(to_ul(Styling::Column::Opacity), 0.01f * static_cast<float>(value));
+    });
 }
 
 void StylingWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-    /*QVector<QSharedPointer<QSignalBlocker>> signalBlockers;
+    QVector<QSharedPointer<QSignalBlocker>> signalBlockers;
 
     signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->groupBox);
-    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->profileTypeComboBox);
-    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->rangeTypeComboBox);
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->lineTypeProfileComboBox);
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->lineTypeRangeComboBox);
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->opacitySpinBox);
+    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->opacitySlider);
 
     if (begin == QModelIndex() && end == QModelIndex()) {
         _ui->groupBox->setEnabled(false);
@@ -36,32 +56,37 @@ void StylingWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
     for (int column = begin.column(); column <= end.column(); column++) {
         const auto index = begin.siblingAtColumn(column);
 
-        if (column == to_ul(Global::Column::Enabled)) {
-            _ui->groupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->groupBox->setChecked(index.data(Qt::EditRole).toBool());
-            _ui->groupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+        if (column == to_ul(Styling::Column::LineTypes)) {
+            _ui->lineTypeProfileComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+            _ui->lineTypeRangeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
         }
 
-        if (column == to_ul(Global::Column::ProfileTypes)) {
-            _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+        if (column == to_ul(Styling::Column::LineTypeProfile)) {
+            _ui->lineTypeProfileComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
+            _ui->lineTypeProfileComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->lineTypeProfileComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->lineTypeProfileComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
         }
 
-        if (column == to_ul(Global::Column::ProfileType)) {
-            _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
-            _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+        if (column == to_ul(Styling::Column::LineTypeRange)) {
+            _ui->lineTypeRangeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
+            _ui->lineTypeRangeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->lineTypeRangeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->lineTypeRangeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
         }
 
-        if (column == to_ul(Global::Column::RangeTypes)) {
-            _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-        }
+        if (column == to_ul(Styling::Column::Opacity)) {
+            _ui->opacitySpinBox->setVisible(index.flags() & Qt::ItemIsEditable);
+            _ui->opacitySpinBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->opacitySpinBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->opacitySpinBox->setValue(index.data(Qt::EditRole).toFloat());
 
-        if (column == to_ul(Global::Column::RangeType)) {
-            _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
-            _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->opacitySlider->setVisible(index.flags() & Qt::ItemIsEditable);
+            _ui->opacitySlider->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui->opacitySlider->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui->opacitySlider->setValue(index.data(Qt::EditRole).toFloat() * 100.0f);
         }
-    }*/
+    }
 }
 
 void StylingWidget::setModelIndex(const QPersistentModelIndex& modelIndex)

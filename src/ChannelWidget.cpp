@@ -139,4 +139,6 @@ void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end,
 void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
+
+    _ui->stylingPushButton->setModelIndex(getSiblingModelIndex(static_cast<int>(Channel::Row::Styling)));
 }

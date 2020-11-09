@@ -18,6 +18,7 @@ public: // Columns and rows
     /** Model item columns */
     enum class Column {
         Name,               /** Name of the model item */
+        LineTypes,          /** Line types */
         LineTypeProfile,    /** Line type for drawing data profile */
         LineTypeRange,      /** Line type for drawing data range */
         Opacity,            /** Opacity */
@@ -60,12 +61,12 @@ public: // Enumerations
     static QMap<QString, LineType> const lineTypes;
 
     /** Get line type name from line type enum */
-    static QString getProfileTypeName(const LineType& lineType) {
+    static QString getLineTypeName(const LineType& lineType) {
         return lineTypes.key(lineType);
     }
 
     /** Get line type enum from line type name */
-    static LineType getProfileTypeEnum(const QString& lineTypeName) {
+    static LineType getLineTypeEnum(const QString& lineTypeName) {
         return lineTypes[lineTypeName];
     }
 

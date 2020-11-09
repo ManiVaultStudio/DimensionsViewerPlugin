@@ -20,11 +20,14 @@ const QMap<Styling::Column, std::function<QVariant(Styling* styling)>> Styling::
     { Styling::Column::Name, [](Styling* styling) {
         return styling->_name;
     }},
+    { Styling::Column::LineTypes, [](Styling* styling) {
+        return QStringList(Styling::lineTypes.keys());
+    }},
     { Styling::Column::LineTypeProfile, [](Styling* styling) {
-        return to_ul(styling->_lineTypeProfile);
+        return Styling::getLineTypeName(styling->_lineTypeProfile);
     }},
     { Styling::Column::LineTypeRange, [](Styling* styling) {
-        return to_ul(styling->_lineTypeRange);
+        return Styling::getLineTypeName(styling->_lineTypeRange);
     }},
     { Styling::Column::Opacity, [](Styling* styling) {
         return styling->_opacity;
@@ -38,11 +41,14 @@ const QMap<Styling::Column, std::function<QVariant(Styling* styling)>> Styling::
     { Styling::Column::Name, [](Styling* styling) {
         return getEditRoles[Styling::Column::Name](styling);
     }},
+    { Styling::Column::LineTypes, [](Styling* styling) {
+        return getEditRoles[Styling::Column::LineTypeProfile](styling).toStringList().join(", ");
+    }},
     { Styling::Column::LineTypeProfile, [](Styling* styling) {
-        return QString::number(getEditRoles[Styling::Column::LineTypeProfile](styling).toInt());
+        return getEditRoles[Styling::Column::LineTypeProfile](styling).toStringList().join(", ");
     }},
     { Styling::Column::LineTypeRange, [](Styling* styling) {
-        return QString::number(getEditRoles[Styling::Column::LineTypeRange](styling).toInt());
+        return getEditRoles[Styling::Column::LineTypeRange](styling).toStringList().join(", ");
     }},
     { Styling::Column::Opacity, [](Styling* styling) {
         return QString::number(getEditRoles[Styling::Column::Opacity](styling).toFloat(), 'f', 1);
@@ -54,11 +60,11 @@ const QMap<Styling::Column, std::function<QVariant(Styling* styling)>> Styling::
 
 const QMap<Styling::Column, std::function<QModelIndexList(Styling* styling, const QModelIndex& index, const QVariant& value)>> Styling::setEditRoles = {
     { Styling::Column::LineTypeProfile, [](Styling* styling, const QModelIndex& index, const QVariant& value) {
-        styling->_lineTypeProfile = static_cast<LineType>(value.toInt());
+        styling->_lineTypeProfile = Styling::getLineTypeEnum(value.toString());
         return QModelIndexList();
     }},
     { Styling::Column::LineTypeRange, [](Styling* styling, const QModelIndex& index, const QVariant& value) {
-        styling->_lineTypeRange = static_cast<LineType>(value.toInt());
+        styling->_lineTypeRange = Styling::getLineTypeEnum(value.toString());
         return QModelIndexList();
     }},
     { Styling::Column::Opacity, [](Styling* styling, const QModelIndex& index, const QVariant& value) {
@@ -74,7 +80,7 @@ const QMap<Styling::Column, std::function<QModelIndexList(Styling* styling, cons
 Styling::Styling(ModelItem* parent) :
     ModelItem("Styling", parent),
     _lineTypeProfile(LineType::Solid),
-    _lineTypeRange(LineType::Dot),
+    _lineTypeRange(LineType::DashDot),
     _opacity(1.0f),
     _color()
 {
