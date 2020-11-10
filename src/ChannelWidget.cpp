@@ -104,7 +104,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->colorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("ProfileTypes", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("ProfileTypes", QSharedPointer<WidgetMapper>::create(_ui->profileTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->profileTypeComboBox->setModel(new QStringListModel());
             _ui->profileTypeComboBox->setCurrentIndex(-1);
@@ -115,7 +115,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
 
-    addWidgetMapper("ProfileType", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("ProfileType", QSharedPointer<WidgetMapper>::create(_ui->profileTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->profileTypeComboBox->setEnabled(false);
 
@@ -128,7 +128,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("RangeTypes", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("RangeTypes", QSharedPointer<WidgetMapper>::create(_ui->rangeTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->rangeTypeComboBox->setModel(new QStringListModel());
             _ui->rangeTypeComboBox->setCurrentIndex(-1);
@@ -139,7 +139,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
 
-    addWidgetMapper("RangeType", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("RangeType", QSharedPointer<WidgetMapper>::create(_ui->rangeTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->rangeTypeComboBox->setEnabled(false);
 
@@ -152,7 +152,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("Styling", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("Styling", QSharedPointer<WidgetMapper>::create(_ui->stylingPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->stylingPushButton->setEnabled(false);
 

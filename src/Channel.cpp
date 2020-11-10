@@ -41,7 +41,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 
 int Channel::columnCount() const 
 {
-    return ModelItem::maxNoColumns;
+    return to_ul(Column::Count);
 }
 
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const

@@ -23,7 +23,7 @@ DifferentialProfile::DifferentialProfile(ModelItem* parent) :
 
 int DifferentialProfile::columnCount() const
 {
-    return ModelItem::maxNoColumns;
+    return to_ul(Column::Count);
 }
 
 Qt::ItemFlags DifferentialProfile::getFlags(const QModelIndex& index) const

@@ -2,6 +2,15 @@
 
 #include <QDebug>
 
+const QMap<QString, Profile::Column> Profile::columns = {
+    { "Name", Profile::Column::Name },
+    { "Enabled", Profile::Column::Enabled },
+    { "Profile types", Profile::Column::ProfileTypes },
+    { "Profile type", Profile::Column::ProfileType },
+    { "Range types", Profile::Column::RangeTypes },
+    { "Range type", Profile::Column::RangeType }
+};
+
 const QMap<QString, Profile::ProfileType> Profile::profileTypes = {
     { "None", Profile::ProfileType::None },
     { "Mean", Profile::ProfileType::Mean },
@@ -30,7 +39,7 @@ Profile::Profile(ModelItem* parent, const ProfileType& profileType) :
 
 int Profile::columnCount() const
 {
-    return ModelItem::maxNoColumns;
+    return to_ul(Column::Count);
 }
 
 Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
@@ -42,12 +51,20 @@ Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
     switch (column)
     {
         case Column::Name:
+        case Column::Enabled:
+        {
+            flags |= Qt::ItemIsEnabled;
+
+            break;
+        }
+
         case Column::ProfileTypes:
         case Column::ProfileType:
         case Column::RangeTypes:
         case Column::RangeType:
         {
-            flags |= Qt::ItemIsEnabled;
+            if (_enabled)
+                flags |= Qt::ItemIsEnabled;
 
             break;
         }
@@ -69,6 +86,9 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
             {
                 case Profile::Column::Name:
                     return _name;
+
+                case Profile::Column::Enabled:
+                    return _enabled;
 
                 case Profile::Column::ProfileTypes:
                     return getProfileTypeNames();
@@ -95,6 +115,9 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
             {
                 case Profile::Column::Name:
                     return getData(column, Qt::EditRole);
+
+                case Profile::Column::Enabled:
+                    return getData(column, Qt::EditRole).toBool() ? "on" : "off";
 
                 case Profile::Column::ProfileTypes:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
@@ -132,13 +155,29 @@ ModelItem::AffectedColumns Profile::setData(const std::int32_t& column, const QV
 
             switch (static_cast<Column>(column))
             {
+                case Profile::Column::Enabled: {
+                    _enabled = value.toBool();
+
+                    affectedColunns << to_ul(Column::ProfileTypes);
+                    affectedColunns << to_ul(Column::ProfileType);
+                    affectedColunns << to_ul(Column::RangeTypes);
+                    affectedColunns << to_ul(Column::RangeType);
+
+                    break;
+                }
+
                 case Profile::Column::ProfileType: {
                     setProfileType(getProfileTypeEnum(value.toString()));
+
+                    affectedColunns << to_ul(Column::RangeTypes);
+                    affectedColunns << to_ul(Column::RangeType);
+
                     break;
                 }
 
                 case Profile::Column::RangeType: {
                     setRangeType(getRangeTypeEnum(value.toString()));
+
                     break;
                 }
 

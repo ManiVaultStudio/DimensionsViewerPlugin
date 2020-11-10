@@ -17,6 +17,7 @@ public: // Columns and rows
     /** Model item columns */
     enum class Column {
         Name,               /** Name of the model item */
+        Enabled,            /** Enabled */
         ProfileTypes,       /** Available profile types */
         ProfileType,        /** Current profile type */
         RangeTypes,         /** Available range types */
@@ -151,6 +152,7 @@ public: // Getters/setters
     QVector<RangeType> getRangeTypes() const;
 
 private:
+    bool                    _enabled;           /** Whether the profile is enabled or not */
     ProfileType             _profileType;       /** Current profile type */
     RangeType               _rangeType;         /** Current range type */
     QVector<RangeType>      _rangeTypes;        /** Range types (depends on the current profile type) */

@@ -10,7 +10,7 @@ class DimensionsViewerPlugin;
 /**
  * Configurations model
  *
- * Class for storing configurations in a Qt abstract list model
+ * Class for storing configurations in a Qt abstract item model
  *
  * @author T. Kroes
  */

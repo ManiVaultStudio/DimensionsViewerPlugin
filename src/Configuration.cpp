@@ -33,7 +33,7 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
 
 int Configuration::columnCount() const 
 {
-    return ModelItem::maxNoColumns;
+    return to_ul(Column::Count);
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const

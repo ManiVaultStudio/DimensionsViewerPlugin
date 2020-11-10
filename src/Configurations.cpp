@@ -16,7 +16,7 @@ Configurations::Configurations() :
 
 int Configurations::columnCount() const 
 {
-    return ModelItem::maxNoColumns;
+    return to_ul(Column::Count);
 }
 
 Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const

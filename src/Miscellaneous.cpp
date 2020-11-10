@@ -15,7 +15,7 @@ Miscellaneous::Miscellaneous(ModelItem* parent) :
 
 int Miscellaneous::columnCount() const 
 {
-    return ModelItem::maxNoColumns;
+    return to_ul(Column::Count);
 }
 
 Qt::ItemFlags Miscellaneous::getFlags(const QModelIndex& index) const
