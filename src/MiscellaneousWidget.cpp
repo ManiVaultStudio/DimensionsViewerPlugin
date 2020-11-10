@@ -14,8 +14,6 @@ MiscellaneousWidget::MiscellaneousWidget(QWidget* parent) :
     QObject::connect(_ui->showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this](int state) {
         setData(to_ul(Miscellaneous::Column::ShowDimensionNames), state == Qt::Checked);
     });
-
-    reset();
 }
 
 void MiscellaneousWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)

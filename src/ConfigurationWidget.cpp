@@ -12,7 +12,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    _ui->treeView->setModel(&getConfigurationsModel());
+    _ui->treeView->setModel(&getModel());
     _ui->treeView->setSelectionModel(&getSelectionModel());
 
     QObject::connect(&getSelectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
@@ -26,8 +26,6 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
         }
             
     });
-
-    reset();
 }
 
 void ConfigurationWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
@@ -38,8 +36,8 @@ void ConfigurationWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 
-    _ui->channelsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Row::Channels)));
-    _ui->globalSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Row::Global)));
-    _ui->differentialProfileSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Row::DifferentialProfile)));
-    _ui->miscellaneousSettingsWidget->setModelIndex(getSiblingModelIndex(static_cast<int>(Configuration::Row::Miscellaneous)));
+    _ui->channelsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Channels)));
+    _ui->globalSettingsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Global)));
+    _ui->differentialProfileSettingsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::DifferentialProfile)));
+    _ui->miscellaneousSettingsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Miscellaneous)));
 }

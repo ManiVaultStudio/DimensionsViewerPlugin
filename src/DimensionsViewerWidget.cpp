@@ -17,7 +17,7 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 	setAcceptDrops(true);
 
-    auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+    auto& configurationsModel = _dimensionsViewerPlugin->getModel();
 
     page()->setWebChannel(_webChannel);
 
@@ -41,5 +41,5 @@ void DimensionsViewerWidget::dropEvent(QDropEvent* dropEvent)
 	const auto items        = dropEvent->mimeData()->text().split("\n");
 	const auto datasetName  = items.at(0);
 
-    _dimensionsViewerPlugin->getConfigurationsModel().selectRow(datasetName);
+    _dimensionsViewerPlugin->getModel().selectRow(datasetName);
 }

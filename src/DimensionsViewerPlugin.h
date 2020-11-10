@@ -36,7 +36,7 @@ public:
 public:
 	
 	/** Returns the configurations model */
-	ConfigurationsModel& getConfigurationsModel() { return _configurationsModel; }
+	ConfigurationsModel& getModel() { return _configurationsModel; }
 
 	/** Returns a pointer to the core interface */
 	hdps::CoreInterface* getCore() { return _core; }

@@ -7,7 +7,7 @@
 SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_dimensionsViewerPlugin(dimensionsViewerPlugin)
 {
-    auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+    auto& configurationsModel = _dimensionsViewerPlugin->getModel();
 
     QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, [this, &configurationsModel](const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/) {
         const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
@@ -35,7 +35,7 @@ SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugi
 
 QVariantMap SpecSynchronizer::getSpec(const int& modified)
 {
-    auto selectedConfiguration = _dimensionsViewerPlugin->getConfigurationsModel().getSelectedConfiguration();
+    auto selectedConfiguration = _dimensionsViewerPlugin->getModel().getSelectedConfiguration();
 
     if (selectedConfiguration != nullptr && selectedConfiguration->getModified() > modified) {
         selectedConfiguration->updateSpec();

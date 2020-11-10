@@ -24,8 +24,6 @@ DifferentialProfileWidget::DifferentialProfileWidget(QWidget* parent) :
     QObject::connect(_ui->profile2DatasetNameComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         setData(to_ul(DifferentialProfile::Column::DatasetName2), currentText);
     });
-
-    reset();
 }
 
 void DifferentialProfileWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
@@ -36,7 +34,7 @@ void DifferentialProfileWidget::updateData(const QModelIndex& begin, const QMode
     signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->profile1DatasetNameComboBox);
     signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->profile2DatasetNameComboBox);
 
-	const auto selectedRows = dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
+	const auto selectedRows = dimensionsViewerPlugin->getModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
         _ui->groupBox->setEnabled(false);

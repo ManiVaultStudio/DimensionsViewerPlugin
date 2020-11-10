@@ -16,7 +16,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     ModelItem::setDimensionsViewerPlugin(this);
-    ModelItemWidget::dimensionsViewerPlugin = this;
+    ModelItemWidget::setDimensionsViewerPlugin(this);
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
 	_configurationWidget = new ConfigurationWidget(this);

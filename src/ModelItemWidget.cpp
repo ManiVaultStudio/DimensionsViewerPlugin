@@ -3,69 +3,55 @@
 
 #include <QDebug>
 
+QAbstractItemModel* ModelItemWidget::WidgetMapper::model = nullptr;
+
 DimensionsViewerPlugin* ModelItemWidget::dimensionsViewerPlugin = nullptr;
 
 ModelItemWidget::ModelItemWidget(QWidget* parent) :
 	QWidget(parent),
-    _persistentModelIndex(),
-    _mappers()
+    _modelIndex(),
+    _widgetMappers()
 {
-    auto& configurationsModel = dimensionsViewerPlugin->getConfigurationsModel();
-
-    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
-        if (topLeft.parent().isValid() && topLeft.parent() == _persistentModelIndex.parent() && topLeft.row() == _persistentModelIndex.row()) {
-            updateData(topLeft, bottomRight, roles);
-
-            if (_mappers.contains(topLeft))
-                _mappers[topLeft](topLeft);
-        }
-    });
 }
 
 void ModelItemWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    _persistentModelIndex = modelIndex;
-
-    if (modelIndex == QModelIndex()) {
-        updateData(QModelIndex(), QModelIndex());
-    } else {
-        const auto noColumns = dimensionsViewerPlugin->getConfigurationsModel().columnCount(modelIndex);
-
-        updateData(getModelIndex().siblingAtColumn(0), getModelIndex().siblingAtColumn(noColumns - 1));
-    }
+    _modelIndex = modelIndex;
 }
 
-ConfigurationsModel& ModelItemWidget::getConfigurationsModel()
+ConfigurationsModel& ModelItemWidget::getModel()
 {
-    return dimensionsViewerPlugin->getConfigurationsModel();
+    return dimensionsViewerPlugin->getModel();
 }
 
 QItemSelectionModel& ModelItemWidget::getSelectionModel()
 {
-    return getConfigurationsModel().getSelectionModel();
-}
-
-QPersistentModelIndex ModelItemWidget::getSiblingModelIndex(const std::int32_t& row, const std::int32_t& column /*= 0*/)
-{
-    return getConfigurationsModel().index(row, column, _persistentModelIndex);
+    return getModel().getSelectionModel();
 }
 
 QModelIndex ModelItemWidget::getModelIndex() const
 {
-    return _persistentModelIndex;
+    return _modelIndex;
 }
 
 void ModelItemWidget::setData(const std::int32_t& column, const QVariant& value)
 {
-    getConfigurationsModel().setData(getModelIndex().siblingAtColumn(column), value);
+    getModel().setData(getModelIndex().siblingAtColumn(column), value);
 }
 
-void ModelItemWidget::reset()
+void ModelItemWidget::addWidgetMapper(const QString& name, const QSharedPointer<WidgetMapper>& widgetMapper)
 {
-    updateData(QModelIndex(), QModelIndex());
+    _widgetMappers[name] = widgetMapper;
 }
 
-void ModelItemWidget::addMapper(const QModelIndex& index, std::function<void(const QModelIndex& index)> mapper)
+QSharedPointer<ModelItemWidget::WidgetMapper> ModelItemWidget::getWidgetMapper(const QString& name)
 {
-    _mappers[index] = mapper;
+    return _widgetMappers[name];
+}
+
+void ModelItemWidget::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
+{
+    ModelItemWidget::dimensionsViewerPlugin = dimensionsViewerPlugin;
+
+    WidgetMapper::model = &dimensionsViewerPlugin->getModel();
 }

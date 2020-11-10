@@ -71,7 +71,7 @@ bool ModelItem::isLeaf() const
 
 ConfigurationsModel* ModelItem::getConfigurationsModel()
 {
-    return &dimensionsViewerPlugin->getConfigurationsModel();
+    return &dimensionsViewerPlugin->getModel();
 }
 
 void ModelItem::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)

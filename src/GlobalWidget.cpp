@@ -24,8 +24,6 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         setData(to_ul(Global::Column::RangeType), currentText);
     });*/
-
-    reset();
 }
 
 void GlobalWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
