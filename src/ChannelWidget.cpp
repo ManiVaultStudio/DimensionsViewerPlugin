@@ -16,33 +16,31 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    const auto fontAwesome = QFont("Font Awesome 5 Free Solid", 8);
-
     QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
         setData(to_ul(Channel::Column::Enabled), state);
     });
-    /*
+    
     QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
-        if (_persistentModelIndex.row() == 0)
-            getConfigurationsModel().selectRow(currentIndex);
+        if (_modelIndex.row() == 0)
+            getModel().selectRow(currentIndex);
         else
             setData(to_ul(Channel::Column::DatasetName), _ui->datasetNameComboBox->currentText());
     });
 
-    _ui->colorPushButton->setShowText(false);
-    _ui->colorPushButton->setColor(Qt::gray);
-
     QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
-        setData(to_ul(Channel::Column::Color), color);
+        const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
+        getModel().setData(getSiblingAtColumn(to_ul(Styling::Column::Color), stylingIndex), color);
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Channel::Column::ProfileType), currentText);
+        const auto profileIndex = getChild(to_ul(Channel::Row::Profile));
+        getModel().setData(getSiblingAtColumn(to_ul(Profile::Column::ProfileType), profileIndex), currentText);
     });
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Channel::Column::RangeType), currentText);
-    });*/
+        const auto profileIndex = getChild(to_ul(Channel::Row::Profile));
+        getModel().setData(getSiblingAtColumn(to_ul(Profile::Column::RangeType), profileIndex), currentText);
+    });
 
     addWidgetMapper("Enabled", QSharedPointer<WidgetMapper>::create(_ui->enabledCheckBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
@@ -90,83 +88,104 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
 
         _ui->datasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
+
+    addWidgetMapper("Color", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->colorPushButton->setEnabled(false);
+            _ui->colorPushButton->setColor(Qt::gray);
+            _ui->colorPushButton->setShowText(false);
+
+            return;
+        }
+
+        _ui->colorPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
+        _ui->colorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->colorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
+        _ui->colorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
+    }));
+
+    addWidgetMapper("ProfileTypes", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->profileTypeComboBox->setModel(new QStringListModel());
+            _ui->profileTypeComboBox->setCurrentIndex(-1);
+
+            return;
+        }
+
+        _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+    }));
+
+    addWidgetMapper("ProfileType", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->profileTypeComboBox->setEnabled(false);
+
+            return;
+        }
+
+        _ui->profileTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
+        _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
+        _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+    }));
+
+    addWidgetMapper("RangeTypes", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->rangeTypeComboBox->setModel(new QStringListModel());
+            _ui->rangeTypeComboBox->setCurrentIndex(-1);
+
+            return;
+        }
+
+        _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+    }));
+
+    addWidgetMapper("RangeType", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->rangeTypeComboBox->setEnabled(false);
+
+            return;
+        }
+
+        _ui->rangeTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
+        _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
+        _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+    }));
+
+    addWidgetMapper("Styling", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->stylingPushButton->setEnabled(false);
+
+            return;
+        }
+
+        _ui->stylingPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
+        _ui->stylingPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->stylingPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
+    }));
 }
 
 void ChannelWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
 {
-    QVector<QSharedPointer<QSignalBlocker>> signalBlockers;
-
-    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->enabledCheckBox);
-    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->datasetNameComboBox);
-    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->colorPushButton);
-    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->profileTypeComboBox);
-    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->rangeTypeComboBox);
-    signalBlockers << QSharedPointer<QSignalBlocker>::create(_ui->stylingPushButton);
-
-	if (begin == QModelIndex() && end == QModelIndex()) {
-        _ui->enabledCheckBox->setEnabled(true);
-        _ui->enabledCheckBox->setChecked(false);
-        _ui->datasetNameComboBox->setEnabled(false);
-        _ui->datasetNameComboBox->setCurrentIndex(-1);
-        _ui->colorPushButton->setEnabled(false);
-        _ui->colorPushButton->setColor(Qt::gray);
-        _ui->profileTypeComboBox->setEnabled(false);
-        _ui->profileTypeComboBox->setCurrentIndex(-1);
-        _ui->rangeTypeComboBox->setEnabled(false);
-        _ui->rangeTypeComboBox->setCurrentIndex(-1);
-        _ui->stylingPushButton->setEnabled(false);
-
-		return;
-	}
-
-	for (int column = begin.column(); column <= end.column(); column++) {
-		/*const auto index = begin.siblingAtColumn(column);
-
-		if (column == to_ul(Channel::Column::Color)) {
-            _ui->colorPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
-            _ui->colorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->colorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
-            _ui->colorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-		}
-        
-        if (column == to_ul(Channel::Column::ProfileTypes)) {
-            _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-        }
-
-        if (column == to_ul(Channel::Column::ProfileType)) {
-            _ui->profileTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
-            _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
-            _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-        }
-
-        if (column == to_ul(Channel::Column::RangeTypes)) {
-            _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-        }
-        
-		if (column == to_ul(Channel::Column::RangeType)) {
-            _ui->rangeTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
-            _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
-            _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-		}
-
-        if (column == to_ul(Channel::Column::Settings)) {
-            _ui->stylingPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
-            _ui->stylingPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->stylingPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-        }*/
-	}
 }
 
 void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 
-    _ui->stylingPushButton->setModelIndex(getSiblingAtColumn(static_cast<int>(Channel::Row::Styling)));
+    const auto profileIndex = getChild(to_ul(Channel::Row::Profile));
+    const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
+
+    _ui->stylingPushButton->setModelIndex(stylingIndex);
 
     getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Enabled)));
     getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DisplayName)));
     getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
+    getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Color), stylingIndex));
+    getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileTypes), profileIndex));
+    getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileType), profileIndex));
+    getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::RangeTypes), profileIndex));
+    getWidgetMapper("RangeType")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::RangeType), profileIndex));
+    getWidgetMapper("Styling")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Styling)));
 }

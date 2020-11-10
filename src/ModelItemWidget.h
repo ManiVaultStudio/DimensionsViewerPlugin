@@ -140,10 +140,20 @@ protected: // Model operations
     /**
      * Get sibling at \p column
      * @param column Sibling column
+     * @param index Model index
+     * @return Sibling model index at column
+     */
+    QPersistentModelIndex getSiblingAtColumn(const std::int32_t& column, const QPersistentModelIndex& index) {
+        return index.sibling(index.row(), column);
+    }
+
+    /**
+     * Get sibling at \p column
+     * @param column Sibling column
      * @return Sibling model index at column
      */
     QPersistentModelIndex getSiblingAtColumn(const std::int32_t& column) {
-        return _modelIndex.sibling(_modelIndex.row(), column);
+        return getSiblingAtColumn(column, _modelIndex);
     }
 
     /** Gets the model index assigned to the widget */

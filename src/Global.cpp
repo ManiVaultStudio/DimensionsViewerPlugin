@@ -21,7 +21,7 @@ int Global::columnCount() const
 
 Qt::ItemFlags Global::getFlags(const QModelIndex& index) const
 {
-    Qt::ItemFlags flags;
+    Qt::ItemFlags flags = Qt::ItemIsEditable;
 
     const auto column = static_cast<Column>(index.column());
 
@@ -116,4 +116,30 @@ ModelItem::AffectedColumns Global::setData(const std::int32_t& column, const QVa
     }
 
     return affectedColunns;
+}
+
+ModelItem* Global::getChild(const int& index) const
+{
+    switch (static_cast<Row>(index))
+    {
+        case Row::Profile:
+            return const_cast<Profile*>(&_profile);
+
+        default:
+            break;
+    }
+    return nullptr;
+}
+
+int Global::getChildCount() const
+{
+    return to_ul(Row::Count);
+}
+
+int Global::getChildIndex(ModelItem* child) const
+{
+    if (dynamic_cast<Profile*>(child))
+        return to_ul(Row::Profile);
+
+    return 0;
 }

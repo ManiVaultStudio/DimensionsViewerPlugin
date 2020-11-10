@@ -38,6 +38,15 @@ public: // Columns and rows
         return columns[columnName];
     }
 
+    /** Model item rows */
+    enum class Row {
+        Profile,
+
+        Start = Profile,
+        End = Profile,
+        Count = End + 1
+    };
+
 protected: // Construction
 
     /**
@@ -74,6 +83,24 @@ public: // ModelIndex: Model
      * @return Model indices that are affected by the operation
      */
     AffectedColumns setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+
+public: // ModelIndex: Hierarchy
+
+    /**
+     * Returns a model item node by index
+     * @param index Index of the child model item
+     * @return Model item at index
+     */
+    ModelItem* getChild(const int& index) const override;
+
+    /** Returns the number of children */
+    int getChildCount() const override;
+
+    /**
+     * Returns the child index
+     * @param child Pointer to child model item
+     */
+    int getChildIndex(ModelItem* child) const override;
 
 protected:
     bool        _enabled;       /** Whether whether global settings are on or off */

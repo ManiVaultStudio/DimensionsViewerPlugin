@@ -36,6 +36,7 @@ public: // Columns and rows
         DatasetName,
         NoDimensions,
         NoPoints,
+        Styling,
 
         Start   = Name,
         End     = NoPoints,

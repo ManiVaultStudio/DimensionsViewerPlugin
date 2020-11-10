@@ -17,7 +17,8 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Dataset names", Channel::Column::DatasetNames },
     { "Dataset name", Channel::Column::DatasetName },
     { "Number of dimensions", Channel::Column::NoDimensions },
-    { "Number of points", Channel::Column::NoPoints }
+    { "Number of points", Channel::Column::NoPoints },
+    { "Styling", Channel::Column::Styling }
 };
 
 Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
