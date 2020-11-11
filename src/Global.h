@@ -17,10 +17,10 @@ public: // Columns and rows
 
     /** Data columns */
     enum class Column {
-        Name,
+        Type,
         Enabled,
 
-        Start   = Name,
+        Start   = Type,
         End     = Enabled,
         Count   = End + 1
     };

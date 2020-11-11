@@ -5,7 +5,7 @@
 #include <QDebug>
 
 const QMap<QString, DifferentialProfile::Column> DifferentialProfile::columns = {
-    { "Name", DifferentialProfile::Column::Name },
+    { "Type", DifferentialProfile::Column::Type },
     { "Enabled", DifferentialProfile::Column::Enabled },
     { "Dataset names 1", DifferentialProfile::Column::DatasetNames2 },
     { "Dataset names 2", DifferentialProfile::Column::DatasetNames2 },
@@ -36,6 +36,9 @@ Qt::ItemFlags DifferentialProfile::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
+        case Column::Type:
+            break;
+
         case Column::Enabled:
         {
             if (noChannelsEnabled >= 2)
@@ -70,10 +73,10 @@ QVariant DifferentialProfile::getData(const std::int32_t& column, const std::int
 
             switch (static_cast<Column>(column))
             {
-                case DifferentialProfile::Column::Name:
-                    return _name;
+                case Column::Type:
+                    return _type;
 
-                case DifferentialProfile::Column::Enabled:
+                case Column::Enabled:
                     return _enabled && getConfiguration()->getChannels()->getNoChannelsEnabled() >= 2;
 
                 default:
@@ -87,10 +90,10 @@ QVariant DifferentialProfile::getData(const std::int32_t& column, const std::int
 
             switch (static_cast<Column>(column))
             {
-                case DifferentialProfile::Column::Name:
+                case Column::Type:
                     return getData(column, Qt::EditRole);
 
-                case DifferentialProfile::Column::Enabled:
+                case Column::Enabled:
                     return getData(column, Qt::EditRole).toBool() ? "on" : "off";
 
                 default:
@@ -117,7 +120,10 @@ QModelIndexList DifferentialProfile::setData(const QModelIndex& index, const QVa
 
             switch (static_cast<Column>(index.column()))
             {
-                case DifferentialProfile::Column::Enabled: {
+                case Column::Type:
+                    break;
+
+                case Column::Enabled: {
                     _enabled = value.toBool();
                     break;
                 }

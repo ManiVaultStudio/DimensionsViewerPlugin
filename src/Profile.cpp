@@ -3,7 +3,7 @@
 #include <QDebug>
 
 const QMap<QString, Profile::Column> Profile::columns = {
-    { "Name", Profile::Column::Name },
+    { "Type", Profile::Column::Type },
     { "Enabled", Profile::Column::Enabled },
     { "Profile types", Profile::Column::ProfileTypes },
     { "Profile type", Profile::Column::ProfileType },
@@ -50,7 +50,7 @@ Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
-        case Column::Name:
+        case Column::Type:
         case Column::Enabled:
         {
             flags |= Qt::ItemIsEnabled;
@@ -84,22 +84,22 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
 
             switch (static_cast<Column>(column))
             {
-                case Profile::Column::Name:
-                    return _name;
+                case Column::Type:
+                    return _type;
 
-                case Profile::Column::Enabled:
+                case Column::Enabled:
                     return _enabled;
 
-                case Profile::Column::ProfileTypes:
+                case Column::ProfileTypes:
                     return getProfileTypeNames();
 
-                case Profile::Column::ProfileType:
+                case Column::ProfileType:
                     return static_cast<std::int32_t>(_profileType);
 
-                case Profile::Column::RangeTypes:
+                case Column::RangeTypes:
                     return getRangeTypeNames();
 
-                case Profile::Column::RangeType:
+                case Column::RangeType:
                     return static_cast<std::int32_t>(_rangeType);
 
                 default:
@@ -113,22 +113,22 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
 
             switch (static_cast<Column>(column))
             {
-                case Profile::Column::Name:
+                case Column::Type:
                     return getData(column, Qt::EditRole);
 
-                case Profile::Column::Enabled:
+                case Column::Enabled:
                     return getData(column, Qt::EditRole).toBool() ? "on" : "off";
 
-                case Profile::Column::ProfileTypes:
+                case Column::ProfileTypes:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
-                case Profile::Column::ProfileType:
+                case Column::ProfileType:
                     return getProfileTypeName(static_cast<ProfileType>(getData(column, Qt::EditRole).toInt()));
 
-                case Profile::Column::RangeTypes:
+                case Column::RangeTypes:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
-                case Profile::Column::RangeType:
+                case Column::RangeType:
                     return getRangeTypeName(static_cast<RangeType>(getData(column, Qt::EditRole).toInt()));
 
                 default:
@@ -155,7 +155,10 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
 
             switch (static_cast<Column>(index.column()))
             {
-                case Profile::Column::Enabled: {
+                case Column::Type:
+                    break;
+
+                case Column::Enabled: {
                     _enabled = value.toBool();
 
                     affectedIndices << index.siblingAtColumn(to_ul(Column::ProfileTypes));
@@ -166,7 +169,7 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
                     break;
                 }
 
-                case Profile::Column::ProfileType: {
+                case Column::ProfileType: {
                     setProfileType(getProfileTypeEnum(value.toString()));
 
                     affectedIndices << index.siblingAtColumn(to_ul(Column::RangeTypes));
@@ -175,7 +178,7 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
                     break;
                 }
 
-                case Profile::Column::RangeType: {
+                case Column::RangeType: {
                     setRangeType(getRangeTypeEnum(value.toString()));
 
                     break;
@@ -214,7 +217,7 @@ void Profile::setProfileType(const ProfileType& profileType)
         case ProfileType::None:
         case ProfileType::Differential:
         {
-            _rangeType = Profile::RangeType::None;
+            _rangeType = RangeType::None;
 
             break;
         }
@@ -228,15 +231,15 @@ void Profile::setProfileType(const ProfileType& profileType)
             _rangeTypes << RangeType::MinMax;
 
             if (!_rangeTypes.contains(_rangeType))
-                _rangeType = Profile::RangeType::StandardDeviation1;
+                _rangeType = RangeType::StandardDeviation1;
 
             break;
         }
 
         case ProfileType::Median:
         {
-            _rangeTypes << Profile::RangeType::Percentile5;
-            _rangeTypes << Profile::RangeType::Percentile10;
+            _rangeTypes << RangeType::Percentile5;
+            _rangeTypes << RangeType::Percentile10;
 
             if (!_rangeTypes.contains(_rangeType))
                 _rangeType = RangeType::Percentile5;

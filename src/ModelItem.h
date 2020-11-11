@@ -30,9 +30,10 @@ public: // Construction
 
     /**
      * Constructor
+     * @param type Type of model item
      * @param parent Parent model item
      */
-    ModelItem(const QString& name, ModelItem* parent = nullptr);
+    ModelItem(const QString& type, ModelItem* parent = nullptr);
 
 public: // Model
 
@@ -124,8 +125,8 @@ protected:
     static hdps::CoreInterface* getCore();
 
 protected:
-    QString         _name;          /** Name */
-    ModelItem*      _parent;		/** Parent model item */
+    QString                 _type;          /** Name */
+    ModelItem*              _parent;		/** Parent model item */
 
     static std::int32_t maxNoColumns;
 

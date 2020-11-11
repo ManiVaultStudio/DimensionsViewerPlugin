@@ -16,14 +16,14 @@ public: // Columns and rows
 
     /** Model item columns */
     enum class Column {
-        Name,               /** Name of the model item */
+        Type,               /** TODO */
         Enabled,            /** Enabled */
         ProfileTypes,       /** Available profile types */
         ProfileType,        /** Current profile type */
         RangeTypes,         /** Available range types */
         RangeType,          /** Current range type */
 
-        Start   = Name,
+        Start   = Type,
         End     = RangeType,
         Count   = End + 1
     };

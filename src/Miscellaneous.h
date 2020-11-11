@@ -16,10 +16,10 @@ public: // Columns and rows
 
     /** Data columns */
     enum class Column {
-        Name,
+        Type,
         ShowDimensionNames,
 
-        Start   = Name,
+        Start   = Type,
         End     = ShowDimensionNames,
         Count   = End + 1
     };

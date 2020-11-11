@@ -15,6 +15,16 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 	_selectionModel(this),
     _datasetNames()
 {
+    QObject::connect(this, &QAbstractItemModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
+        if (topLeft != bottomRight)
+            return;
+
+        const auto type = topLeft.siblingAtColumn(0).data(Qt::DisplayRole).toString();
+
+        if (type == "Global") {
+            qDebug() << type;
+        }
+    });
 }
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const

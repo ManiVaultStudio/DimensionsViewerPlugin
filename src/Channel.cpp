@@ -9,7 +9,7 @@
 #include <QVariantList>
 
 const QMap<QString, Channel::Column> Channel::columns = {
-    { "Name", Channel::Column::Name },
+    { "Type", Channel::Column::Type },
     { "Index", Channel::Column::Index },
     { "Internal name", Channel::Column::InternalName },
     { "Display name", Channel::Column::DisplayName },
@@ -168,8 +168,8 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
             switch (static_cast<Column>(column))
             {
-                case Channel::Column::Name:
-                    return _name;
+                case Channel::Column::Type:
+                    return _type;
 
                 case Channel::Column::Index:
                     return _index;
@@ -216,7 +216,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
             switch (static_cast<Column>(column))
             {
-                case Channel::Column::Name:
+                case Channel::Column::Type:
                     return getData(column, Qt::EditRole);
 
                 case Channel::Column::Index:
@@ -277,12 +277,6 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
             switch (static_cast<Column>(index.column()))
             {
-                case Channel::Column::Name:
-                {
-                    _displayName = value.toString();
-                    break;
-                }
-
                 case Channel::Column::Enabled:
                 {
                     _enabled = value.toBool();

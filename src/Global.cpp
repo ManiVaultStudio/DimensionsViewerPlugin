@@ -6,7 +6,7 @@
 #include <QDebug>
 
 const QMap<QString, Global::Column> Global::columns = {
-    { "Name", Global::Column::Name },
+    { "Type", Global::Column::Type },
     { "Enabled", Global::Column::Enabled }
 };
 
@@ -30,7 +30,7 @@ Qt::ItemFlags Global::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
-        case Column::Name: {
+        case Column::Type: {
             flags |= Qt::ItemIsEnabled;
             break;
         }
@@ -55,8 +55,8 @@ QVariant Global::getData(const std::int32_t& column, const std::int32_t& role) c
 
             switch (static_cast<Column>(column))
             {
-                case Global::Column::Name:
-                    return _name;
+                case Global::Column::Type:
+                    return _type;
 
                 case Global::Column::Enabled:
                     return _enabled;
@@ -72,7 +72,7 @@ QVariant Global::getData(const std::int32_t& column, const std::int32_t& role) c
 
             switch (static_cast<Column>(column))
             {
-                case Global::Column::Name:
+                case Global::Column::Type:
                     return getData(column, Qt::EditRole);
 
                 case Global::Column::Enabled:
@@ -102,6 +102,9 @@ QModelIndexList Global::setData(const QModelIndex& index, const QVariant& value,
 
             switch (static_cast<Column>(index.column()))
             {
+                case Column::Type:
+                    break;
+
                 case Global::Column::Enabled:
                 {
                     _enabled = value.toBool();

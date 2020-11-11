@@ -9,7 +9,7 @@ class Configuration;
 #include <QVector>
 
 /**
- * Channels class
+ * Channels model item class
  *
  * @author T. Kroes
  */
@@ -19,10 +19,10 @@ public: // Columns and rows
 
     /** Model item columns */
     enum class Column {
-        Name,
+        Type,
 
-        Start   = Name,
-        End     = Name,
+        Start   = Type,
+        End     = Type,
         Count   = End + 1
     };
 

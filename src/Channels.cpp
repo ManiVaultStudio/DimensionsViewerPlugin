@@ -5,7 +5,7 @@
 #include <QDebug>
 
 const QMap<QString, Channels::Column> Channels::columns = {
-    { "Name", Channels::Column::Name }
+    { "Type", Channels::Column::Type }
 };
 
 Channels::Channels(ModelItem* parent, const QString& datasetName, const QString& dataName) :
@@ -36,8 +36,8 @@ QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role)
 
             switch (static_cast<Column>(column))
             {
-                case Channels::Column::Name:
-                    return _name;
+                case Channels::Column::Type:
+                    return _type;
 
                 default:
                     break;
@@ -50,7 +50,7 @@ QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role)
 
             switch (static_cast<Column>(column))
             {
-                case Channels::Column::Name:
+                case Channels::Column::Type:
                     return getData(column, Qt::EditRole);
 
                 default:
@@ -77,7 +77,7 @@ QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& valu
 
             switch (static_cast<Column>(index.column()))
             {
-                case Channels::Column::Name:
+                case Channels::Column::Type:
                     break;
 
                 default:

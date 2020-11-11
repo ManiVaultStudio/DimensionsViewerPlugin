@@ -7,7 +7,7 @@ std::int32_t Configuration::maxNoDimensions = 100;
 std::int32_t Configuration::noConfigurations = 0;
 
 const QMap<QString, Configuration::Column> Configuration::columns = {
-    { "Name", Configuration::Column::Name },
+    { "Type", Configuration::Column::Type },
     { "Index", Configuration::Column::Index },
     { "Dataset name", Configuration::Column::DatasetName },
     { "Data name", Configuration::Column::DataName },
@@ -29,6 +29,8 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
     noConfigurations++;
 
     _spec["modified"] = 0;
+
+
 }
 
 int Configuration::columnCount() const 
@@ -44,7 +46,7 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
-        case Column::Name:
+        case Column::Type:
         case Column::Index:
         case Column::DatasetName:
         case Column::DataName:
@@ -71,8 +73,8 @@ QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& 
 
             switch (static_cast<Column>(column))
             {
-                case Configuration::Column::Name:
-                    return _name;
+                case Configuration::Column::Type:
+                    return _type;
 
                 case Configuration::Column::Index:
                     return _index;
@@ -97,7 +99,7 @@ QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& 
 
             switch (static_cast<Column>(column))
             {
-                case Configuration::Column::Name:
+                case Configuration::Column::Type:
                     return getData(column, Qt::EditRole);
 
                 case Configuration::Column::Index:
@@ -136,6 +138,9 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
             switch (static_cast<Column>(index.column()))
             {
+                case Configuration::Column::Type:
+                    break;
+
                 case Configuration::Column::Subsets:
                 {
                     _subsets = value.toStringList();

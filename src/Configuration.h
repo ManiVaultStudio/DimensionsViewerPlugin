@@ -27,14 +27,14 @@ public: // Columns and rows
 
     /** Model item columns */
     enum class Column {
-        Name,
+        Type,
         Index,
         DatasetName,
         DataName,
         Subsets,
         SelectionStamp,
 
-        Start   = Name,
+        Start   = Type,
         End     = SelectionStamp,
         Count   = End + 1
     };

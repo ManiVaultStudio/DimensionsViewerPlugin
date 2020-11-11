@@ -17,14 +17,14 @@ public: // Columns and rows
 
     /** Model item columns */
     enum class Column {
-        Name,               /** Name of the model item */
+        Type,               /** TODO */
         LineTypes,          /** Line types */
         LineTypeProfile,    /** Line type for drawing data profile */
         LineTypeRange,      /** Line type for drawing data range */
         Opacity,            /** Opacity */
         Color,              /** Color */
 
-        Start   = Name,
+        Start   = Type,
         End     = Color,
         Count   = End + 1
     };

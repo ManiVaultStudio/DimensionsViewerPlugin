@@ -27,7 +27,7 @@ public: // Columns and rows
 
     /** Model item columns */
     enum class Column {
-        Name,
+        Type,
         Index,
         InternalName,
         DisplayName,
@@ -43,7 +43,7 @@ public: // Columns and rows
         NoPoints,
         Styling,
 
-        Start   = Name,
+        Start   = Type,
         End     = NoPoints,
         Count   = End + 1
     };

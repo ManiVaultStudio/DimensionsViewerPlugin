@@ -3,7 +3,7 @@
 #include <QDebug>
 
 const QMap<QString, Miscellaneous::Column> Miscellaneous::columns = {
-    { "Name", Miscellaneous::Column::Name },
+    { "Type", Miscellaneous::Column::Type },
     { "Show dimension names", Miscellaneous::Column::ShowDimensionNames }
 };
 
@@ -26,7 +26,7 @@ Qt::ItemFlags Miscellaneous::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
-        case Column::Name: {
+        case Column::Type: {
             flags |= Qt::ItemIsEnabled;
 
             break;
@@ -54,10 +54,10 @@ QVariant Miscellaneous::getData(const std::int32_t& column, const std::int32_t& 
 
             switch (static_cast<Column>(column))
             {
-                case Miscellaneous::Column::Name:
-                    return _name;
+                case Column::Type:
+                    return _type;
 
-                case Miscellaneous::Column::ShowDimensionNames:
+                case Column::ShowDimensionNames:
                     return _showDimensionNames;
 
                 default:
@@ -71,10 +71,10 @@ QVariant Miscellaneous::getData(const std::int32_t& column, const std::int32_t& 
 
             switch (static_cast<Column>(column))
             {
-                case Miscellaneous::Column::Name:
+                case Column::Type:
                     return getData(column, Qt::EditRole);
 
-                case Miscellaneous::Column::ShowDimensionNames:
+                case Column::ShowDimensionNames:
                     return getData(column, Qt::EditRole).toBool() ? "on" : "off";
 
                 default:
@@ -101,7 +101,10 @@ QModelIndexList Miscellaneous::setData(const QModelIndex& index, const QVariant&
 
             switch (static_cast<Column>(index.column()))
             {
-                case Miscellaneous::Column::ShowDimensionNames: {
+                case Column::Type:
+                    break;
+
+                case Column::ShowDimensionNames: {
                     _showDimensionNames = value.toBool();
                     break;
                 }

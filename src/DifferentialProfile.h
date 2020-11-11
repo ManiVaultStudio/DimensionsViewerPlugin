@@ -17,14 +17,14 @@ public: // Columns and rows
 
     /** Model item columns */
     enum class Column {
-        Name,
+        Type,
         Enabled,
         DatasetNames1,
         DatasetNames2,
         DatasetName1,
         DatasetName2,
 
-        Start   = Name,
+        Start   = Type,
         End     = DatasetName2,
         Count   = End + 1
     };

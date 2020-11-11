@@ -7,9 +7,9 @@
 std::int32_t ModelItem::maxNoColumns = 25;
 DimensionsViewerPlugin* ModelItem::dimensionsViewerPlugin = nullptr;
 
-ModelItem::ModelItem(const QString& name, ModelItem* parent /*= nullptr*/) :
+ModelItem::ModelItem(const QString& type, ModelItem* parent /*= nullptr*/) :
     QObject(parent),
-    _name(name),
+    _type(type),
     _parent(parent)
 {
 }

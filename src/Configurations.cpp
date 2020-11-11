@@ -5,7 +5,7 @@
 #include <QMessageBox>
 
 const QMap<QString, Configurations::Column> Configurations::columns = {
-    { "Name", Configurations::Column::Name }
+    { "Type", Configurations::Column::Type }
 };
 
 Configurations::Configurations() :
@@ -32,8 +32,8 @@ QVariant Configurations::getData(const std::int32_t& column, const std::int32_t&
 
             switch (static_cast<Column>(column))
             {
-                case Configurations::Column::Name:
-                    return _name;
+                case Configurations::Column::Type:
+                    return _type;
 
                 default:
                     break;
@@ -46,7 +46,7 @@ QVariant Configurations::getData(const std::int32_t& column, const std::int32_t&
 
             switch (static_cast<Column>(column))
             {
-                case Configurations::Column::Name:
+                case Configurations::Column::Type:
                     return getData(column, Qt::EditRole);
 
                 default:
@@ -73,7 +73,7 @@ QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant
 
             switch (static_cast<Column>(index.column()))
             {
-                case Configurations::Column::Name:
+                case Configurations::Column::Type:
                     break;
 
                 default:
