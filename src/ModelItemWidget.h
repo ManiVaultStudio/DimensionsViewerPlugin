@@ -106,14 +106,6 @@ public: // Construction
 
 protected:
 
-	/**
-	 * Updates the UI with model indices ranging from \p begin to \p end
-	 * @param begin Start of model index range
-	 * @param end End of model index range
-	 * @param roles Data roles
-	 */
-	virtual void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>()) = 0;
-
     /**
      * Sets the model index for this model item widget
      * @param modelIndex Persistent model index

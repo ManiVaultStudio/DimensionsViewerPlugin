@@ -114,10 +114,6 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
     }));
 }
 
-void GlobalWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
-{
-}
-
 void GlobalWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);

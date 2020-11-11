@@ -14,10 +14,6 @@ ChannelsWidget::ChannelsWidget(QWidget* parent) :
 	_ui->setupUi(this);
 }
 
-void ChannelsWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
-{
-}
-
 void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);

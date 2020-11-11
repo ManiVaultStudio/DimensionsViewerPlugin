@@ -120,10 +120,6 @@ StylingWidget::StylingWidget(QWidget* parent) :
     }));
 }
 
-void StylingWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
-{
-}
-
 void StylingWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);

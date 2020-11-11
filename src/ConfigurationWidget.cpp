@@ -28,10 +28,6 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
     });
 }
 
-void ConfigurationWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
-{
-}
-
 void ConfigurationWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
