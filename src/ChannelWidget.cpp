@@ -28,8 +28,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     });
 
     QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
-        const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
-        getModel().setData(getSiblingAtColumn(to_ul(Styling::Column::Color), stylingIndex), color);
+        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::Color)), color);
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
@@ -175,7 +174,7 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DisplayName)));
     getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
-    getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Color), stylingIndex));
+    getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
     getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileTypes)));
     getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)));
     getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeTypes)));

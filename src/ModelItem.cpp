@@ -19,18 +19,6 @@ QVariant ModelItem::getData(const QModelIndex& index, const int& role) const
     return getData(index.column(), role);
 }
 
-QModelIndexList ModelItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
-{
-    const auto affectedColumns = setData(index.column(), value, role);
-
-    QModelIndexList affectedIndices;
-
-    for (auto affectedColumn : affectedColumns)
-        affectedIndices << index.siblingAtColumn(affectedColumn);
-
-    return affectedIndices;
-}
-
 QModelIndex ModelItem::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
 {
     return getConfigurationsModel()->index(row, column, parent);

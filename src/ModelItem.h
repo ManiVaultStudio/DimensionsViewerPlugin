@@ -61,7 +61,7 @@ public: // Model
      * @param role Data role
      * @return Model indices that are affected by the operation
      */
-    virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
+    virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) = 0;
 
     /**
      * Get data
@@ -70,15 +70,6 @@ public: // Model
      * @return Data in variant form
      */
     virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const = 0;
-
-    /**
-     * Set data
-     * @param column Data column
-     * @param value Data value in variant form
-     * @param role Data role
-     * @return Columns which are affected by the operation
-     */
-    virtual AffectedColumns setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role) = 0;
 
     /**
      * Returns the model index belonging to the given model row and column (wraps the model index())

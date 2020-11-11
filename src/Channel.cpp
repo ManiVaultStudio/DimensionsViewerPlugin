@@ -286,15 +286,15 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
     return QVariant();
 }
 
-ModelItem::AffectedColumns Channel::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    AffectedColumns affectedColunns{ column };
+    QModelIndexList affectedIndices{ index };
 
     switch (role)
     {
         case Qt::EditRole: {
 
-            switch (static_cast<Column>(column))
+            switch (static_cast<Column>(index.column()))
             {
                 case Channel::Column::Name:
                 {
@@ -306,9 +306,14 @@ ModelItem::AffectedColumns Channel::setData(const std::int32_t& column, const QV
                 {
                     _enabled = value.toBool();
 
-                    affectedColunns << to_ul(Column::DatasetNames);
-                    affectedColunns << to_ul(Column::DatasetName);
-                    affectedColunns << to_ul(Column::Styling);
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::DatasetNames));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::DatasetName));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::Color));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::ProfileTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::ProfileType));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeType));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::Styling));
 
                     break;
                 }
@@ -329,6 +334,24 @@ ModelItem::AffectedColumns Channel::setData(const std::int32_t& column, const QV
                     break;
                 }
 
+                case Channel::Column::Color:
+                {
+                    _styling._color = value.value<QColor>();
+                    break;
+                }
+
+                case Channel::Column::ProfileType:
+                {
+                    _profile._profileType = static_cast<Profile::ProfileType>(value.toInt());
+                    break;
+                }
+
+                case Channel::Column::RangeType:
+                {
+                    _profile._profileType = static_cast<Profile::ProfileType>(value.toInt());
+                    break;
+                }
+
                 default:
                     break;
             }
@@ -337,7 +360,7 @@ ModelItem::AffectedColumns Channel::setData(const std::int32_t& column, const QV
         }
     }
 
-    return affectedColunns;
+    return affectedIndices;
 }
 
 ModelItem* Channel::getChild(const int& index) const

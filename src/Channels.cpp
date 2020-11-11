@@ -67,15 +67,15 @@ QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role)
     return QVariant();
 }
 
-ModelItem::AffectedColumns Channels::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    AffectedColumns affectedColunns{ column };
+    QModelIndexList affectedIndices{ index };
 
     switch (role)
     {
         case Qt::EditRole: {
 
-            switch (static_cast<Column>(column))
+            switch (static_cast<Column>(index.column()))
             {
                 case Channels::Column::Name:
                     break;
@@ -91,7 +91,7 @@ ModelItem::AffectedColumns Channels::setData(const std::int32_t& column, const Q
             break;
     }
 
-    return affectedColunns;
+    return affectedIndices;
 }
 
 ModelItem* Channels::getChild(const int& index) const

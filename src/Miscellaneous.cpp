@@ -91,15 +91,15 @@ QVariant Miscellaneous::getData(const std::int32_t& column, const std::int32_t& 
     return QVariant();
 }
 
-ModelItem::AffectedColumns Miscellaneous::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+QModelIndexList Miscellaneous::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    AffectedColumns affectedColunns{ column };
+    QModelIndexList affectedIndices{ index };
 
     switch (role)
     {
         case Qt::EditRole: {
 
-            switch (static_cast<Column>(column))
+            switch (static_cast<Column>(index.column()))
             {
                 case Miscellaneous::Column::ShowDimensionNames: {
                     _showDimensionNames = value.toBool();
@@ -117,5 +117,5 @@ ModelItem::AffectedColumns Miscellaneous::setData(const std::int32_t& column, co
             break;
     }
 
-    return affectedColunns;
+    return affectedIndices;
 }

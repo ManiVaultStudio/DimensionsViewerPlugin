@@ -61,13 +61,13 @@ public: // ModelIndex: Model
     QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
 
     /**
-     * Set data
-     * @param column Data column
+     * Sets data
+     * @param index Model index
      * @param value Data value in variant form
      * @param role Data role
      * @return Model indices that are affected by the operation
      */
-    AffectedColumns setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
 public: // ModelIndex: Hierarchy
 

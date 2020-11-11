@@ -1,4 +1,5 @@
 #include "Styling.h"
+#include "Channel.h"
 
 #include <QDebug>
 
@@ -124,15 +125,15 @@ QVariant Styling::getData(const std::int32_t& column, const std::int32_t& role) 
     return QVariant();
 }
 
-ModelItem::AffectedColumns Styling::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+QModelIndexList Styling::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    AffectedColumns affectedColunns{ column };
+    QModelIndexList affectedIndices{ index };
 
     switch (role)
     {
         case Qt::EditRole: {
 
-            switch (static_cast<Column>(column))
+            switch (static_cast<Column>(index.column()))
             {
                 case Styling::Column::LineTypeProfile: {
                     _lineTypeProfile = Styling::getLineTypeEnum(value.toString());
@@ -151,6 +152,9 @@ ModelItem::AffectedColumns Styling::setData(const std::int32_t& column, const QV
 
                 case Styling::Column::Color: {
                     _color = value.value<QColor>();
+
+                    affectedIndices << index.parent().siblingAtColumn(to_ul(Channel::Column::Color));
+
                     break;
                 }
 
@@ -165,5 +169,5 @@ ModelItem::AffectedColumns Styling::setData(const std::int32_t& column, const QV
             break;
     }
 
-    return affectedColunns;
+    return affectedIndices;
 }

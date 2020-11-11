@@ -107,15 +107,15 @@ QVariant DifferentialProfile::getData(const std::int32_t& column, const std::int
     return QVariant();
 }
 
-ModelItem::AffectedColumns DifferentialProfile::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+QModelIndexList DifferentialProfile::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    AffectedColumns affectedColunns{ column };
+    QModelIndexList affectedIndices{ index };
 
     switch (role)
     {
         case Qt::EditRole: {
 
-            switch (static_cast<Column>(column))
+            switch (static_cast<Column>(index.column()))
             {
                 case DifferentialProfile::Column::Enabled: {
                     _enabled = value.toBool();
@@ -133,7 +133,7 @@ ModelItem::AffectedColumns DifferentialProfile::setData(const std::int32_t& colu
             break;
     }
 
-    return affectedColunns;
+    return affectedIndices;
 }
 
 Configuration* DifferentialProfile::getConfiguration() const
