@@ -126,6 +126,12 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             break;
         }
 
+        case Channel::Column::Styling: {
+            flags |= Qt::ItemIsEnabled;
+
+            break;
+        }
+
         default:
             break;
     }

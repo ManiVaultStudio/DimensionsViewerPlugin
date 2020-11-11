@@ -51,7 +51,7 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
         getModel().setData(getSiblingAtColumn(to_ul(Profile::Column::RangeType), profileIndex), currentText);
     });
 
-    addWidgetMapper("Enabled", QSharedPointer<WidgetMapper>::create(_ui->groupBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("EnabledCheckBox", QSharedPointer<WidgetMapper>::create(_ui->groupBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->groupBox->setEnabled(false);
             _ui->groupBox->setChecked(false);
@@ -65,7 +65,7 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
         _ui->groupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("ProfileTypes", QSharedPointer<WidgetMapper>::create(_ui->profileTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("ProfileTypesComboBox", QSharedPointer<WidgetMapper>::create(_ui->profileTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->profileTypeComboBox->setModel(new QStringListModel());
             _ui->profileTypeComboBox->setCurrentIndex(-1);
@@ -124,8 +124,8 @@ void GlobalWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 
     const auto profileIndex = getChild(to_ul(Channel::Row::Profile));
 
-    getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::Enabled), profileIndex));
-    getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileTypes), profileIndex));
+    getWidgetMapper("EnabledCheckBox")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::Enabled), profileIndex));
+    getWidgetMapper("ProfileTypesComboBox")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileTypes), profileIndex));
     getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileType), profileIndex));
     getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::RangeTypes), profileIndex));
     getWidgetMapper("RangeType")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::RangeType), profileIndex));

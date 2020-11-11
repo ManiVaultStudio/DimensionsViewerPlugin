@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>259</width>
-    <height>121</height>
+    <width>258</width>
+    <height>151</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,16 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
-    <number>5</number>
+    <number>6</number>
    </property>
    <property name="topMargin">
-    <number>5</number>
+    <number>6</number>
    </property>
    <property name="rightMargin">
-    <number>5</number>
+    <number>6</number>
    </property>
    <property name="bottomMargin">
-    <number>5</number>
+    <number>6</number>
    </property>
    <item>
     <widget class="QGroupBox" name="groupBox">
@@ -34,12 +34,41 @@
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lineTypeProfileLabel">
-          <property name="text">
-           <string>Profile line type</string>
-          </property>
-         </widget>
+        <item row="2" column="1">
+         <layout class="QHBoxLayout" name="opacityHorizontalLayout">
+          <item>
+           <widget class="QDoubleSpinBox" name="opacitySpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>10.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="opacitySlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="opacityLabel">
@@ -51,6 +80,13 @@
           </property>
           <property name="text">
            <string>Opacity</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="lineTypeProfileLabel">
+          <property name="text">
+           <string>Profile line type</string>
           </property>
          </widget>
         </item>
@@ -67,26 +103,15 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <layout class="QHBoxLayout" name="opacityHorizontalLayout">
-          <item>
-           <widget class="QDoubleSpinBox" name="opacitySpinBox">
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>0</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSlider" name="opacitySlider">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-         </layout>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="lineTypeProfileComboBox">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="lineTypeRangeComboBox">
@@ -98,12 +123,31 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="lineTypeProfileComboBox">
+        <item row="3" column="0">
+         <widget class="QLabel" name="colorLabel">
+          <property name="text">
+           <string>Color</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="ColorPickerPushButton" name="colorPushButton" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
-            <width>100</width>
-            <height>0</height>
+            <width>0</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>22</height>
            </size>
           </property>
          </widget>
@@ -115,6 +159,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ColorPickerPushButton</class>
+   <extends>QWidget</extends>
+   <header>widgets/ColorPickerPushButton.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
