@@ -34,6 +34,11 @@ public: // Columns and rows
         Enabled,
         DatasetNames,
         DatasetName,
+        Color,
+        ProfileTypes,
+        ProfileType,
+        RangeTypes,
+        RangeType,
         NoDimensions,
         NoPoints,
         Styling,
@@ -168,8 +173,6 @@ private:
 	bool					_enabled;			/** Whether the channel is enabled or not */
 	QStringList             _datasetNames;		/** Dataset names */
 	QString					_datasetName;		/** Dataset name */
-	QColor					_color;				/** Color */
-	float					_opacity;			/** Opacity */
     Profile				    _profile;		    /** Profile settings */
     Styling				    _styling;		    /** Style settings */
 	QVariantMap				_spec;				/** Specification for use in JS visualization client (Vega) */

@@ -33,13 +33,11 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        const auto profileIndex = getChild(to_ul(Channel::Row::Profile));
-        getModel().setData(getSiblingAtColumn(to_ul(Profile::Column::ProfileType), profileIndex), currentText);
+        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)), currentText);
     });
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        const auto profileIndex = getChild(to_ul(Channel::Row::Profile));
-        getModel().setData(getSiblingAtColumn(to_ul(Profile::Column::RangeType), profileIndex), currentText);
+        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::RangeType)), currentText);
     });
 
     addWidgetMapper("Enabled", QSharedPointer<WidgetMapper>::create(_ui->enabledCheckBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
@@ -169,7 +167,6 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 
-    const auto profileIndex = getChild(to_ul(Channel::Row::Profile));
     const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
 
     _ui->stylingPushButton->setModelIndex(stylingIndex);
@@ -179,9 +176,9 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
     getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Color), stylingIndex));
-    getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileTypes), profileIndex));
-    getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileType), profileIndex));
-    getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::RangeTypes), profileIndex));
-    getWidgetMapper("RangeType")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::RangeType), profileIndex));
+    getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileTypes)));
+    getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)));
+    getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeTypes)));
+    getWidgetMapper("RangeType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeType)));
     getWidgetMapper("Styling")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Styling)));
 }

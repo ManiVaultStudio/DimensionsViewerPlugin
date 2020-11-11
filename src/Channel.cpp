@@ -16,9 +16,15 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Enabled", Channel::Column::Enabled },
     { "Dataset names", Channel::Column::DatasetNames },
     { "Dataset name", Channel::Column::DatasetName },
+    { "Dataset name", Channel::Column::DatasetName },
+    { "Color", Channel::Column::Color},
+    { "Profile types", Channel::Column::ProfileTypes },
+    { "Profile type", Channel::Column::ProfileType },
+    { "Range types", Channel::Column::RangeTypes },
+    { "Range type", Channel::Column::RangeType },
+    { "Styling", Channel::Column::Styling },
     { "Number of dimensions", Channel::Column::NoDimensions },
-    { "Number of points", Channel::Column::NoPoints },
-    { "Styling", Channel::Column::Styling }
+    { "Number of points", Channel::Column::NoPoints }
 };
 
 Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
@@ -29,8 +35,6 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_enabled(enabled),
     _datasetNames(),
 	_datasetName(datasetName),
-	_color(color),
-	_opacity(opacity),
 	_profile(this, Profile::ProfileType::Mean),
 	_styling(this),
 	_spec(),
@@ -126,8 +130,16 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             break;
         }
 
+        case Channel::Column::Color: {
+            if (_enabled && globalEnabled)
+                flags |= Qt::ItemIsEnabled;
+
+            break;
+        }
+
         case Channel::Column::Styling: {
-            flags |= Qt::ItemIsEnabled;
+            if (_enabled)
+                flags |= Qt::ItemIsEnabled;
 
             break;
         }
@@ -141,6 +153,10 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
 QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) const
 {
+    const auto configuration    = getChannels()->getConfiguration();
+    const auto global           = configuration->getGlobal();
+    const auto globalEnabled    = global->_enabled;
+
     switch (role)
     {
         case Qt::EditRole: {
@@ -173,11 +189,40 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::DatasetName:
                     return _datasetName;
 
+                case Channel::Column::Color:
+                    return _styling._color;
+
+                case Channel::Column::ProfileTypes:
+                {
+                    auto& profile = globalEnabled ? global->_profile : _profile;
+                    return profile.getData(to_ul(Profile::Column::ProfileTypes), Qt::EditRole).toStringList();
+                }
+
+                case Channel::Column::ProfileType:
+                {
+                    auto& profile = globalEnabled ? global->_profile : _profile;
+                    return profile.getData(to_ul(Profile::Column::ProfileType), Qt::EditRole).toInt();
+                }
+
+                case Channel::Column::RangeTypes:
+                {
+                    auto& profile = globalEnabled ? global->_profile : _profile;
+                    return profile.getData(to_ul(Profile::Column::RangeTypes), Qt::EditRole).toStringList();
+                }
+
+                case Channel::Column::RangeType:
+                {
+                    auto& profile = globalEnabled ? global->_profile : _profile;
+                    return profile.getData(to_ul(Profile::Column::RangeType), Qt::EditRole).toInt();
+                }
+
                 case Channel::Column::NoDimensions:
                     return getNoDimensions();
 
                 case Channel::Column::NoPoints:
+                {
                     return getNoPoints();
+                }
 
                 default:
                     break;
@@ -209,6 +254,18 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
                 case Channel::Column::DatasetName:
+                    return getData(column, Qt::EditRole);
+
+                case Channel::Column::ProfileTypes:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Channel::Column::ProfileType:
+                    return getData(column, Qt::EditRole);
+
+                case Channel::Column::RangeTypes:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Channel::Column::RangeType:
                     return getData(column, Qt::EditRole);
 
                 case Channel::Column::NoDimensions:
@@ -249,19 +306,9 @@ ModelItem::AffectedColumns Channel::setData(const std::int32_t& column, const QV
                 {
                     _enabled = value.toBool();
 
-                    /*QModelIndexList affectedIndices;
-
-                    for (int column = to_ul(Channel::Column::Start); column <= to_ul(Channel::Column::End); column++)
-                        affectedIndices << index.siblingAtColumn(column);
-
-                    const auto differentialProfileIndex = channel->index(to_ul(Channel::Row::DifferentialProfile), 0, index.parent().parent());
-
-                    for (int column = to_ul(DifferentialProfile::Column::Start); column <= to_ul(DifferentialProfile::Column::End); column++)
-                        affectedIndices << differentialProfileIndex.siblingAtColumn(column);
-
-                    affectedIndices << index.parent().parent().siblingAtColumn(to_ul(Miscellaneous::Column::ShowDimensionNames));
-
-                    return affectedIndices;*/
+                    affectedColunns << to_ul(Column::DatasetNames);
+                    affectedColunns << to_ul(Column::DatasetName);
+                    affectedColunns << to_ul(Column::Styling);
 
                     break;
                 }
@@ -269,13 +316,6 @@ ModelItem::AffectedColumns Channel::setData(const std::int32_t& column, const QV
                 case Channel::Column::DatasetNames:
                 {
                     _datasetNames = value.toStringList();
-
-                    /*QModelIndexList affectedIndices;
-
-                    for (int column = to_ul(Channel::Column::Start); column <= to_ul(Channel::Column::End); column++)
-                        affectedIndices << index.siblingAtColumn(column);
-
-                    return affectedIndices;*/
 
                     break;
                 }
@@ -490,8 +530,6 @@ void Channel::updateSpec()
 	_spec["displayName"]    = _displayName;
 	_spec["datasetName"]	= _datasetName;
 	_spec["dimensions"]		= dimensions;
-	_spec["color"]			= _color;
-	_spec["opacity"]		= _opacity;
 	_spec["profileType"]	= static_cast<int>(_profile.getProfileType());
 	_spec["rangeType"]		= static_cast<int>(_profile.getRangeType());
 	_spec["canDisplay"]		= canDisplay();

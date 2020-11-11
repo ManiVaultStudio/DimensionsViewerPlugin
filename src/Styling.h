@@ -112,4 +112,6 @@ private:
     LineType    _lineTypeRange;         /** Line type for drawing data range */
     float       _opacity;               /** Opacity for data range */
     QColor      _color;                 /** Color */
+
+    friend class Channel;
 };

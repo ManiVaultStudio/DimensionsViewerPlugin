@@ -156,4 +156,6 @@ private:
     ProfileType             _profileType;       /** Current profile type */
     RangeType               _rangeType;         /** Current range type */
     QVector<RangeType>      _rangeTypes;        /** Range types (depends on the current profile type) */
+
+    friend class Channel;
 };
