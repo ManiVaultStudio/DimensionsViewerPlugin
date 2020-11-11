@@ -42,9 +42,9 @@ public: // Columns and rows
     enum class Row {
         Profile,
 
-        Start = Profile,
-        End = Profile,
-        Count = End + 1
+        Start   = Profile,
+        End     = Profile,
+        Count   = End + 1
     };
 
 protected: // Construction

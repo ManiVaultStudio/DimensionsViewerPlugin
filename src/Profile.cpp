@@ -94,13 +94,13 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
                     return getProfileTypeNames();
 
                 case Profile::Column::ProfileType:
-                    return getProfileTypeName(_profileType);
+                    return static_cast<std::int32_t>(_profileType);
 
                 case Profile::Column::RangeTypes:
                     return getRangeTypeNames();
 
                 case Profile::Column::RangeType:
-                    return getRangeTypeName(_rangeType);
+                    return static_cast<std::int32_t>(_rangeType);
 
                 default:
                     break;
@@ -123,13 +123,13 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
                 case Profile::Column::ProfileType:
-                    return getData(column, Qt::EditRole);
+                    return getProfileTypeName(static_cast<ProfileType>(getData(column, Qt::EditRole).toInt()));
 
                 case Profile::Column::RangeTypes:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
                 case Profile::Column::RangeType:
-                    return getData(column, Qt::EditRole);
+                    return getRangeTypeName(static_cast<RangeType>(getData(column, Qt::EditRole).toInt()));
 
                 default:
                     break;

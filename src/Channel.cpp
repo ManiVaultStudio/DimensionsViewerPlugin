@@ -18,10 +18,6 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Dataset name", Channel::Column::DatasetName },
     { "Dataset name", Channel::Column::DatasetName },
     { "Color", Channel::Column::Color},
-    { "Profile types", Channel::Column::ProfileTypes },
-    { "Profile type", Channel::Column::ProfileType },
-    { "Range types", Channel::Column::RangeTypes },
-    { "Range type", Channel::Column::RangeType },
     { "Styling", Channel::Column::Styling },
     { "Number of dimensions", Channel::Column::NoDimensions },
     { "Number of points", Channel::Column::NoPoints }
@@ -137,6 +133,15 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             break;
         }
 
+        case Channel::Column::ProfileType:
+        case Channel::Column::RangeType:
+        {
+            if (_enabled && !globalEnabled)
+                flags |= Qt::ItemIsEnabled;
+
+            break;
+        }
+
         case Channel::Column::Styling: {
             if (_enabled)
                 flags |= Qt::ItemIsEnabled;
@@ -181,7 +186,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::DatasetNames:
                 {
                     if (_index == 0)
-                        return getConfigurationsModel()->getDatasetNames();
+                        return getModel()->getDatasetNames();
 
                     return getChannels()->getConfiguration()->getSubsets();
                 }
@@ -191,30 +196,6 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
                 case Channel::Column::Color:
                     return _styling._color;
-
-                case Channel::Column::ProfileTypes:
-                {
-                    auto& profile = globalEnabled ? global->_profile : _profile;
-                    return profile.getData(to_ul(Profile::Column::ProfileTypes), Qt::EditRole).toStringList();
-                }
-
-                case Channel::Column::ProfileType:
-                {
-                    auto& profile = globalEnabled ? global->_profile : _profile;
-                    return profile.getData(to_ul(Profile::Column::ProfileType), Qt::EditRole).toInt();
-                }
-
-                case Channel::Column::RangeTypes:
-                {
-                    auto& profile = globalEnabled ? global->_profile : _profile;
-                    return profile.getData(to_ul(Profile::Column::RangeTypes), Qt::EditRole).toStringList();
-                }
-
-                case Channel::Column::RangeType:
-                {
-                    auto& profile = globalEnabled ? global->_profile : _profile;
-                    return profile.getData(to_ul(Profile::Column::RangeType), Qt::EditRole).toInt();
-                }
 
                 case Channel::Column::NoDimensions:
                     return getNoDimensions();
@@ -260,13 +241,13 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
                 case Channel::Column::ProfileType:
-                    return getData(column, Qt::EditRole);
+                    return Profile::getProfileTypeName(static_cast<Profile::ProfileType>(getData(column, Qt::EditRole).toInt()));
 
                 case Channel::Column::RangeTypes:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
                 case Channel::Column::RangeType:
-                    return getData(column, Qt::EditRole);
+                    return Profile::getRangeTypeName(static_cast<Profile::RangeType>(getData(column, Qt::EditRole).toInt()));
 
                 case Channel::Column::NoDimensions:
                 case Channel::Column::NoPoints:
@@ -337,18 +318,6 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 case Channel::Column::Color:
                 {
                     _styling._color = value.value<QColor>();
-                    break;
-                }
-
-                case Channel::Column::ProfileType:
-                {
-                    _profile._profileType = static_cast<Profile::ProfileType>(value.toInt());
-                    break;
-                }
-
-                case Channel::Column::RangeType:
-                {
-                    _profile._profileType = static_cast<Profile::ProfileType>(value.toInt());
                     break;
                 }
 

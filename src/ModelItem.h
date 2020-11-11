@@ -110,7 +110,7 @@ public: // Hierarchy
 public: // Miscellaneous
 
     /** Get the configurations model */
-    static ConfigurationsModel* getConfigurationsModel();
+    static const ConfigurationsModel* getModel();
 
 protected:
 

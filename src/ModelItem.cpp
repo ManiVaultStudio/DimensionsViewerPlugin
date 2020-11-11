@@ -21,7 +21,7 @@ QVariant ModelItem::getData(const QModelIndex& index, const int& role) const
 
 QModelIndex ModelItem::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    return getConfigurationsModel()->index(row, column, parent);
+    return getModel()->index(row, column, parent);
 }
 
 ModelItem* ModelItem::getChild(const int& index) const
@@ -57,7 +57,7 @@ bool ModelItem::isLeaf() const
     return getChildCount() == 0;
 }
 
-ConfigurationsModel* ModelItem::getConfigurationsModel()
+const ConfigurationsModel* ModelItem::getModel()
 {
     return &dimensionsViewerPlugin->getModel();
 }

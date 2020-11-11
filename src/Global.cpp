@@ -1,4 +1,7 @@
 #include "Global.h"
+#include "Channels.h"
+#include "Channel.h"
+#include "ConfigurationsModel.h"
 
 #include <QDebug>
 
@@ -99,11 +102,13 @@ QModelIndexList Global::setData(const QModelIndex& index, const QVariant& value,
 
             switch (static_cast<Column>(index.column()))
             {
-                case Global::Column::Enabled: {
+                case Global::Column::Enabled:
+                {
                     _enabled = value.toBool();
+
                     break;
                 }
-
+                
                 default:
                     break;
             }

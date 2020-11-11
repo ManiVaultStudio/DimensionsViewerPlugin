@@ -13,32 +13,8 @@ GlobalWidget::GlobalWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    const auto updateChannels = [this]() {
-        const auto channelsIndex = _modelIndex.sibling(to_ul(Configuration::Row::Channels), 0);
-
-        QVector<std::int32_t> channels;
-
-        channels << to_ul(Channels::Row::Channel1);
-        channels << to_ul(Channels::Row::Channel2);
-        channels << to_ul(Channels::Row::Channel3);
-
-        for (auto channel : channels) {
-            const auto channelIndex = getModel().index(channel, 0, channelsIndex);
-            const auto profileIndex = getModel().index(to_ul(Channel::Row::Profile), 0, channelIndex);
-
-            qDebug() << getModel().itemData(profileIndex);
-
-            /*for (int column = to_ul(Profile::Column::Start); column <= to_ul(Profile::Column::Start); column++) {
-                getModel().setData(profileIndex.siblingAtColumn(column), QVariant(), Qt::UserRole);
-            }*/
-        }
-    };
-
-    QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this, updateChannels](bool state) {
-        const auto profileIndex = getChild(to_ul(Channel::Row::Profile));
-        getModel().setData(getSiblingAtColumn(to_ul(Profile::Column::Enabled), profileIndex), state);
-
-        updateChannels();
+    QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
+        getModel().setData(getSiblingAtColumn(to_ul(Global::Column::Enabled)), state);
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {

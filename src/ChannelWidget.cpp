@@ -32,11 +32,11 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)), currentText);
+        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)), currentText, Qt::DisplayRole);
     });
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::RangeType)), currentText);
+        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::RangeType)), currentText, Qt::DisplayRole);
     });
 
     addWidgetMapper("Enabled", QSharedPointer<WidgetMapper>::create(_ui->enabledCheckBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
@@ -133,7 +133,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
             return;
         }
 
-        _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+        _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
 
     addWidgetMapper("RangeType", QSharedPointer<WidgetMapper>::create(_ui->rangeTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
