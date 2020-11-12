@@ -34,9 +34,9 @@ QModelIndex ModelItemWidget::getModelIndex() const
     return _modelIndex;
 }
 
-void ModelItemWidget::setData(const std::int32_t& column, const QVariant& value)
+void ModelItemWidget::setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    getModel().setData(getModelIndex().siblingAtColumn(column), value);
+    getModel().setData(getModelIndex().siblingAtColumn(column), value, role);
 }
 
 void ModelItemWidget::addWidgetMapper(const QString& name, const QSharedPointer<WidgetMapper>& widgetMapper)

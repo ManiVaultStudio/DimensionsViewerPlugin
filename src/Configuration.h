@@ -2,7 +2,6 @@
 
 #include "ModelItem.h"
 #include "Channels.h"
-#include "Global.h"
 #include "DifferentialProfile.h"
 
 #include <QStringList>
@@ -31,12 +30,11 @@ public: // Columns and rows
         Index,
         DatasetName,
         DataName,
-        Subsets,
         SelectionStamp,
 
-        Start   = Type,
-        End     = SelectionStamp,
-        Count   = End + 1
+        _Start  = Type,
+        _End    = SelectionStamp,
+        _Count  = _End + 1
     };
 
     /** Maps column name to column enum and vice versa */
@@ -55,13 +53,12 @@ public: // Columns and rows
     /** Model item rows */
     enum class Row {
         Channels,
-        Global,
         DifferentialProfile,
         Miscellaneous,
 
-        Start   = Channels,
-        End     = Miscellaneous,
-        Count   = End + 1
+        _Start  = Channels,
+        _End    = Miscellaneous,
+        _Count  = _End + 1
     };
 
 public: // Construction
@@ -126,14 +123,8 @@ public: // Miscellaneous
     /** Get channels model item */
     const Channels* getChannels() const;
 
-    /** Get global model item */
-    const Global* getGlobal() const;
-
     /** Get differential profile model item */
     const DifferentialProfile* getDifferentialProfile() const;
-
-    /** Returns the subset names */
-    QStringList getSubsets() const { return _subsets; }
 
 public: // Spec
 
@@ -159,9 +150,7 @@ protected:
     QString                 _datasetName;                   /** TODO */
     QString					_dataName;			            /** Name of the points data */
     Channels		        _channels;                      /** TODO */
-    Global                  _global;                        /** TODO */
     DifferentialProfile     _differentialProfile;           /** TODO */
-    QStringList		        _subsets;                       /** Subsets of the primary dataset (selected in the first channel) */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:

@@ -11,7 +11,6 @@ const QMap<QString, Configuration::Column> Configuration::columns = {
     { "Index", Configuration::Column::Index },
     { "Dataset name", Configuration::Column::DatasetName },
     { "Data name", Configuration::Column::DataName },
-    { "Subsets", Configuration::Column::Subsets },
     { "Selection stamp", Configuration::Column::SelectionStamp }
 };
 
@@ -21,9 +20,7 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
     _datasetName(datasetName),
     _dataName(dataName),
 	_channels(this, datasetName, dataName),
-	_global(this),
 	_differentialProfile(this),
-	_subsets(),
     _spec()
 {
     noConfigurations++;
@@ -35,7 +32,7 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
 
 int Configuration::columnCount() const 
 {
-    return to_ul(Column::Count);
+    return to_ul(Column::_Count);
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
@@ -50,7 +47,6 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
         case Column::Index:
         case Column::DatasetName:
         case Column::DataName:
-        case Column::Subsets:
         case Column::SelectionStamp:
         {
             flags |= Qt::ItemIsEnabled;
@@ -85,9 +81,6 @@ QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& 
                 case Configuration::Column::DataName:
                     return _dataName;
 
-                case Configuration::Column::Subsets:
-                    return _subsets;
-
                 default:
                     break;
             }
@@ -110,9 +103,6 @@ QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& 
 
                 case Configuration::Column::DataName:
                     return getData(column, Qt::EditRole);
-
-                case Configuration::Column::Subsets:
-                    return getData(column, Qt::EditRole).toStringList().join(", ");
 
                 default:
                     break;
@@ -141,27 +131,6 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
                 case Configuration::Column::Type:
                     break;
 
-                case Configuration::Column::Subsets:
-                {
-                    _subsets = value.toStringList();
-
-                    /*QModelIndexList affectedIndices;
-
-                    QVector<std::int32_t> channels;
-
-                    channels << Channels::Row::Channel2;
-                    channels << Channels::Row::Channel3;
-
-                    const auto channelsIndex = configuration->index(0, 0, index.siblingAtColumn(0));
-
-                    for (auto channel : channels) {
-                        for (int column = to_ul(Channel::Column::Start); column <= to_ul(Channel::Column::End); column++)
-                            affectedIndices << configuration->index(channel, 0, channelsIndex).siblingAtColumn(column);
-                    }*/
-
-                    break;
-                }
-
                 default:
                     break;
             }
@@ -183,9 +152,6 @@ ModelItem* Configuration::getChild(const int& index) const
         case Row::Channels:
             return const_cast<Channels*>(&_channels);
 
-        case Row::Global:
-            return const_cast<Global*>(&_global);
-
         case Row::DifferentialProfile:
             return const_cast<DifferentialProfile*>(&_differentialProfile);
 
@@ -201,16 +167,13 @@ ModelItem* Configuration::getChild(const int& index) const
 
 int Configuration::getChildCount() const
 {
-    return static_cast<int>(Row::End);
+    return static_cast<int>(Row::_End);
 }
 
 int Configuration::getChildIndex(ModelItem* child) const
 {
     if (dynamic_cast<Channels*>(child))
         return static_cast<int>(Row::Channels);
-
-    if (dynamic_cast<Global*>(child))
-        return static_cast<int>(Row::Global);
 
     if (dynamic_cast<DifferentialProfile*>(child))
         return static_cast<int>(Row::DifferentialProfile);
@@ -221,11 +184,6 @@ int Configuration::getChildIndex(ModelItem* child) const
 const Channels* Configuration::getChannels() const
 {
     return &_channels;
-}
-
-const Global* Configuration::getGlobal() const
-{
-    return &_global;
 }
 
 const DifferentialProfile* Configuration::getDifferentialProfile() const

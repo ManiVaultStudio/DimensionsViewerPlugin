@@ -18,6 +18,11 @@ class ConfigurationsModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
+public: // Alias(es)
+
+    /** Rule function executed when data changes */
+    using RuleFunction = std::function<void(const QPersistentModelIndex& index)>;
+
 public: // Construction
 
     /**
@@ -140,10 +145,11 @@ private:
     ModelItem* getItem(const QModelIndex& index) const;
 
 private:
-	DimensionsViewerPlugin*		_dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
-    Configurations		        _configurations;				/** Configurations data source */
-	QItemSelectionModel			_selectionModel;				/** Selection model */
-    QStringList                 _datasetNames;                  /** Dataset names */
+    DimensionsViewerPlugin*                             _dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
+    Configurations		                                _configurations;				/** Configurations data source */
+    QItemSelectionModel                                 _selectionModel;				/** Selection model */
+    QStringList                                         _datasetNames;                  /** Dataset names */
+    QMap<QString, QMap<std::int32_t, RuleFunction>>     _rules;                         /** Data rules */
 
     friend class Configurations;
 };

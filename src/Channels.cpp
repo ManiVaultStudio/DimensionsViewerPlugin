@@ -20,7 +20,7 @@ Channels::Channels(ModelItem* parent, const QString& datasetName, const QString&
 
 int Channels::columnCount() const
 {
-    return to_ul(Column::Count);
+    return to_ul(Column::_Count);
 }
 
 Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const

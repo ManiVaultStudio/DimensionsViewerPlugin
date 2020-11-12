@@ -57,9 +57,6 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="GlobalWidget" name="globalSettingsWidget" native="true"/>
-     </item>
     </layout>
    </item>
    <item>
@@ -101,12 +98,6 @@
    <class>ChannelsWidget</class>
    <extends>QWidget</extends>
    <header>ChannelsWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>GlobalWidget</class>
-   <extends>QWidget</extends>
-   <header>GlobalWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

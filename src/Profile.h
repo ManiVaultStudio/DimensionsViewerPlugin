@@ -1,48 +1,14 @@
 #pragma once
 
-#include "ModelItem.h"
-
 #include <QObject>
 #include <QMap>
 
 /**
- * Profile model item class
+ * Profile utility class
  *
  * @author T. Kroes
  */
-class Profile : public ModelItem {
-
-public: // Columns and rows
-
-    /** Model item columns */
-    enum class Column {
-        Type,               /** TODO */
-        Enabled,            /** Enabled */
-        ProfileTypes,       /** Available profile types */
-        ProfileType,        /** Current profile type */
-        RangeTypes,         /** Available range types */
-        RangeType,          /** Current range type */
-
-        Start   = Type,
-        End     = RangeType,
-        Count   = End + 1
-    };
-
-    /** Maps column name to column enum */
-    static QMap<QString, Column> const columns;
-
-    /** Get column name from column enum */
-    static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
-    }
-
-    /** Get column enum from column name */
-    static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
-    }
-
-    /** Model item rows */
-    enum class Row {};
+class Profile {
 
 public: // Enumerations
 
@@ -101,41 +67,24 @@ public: // Construction
 
     /**
      * Constructor
-     * @param parent Parent model item
      * @param profileType Profile type
      */
-    Profile(ModelItem* parent, const ProfileType& profileType);
+    Profile(const ProfileType& profileType);
 
-public: // ModelIndex: Model
+public: // Operators
 
-    /** Returns the number of columns in the item */
-    int columnCount() const override;
+    Profile& operator=(const Profile& other)
+    {
+        _profileType    = other._profileType;
+        _rangeTypes     = other._rangeTypes;
+        _rangeType      = other._rangeType;
 
-    /**
-     * Returns the item flags for the given model index
-     * @param index Model index
-     * @return Item flags for the index
-     */
-    Qt::ItemFlags getFlags(const QModelIndex& index) const override;
-
-    /**
-     * Get data role
-     * @param column Column to fetch data from
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
-
-    /**
-     * Sets data
-     * @param index Model index
-     * @param value Data value in variant form
-     * @param role Data role
-     * @return Model indices that are affected by the operation
-     */
-    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+        return *this;
+    }
 
 public: // Getters/setters
+
+    QStringList getProfileTypeNames() const;
 
     ProfileType getProfileType() const;
 
@@ -145,7 +94,7 @@ public: // Getters/setters
 
     void setRangeType(const RangeType& rangeType);
 
-    QStringList getProfileTypeNames() const;
+    
 
     QStringList getRangeTypeNames() const;
 

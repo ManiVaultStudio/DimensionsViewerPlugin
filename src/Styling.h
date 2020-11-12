@@ -1,49 +1,17 @@
 #pragma once
 
-#include "ModelItem.h"
-
 #include <QObject>
 #include <QMap>
 #include <QColor>
 
 /**
- * Styling model item class
+ * Styling utility class
  *
  * @author T. Kroes
  */
-class Styling : public ModelItem {
+class Styling {
 
 public: // Columns and rows
-
-    /** Model item columns */
-    enum class Column {
-        Type,               /** TODO */
-        LineTypes,          /** Line types */
-        LineTypeProfile,    /** Line type for drawing data profile */
-        LineTypeRange,      /** Line type for drawing data range */
-        Opacity,            /** Opacity */
-        Color,              /** Color */
-
-        Start   = Type,
-        End     = Color,
-        Count   = End + 1
-    };
-
-    /** Maps column name to column enum */
-    static QMap<QString, Column> const columns;
-
-    /** Get column name from column enum */
-    static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
-    }
-
-    /** Get column enum from column name */
-    static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
-    }
-
-    /** Model item rows */
-    enum class Row {};
 
 public: // Enumerations
 
@@ -72,40 +40,25 @@ public: // Enumerations
 
 public: // Construction
 
-    /**
-     * Constructor
-     * @param parent Parent model item
-     */
-    Styling(ModelItem* parent);
+    /** Default constructor */
+    Styling();
 
-public: // ModelIndex: Model
+public: // Operators
 
-    /** Returns the number of columns in the item */
-    int columnCount() const override;
+    Styling& operator=(const Styling& other)
+    {
+        _lineTypeProfile    = other._lineTypeProfile;
+        _lineTypeRange      = other._lineTypeRange;
+        _opacity            = other._opacity;
+        //_color              = other._color;
 
-    /**
-     * Returns the item flags for the given model index
-     * @param index Model index
-     * @return Item flags for the index
-     */
-    Qt::ItemFlags getFlags(const QModelIndex& index) const override;
+        return *this;
+    }
 
-    /**
-     * Get data role
-     * @param column Column to fetch data from
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
+public:
 
-    /**
-     * Sets data
-     * @param index Model index
-     * @param value Data value in variant form
-     * @param role Data role
-     * @return Model indices that are affected by the operation
-     */
-    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+    /** Get line type names */
+    QStringList getLineTypeNames() const;
 
 private:
     LineType    _lineTypeProfile;       /** Line type for drawing data profile */

@@ -34,18 +34,31 @@ public: // Columns and rows
         Enabled,
         DatasetNames,
         DatasetName,
-        Color,
-        ProfileTypes,
-        ProfileType,
-        RangeTypes,
-        RangeType,
+
+        _ProfileStart,                          /** Start of the profile section */
+            ProfileTypes,                       /** Available profile types */
+            ProfileType,                        /** Current profile type */
+            RangeTypes,                         /** Available range types */
+            RangeType,                          /** Current range type */
+        _ProfileEnd = RangeType,                /** End of the profile section */
+
+        _StylingStart = _ProfileEnd,            /** Start of the styling section */
+            Styling,                            /** TODO */
+            LineTypes,                          /** Line types */
+            LineTypeProfile,                    /** Line type for drawing data profile */
+            LineTypeRange,                      /** Line type for drawing data range */
+            Opacity,                            /** Opacity */
+            Color,                              /** Color */
+        _StylingEnd = Color,                    /** End of the styling section */
+
+        Linked,                                 /** TODO */
+
         NoDimensions,
         NoPoints,
-        Styling,
 
-        Start   = Type,
-        End     = NoPoints,
-        Count   = End + 1
+        _Start  = Type,
+        _End    = NoPoints,
+        _Count  = _End + 1
     };
 
     /** Maps column name to column enum */
@@ -115,24 +128,6 @@ public: // ModelIndex: Model
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
-public: // ModelIndex: Hierarchy
-
-    /**
-     * Returns a model item node by index
-     * @param index Index of the child model item
-     * @return Model item at index
-     */
-    ModelItem* getChild(const int& index) const override;
-
-    /** Returns the number of children */
-    int getChildCount() const override;
-
-    /**
-     * Returns the child index
-     * @param child Pointer to child model item
-     */
-    int getChildIndex(ModelItem* child) const override;
-
 public: // Points data functions
 
     /** Returns the number of dimensions */
@@ -148,6 +143,11 @@ protected: // Miscellaneous
 	
     /** Get parent channels model item */
     const Channels* getChannels() const;
+
+    /** Get channels at row */
+    const Channel* getSibling(const std::int32_t& row) const;
+
+    Channel* getSibling(const std::int32_t& row);
 
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
@@ -167,16 +167,17 @@ signals:
     void specChanged(Channel* channel);
 
 private:
-	const std::uint32_t		_index;				/** Index */
-	const QString			_internalName;		/** Internal name (e.g. channel1, channel2) */
-	QString			        _displayName;		/** Display name (e.g. dataset, Subset1 and Subset 2) */
-	bool					_enabled;			/** Whether the channel is enabled or not */
-	QStringList             _datasetNames;		/** Dataset names */
-	QString					_datasetName;		/** Dataset name */
-    Profile				    _profile;		    /** Profile settings */
-    Styling				    _styling;		    /** Style settings */
-	QVariantMap				_spec;				/** Specification for use in JS visualization client (Vega) */
-	Points*					_points;			/** Pointer to points dataset */
+	const std::uint32_t		_index;				        /** Index */
+	const QString			_internalName;		        /** Internal name (e.g. channel1, channel2) */
+	QString			        _displayName;		        /** Display name (e.g. dataset, Subset1 and Subset 2) */
+	bool					_enabled;			        /** Whether the channel is enabled or not */
+	bool					_linked;                    /** Whether settings are linked to the settings of the first channel */
+	QStringList             _datasetNames;		        /** Dataset names */
+	QString					_datasetName;		        /** Dataset name */
+    Profile				    _profile;		            /** Profile settings */
+    Styling				    _styling;		            /** Style settings */
+	QVariantMap				_spec;				        /** Specification for use in JS visualization client (Vega) */
+	Points*					_points;			        /** Pointer to points dataset */
 
 protected:
 	friend class Channels;

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>653</width>
+    <width>749</width>
     <height>22</height>
    </rect>
   </property>
@@ -80,7 +80,7 @@
     </widget>
    </item>
    <item>
-    <widget class="ColorPickerPushButton" name="colorPushButton">
+    <widget class="ColorPickerPushButton" name="colorPushButton" native="true">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -108,7 +108,7 @@
        <height>0</height>
       </size>
      </property>
-     <property name="text">
+     <property name="text" stdset="0">
       <string/>
      </property>
     </widget>
@@ -173,13 +173,36 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QPushButton" name="profileLinkedPushButton">
+     <property name="minimumSize">
+      <size>
+       <width>22</width>
+       <height>22</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>22</width>
+       <height>22</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
    <class>ColorPickerPushButton</class>
-   <extends>QPushButton</extends>
+   <extends>QWidget</extends>
    <header>widgets/ColorPickerPushButton.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>StylingPushButton</class>

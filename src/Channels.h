@@ -21,9 +21,9 @@ public: // Columns and rows
     enum class Column {
         Type,
 
-        Start   = Type,
-        End     = Type,
-        Count   = End + 1
+        _Start  = Type,
+        _End    = Type,
+        _Count  = _End + 1
     };
 
     /** Maps column name to column enum and vice versa */
@@ -40,15 +40,15 @@ public: // Columns and rows
     }
 
     /** Model item rows */
-    enum Row {
+    enum class Row {
         Channel1,
         Channel2,
         Channel3,
         DifferentialProfile,
 
-        Start   = Channel1,
-        End     = DifferentialProfile,
-        Count   = End + 1
+        _Start  = Channel1,
+        _End    = DifferentialProfile,
+        _Count  = _End + 1
     };
 
 protected: // Construction

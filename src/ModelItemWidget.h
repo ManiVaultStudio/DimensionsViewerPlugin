@@ -19,6 +19,7 @@ class ModelItemWidget : public QWidget
 public:
 
     class WidgetMapper {
+
     public: // Alias(es)
 
         /** Callback executed when data changes */
@@ -81,6 +82,8 @@ public:
          */
         void setModelIndex(const QPersistentModelIndex& index) {
             _index = index;
+
+            QSignalBlocker signalBlocker(_widget);
 
             _callbackFunction(_index, _index == QModelIndex());
         }
@@ -155,8 +158,9 @@ protected: // Model operations
      * Set model data
      * @param column Data column
      * @param value Data value
+     * @param role Data role
      */
-    void setData(const std::int32_t& column, const QVariant& value);
+    void setData(const std::int32_t& column, const QVariant& value, const std::int32_t& role = Qt::EditRole);
 
 protected: // Widget mappers
 

@@ -33,7 +33,6 @@ void ConfigurationWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     ModelItemWidget::setModelIndex(modelIndex);
 
     _ui->channelsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Channels)));
-    _ui->globalSettingsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Global)));
     _ui->differentialProfileSettingsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::DifferentialProfile)));
     _ui->miscellaneousSettingsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Miscellaneous)));
 }

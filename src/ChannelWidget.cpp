@@ -28,15 +28,19 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     });
 
     QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
-        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::Color)), color);
+        setData(to_ul(Channel::Column::Color), color);
     });
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)), currentText, Qt::DisplayRole);
+        setData(to_ul(Channel::Column::ProfileType), currentText, Qt::DisplayRole);
     });
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        getModel().setData(getSiblingAtColumn(to_ul(Channel::Column::RangeType)), currentText, Qt::DisplayRole);
+        setData(to_ul(Channel::Column::RangeType), currentText, Qt::DisplayRole);
+    });
+
+    QObject::connect(_ui->profileLinkedPushButton, &QPushButton::toggled, [this](bool checked) {
+        setData(to_ul(Channel::Column::Linked), checked);
     });
 
     addWidgetMapper("Enabled", QSharedPointer<WidgetMapper>::create(_ui->enabledCheckBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
@@ -160,15 +164,33 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->stylingPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->stylingPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
+
+    addWidgetMapper("ProfileLinkedPushButton", QSharedPointer<WidgetMapper>::create(_ui->profileLinkedPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->profileLinkedPushButton->setEnabled(false);
+
+            QSizePolicy sizePolicyRetain = _ui->profileLinkedPushButton->sizePolicy();
+            sizePolicyRetain.setRetainSizeWhenHidden(true);
+            
+            _ui->profileLinkedPushButton->setSizePolicy(sizePolicyRetain);
+
+            return;
+        }
+
+        _ui->profileLinkedPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
+        _ui->profileLinkedPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->profileLinkedPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
+        _ui->profileLinkedPushButton->setFont(index.data(Qt::FontRole).value<QFont>());
+        _ui->profileLinkedPushButton->setChecked(index.data(Qt::EditRole).toBool());
+        _ui->profileLinkedPushButton->setText(index.data(Qt::DisplayRole).toString());
+    }));
 }
 
 void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 
-    const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
-
-    _ui->stylingPushButton->setModelIndex(stylingIndex);
+    _ui->stylingPushButton->setModelIndex(modelIndex);
 
     getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Enabled)));
     getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DisplayName)));
@@ -180,4 +202,5 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeTypes)));
     getWidgetMapper("RangeType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeType)));
     getWidgetMapper("Styling")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Styling)));
+    getWidgetMapper("ProfileLinkedPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Linked)));
 }

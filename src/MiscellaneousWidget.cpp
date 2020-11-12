@@ -1,5 +1,4 @@
 #include "MiscellaneousWidget.h"
-#include "Miscellaneous.h"
 
 #include "ui_MiscellaneousWidget.h"
 
@@ -11,9 +10,9 @@ MiscellaneousWidget::MiscellaneousWidget(QWidget* parent) :
 {
     _ui->setupUi(this);
 
-    QObject::connect(_ui->showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this](int state) {
+    /*QObject::connect(_ui->showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this](int state) {
         setData(to_ul(Miscellaneous::Column::ShowDimensionNames), state == Qt::Checked);
-    });
+    });*/
 }
 
 //void MiscellaneousWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)

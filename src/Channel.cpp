@@ -3,6 +3,7 @@
 #include "Configuration.h"
 #include "ConfigurationsModel.h"
 
+#include "Application.h"
 #include "PointData.h"
 
 #include <QDebug>
@@ -17,8 +18,17 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Dataset names", Channel::Column::DatasetNames },
     { "Dataset name", Channel::Column::DatasetName },
     { "Dataset name", Channel::Column::DatasetName },
-    { "Color", Channel::Column::Color},
+    { "ProfileTypes", Channel::Column::ProfileTypes },
+    { "Profile type", Channel::Column::ProfileType },
+    { "Range types", Channel::Column::RangeTypes },
+    { "Range type", Channel::Column::RangeType },
     { "Styling", Channel::Column::Styling },
+    { "Line types", Channel::Column::LineTypes },
+    { "Line type profile", Channel::Column::LineTypeProfile },
+    { "Line type range", Channel::Column::LineTypeRange },
+    { "Opacity", Channel::Column::Opacity },
+    { "Color", Channel::Column::Color},
+    { "Linked", Channel::Column::Linked },
     { "Number of dimensions", Channel::Column::NoDimensions },
     { "Number of points", Channel::Column::NoPoints }
 };
@@ -31,17 +41,20 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_enabled(enabled),
     _datasetNames(),
 	_datasetName(datasetName),
-	_profile(this, Profile::ProfileType::Mean),
-	_styling(this),
+	_profile(Profile::ProfileType::Mean),
+    _linked(index == 0 ? false : true),
+	_styling(),
 	_spec(),
     _points(nullptr)
 {
     resolvePoints();
+
+    _styling._color = color;
 }
 
 int Channel::columnCount() const 
 {
-    return to_ul(Column::Count);
+    return to_ul(Column::_Count);
 }
 
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
@@ -50,11 +63,11 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
     const auto column           = static_cast<Column>(index.column());
     const auto configuration    = getChannels()->getConfiguration();
-    const auto globalEnabled    = configuration->getGlobal()->_enabled;
-    const auto noSubsets        = configuration->getSubsets().count();
+    const auto noDatasets       = _datasetNames.count();
 
     switch (column)
     {
+        case Column::Type:
         case Column::Index:
         case Column::InternalName:
         case Column::DisplayName:
@@ -67,21 +80,21 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         case Column::Enabled: {
             switch (_index)
             {
-                case Channels::Row::Channel1: {
+                case to_ul(Channels::Row::Channel1): {
                     flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel2: {
-                    if (noSubsets >= 1)
+                case to_ul(Channels::Row::Channel2): {
+                    if (noDatasets >= 1)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel3: {
-                    if (noSubsets >= 2)
+                case to_ul(Channels::Row::Channel3): {
+                    if (noDatasets >= 2)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -99,21 +112,21 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             switch (_index)
             {
-                case Channels::Row::Channel1: {
+                case to_ul(Channels::Row::Channel1): {
                     flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel2: {
-                    if (_enabled && noSubsets >= 1)
+                case to_ul(Channels::Row::Channel2): {
+                    if (_enabled && noDatasets >= 1)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel3: {
-                    if (_enabled && noSubsets >= 2)
+                case to_ul(Channels::Row::Channel3): {
+                    if (_enabled && noDatasets >= 2)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -126,28 +139,82 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             break;
         }
 
-        case Channel::Column::Color: {
-            if (_enabled && globalEnabled)
-                flags |= Qt::ItemIsEnabled;
+        case Channel::Column::ProfileTypes:
+        case Channel::Column::ProfileType:
+        {
+            if (_enabled) {
+                if (_index > 0) {
+                    if (!_linked)
+                        flags |= Qt::ItemIsEnabled;
+                }
+                else {
+                    flags |= Qt::ItemIsEnabled;
+                }
+            }
 
             break;
         }
 
-        case Channel::Column::ProfileType:
+        case Channel::Column::RangeTypes:
         case Channel::Column::RangeType:
         {
-            if (_enabled && !globalEnabled)
-                flags |= Qt::ItemIsEnabled;
+            if (_enabled) {
+                if (_index > 0) {
+                    if (!_linked && _profile.getProfileType() != Profile::ProfileType::None)
+                        flags |= Qt::ItemIsEnabled;
+                }
+                else {
+                    flags |= Qt::ItemIsEnabled;
+                }
+            }
+            
+            break;
+        }
+
+        case Channel::Column::Styling:
+        {
+            if (_enabled) {
+                if (_index > 0)
+                {
+                    if (!_linked)
+                        flags |= Qt::ItemIsEnabled;
+                }
+                else {
+                    flags |= Qt::ItemIsEnabled;
+                }
+            }
 
             break;
         }
 
-        case Channel::Column::Styling: {
+        case Channel::Column::LineTypes:
+        case Channel::Column::LineTypeProfile:
+        case Channel::Column::LineTypeRange:
+        case Channel::Column::Opacity:
+        case Channel::Column::Color:
+        {
             if (_enabled)
                 flags |= Qt::ItemIsEnabled;
 
             break;
         }
+
+        case Channel::Column::Linked:
+        {
+            if (_index > 0) {
+                if (_enabled)
+                    flags |= Qt::ItemIsEnabled;
+            }
+            else {
+                flags &= ~Qt::ItemIsEditable;
+            }
+
+            break;
+        }
+
+        case Channel::Column::NoDimensions:
+        case Channel::Column::NoPoints:
+            break;
 
         default:
             break;
@@ -158,10 +225,6 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
 QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) const
 {
-    const auto configuration    = getChannels()->getConfiguration();
-    const auto global           = configuration->getGlobal();
-    const auto globalEnabled    = global->_enabled;
-
     switch (role)
     {
         case Qt::EditRole: {
@@ -184,26 +247,49 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                     return _enabled;
 
                 case Channel::Column::DatasetNames:
-                {
-                    if (_index == 0)
-                        return getModel()->getDatasetNames();
-
-                    return getChannels()->getConfiguration()->getSubsets();
-                }
+                    return _datasetNames;
 
                 case Channel::Column::DatasetName:
                     return _datasetName;
 
+                case Channel::Column::ProfileTypes:
+                    return _profile.getProfileTypeNames();
+
+                case Channel::Column::ProfileType:
+                    return static_cast<std::int32_t>(_profile.getProfileType());
+
+                case Channel::Column::RangeTypes:
+                    return _profile.getRangeTypeNames();
+
+                case Channel::Column::RangeType:
+                    return static_cast<std::int32_t>(_profile.getRangeType());
+
+                case Channel::Column::Styling:
+                    return "Styling";
+
+                case Channel::Column::LineTypes:
+                    return _styling.getLineTypeNames();
+
+                case Channel::Column::LineTypeProfile:
+                    return static_cast<std::int32_t>(_styling._lineTypeProfile);
+
+                case Channel::Column::LineTypeRange:
+                    return static_cast<std::int32_t>(_styling._lineTypeRange);
+
+                case Channel::Column::Opacity:
+                    return _styling._opacity;
+
                 case Channel::Column::Color:
-                    return _styling._color;
+                    return QVariant::fromValue(_styling._color);
+
+                case Channel::Column::Linked:
+                    return _linked;
 
                 case Channel::Column::NoDimensions:
                     return getNoDimensions();
 
                 case Channel::Column::NoPoints:
-                {
                     return getNoPoints();
-                }
 
                 default:
                     break;
@@ -249,9 +335,65 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::RangeType:
                     return Profile::getRangeTypeName(static_cast<Profile::RangeType>(getData(column, Qt::EditRole).toInt()));
 
+                case Channel::Column::Styling:
+                    return getData(column, Qt::EditRole);
+
+                case Channel::Column::LineTypes:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Channel::Column::LineTypeProfile:
+                case Channel::Column::LineTypeRange:
+                    return Styling::getLineTypeName(static_cast<Styling::LineType>(getData(column, Qt::EditRole).toInt()));
+
+                case Channel::Column::Opacity:
+                    return QString::number(getData(column, Qt::EditRole).toFloat(), 'f', 2);
+
+                case Channel::Column::Color:
+                    return getData(column, Qt::EditRole).value<QColor>().name();
+
+                case Channel::Column::Linked:
+                    return hdps::Application::getIconFont("FontAwesome").getIconCharacter(_linked ? "link" : "unlink");
+
                 case Channel::Column::NoDimensions:
                 case Channel::Column::NoPoints:
                     return QString::number(getData(column, Qt::EditRole).toInt());
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::FontRole:
+        {
+            switch (static_cast<Column>(column))
+            {
+                case Channel::Column::Type:
+                case Channel::Column::Index:
+                case Channel::Column::InternalName:
+                case Channel::Column::DisplayName:
+                case Channel::Column::Enabled:
+                case Channel::Column::DatasetNames:
+                case Channel::Column::DatasetName:
+                case Channel::Column::ProfileTypes:
+                case Channel::Column::ProfileType:
+                case Channel::Column::RangeTypes:
+                case Channel::Column::RangeType:
+                case Channel::Column::Styling:
+                case Channel::Column::LineTypes:
+                case Channel::Column::LineTypeProfile:
+                case Channel::Column::LineTypeRange:
+                case Channel::Column::Opacity:
+                case Channel::Column::Color:
+                    break;
+
+                case Channel::Column::Linked:
+                    return hdps::Application::getIconFont("FontAwesome").getFont(9);
+
+                case Channel::Column::NoDimensions:
+                case Channel::Column::NoPoints:
+                    break;
 
                 default:
                     break;
@@ -271,24 +413,64 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 {
     QModelIndexList affectedIndices{ index };
 
+    const auto updateAllColumns = [&affectedIndices, &index]() {
+        for (int column = to_ul(Channel::Column::_Start); column <= to_ul(Channel::Column::_End); column++)
+            affectedIndices << index.siblingAtColumn(column);
+    };
+
+    const auto synchronizeProfile = [this, &affectedIndices, &index]() {
+        QVector<std::int32_t> channels;
+
+        channels << to_ul(Channels::Row::Channel2);
+        channels << to_ul(Channels::Row::Channel3);
+
+        for (auto channel : channels) {
+            const auto sibling = getSibling(channel);
+
+            if (sibling->_linked)
+                sibling->_profile = getSibling(to_ul(Channels::Row::Channel1))->_profile;
+
+            for (int column = to_ul(Channel::Column::_ProfileStart); column <= to_ul(Channel::Column::_ProfileEnd); column++)
+                affectedIndices << index.sibling(channel, column);
+        }
+    };
+
+    const auto synchronizeStyling = [this, &affectedIndices, &index]() {
+        QVector<std::int32_t> channels;
+
+        channels << to_ul(Channels::Row::Channel2);
+        channels << to_ul(Channels::Row::Channel3);
+
+        for (auto channel : channels) {
+            const auto sibling = getSibling(channel);
+
+            if (sibling->_linked)
+                sibling->_styling = getSibling(to_ul(Channels::Row::Channel1))->_styling;
+
+            for (int column = to_ul(Channel::Column::_StylingStart); column <= to_ul(Channel::Column::_StylingEnd); column++)
+                affectedIndices << index.sibling(channel, column);
+        }
+    };
+    
+    const auto column = static_cast<Column>(index.column());
+
     switch (role)
     {
-        case Qt::EditRole: {
-
-            switch (static_cast<Column>(index.column()))
+        case Qt::EditRole:
+        {
+            switch (column)
             {
+                case Channel::Column::Type:
+                case Channel::Column::Index:
+                case Channel::Column::InternalName:
+                case Channel::Column::DisplayName:
+                    break;
+
                 case Channel::Column::Enabled:
                 {
                     _enabled = value.toBool();
 
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::DatasetNames));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::DatasetName));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::Color));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::ProfileTypes));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::ProfileType));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeTypes));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeType));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::Styling));
+                    updateAllColumns();
 
                     break;
                 }
@@ -296,6 +478,8 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 case Channel::Column::DatasetNames:
                 {
                     _datasetNames = value.toStringList();
+
+                    updateAllColumns();
 
                     break;
                 }
@@ -309,11 +493,72 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                     break;
                 }
 
+                case Channel::Column::ProfileTypes:
+                    break;
+
+                case Channel::Column::ProfileType:
+                {
+                    _profile.setProfileType(static_cast<Profile::ProfileType>(value.toInt()));
+
+                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeType));
+
+                    break;
+                }
+
+                case Channel::Column::RangeTypes:
+                    break;
+
+                case Channel::Column::RangeType:
+                {
+                    _profile.setRangeType(static_cast<Profile::RangeType>(value.toInt()));
+
+                    break;
+                }
+
+                case Channel::Column::Styling:
+                case Channel::Column::LineTypes:
+                    break;
+
+                case Channel::Column::LineTypeProfile:
+                case Channel::Column::LineTypeRange:
+                {
+                    _styling._lineTypeProfile = static_cast<Styling::LineType>(value.toInt());
+
+                    break;
+                }
+
+                case Channel::Column::Opacity:
+                {
+                    _styling._opacity = value.toFloat();
+
+                    break;
+                }
+
                 case Channel::Column::Color:
                 {
                     _styling._color = value.value<QColor>();
+
                     break;
                 }
+
+                case Channel::Column::Linked:
+                {
+                    _linked = value.toBool();
+
+                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeType));
+                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::Styling));
+
+                    synchronizeProfile();
+                    synchronizeStyling();
+
+                    break;
+                }
+
+                case Channel::Column::NoDimensions:
+                case Channel::Column::NoPoints:
+                    break;
 
                 default:
                     break;
@@ -321,41 +566,86 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
             break;
         }
-    }
 
-    return affectedIndices;
-}
+        case Qt::DisplayRole:
+        {
+            switch (column)
+            {
+                case Channel::Column::Type:
+                case Channel::Column::Index:
+                case Channel::Column::InternalName:
+                case Channel::Column::DisplayName:
+                case Channel::Column::Enabled:
+                case Channel::Column::DatasetNames:
+                case Channel::Column::DatasetName:
+                case Channel::Column::ProfileTypes:
+                    break;
 
-ModelItem* Channel::getChild(const int& index) const
-{
-    switch (static_cast<Row>(index))
-    {
-        case Row::Profile:
-            return const_cast<Profile*>(&_profile);
+                case Channel::Column::ProfileType:
+                {
+                    _profile.setProfileType(Profile::getProfileTypeEnum(value.toString()));
 
-        case Row::Styling:
-            return const_cast<Styling*>(&_styling);
+                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeType));
+
+                    break;
+                }
+
+                case Channel::Column::RangeTypes:
+                    break;
+
+                case Channel::Column::RangeType:
+                {
+                    _profile.setRangeType(Profile::getRangeTypeEnum(value.toString()));
+
+                    synchronizeProfile();
+
+                    break;
+                }
+
+                case Channel::Column::Styling:
+                case Channel::Column::LineTypes:
+                    break;
+
+                case Channel::Column::LineTypeProfile:
+                {
+                    _styling._lineTypeProfile = Styling::getLineTypeEnum(value.toString());
+
+                    break;
+                }
+
+                case Channel::Column::LineTypeRange:
+                {
+                    _styling._lineTypeRange = Styling::getLineTypeEnum(value.toString());
+
+                    break;
+                }
+
+                case Channel::Column::Opacity:
+                case Channel::Column::Color:
+                case Channel::Column::Linked:
+                case Channel::Column::NoDimensions:
+                case Channel::Column::NoPoints:
+                    break;
+
+                default:
+                    break;
+            }
+
+            break;
+        }
 
         default:
             break;
     }
-    return nullptr;
-}
 
-int Channel::getChildCount() const
-{
-    return to_ul(Row::Count);
-}
+    if (column >= Column::_ProfileStart && column <= Column::_ProfileEnd)
+        synchronizeProfile();
 
-int Channel::getChildIndex(ModelItem* child) const
-{
-    if (dynamic_cast<Profile*>(child))
-        return to_ul(Row::Profile);
+    if (column >= Column::_StylingStart && column <= Column::_StylingEnd)
+        synchronizeStyling();
 
-    if (dynamic_cast<Styling*>(child))
-        return to_ul(Row::Styling);
-
-    return 0;
+    return affectedIndices;
 }
 
 std::int32_t Channel::getNoDimensions() const
@@ -383,6 +673,18 @@ void Channel::resolvePoints()
 const Channels* Channel::getChannels() const
 {
     return dynamic_cast<Channels*>(_parent);
+}
+
+const Channel* Channel::getSibling(const std::int32_t& row) const
+{
+    return (*getChannels())[row];
+}
+
+Channel* Channel::getSibling(const std::int32_t& row)
+{
+    const auto constThis = const_cast<const Channel*>(this);
+
+    return const_cast<Channel*>(constThis->getSibling(row));
 }
 
 bool Channel::canDisplay() const
