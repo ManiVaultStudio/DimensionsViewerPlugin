@@ -42,7 +42,6 @@ file(GLOB WIDGETS
 	src/ChannelWidget.*
 	src/ConfigurationWidget.*
 	src/DimensionsViewerWidget.*
-	src/DifferentialWidget.*
 	src/MiscellaneousWidget.*
 	src/ModelItemWidget.*
 	src/StylingWidget.*

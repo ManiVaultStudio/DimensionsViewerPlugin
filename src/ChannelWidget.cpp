@@ -91,6 +91,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     addWidgetMapper("Differential", QSharedPointer<WidgetMapper>::create(_ui->differentialWidget, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->differentialWidget->setEnabled(false);
+            _ui->differentialWidget->setVisible(false);
 
             return;
         }

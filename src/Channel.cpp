@@ -393,6 +393,16 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::RangeType:
                     return static_cast<std::int32_t>(_profile.getRangeType());
 
+                case Channel::Column::DifferentialDatasetNames1:
+                case Channel::Column::DifferentialDatasetNames2:
+                    return _datasetNames;
+
+                case Channel::Column::DifferentialDatasetName1:
+                    return _differential._profileDatasetName[0];
+                
+                case Channel::Column::DifferentialDatasetName2:
+                    return _differential._profileDatasetName[1];
+
                 case Channel::Column::Styling:
                     return "Styling";
 
@@ -701,10 +711,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 {
                     _linked = value.toBool();
 
-                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeTypes));
-                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::RangeType));
-                    affectedIndices << index.siblingAtColumn(to_ul(Channel::Column::Styling));
-
+                    updateAllColumns();
                     synchronizeProfile();
                     synchronizeStyling();
 

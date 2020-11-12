@@ -90,9 +90,9 @@ public: // Columns and rows
         Profile,
         Styling,
 
-        Start   = Profile,
-        End     = Styling,
-        Count   = End + 1
+        _Start  = Profile,
+        _End    = Styling,
+        _Count  = _End + 1
     };
 
 protected: // Construction
