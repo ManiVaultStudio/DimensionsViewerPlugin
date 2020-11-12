@@ -18,8 +18,8 @@ void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 
-    _ui->channel1Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Channel1)));
-    _ui->channel2Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Channel2)));
-    _ui->channel3Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Channel3)));
+    _ui->channel1Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Dataset)));
+    _ui->channel2Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Subset1)));
+    _ui->channel3Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Subset2)));
     _ui->channel4Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Differential)));
 }

@@ -41,12 +41,12 @@ public: // Columns and rows
 
     /** Model item rows */
     enum class Row {
-        Channel1,
-        Channel2,
-        Channel3,
+        Dataset,
+        Subset1,
+        Subset2,
         Differential,
 
-        _Start  = Channel1,
+        _Start  = Dataset,
         _End    = Differential,
         _Count  = _End + 1
     };

@@ -93,7 +93,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
             switch (channel)
             {
-                case Channels::Row::Channel1:
+                case Channels::Row::Dataset:
                 {
                     if (noDatasets >= 1)
                         flags |= Qt::ItemIsEnabled;
@@ -101,7 +101,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                     break;
                 }
 
-                case Channels::Row::Channel2:
+                case Channels::Row::Subset1:
                 {
                     if (noDatasets >= 1)
                         flags |= Qt::ItemIsEnabled;
@@ -109,7 +109,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                     break;
                 }
 
-                case Channels::Row::Channel3:
+                case Channels::Row::Subset2:
                 case Channels::Row::Differential:
                 {
                     if (noDatasets >= 1)
@@ -130,14 +130,14 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             switch (channel)
             {
-                case Channels::Row::Channel1:
+                case Channels::Row::Dataset:
                 {
                     flags |= Qt::ItemIsEditable | Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel2:
+                case Channels::Row::Subset1:
                 {
                     flags |= Qt::ItemIsEditable;
 
@@ -147,7 +147,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                     break;
                 }
 
-                case Channels::Row::Channel3:
+                case Channels::Row::Subset2:
                 {
                     flags |= Qt::ItemIsEditable;
 
@@ -180,15 +180,15 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             if (_enabled) {
                 switch (channel)
                 {
-                    case Channels::Row::Channel1:
+                    case Channels::Row::Dataset:
                     {
                         flags |= Qt::ItemIsEnabled;
 
                         break;
                     }
 
-                    case Channels::Row::Channel2:
-                    case Channels::Row::Channel3:
+                    case Channels::Row::Subset1:
+                    case Channels::Row::Subset2:
                     {
                         if (!_linked && _profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median)
                             flags |= Qt::ItemIsEnabled;
@@ -215,15 +215,15 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             if (_enabled) {
                 switch (channel)
                 {
-                    case Channels::Row::Channel1:
+                    case Channels::Row::Dataset:
                     {
                         flags |= Qt::ItemIsEnabled;
 
                         break;
                     }
 
-                    case Channels::Row::Channel2:
-                    case Channels::Row::Channel3:
+                    case Channels::Row::Subset1:
+                    case Channels::Row::Subset2:
                     {
                         if (!_linked && _profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median)
                             flags |= Qt::ItemIsEnabled;
@@ -277,15 +277,15 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             if (_enabled) {
                 switch (channel)
                 {
-                    case Channels::Row::Channel1:
+                    case Channels::Row::Dataset:
                     {
                         flags |= Qt::ItemIsEnabled;
 
                         break;
                     }
 
-                    case Channels::Row::Channel2:
-                    case Channels::Row::Channel3:
+                    case Channels::Row::Subset1:
+                    case Channels::Row::Subset2:
                     case Channels::Row::Differential:
                     {
                         if (!_linked)
@@ -320,15 +320,15 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             switch (channel)
             {
-                case Channels::Row::Channel1:
+                case Channels::Row::Dataset:
                 {
                     flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case Channels::Row::Channel2:
-                case Channels::Row::Channel3:
+                case Channels::Row::Subset1:
+                case Channels::Row::Subset2:
                 case Channels::Row::Differential:
                 {
                     flags |= Qt::ItemIsEditable;
@@ -577,14 +577,14 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
     const auto synchronizeProfile = [this, &affectedIndices, &index]() {
         QVector<std::int32_t> channels;
 
-        channels << to_ul(Channels::Row::Channel2);
-        channels << to_ul(Channels::Row::Channel3);
+        channels << to_ul(Channels::Row::Subset1);
+        channels << to_ul(Channels::Row::Subset2);
 
         for (auto channel : channels) {
             const auto sibling = getSibling(channel);
 
             if (sibling->_linked)
-                sibling->_profile = getSibling(to_ul(Channels::Row::Channel1))->_profile;
+                sibling->_profile = getSibling(to_ul(Channels::Row::Dataset))->_profile;
 
             for (int column = to_ul(Channel::Column::_ProfileStart); column <= to_ul(Channel::Column::_ProfileEnd); column++)
                 affectedIndices << index.sibling(channel, column);
@@ -594,15 +594,15 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
     const auto synchronizeStyling = [this, &affectedIndices, &index]() {
         QVector<std::int32_t> channels;
 
-        channels << to_ul(Channels::Row::Channel2);
-        channels << to_ul(Channels::Row::Channel3);
+        channels << to_ul(Channels::Row::Subset1);
+        channels << to_ul(Channels::Row::Subset2);
         channels << to_ul(Channels::Row::Differential);
 
         for (auto channel : channels) {
             const auto sibling = getSibling(channel);
 
             if (sibling->_linked)
-                sibling->_styling = getSibling(to_ul(Channels::Row::Channel1))->_styling;
+                sibling->_styling = getSibling(to_ul(Channels::Row::Dataset))->_styling;
 
             for (int column = to_ul(Channel::Column::_StylingStart); column <= to_ul(Channel::Column::_StylingEnd); column++)
                 affectedIndices << index.sibling(channel, column);
@@ -640,7 +640,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
                     switch (static_cast<Channels::Row>(_index))
                     {
-                        case Channels::Row::Channel2:
+                        case Channels::Row::Subset1:
                         {
                             if (noDatasets == 1)
                                 _enabled = true;
@@ -648,7 +648,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                             break;
                         }
 
-                        case Channels::Row::Channel3:
+                        case Channels::Row::Subset2:
                         case Channels::Row::Differential:
                         {
                             if (noDatasets == 2)

@@ -166,8 +166,8 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 
         QVector<std::int32_t> channels;
 
-        channels << to_ul(Channels::Row::Channel2);
-        channels << to_ul(Channels::Row::Channel3);
+        channels << to_ul(Channels::Row::Subset1);
+        channels << to_ul(Channels::Row::Subset2);
         channels << to_ul(Channels::Row::Differential);
 
         for (auto channel : channels) {

@@ -14,7 +14,7 @@ Differential::Differential(Channel* channel) :
 
 QStringList Differential::getChannelNames(const Operand& operand) const
 {
-    return _channelNames[static_cast<std::int32_t>(operand)];
+    return getCandidateChannelNames();
 }
 
 QString Differential::getChannelName(const Operand& operand) const
