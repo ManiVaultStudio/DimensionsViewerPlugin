@@ -19,8 +19,9 @@ public: // Enumerations
 		Median,             /** Display statistical median */
 		Differential,       /** Display differential profile (difference between two profiles) */
 
-        Start = None,
-		End = Differential
+        _Start  = None,
+		_End    = Differential,
+		_Count  = _End + 1
 	};
     
     /** Maps profile type name to profile type enum and vice versa */
@@ -46,8 +47,9 @@ public: // Enumerations
 		Percentile5,            /** 5% and 95% percentile (median profile type) */
 		Percentile10,           /** 10% and 90% percentile (median profile type) */
 
-        Start = None,
-		End = Percentile10
+        _Start  = None,
+		_End    = Percentile10,
+		_Count  = _End + 1
 	};
 
     /** Maps range type name to range type enum and */

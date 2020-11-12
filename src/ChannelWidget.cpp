@@ -232,8 +232,8 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
     getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
     getWidgetMapper("Differential")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Differential)));
-    getWidgetMapper("DifferentialDatasetName1")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialDatasetName1)));
-    getWidgetMapper("DifferentialDatasetName2")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialDatasetName2)));
+    getWidgetMapper("DifferentialDatasetName1")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandName1)));
+    getWidgetMapper("DifferentialDatasetName2")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandName2)));
     getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
     getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileTypes)));
     getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)));

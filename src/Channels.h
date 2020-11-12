@@ -51,6 +51,19 @@ public: // Columns and rows
         _Count  = _End + 1
     };
 
+    /** Maps row name to row enum */
+    static QMap<QString, Row> const rows;
+
+    /** Get row name from row enum */
+    static QString getRowTypeName(const Row& row) {
+        return rows.key(row);
+    }
+
+    /** Get row enum from row name */
+    static Row getRowTypeEnum(const QString& rowName) {
+        return rows[rowName];
+    }
+
 protected: // Construction
 
     /**
@@ -122,9 +135,10 @@ public: // Overloaded operators
 
     Channel* operator [](int i) const { return _channels[i]; }
 
-private:
+protected:
     QVector<Channel*>       _channels;
 
     friend class Configuration;
     friend class Channel;
+    friend class Differential;
 };

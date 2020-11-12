@@ -45,11 +45,11 @@ public: // Columns and rows
 
         _DifferentialStart = _ProfileEnd,               /** Start of the differential section */
             Differential,                               /** TODO */
-            DifferentialDatasetNames1,                  /** TODO */
-            DifferentialDatasetNames2,                  /** TODO */
-            DifferentialDatasetName1,                   /** TODO */
-            DifferentialDatasetName2,                   /** TODO */
-        _DifferentialEnd = DifferentialDatasetName2,    /** End of the differential section */
+            DifferentialOperandNames1,                  /** TODO */
+            DifferentialOperandNames2,                  /** TODO */
+            DifferentialOperandName1,                   /** TODO */
+            DifferentialOperandName2,                   /** TODO */
+        _DifferentialEnd = DifferentialOperandName2,    /** End of the differential section */
 
         _StylingStart = _DifferentialEnd,               /** Start of the styling section */
             Styling,                                    /** TODO */
@@ -94,6 +94,20 @@ public: // Columns and rows
         _End    = Styling,
         _Count  = _End + 1
     };
+
+
+    /** Maps row name to row enum */
+    static QMap<QString, Row> const rows;
+
+    /** Get row name from row enum */
+    static QString getRowTypeName(const Row& row) {
+        return rows.key(row);
+    }
+
+    /** Get row enum from row name */
+    static Row getRowTypeEnum(const QString& rowName) {
+        return rows[rowName];
+    }
 
 protected: // Construction
 
@@ -193,4 +207,5 @@ private:
 
 protected:
 	friend class Channels;
+	friend class Differential;
 };

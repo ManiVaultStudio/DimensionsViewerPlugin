@@ -31,7 +31,7 @@ QStringList Profile::getProfileTypeNames() const
 {
     QStringList profileTypeNames;
 
-    for (int i = 1; i <= static_cast<int>(ProfileType::End); ++i)
+    for (int i = 1; i <= static_cast<int>(ProfileType::_End); ++i)
         profileTypeNames << getProfileTypeName(static_cast<ProfileType>(i));
 
     return profileTypeNames;

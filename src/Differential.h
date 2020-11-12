@@ -2,6 +2,8 @@
 
 #include <QObject>
 
+class Channel;
+
 /**
  * Differential class
  *
@@ -9,14 +11,43 @@
  */
 class Differential {
 
+public: // Enumerations
+
+    enum class Operand {
+        ChannelA,
+        ChannelB
+    };
+
 protected: // Construction
 
-    /** Default constructor */
-	Differential();
+    /** Constructor
+     * @param channel Parent channel
+     */
+	Differential(Channel* channel);
+
+public:
+
+    /**
+     * Get (selectable) channel names for \p operand
+     * @param operand Operand
+     * @return Channels names
+     */
+    QStringList getChannelNames(const Operand& operand) const;
+
+    /**
+     * Get (selected) channel name for \p operand
+     * @param operand Operand
+     * @return Channels name
+     */
+    QString getChannelName(const Operand& operand) const;
+
+    /** Get candidate channel names */
+    QStringList getCandidateChannelNames() const;
 
 protected:
-    QStringList     _profileDatasetNames[2];        /** Profile 1-2 dataset names (for differential profile) */
-    QString         _profileDatasetName[2];         /** Profile 1-2 selected dataset name (for differential profile) */
+    Channel*        _channel;               /** Parent channel */
+    QStringList     _channelNames[2];       /** Channel names */
+    QString         _channelName[2];        /** Channel name */
 
     friend class Channel;
 };

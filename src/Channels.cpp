@@ -8,6 +8,13 @@ const QMap<QString, Channels::Column> Channels::columns = {
     { "Type", Channels::Column::Type }
 };
 
+const QMap<QString, Channels::Row> Channels::rows = {
+    { "Channel 1", Channels::Row::Channel1 },
+    { "Channel 2", Channels::Row::Channel2 },
+    { "Channel 3", Channels::Row::Channel3 },
+    { "Differential", Channels::Row::Differential }
+};
+
 Channels::Channels(ModelItem* parent, const QString& datasetName, const QString& dataName) :
     ModelItem("Channels", parent),
     _channels({

@@ -23,10 +23,10 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Range types", Channel::Column::RangeTypes },
     { "Range type", Channel::Column::RangeType },
     { "Differential", Channel::Column::Differential },
-    { "Differential dataset names 1", Channel::Column::DifferentialDatasetNames1 },
-    { "Differential dataset names 1", Channel::Column::DifferentialDatasetNames2 },
-    { "Differential dataset name 1", Channel::Column::DifferentialDatasetName1 },
-    { "Differential dataset name 1", Channel::Column::DifferentialDatasetName2 },
+    { "Differential operand 1 names", Channel::Column::DifferentialOperandNames1 },
+    { "Differential operand 2 names", Channel::Column::DifferentialOperandNames2 },
+    { "Differential operand 1 name", Channel::Column::DifferentialOperandName1 },
+    { "Differential operand 2 name", Channel::Column::DifferentialOperandName2 },
     { "Styling", Channel::Column::Styling },
     { "Line types", Channel::Column::LineTypes },
     { "Line type profile", Channel::Column::LineTypeProfile },
@@ -38,6 +38,11 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Number of points", Channel::Column::NoPoints }
 };
 
+const QMap<QString, Channel::Row> Channel::rows = {
+    { "Profile", Channel::Row::Profile },
+    { "Styling", Channel::Row::Styling }
+};
+
 Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity /*= 1.0f*/) :
     ModelItem("Channel", parent),
 	_index(index),
@@ -47,6 +52,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
     _datasetNames(),
 	_datasetName(datasetName),
 	_profile(profileType),
+    _differential(this),
     _linked(index == 0 ? false : true),
 	_styling(),
 	_spec(),
@@ -66,10 +72,9 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags;
 
-    const auto column           = static_cast<Column>(index.column());
-    const auto configuration    = getChannels()->getConfiguration();
-    const auto noDatasets       = _datasetNames.count();
-    const auto channel          = static_cast<Channels::Row>(_index);
+    const auto column       = static_cast<Column>(index.column());
+    const auto noDatasets   = _datasetNames.count();
+    const auto channel      = static_cast<Channels::Row>(_index);
 
     switch (column)
     {
@@ -249,11 +254,11 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             break;
         }
 
-        case Channel::Column::DifferentialDatasetNames1:
+        case Channel::Column::DifferentialOperandNames1:
             break;
 
-        case Channel::Column::DifferentialDatasetName1:
-        case Channel::Column::DifferentialDatasetName2:
+        case Channel::Column::DifferentialOperandName1:
+        case Channel::Column::DifferentialOperandName2:
         {
             if (_profile.getProfileType() == Profile::ProfileType::Differential) {
                 flags |= Qt::ItemIsEditable;
@@ -393,15 +398,17 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::RangeType:
                     return static_cast<std::int32_t>(_profile.getRangeType());
 
-                case Channel::Column::DifferentialDatasetNames1:
-                case Channel::Column::DifferentialDatasetNames2:
-                    return _datasetNames;
+                case Channel::Column::DifferentialOperandNames1:
+                    return _differential.getChannelNames(Differential::Operand::ChannelA);
 
-                case Channel::Column::DifferentialDatasetName1:
-                    return _differential._profileDatasetName[0];
+                case Channel::Column::DifferentialOperandNames2:
+                    return _differential.getChannelNames(Differential::Operand::ChannelB);
+
+                case Channel::Column::DifferentialOperandName1:
+                    return _differential.getChannelName(Differential::Operand::ChannelA);
                 
-                case Channel::Column::DifferentialDatasetName2:
-                    return _differential._profileDatasetName[1];
+                case Channel::Column::DifferentialOperandName2:
+                    return _differential.getChannelName(Differential::Operand::ChannelB);
 
                 case Channel::Column::Styling:
                     return "Styling";
@@ -473,6 +480,16 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
                 case Channel::Column::RangeType:
                     return Profile::getRangeTypeName(static_cast<Profile::RangeType>(getData(column, Qt::EditRole).toInt()));
+
+                case Channel::Column::DifferentialOperandNames1:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Channel::Column::DifferentialOperandNames2:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Channel::Column::DifferentialOperandName1:
+                case Channel::Column::DifferentialOperandName2:
+                    return getData(column, Qt::EditRole);
 
                 case Channel::Column::Styling:
                     return getData(column, Qt::EditRole);
