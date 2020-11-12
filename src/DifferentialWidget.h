@@ -10,7 +10,7 @@
 class DimensionsViewerPlugin;
 
 namespace Ui {
-	class DifferentialProfileWidget;
+	class DifferentialWidget;
 }
 
 /**
@@ -18,7 +18,7 @@ namespace Ui {
  *
  * @author T. Kroes
  */
-class DifferentialProfileWidget : public ModelItemWidget
+class DifferentialWidget : public ModelItemWidget
 {
 public: // Construction
 
@@ -26,7 +26,7 @@ public: // Construction
      * Constructor
      * @param parent Parent widget
      */
-    DifferentialProfileWidget(QWidget* parent);
+    DifferentialWidget(QWidget* parent);
 
 public: // Inherited from ModelItemWidget
 
@@ -37,5 +37,5 @@ public: // Inherited from ModelItemWidget
     void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-	std::unique_ptr<Ui::DifferentialProfileWidget>  _ui;    /** UI from creator */
+	std::unique_ptr<Ui::DifferentialWidget>  _ui;    /** UI from creator */
 };

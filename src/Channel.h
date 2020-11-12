@@ -2,6 +2,7 @@
 
 #include "ModelItem.h"
 #include "Profile.h"
+#include "Differential.h"
 #include "Styling.h"
 
 #include <QObject>
@@ -35,29 +36,39 @@ public: // Columns and rows
         DatasetNames,
         DatasetName,
 
-        _ProfileStart,                          /** Start of the profile section */
-            ProfileTypes,                       /** Available profile types */
-            ProfileType,                        /** Current profile type */
-            RangeTypes,                         /** Available range types */
-            RangeType,                          /** Current range type */
-        _ProfileEnd = RangeType,                /** End of the profile section */
+        _ProfileStart = DatasetName,                    /** Start of the profile section */
+            ProfileTypes,                               /** Available profile types */
+            ProfileType,                                /** Current profile type */
+            RangeTypes,                                 /** Available range types */
+            RangeType,                                  /** Current range type */
+        _ProfileEnd = RangeType,                        /** End of the profile section */
 
-        _StylingStart = _ProfileEnd,            /** Start of the styling section */
-            Styling,                            /** TODO */
-            LineTypes,                          /** Line types */
-            LineTypeProfile,                    /** Line type for drawing data profile */
-            LineTypeRange,                      /** Line type for drawing data range */
-            Opacity,                            /** Opacity */
-            Color,                              /** Color */
-        _StylingEnd = Color,                    /** End of the styling section */
+        _DifferentialStart = _ProfileEnd,               /** Start of the differential section */
+            Differential,                               /** TODO */
+            DifferentialDatasetNames1,                  /** TODO */
+            DifferentialDatasetNames2,                  /** TODO */
+            DifferentialDatasetName1,                   /** TODO */
+            DifferentialDatasetName2,                   /** TODO */
+        _DifferentialEnd = DifferentialDatasetName2,    /** End of the differential section */
 
-        Linked,                                 /** TODO */
+        _StylingStart = _DifferentialEnd,               /** Start of the styling section */
+            Styling,                                    /** TODO */
+            LineTypes,                                  /** Line types */
+            LineTypeProfile,                            /** Line type for drawing data profile */
+            LineTypeRange,                              /** Line type for drawing data range */
+            Opacity,                                    /** Opacity */
+            Color,                                      /** Color */
+        _StylingEnd = Color,                            /** End of the styling section */
 
-        NoDimensions,
-        NoPoints,
+        Linked,                                         /** TODO */
+
+        _PointsStart = Linked,                          /** TODO */
+            NoDimensions,                               /** TODO */
+            NoPoints,                                   /** TODO */
+        _PointsEnd = NoPoints,                          /** TODO */
 
         _Start  = Type,
-        _End    = NoPoints,
+        _End    = _PointsEnd,
         _Count  = _End + 1
     };
 
@@ -97,7 +108,7 @@ protected: // Construction
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 */
-	Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f);
+	Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
 
 public: // ModelIndex: Model
 
@@ -175,6 +186,7 @@ private:
 	QStringList             _datasetNames;		        /** Dataset names */
 	QString					_datasetName;		        /** Dataset name */
     Profile				    _profile;		            /** Profile settings */
+    Differential            _differential;              /** Differential settings */
     Styling				    _styling;		            /** Style settings */
 	QVariantMap				_spec;				        /** Specification for use in JS visualization client (Vega) */
 	Points*					_points;			        /** Pointer to points dataset */

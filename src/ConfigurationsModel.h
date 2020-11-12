@@ -149,7 +149,6 @@ private:
     Configurations		                                _configurations;				/** Configurations data source */
     QItemSelectionModel                                 _selectionModel;				/** Selection model */
     QStringList                                         _datasetNames;                  /** Dataset names */
-    QMap<QString, QMap<std::int32_t, RuleFunction>>     _rules;                         /** Data rules */
 
     friend class Configurations;
 };

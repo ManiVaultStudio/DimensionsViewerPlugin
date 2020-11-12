@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>749</width>
+    <width>976</width>
     <height>22</height>
    </rect>
   </property>
@@ -77,6 +77,51 @@
      <property name="toolTip">
       <string>Current dataset name</string>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="differentialWidget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QComboBox" name="differentialDatasetName1ComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="withLabel">
+        <property name="text">
+         <string>with:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="differentialDatasetName2ComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -174,7 +219,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="profileLinkedPushButton">
+    <widget class="QPushButton" name="linkedPushButton">
      <property name="minimumSize">
       <size>
        <width>22</width>

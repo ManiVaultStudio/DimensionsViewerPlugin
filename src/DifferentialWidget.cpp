@@ -1,29 +1,28 @@
-#include "DifferentialProfileWidget.h"
-#include "DifferentialProfile.h"
+#include "DifferentialWidget.h"
 #include "DimensionsViewerPlugin.h"
 
-#include "ui_DifferentialProfileWidget.h"
+#include "ui_DifferentialWidget.h"
 
 #include <QDebug>
 #include <QStringListModel>
 
-DifferentialProfileWidget::DifferentialProfileWidget(QWidget* parent) :
+DifferentialWidget::DifferentialWidget(QWidget* parent) :
     ModelItemWidget(parent),
-	_ui{ std::make_unique<Ui::DifferentialProfileWidget>() }
+	_ui{ std::make_unique<Ui::DifferentialWidget>() }
 {
     _ui->setupUi(this);
 
-    QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
-        setData(to_ul(DifferentialProfile::Column::Enabled), state);
+    /*QObject::connect(_ui->groupBox, &QGroupBox::toggled, [this](bool state) {
+        setData(to_ul(Differential::Column::Enabled), state);
     });
 
     QObject::connect(_ui->profile1DatasetNameComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(DifferentialProfile::Column::DatasetName1), currentText);
+        setData(to_ul(Differential::Column::DatasetName1), currentText);
     });
 
     QObject::connect(_ui->profile2DatasetNameComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(DifferentialProfile::Column::DatasetName2), currentText);
-    });
+        setData(to_ul(Differential::Column::DatasetName2), currentText);
+    });*/
 }
 
 //void DifferentialProfileWidget::updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/)
@@ -76,7 +75,7 @@ DifferentialProfileWidget::DifferentialProfileWidget(QWidget* parent) :
 //	}
 //}
 
-void DifferentialProfileWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
+void DifferentialWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     ModelItemWidget::setModelIndex(modelIndex);
 }

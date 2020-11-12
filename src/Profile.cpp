@@ -20,11 +20,11 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
 };
 
 Profile::Profile(const ProfileType& profileType) :
-    _profileType(ProfileType::None),
+    _profileType(),
     _rangeType(RangeType::MinMax),
     _rangeTypes()
 {
-    setProfileType(ProfileType::Mean);
+    setProfileType(profileType);
 }
 
 QStringList Profile::getProfileTypeNames() const

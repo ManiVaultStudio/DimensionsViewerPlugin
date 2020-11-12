@@ -20,7 +20,6 @@ Configuration::Configuration(ModelItem* parent, const QString& datasetName, cons
     _datasetName(datasetName),
     _dataName(dataName),
 	_channels(this, datasetName, dataName),
-	_differentialProfile(this),
     _spec()
 {
     noConfigurations++;
@@ -152,9 +151,6 @@ ModelItem* Configuration::getChild(const int& index) const
         case Row::Channels:
             return const_cast<Channels*>(&_channels);
 
-        case Row::DifferentialProfile:
-            return const_cast<DifferentialProfile*>(&_differentialProfile);
-
         case Row::Miscellaneous:
             return nullptr;
 
@@ -175,20 +171,12 @@ int Configuration::getChildIndex(ModelItem* child) const
     if (dynamic_cast<Channels*>(child))
         return static_cast<int>(Row::Channels);
 
-    if (dynamic_cast<DifferentialProfile*>(child))
-        return static_cast<int>(Row::DifferentialProfile);
-
     return 0;
 }
 
 const Channels* Configuration::getChannels() const
 {
     return &_channels;
-}
-
-const DifferentialProfile* Configuration::getDifferentialProfile() const
-{
-    return &_differentialProfile;
 }
 
 //

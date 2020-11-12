@@ -22,6 +22,11 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Profile type", Channel::Column::ProfileType },
     { "Range types", Channel::Column::RangeTypes },
     { "Range type", Channel::Column::RangeType },
+    { "Differential", Channel::Column::Differential },
+    { "Differential dataset names 1", Channel::Column::DifferentialDatasetNames1 },
+    { "Differential dataset names 1", Channel::Column::DifferentialDatasetNames2 },
+    { "Differential dataset name 1", Channel::Column::DifferentialDatasetName1 },
+    { "Differential dataset name 1", Channel::Column::DifferentialDatasetName2 },
     { "Styling", Channel::Column::Styling },
     { "Line types", Channel::Column::LineTypes },
     { "Line type profile", Channel::Column::LineTypeProfile },
@@ -33,7 +38,7 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Number of points", Channel::Column::NoPoints }
 };
 
-Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/) :
+Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity /*= 1.0f*/) :
     ModelItem("Channel", parent),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
@@ -41,7 +46,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 	_enabled(enabled),
     _datasetNames(),
 	_datasetName(datasetName),
-	_profile(Profile::ProfileType::Mean),
+	_profile(profileType),
     _linked(index == 0 ? false : true),
 	_styling(),
 	_spec(),
@@ -59,11 +64,12 @@ int Channel::columnCount() const
 
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 {
-    Qt::ItemFlags flags = Qt::ItemIsEditable;
+    Qt::ItemFlags flags;
 
     const auto column           = static_cast<Column>(index.column());
     const auto configuration    = getChannels()->getConfiguration();
     const auto noDatasets       = _datasetNames.count();
+    const auto channel          = static_cast<Channels::Row>(_index);
 
     switch (column)
     {
@@ -78,23 +84,30 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         }
 
         case Column::Enabled: {
-            switch (_index)
+            flags |= Qt::ItemIsEditable;
+
+            switch (channel)
             {
-                case to_ul(Channels::Row::Channel1): {
-                    flags |= Qt::ItemIsEnabled;
-
-                    break;
-                }
-
-                case to_ul(Channels::Row::Channel2): {
+                case Channels::Row::Channel1:
+                {
                     if (noDatasets >= 1)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case to_ul(Channels::Row::Channel3): {
-                    if (noDatasets >= 2)
+                case Channels::Row::Channel2:
+                {
+                    if (noDatasets >= 1)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Row::Channel3:
+                case Channels::Row::Differential:
+                {
+                    if (noDatasets >= 1)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -110,22 +123,37 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         case Column::DatasetNames:
         case Column::DatasetName:
         {
-            switch (_index)
+            switch (channel)
             {
-                case to_ul(Channels::Row::Channel1): {
-                    flags |= Qt::ItemIsEnabled;
+                case Channels::Row::Channel1:
+                {
+                    flags |= Qt::ItemIsEditable | Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case to_ul(Channels::Row::Channel2): {
+                case Channels::Row::Channel2:
+                {
+                    flags |= Qt::ItemIsEditable;
+
                     if (_enabled && noDatasets >= 1)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
 
-                case to_ul(Channels::Row::Channel3): {
+                case Channels::Row::Channel3:
+                {
+                    flags |= Qt::ItemIsEditable;
+
+                    if (_enabled && noDatasets >= 2)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Row::Differential:
+                {
                     if (_enabled && noDatasets >= 2)
                         flags |= Qt::ItemIsEnabled;
 
@@ -142,13 +170,32 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         case Channel::Column::ProfileTypes:
         case Channel::Column::ProfileType:
         {
+            flags |= Qt::ItemIsEditable;
+
             if (_enabled) {
-                if (_index > 0) {
-                    if (!_linked)
+                switch (channel)
+                {
+                    case Channels::Row::Channel1:
+                    {
                         flags |= Qt::ItemIsEnabled;
-                }
-                else {
-                    flags |= Qt::ItemIsEnabled;
+
+                        break;
+                    }
+
+                    case Channels::Row::Channel2:
+                    case Channels::Row::Channel3:
+                    {
+                        if (!_linked && _profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median)
+                            flags |= Qt::ItemIsEnabled;
+
+                        break;
+                    }
+
+                    case Channels::Row::Differential:
+                        break;
+
+                    default:
+                        break;
                 }
             }
 
@@ -158,29 +205,92 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         case Channel::Column::RangeTypes:
         case Channel::Column::RangeType:
         {
+            flags |= Qt::ItemIsEditable;
+
             if (_enabled) {
-                if (_index > 0) {
-                    if (!_linked && _profile.getProfileType() != Profile::ProfileType::None)
+                switch (channel)
+                {
+                    case Channels::Row::Channel1:
+                    {
                         flags |= Qt::ItemIsEnabled;
-                }
-                else {
-                    flags |= Qt::ItemIsEnabled;
+
+                        break;
+                    }
+
+                    case Channels::Row::Channel2:
+                    case Channels::Row::Channel3:
+                    {
+                        if (!_linked && _profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median)
+                            flags |= Qt::ItemIsEnabled;
+
+                        break;
+                    }
+
+                    case Channels::Row::Differential:
+                        break;
+
+                    default:
+                        break;
                 }
             }
             
             break;
         }
 
+        case Channel::Column::Differential:
+        {
+            if (_profile.getProfileType() == Profile::ProfileType::Differential) {
+                flags |= Qt::ItemIsEditable;
+
+                if (_enabled)
+                    flags |= Qt::ItemIsEnabled;
+            }
+
+            break;
+        }
+
+        case Channel::Column::DifferentialDatasetNames1:
+            break;
+
+        case Channel::Column::DifferentialDatasetName1:
+        case Channel::Column::DifferentialDatasetName2:
+        {
+            if (_profile.getProfileType() == Profile::ProfileType::Differential) {
+                flags |= Qt::ItemIsEditable;
+
+                if (_enabled)
+                    flags |= Qt::ItemIsEnabled;
+            }
+
+            break;
+        }
+
         case Channel::Column::Styling:
         {
+            flags |= Qt::ItemIsEditable;
+
             if (_enabled) {
-                if (_index > 0)
+                switch (channel)
                 {
-                    if (!_linked)
+                    case Channels::Row::Channel1:
+                    {
                         flags |= Qt::ItemIsEnabled;
-                }
-                else {
-                    flags |= Qt::ItemIsEnabled;
+
+                        break;
+                    }
+
+                    case Channels::Row::Channel2:
+                    case Channels::Row::Channel3:
+                    case Channels::Row::Differential:
+                    {
+                        if (!_linked)
+                            flags |= Qt::ItemIsEnabled;
+
+                        break;
+                    }
+
+                    default:
+                        break;
                 }
             }
 
@@ -193,6 +303,8 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         case Channel::Column::Opacity:
         case Channel::Column::Color:
         {
+            flags |= Qt::ItemIsEditable;
+
             if (_enabled)
                 flags |= Qt::ItemIsEnabled;
 
@@ -201,12 +313,29 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
         case Channel::Column::Linked:
         {
-            if (_index > 0) {
-                if (_enabled)
+            switch (channel)
+            {
+                case Channels::Row::Channel1:
+                {
                     flags |= Qt::ItemIsEnabled;
-            }
-            else {
-                flags &= ~Qt::ItemIsEditable;
+
+                    break;
+                }
+
+                case Channels::Row::Channel2:
+                case Channels::Row::Channel3:
+                case Channels::Row::Differential:
+                {
+                    flags |= Qt::ItemIsEditable;
+
+                    if (_enabled)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                default:
+                    break;
             }
 
             break;
@@ -440,6 +569,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
         channels << to_ul(Channels::Row::Channel2);
         channels << to_ul(Channels::Row::Channel3);
+        channels << to_ul(Channels::Row::Differential);
 
         for (auto channel : channels) {
             const auto sibling = getSibling(channel);
@@ -478,6 +608,31 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 case Channel::Column::DatasetNames:
                 {
                     _datasetNames = value.toStringList();
+
+                    const auto noDatasets = _datasetNames.count();
+
+                    switch (static_cast<Channels::Row>(_index))
+                    {
+                        case Channels::Row::Channel2:
+                        {
+                            if (noDatasets == 1)
+                                _enabled = true;
+
+                            break;
+                        }
+
+                        case Channels::Row::Channel3:
+                        case Channels::Row::Differential:
+                        {
+                            if (noDatasets == 2)
+                                _enabled = true;
+
+                            break;
+                        }
+
+                        default:
+                            break;
+                    }
 
                     updateAllColumns();
 

@@ -39,7 +39,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         setData(to_ul(Channel::Column::RangeType), currentText, Qt::DisplayRole);
     });
 
-    QObject::connect(_ui->profileLinkedPushButton, &QPushButton::toggled, [this](bool checked) {
+    QObject::connect(_ui->linkedPushButton, &QPushButton::toggled, [this](bool checked) {
         setData(to_ul(Channel::Column::Linked), checked);
     });
 
@@ -68,6 +68,13 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->enabledCheckBox->setText(index.data(Qt::EditRole).toString());
     }));
 
+    addWidgetMapper("DatasetNames", QSharedPointer<WidgetMapper>::create(_ui->datasetNameComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize)
+            return;
+
+        _ui->datasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+    }));
+
     addWidgetMapper("DatasetName", QSharedPointer<WidgetMapper>::create(_ui->datasetNameComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->datasetNameComboBox->setEnabled(false);
@@ -81,13 +88,40 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->datasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("DatasetNames", QSharedPointer<WidgetMapper>::create(_ui->datasetNameComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize)
+    addWidgetMapper("Differential", QSharedPointer<WidgetMapper>::create(_ui->differentialWidget, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->differentialWidget->setEnabled(false);
+
             return;
+        }
 
-        qDebug() << index.data(Qt::EditRole).toStringList();
+        _ui->differentialWidget->setVisible(index.flags() & Qt::ItemIsEditable);
+        _ui->differentialWidget->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->differentialWidget->setToolTip(index.data(Qt::ToolTipRole).toString());
+    }));
 
-        _ui->datasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+    addWidgetMapper("DifferentialDatasetName1", QSharedPointer<WidgetMapper>::create(_ui->differentialDatasetName1ComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->differentialDatasetName1ComboBox->setEnabled(false);
+
+            return;
+        }
+
+        _ui->differentialDatasetName1ComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->differentialDatasetName1ComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+        _ui->differentialDatasetName1ComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+    }));
+
+    addWidgetMapper("DifferentialDatasetName2", QSharedPointer<WidgetMapper>::create(_ui->differentialDatasetName2ComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize) {
+            _ui->differentialDatasetName2ComboBox->setEnabled(false);
+
+            return;
+        }
+
+        _ui->differentialDatasetName2ComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->differentialDatasetName2ComboBox->setCurrentText(index.data(Qt::EditRole).toString());
+        _ui->differentialDatasetName2ComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
     addWidgetMapper("Color", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
@@ -165,24 +199,24 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->stylingPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("ProfileLinkedPushButton", QSharedPointer<WidgetMapper>::create(_ui->profileLinkedPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("LinkedPushButton", QSharedPointer<WidgetMapper>::create(_ui->linkedPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->profileLinkedPushButton->setEnabled(false);
+            _ui->linkedPushButton->setEnabled(false);
 
-            QSizePolicy sizePolicyRetain = _ui->profileLinkedPushButton->sizePolicy();
+            QSizePolicy sizePolicyRetain = _ui->linkedPushButton->sizePolicy();
             sizePolicyRetain.setRetainSizeWhenHidden(true);
             
-            _ui->profileLinkedPushButton->setSizePolicy(sizePolicyRetain);
+            _ui->linkedPushButton->setSizePolicy(sizePolicyRetain);
 
             return;
         }
 
-        _ui->profileLinkedPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->profileLinkedPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
-        _ui->profileLinkedPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-        _ui->profileLinkedPushButton->setFont(index.data(Qt::FontRole).value<QFont>());
-        _ui->profileLinkedPushButton->setChecked(index.data(Qt::EditRole).toBool());
-        _ui->profileLinkedPushButton->setText(index.data(Qt::DisplayRole).toString());
+        _ui->linkedPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
+        _ui->linkedPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->linkedPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
+        _ui->linkedPushButton->setFont(index.data(Qt::FontRole).value<QFont>());
+        _ui->linkedPushButton->setChecked(index.data(Qt::EditRole).toBool());
+        _ui->linkedPushButton->setText(index.data(Qt::DisplayRole).toString());
     }));
 }
 
@@ -194,13 +228,16 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 
     getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Enabled)));
     getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DisplayName)));
-    getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
+    getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
+    getWidgetMapper("Differential")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Differential)));
+    getWidgetMapper("DifferentialDatasetName1")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialDatasetName1)));
+    getWidgetMapper("DifferentialDatasetName2")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialDatasetName2)));
     getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
     getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileTypes)));
     getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)));
     getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeTypes)));
     getWidgetMapper("RangeType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeType)));
     getWidgetMapper("Styling")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Styling)));
-    getWidgetMapper("ProfileLinkedPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Linked)));
+    getWidgetMapper("LinkedPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Linked)));
 }

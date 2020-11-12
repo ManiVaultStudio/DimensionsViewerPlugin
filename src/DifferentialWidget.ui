@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DifferentialProfileWidget</class>
- <widget class="QWidget" name="DifferentialProfileWidget">
+ <class>DifferentialWidget</class>
+ <widget class="QWidget" name="DifferentialWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -117,7 +117,7 @@
          </widget>
         </item>
         <item>
-         <widget class="ColorPickerPushButton" name="colorPushButton">
+         <widget class="ColorPickerPushButton" name="colorPushButton" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -136,7 +136,7 @@
             <height>20</height>
            </size>
           </property>
-          <property name="text">
+          <property name="text" stdset="0">
            <string/>
           </property>
          </widget>
@@ -180,8 +180,9 @@
  <customwidgets>
   <customwidget>
    <class>ColorPickerPushButton</class>
-   <extends>QPushButton</extends>
+   <extends>QWidget</extends>
    <header>widgets/ColorPickerPushButton.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>StylingPushButton</class>

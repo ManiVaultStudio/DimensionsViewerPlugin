@@ -44,10 +44,10 @@ public: // Columns and rows
         Channel1,
         Channel2,
         Channel3,
-        DifferentialProfile,
+        Differential,
 
         _Start  = Channel1,
-        _End    = DifferentialProfile,
+        _End    = Differential,
         _Count  = _End + 1
     };
 

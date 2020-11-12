@@ -31,7 +31,7 @@ file(GLOB MODEL
 	src/Configuration.*
 	src/Configurations.*
 	src/ConfigurationsModel.*
-	src/DifferentialProfile.*
+	src/Differential.*
 	src/ModelItem.*
 	src/Profile.*
 	src/Styling.*
@@ -42,7 +42,7 @@ file(GLOB WIDGETS
 	src/ChannelWidget.*
 	src/ConfigurationWidget.*
 	src/DimensionsViewerWidget.*
-	src/DifferentialProfileWidget.*
+	src/DifferentialWidget.*
 	src/MiscellaneousWidget.*
 	src/ModelItemWidget.*
 	src/StylingWidget.*

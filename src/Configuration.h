@@ -2,7 +2,6 @@
 
 #include "ModelItem.h"
 #include "Channels.h"
-#include "DifferentialProfile.h"
 
 #include <QStringList>
 #include <QColor>
@@ -53,7 +52,6 @@ public: // Columns and rows
     /** Model item rows */
     enum class Row {
         Channels,
-        DifferentialProfile,
         Miscellaneous,
 
         _Start  = Channels,
@@ -123,9 +121,6 @@ public: // Miscellaneous
     /** Get channels model item */
     const Channels* getChannels() const;
 
-    /** Get differential profile model item */
-    const DifferentialProfile* getDifferentialProfile() const;
-
 public: // Spec
 
     /** Update configuration spec */
@@ -150,7 +145,6 @@ protected:
     QString                 _datasetName;                   /** TODO */
     QString					_dataName;			            /** Name of the points data */
     Channels		        _channels;                      /** TODO */
-    DifferentialProfile     _differentialProfile;           /** TODO */
     QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
 
 protected:

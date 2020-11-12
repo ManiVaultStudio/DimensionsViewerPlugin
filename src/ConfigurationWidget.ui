@@ -46,7 +46,10 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="topHorizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="topMargin">
+      <number>0</number>
+     </property>
      <item>
       <widget class="ChannelsWidget" name="channelsWidget" native="true">
        <property name="sizePolicy">
@@ -57,18 +60,8 @@
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="bottomHorizontalLayout">
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
      <item>
-      <widget class="DifferentialProfileWidget" name="differentialProfileSettingsWidget" native="true"/>
-     </item>
-     <item>
-      <widget class="MiscellaneousWidget" name="miscellaneousSettingsWidget" native="true">
+      <widget class="MiscellaneousWidget" name="miscellaneousWidget" native="true">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -82,12 +75,6 @@
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>DifferentialProfileWidget</class>
-   <extends>QWidget</extends>
-   <header>DifferentialProfileWidget.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>MiscellaneousWidget</class>
    <extends>QWidget</extends>

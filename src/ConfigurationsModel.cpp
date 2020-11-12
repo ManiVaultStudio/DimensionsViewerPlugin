@@ -15,16 +15,6 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 	_selectionModel(this),
     _datasetNames()
 {
-    QObject::connect(this, &QAbstractItemModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
-        if (topLeft != bottomRight)
-            return;
-
-        const auto type = topLeft.siblingAtColumn(0).data(Qt::DisplayRole).toString();
-
-        if (type == "Global") {
-            qDebug() << type;
-        }
-    });
 }
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
@@ -44,7 +34,7 @@ int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
 
 int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    return 20;//
+    return 25;
     if (parent.isValid())
         return static_cast<ModelItem*>(parent.internalPointer())->columnCount();
     
@@ -178,6 +168,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 
         channels << to_ul(Channels::Row::Channel2);
         channels << to_ul(Channels::Row::Channel3);
+        channels << to_ul(Channels::Row::Differential);
 
         for (auto channel : channels) {
             const auto channelIndex         = index(channel, 0, channelsIndex);

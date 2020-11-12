@@ -11,9 +11,10 @@ const QMap<QString, Channels::Column> Channels::columns = {
 Channels::Channels(ModelItem* parent, const QString& datasetName, const QString& dataName) :
     ModelItem("Channels", parent),
     _channels({
-        new Channel(this, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.25f),
-        new Channel(this, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.25f),
-        new Channel(this, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.25f)
+        new Channel(this, 0, "Dataset", true, datasetName, Profile::ProfileType::Mean, Qt::black, 0.25f),
+        new Channel(this, 1, "Subset 1", false, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 0.25f),
+        new Channel(this, 2, "Subset 2", false, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 0.25f),
+        new Channel(this, 3, "Compare", false, "", Profile::ProfileType::Differential, QColor(150, 70, 20), 0.25f)
     })
 {
 }
