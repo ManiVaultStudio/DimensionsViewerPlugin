@@ -45,12 +45,13 @@ public:
     QStringList getCandidateChannelNames() const;
 
     /** TODO */
-    bool canDisplay() const;
+    void update();
 
 protected:
     Channel*        _channel;               /** Parent channel */
-    QStringList     _channelNames[2];       /** Channel names */
-    QString         _channelName[2];        /** Channel name */
+    QStringList     _operandNames[2];       /** Operand names */
+    QString         _operandName[2];        /** Operand name */
+    bool            _valid;                 /** TODO */
 
     friend class Channel;
 };

@@ -95,7 +95,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QComboBox" name="differentialDatasetName1ComboBox">
+       <widget class="QComboBox" name="differentialOperandName1ComboBox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -112,7 +112,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="differentialDatasetName2ComboBox">
+       <widget class="QComboBox" name="differentialOperandName2ComboBox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>

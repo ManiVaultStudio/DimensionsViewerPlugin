@@ -7,19 +7,19 @@
 
 Differential::Differential(Channel* channel) :
     _channel(channel),
-    _channelNames(),
-    _channelName()
+    _operandNames(),
+    _operandName()
 {
 }
 
 QStringList Differential::getChannelNames(const Operand& operand) const
 {
-    return getCandidateChannelNames();
+    return _operandNames[static_cast<std::int32_t>(operand)];
 }
 
 QString Differential::getChannelName(const Operand& operand) const
 {
-    return _channelName[static_cast<std::int32_t>(operand)];
+    return _operandName[static_cast<std::int32_t>(operand)];
 }
 
 QStringList Differential::getCandidateChannelNames() const
@@ -41,7 +41,37 @@ QStringList Differential::getCandidateChannelNames() const
     return candidateChannelNames;
 }
 
-bool Differential::canDisplay() const
+void Differential::update()
 {
-    return getCandidateChannelNames().count() >= 2;
+    const auto candidateChannelNames = getCandidateChannelNames();
+
+    switch (candidateChannelNames.count())
+    {
+        case 1:
+        {
+            _operandNames[to_ul(Operand::ChannelA)] = QStringList();
+            _operandNames[to_ul(Operand::ChannelB)] = QStringList();
+
+            _operandName[to_ul(Operand::ChannelA)] = "";
+            _operandName[to_ul(Operand::ChannelB)] = "";
+
+            break;
+        }
+
+        case 2:
+        {
+            _operandNames[to_ul(Operand::ChannelA)] = QStringList(candidateChannelNames[0]);
+            _operandNames[to_ul(Operand::ChannelB)] = QStringList(candidateChannelNames[1]);
+
+            _operandName[to_ul(Operand::ChannelA)] = candidateChannelNames[0];
+            _operandName[to_ul(Operand::ChannelB)] = candidateChannelNames[1];
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    _valid = candidateChannelNames.count() >= 2;
 }

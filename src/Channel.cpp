@@ -119,7 +119,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
                 case Channels::Row::Differential:
                 {
-                    if (_differential.canDisplay())
+                    if (_differential._valid)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -576,9 +576,9 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 {
     QModelIndexList affectedIndices{ index };
 
-    const auto updateChannel = [&affectedIndices, &index](const std::int32_t& channelIndex) {
+    const auto updateChannel = [this, &affectedIndices, &index](const Channels::Row& channel) {
         for (int column = to_ul(Channel::Column::_Start); column <= to_ul(Channel::Column::_End); column++)
-            affectedIndices << index.sibling(channelIndex, column);
+            affectedIndices << index.sibling(static_cast<int>(channel), column);
     };
 
     const auto synchronizeProfile = [this, &affectedIndices, &index]() {
@@ -616,7 +616,8 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         }
     };
     
-    const auto column = static_cast<Column>(index.column());
+    const auto row      = static_cast<Channels::Row>(_index);
+    const auto column   = static_cast<Column>(index.column());
 
     switch (role)
     {
@@ -634,8 +635,20 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 {
                     _enabled = value.toBool();
 
-                    updateChannel(_index);
-                    updateChannel(to_ul(Channels::Row::Differential));
+                    _differential.update();
+
+                    //if (row == Channels::Row::Differential) {
+                    //    if (!_differential._valid)
+                    //        _enabled = false;
+                    //}
+                    //else {
+                    //    
+
+                    //    updateChannel(Channels::Row::Differential);
+                    //}
+                    
+                    //_enabled = value.toBool();
+                    updateChannel(row);
 
                     break;
                 }
@@ -646,7 +659,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
                     const auto noDatasets = _datasetNames.count();
 
-                    switch (static_cast<Channels::Row>(_index))
+                    switch (row)
                     {
                         case Channels::Row::Subset1:
                         {
@@ -669,7 +682,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                             break;
                     }
 
-                    updateChannel(_index);
+                    updateChannel(row);
 
                     break;
                 }
@@ -736,7 +749,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 {
                     _linked = value.toBool();
 
-                    updateChannel(_index);
+                    updateChannel(row);
                     synchronizeProfile();
                     synchronizeStyling();
 
