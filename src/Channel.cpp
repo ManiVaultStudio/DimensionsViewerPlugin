@@ -110,9 +110,16 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                 }
 
                 case Channels::Row::Subset2:
-                case Channels::Row::Differential:
                 {
                     if (noDatasets >= 1)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Row::Differential:
+                {
+                    if (_differential.canDisplay())
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -190,7 +197,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                     case Channels::Row::Subset1:
                     case Channels::Row::Subset2:
                     {
-                        if (!_linked && _profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median)
+                        if (!_linked && (_profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median))
                             flags |= Qt::ItemIsEnabled;
 
                         break;
@@ -225,7 +232,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                     case Channels::Row::Subset1:
                     case Channels::Row::Subset2:
                     {
-                        if (!_linked && _profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median)
+                        if (!_linked && (_profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median))
                             flags |= Qt::ItemIsEnabled;
 
                         break;
@@ -569,9 +576,9 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 {
     QModelIndexList affectedIndices{ index };
 
-    const auto updateAllColumns = [&affectedIndices, &index]() {
+    const auto updateChannel = [&affectedIndices, &index](const std::int32_t& channelIndex) {
         for (int column = to_ul(Channel::Column::_Start); column <= to_ul(Channel::Column::_End); column++)
-            affectedIndices << index.siblingAtColumn(column);
+            affectedIndices << index.sibling(channelIndex, column);
     };
 
     const auto synchronizeProfile = [this, &affectedIndices, &index]() {
@@ -627,7 +634,8 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 {
                     _enabled = value.toBool();
 
-                    updateAllColumns();
+                    updateChannel(_index);
+                    updateChannel(to_ul(Channels::Row::Differential));
 
                     break;
                 }
@@ -661,7 +669,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                             break;
                     }
 
-                    updateAllColumns();
+                    updateChannel(_index);
 
                     break;
                 }
@@ -728,7 +736,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 {
                     _linked = value.toBool();
 
-                    updateAllColumns();
+                    updateChannel(_index);
                     synchronizeProfile();
                     synchronizeStyling();
 

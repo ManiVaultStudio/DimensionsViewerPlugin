@@ -44,6 +44,9 @@ public:
     /** Get candidate channel names */
     QStringList getCandidateChannelNames() const;
 
+    /** TODO */
+    bool canDisplay() const;
+
 protected:
     Channel*        _channel;               /** Parent channel */
     QStringList     _channelNames[2];       /** Channel names */

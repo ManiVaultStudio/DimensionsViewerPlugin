@@ -10,6 +10,7 @@ MiscellaneousWidget::MiscellaneousWidget(QWidget* parent) :
 {
     _ui->setupUi(this);
 
+    hide();
     /*QObject::connect(_ui->showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this](int state) {
         setData(to_ul(Miscellaneous::Column::ShowDimensionNames), state == Qt::Checked);
     });*/

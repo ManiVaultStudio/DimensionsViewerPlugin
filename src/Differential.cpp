@@ -32,14 +32,16 @@ QStringList Differential::getCandidateChannelNames() const
 
         const auto profileType = channel->_profile.getProfileType();
 
-        if (profileType != Profile::ProfileType::None)
-            continue;
-
-        if (profileType != Profile::ProfileType::Differential)
+        if (profileType == Profile::ProfileType::None || profileType == Profile::ProfileType::Differential)
             continue;
 
         candidateChannelNames << channel->_displayName;
     }
 
     return candidateChannelNames;
+}
+
+bool Differential::canDisplay() const
+{
+    return getCandidateChannelNames().count() >= 2;
 }
