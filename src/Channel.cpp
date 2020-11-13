@@ -140,7 +140,10 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             {
                 case Channels::Row::Dataset:
                 {
-                    flags |= Qt::ItemIsEditable | Qt::ItemIsEnabled;
+                    flags |= Qt::ItemIsEditable;
+
+                    if (noDatasets >= 2)
+                        flags |= Qt::ItemIsEnabled;
 
                     break;
                 }
@@ -282,29 +285,32 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             flags |= Qt::ItemIsEditable;
 
-            if (enabled) {
-                switch (channel)
+            switch (channel)
+            {
+                case Channels::Row::Dataset:
                 {
-                    case Channels::Row::Dataset:
-                    {
+                    bool enabled = true;
+
+                    const auto channelsEnabled = getChannels()->getFiltered(Profile::ProfileTypes(), &enabled);
+
+                    if (!channelsEnabled.isEmpty())
                         flags |= Qt::ItemIsEnabled;
 
-                        break;
-                    }
-
-                    case Channels::Row::Subset1:
-                    case Channels::Row::Subset2:
-                    case Channels::Row::Differential:
-                    {
-                        if (!_linked)
-                            flags |= Qt::ItemIsEnabled;
-
-                        break;
-                    }
-
-                    default:
-                        break;
+                    break;
                 }
+
+                case Channels::Row::Subset1:
+                case Channels::Row::Subset2:
+                case Channels::Row::Differential:
+                {
+                    if (enabled && !_linked)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                default:
+                    break;
             }
 
             break;
@@ -661,6 +667,9 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 {
                     _enabled = value.toBool();
 
+                    for (int row = to_ul(Channels::Row::_Start); row <= to_ul(Channels::Row::_End); row++)
+                        affectedIndices << index.sibling(row, to_ul(Channel::Column::Styling));
+                    
                     updateChannel(row);
                     updateDifferentialChannels();
 
