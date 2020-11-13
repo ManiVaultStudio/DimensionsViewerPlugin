@@ -21,3 +21,43 @@ QStringList Styling::getLineTypeNames() const
 {
     return QStringList(lineTypes.keys());
 }
+
+Styling::LineType Styling::getLineTypeProfile() const
+{
+    return _lineTypeProfile;
+}
+
+void Styling::setLineTypeProfile(const LineType& lineTypeProfile)
+{
+    _lineTypeProfile = lineTypeProfile;
+}
+
+Styling::LineType Styling::getLineTypeRange() const
+{
+    return _lineTypeRange;
+}
+
+void Styling::setLineTypeRange(const LineType& lineTypeRange)
+{
+    _lineTypeRange = lineTypeRange;
+}
+
+float Styling::getOpacity() const
+{
+    return _opacity;
+}
+
+void Styling::setOpacity(const float& opacity)
+{
+    _opacity = opacity;
+}
+
+QColor Styling::getColor() const
+{
+    return _color;
+}
+
+void Styling::setColor(const QColor& color)
+{
+    _color = color;
+}

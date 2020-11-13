@@ -82,8 +82,14 @@ public: // Construction
 
 public: // Operators
 
+    /**
+     * Assignment operator
+     * @param other Other profile
+     */
     Profile& operator=(const Profile& other)
     {
+        _locked         = other._locked;
+        _profileTypes   = other._profileTypes;
         _profileType    = other._profileType;
         _rangeTypes     = other._rangeTypes;
         _rangeType      = other._rangeType;
@@ -131,8 +137,8 @@ private:
 private:
     bool            _locked;            /** Whether settings are locked */
     ProfileTypes    _profileTypes;      /** Current profile type */
-    ProfileType     _profileType;       /** Current profile type */
-    RangeTypes      _rangeTypes;        /** Range types (depends on the current profile type) */
+    ProfileType     _profileType;       /** Available profile type(s) */
+    RangeTypes      _rangeTypes;        /** Available range types (depends on the current profile type) */
     RangeType       _rangeType;         /** Current range type */
 
     friend class Channel;

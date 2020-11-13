@@ -40,20 +40,14 @@ bool Differential::isValid() const
 
 QStringList Differential::getCandidateChannelNames() const
 {
+    auto enabled = true;
+
+    const auto candidateChannels = _channel->getChannels()->getFiltered(Profile::ProfileTypes({Profile::ProfileType::Mean, Profile::ProfileType::Median }), &enabled);
 
     QStringList candidateChannelNames;
 
-    for (auto channel : _channel->getChannels()->_channels) {
-        if (!channel->_enabled)
-            continue;
-
-        const auto profileType = channel->_profile.getProfileType();
-
-        if (profileType == Profile::ProfileType::None || profileType == Profile::ProfileType::Differential)
-            continue;
-
-        candidateChannelNames << channel->_displayName;
-    }
+    for (auto candidateChannel : candidateChannels)
+        candidateChannelNames << candidateChannel->getData(Channel::Column::DatasetName, Qt::EditRole).toString();
 
     return candidateChannelNames;
 }

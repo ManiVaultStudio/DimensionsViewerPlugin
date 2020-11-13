@@ -55,16 +55,50 @@ public: // Operators
         return *this;
     }
 
-public:
+public: // Getters/setters
 
-    /** Get line type names */
+    /** Gets line type names */
     QStringList getLineTypeNames() const;
+
+    /** Gets profile line type */
+    LineType getLineTypeProfile() const;
+
+    /**
+     * Sets profile line type
+     * @param lineTypeProfile Line type for profile
+     */
+    void setLineTypeProfile(const LineType& lineTypeProfile);
+
+    /** Gets range line type */
+    LineType getLineTypeRange() const;
+
+    /**
+     * Sets range line type
+     * @param lineTypeRange Line type for range
+     */
+    void setLineTypeRange(const LineType& lineTypeRange);
+
+    /** Gets opacity */
+    float getOpacity() const;
+
+    /**
+     * Sets opacity
+     * @param opacity Opacity
+     */
+    void setOpacity(const float& opacity);
+
+    /** Gets color */
+    QColor getColor() const;
+
+    /**
+     * Sets color
+     * @param color Color
+     */
+    void setColor(const QColor& color);
 
 private:
     LineType    _lineTypeProfile;       /** Line type for drawing data profile */
     LineType    _lineTypeRange;         /** Line type for drawing data range */
     float       _opacity;               /** Opacity for data range */
     QColor      _color;                 /** Color */
-
-    friend class Channel;
 };

@@ -60,7 +60,7 @@ Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& d
 {
     resolvePoints();
 
-    _styling._color = color;
+    _styling.setColor(color);
 }
 
 int Channel::columnCount() const 
@@ -75,6 +75,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
     const auto column       = static_cast<Column>(index.column());
     const auto noDatasets   = _datasetNames.count();
     const auto channel      = static_cast<Channels::Row>(_index);
+    const auto enabled      = getData(Column::Enabled, Qt::EditRole).toBool();
 
     switch (column)
     {
@@ -148,7 +149,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                 {
                     flags |= Qt::ItemIsEditable;
 
-                    if (_enabled && noDatasets >= 1)
+                    if (enabled && noDatasets >= 1)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -158,7 +159,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                 {
                     flags |= Qt::ItemIsEditable;
 
-                    if (_enabled && noDatasets >= 2)
+                    if (enabled && noDatasets >= 2)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -166,7 +167,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
                 case Channels::Row::Differential:
                 {
-                    if (_enabled && noDatasets >= 2)
+                    if (enabled && noDatasets >= 2)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -184,7 +185,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             flags |= Qt::ItemIsEditable;
 
-            if (_enabled) {
+            if (enabled) {
                 switch (channel)
                 {
                     case Channels::Row::Dataset:
@@ -219,7 +220,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             flags |= Qt::ItemIsEditable;
 
-            if (_enabled) {
+            if (enabled) {
                 switch (channel)
                 {
                     case Channels::Row::Dataset:
@@ -254,7 +255,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             if (_profile.getProfileType() == Profile::ProfileType::Differential) {
                 flags |= Qt::ItemIsEditable;
 
-                if (_enabled)
+                if (enabled)
                     flags |= Qt::ItemIsEnabled;
             }
 
@@ -270,7 +271,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             if (_profile.getProfileType() == Profile::ProfileType::Differential) {
                 flags |= Qt::ItemIsEditable;
 
-                if (_enabled && _differential.isPrimed())
+                if (enabled && _differential.isPrimed())
                     flags |= Qt::ItemIsEnabled;
             }
 
@@ -281,7 +282,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             flags |= Qt::ItemIsEditable;
 
-            if (_enabled) {
+            if (enabled) {
                 switch (channel)
                 {
                     case Channels::Row::Dataset:
@@ -317,7 +318,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
         {
             flags |= Qt::ItemIsEditable;
 
-            if (_enabled)
+            if (enabled)
                 flags |= Qt::ItemIsEnabled;
 
             break;
@@ -340,7 +341,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                 {
                     flags |= Qt::ItemIsEditable;
 
-                    if (_enabled)
+                    if (enabled)
                         flags |= Qt::ItemIsEnabled;
 
                     break;
@@ -424,16 +425,16 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                     return static_cast<std::int32_t>(_profile.getRangeType());
 
                 case Channel::Column::DifferentialOperandNames1:
-                    return _differential.getOperandChannelNames(Differential::Operand::ChannelA);
+                    return (_enabled && _differential.isPrimed()) ? _differential.getOperandChannelNames(Differential::Operand::ChannelA) : QStringList();
 
                 case Channel::Column::DifferentialOperandNames2:
-                    return _differential.getOperandChannelNames(Differential::Operand::ChannelB);
+                    return (_enabled && _differential.isPrimed()) ? _differential.getOperandChannelNames(Differential::Operand::ChannelB) : QStringList();
 
                 case Channel::Column::DifferentialOperandName1:
-                    return _differential.getOperandChannelName(Differential::Operand::ChannelA);
+                    return (_enabled && _differential.isPrimed()) ? _differential.getOperandChannelName(Differential::Operand::ChannelA) : "";
                 
                 case Channel::Column::DifferentialOperandName2:
-                    return _differential.getOperandChannelName(Differential::Operand::ChannelB);
+                    return (_enabled && _differential.isPrimed()) ? _differential.getOperandChannelName(Differential::Operand::ChannelB) : "";
 
                 case Channel::Column::Styling:
                     return "Styling";
@@ -442,16 +443,16 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                     return _styling.getLineTypeNames();
 
                 case Channel::Column::LineTypeProfile:
-                    return static_cast<std::int32_t>(_styling._lineTypeProfile);
+                    return static_cast<std::int32_t>(_styling.getLineTypeProfile());
 
                 case Channel::Column::LineTypeRange:
-                    return static_cast<std::int32_t>(_styling._lineTypeRange);
+                    return static_cast<std::int32_t>(_styling.getLineTypeRange());
 
                 case Channel::Column::Opacity:
-                    return _styling._opacity;
+                    return _styling.getOpacity();
 
                 case Channel::Column::Color:
-                    return QVariant::fromValue(_styling._color);
+                    return QVariant::fromValue(_styling.getColor());
 
                 case Channel::Column::Linked:
                     return _linked;
@@ -607,6 +608,15 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
             affectedIndices << index.sibling(static_cast<int>(channel), column);
     };
 
+    const auto updateDifferentialChannels = [this, &affectedIndices, &index, updateChannel]() {
+        const auto differentialChannels = getChannels()->getFiltered(Profile::ProfileTypes({ Profile::ProfileType::Differential }));
+
+        for (auto differentialChannel : differentialChannels) {
+            differentialChannel->getDifferential().update();
+            updateChannel(static_cast<Channels::Row>(differentialChannel->getData(to_ul(Channel::Column::Index), Qt::EditRole).toInt()));
+        }
+    };
+
     const auto synchronizeProfile = [this, &affectedIndices, &index]() {
         const auto channels = getChannels()->getFiltered(Profile::ProfileTypes({ Profile::ProfileType::Mean, Profile::ProfileType::Median }));
 
@@ -631,16 +641,6 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         }
     };
 
-    const auto updateDifferentialChannel = [this, &affectedIndices, &index, updateChannel]() {
-        _differential.update();
-
-        const auto channels = getChannels()->getFiltered(Profile::ProfileTypes({Profile::ProfileType::Differential}));
-
-        for (auto channel : channels) {
-            updateChannel(static_cast<Channels::Row>(channel->getData(to_ul(Channel::Column::Index), Qt::EditRole).toInt()));
-        }
-    };
-
     switch (role)
     {
         case Qt::EditRole:
@@ -657,25 +657,8 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 {
                     _enabled = value.toBool();
 
-                    switch (row)
-                    {
-                        case Channels::Row::Dataset:
-                        case Channels::Row::Subset1:
-                        case Channels::Row::Subset2:
-                        {
-                            updateDifferentialChannel();
-
-                            break;
-                        }
-
-                        case Channels::Row::Differential:
-                            break;
-
-                        default:
-                            break;
-                    }
-
                     updateChannel(row);
+                    updateDifferentialChannels();
 
                     break;
                 }
@@ -698,7 +681,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
                         case Channels::Row::Subset2:
                         {
-                            if (noDatasets == 2)
+                            if (noDatasets >= 2)
                                 _enabled = true;
 
                             break;
@@ -760,21 +743,21 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 case Channel::Column::LineTypeProfile:
                 case Channel::Column::LineTypeRange:
                 {
-                    _styling._lineTypeProfile = static_cast<Styling::LineType>(value.toInt());
+                    _styling.setLineTypeProfile(static_cast<Styling::LineType>(value.toInt()));
 
                     break;
                 }
 
                 case Channel::Column::Opacity:
                 {
-                    _styling._opacity = value.toFloat();
+                    _styling.setOpacity(value.toFloat());
 
                     break;
                 }
 
                 case Channel::Column::Color:
                 {
-                    _styling._color = value.value<QColor>();
+                    _styling.setColor(value.value<QColor>());
 
                     break;
                 }
@@ -843,14 +826,14 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
                 case Channel::Column::LineTypeProfile:
                 {
-                    _styling._lineTypeProfile = Styling::getLineTypeEnum(value.toString());
+                    _styling.setLineTypeProfile(Styling::getLineTypeEnum(value.toString()));
 
                     break;
                 }
 
                 case Channel::Column::LineTypeRange:
                 {
-                    _styling._lineTypeRange = Styling::getLineTypeEnum(value.toString());
+                    _styling.setLineTypeRange(Styling::getLineTypeEnum(value.toString()));
 
                     break;
                 }
