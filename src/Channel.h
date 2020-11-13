@@ -180,6 +180,25 @@ protected: // Miscellaneous
 	/** Returns if the referenced dataset is a subset */
 	bool isSubset() const;
 
+public: // Getters
+
+    /** Get profile settings */
+    const Profile& getProfile() const {
+        return _profile;
+    }
+
+    /** Get differential settings */
+    const Differential& getDifferential() const {
+        return _differential;
+    }
+
+    /** Get styling settings */
+    const Styling& getStyling() const {
+        return _styling;
+    }
+
+protected: // Spec
+
 	/** Updates the visualization specification */
 	void updateSpec();
 

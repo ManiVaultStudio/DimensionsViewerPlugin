@@ -32,26 +32,33 @@ public:
      * @param operand Operand
      * @return Channels names
      */
-    QStringList getChannelNames(const Operand& operand) const;
+    QStringList getOperandChannelNames(const Operand& operand) const;
 
     /**
      * Get (selected) channel name for \p operand
      * @param operand Operand
      * @return Channels name
      */
-    QString getChannelName(const Operand& operand) const;
+    QString getOperandChannelName(const Operand& operand) const;
+
+    /** Gets whether enough candidate channels are available for a differential channel analysis */
+    bool isPrimed() const;
+
+    /** Gets whether the differential is valid and can be visualized */
+    bool isValid() const;
+
+    /** Updates the differential inputs and determines whether the differential is valid and can be visualized */
+    void update();
+
+private:
 
     /** Get candidate channel names */
     QStringList getCandidateChannelNames() const;
 
-    /** TODO */
-    void update();
-
-protected:
-    Channel*        _channel;               /** Parent channel */
-    QStringList     _operandNames[2];       /** Operand names */
-    QString         _operandName[2];        /** Operand name */
-    bool            _valid;                 /** TODO */
+private:
+    Channel*        _channel;                       /** Parent channel */
+    QStringList     _operandChannelNames[2];        /** Operand channel names (selectable channel name(s) in dropdown UI) */
+    QString         _operandChannelName[2];         /** Operand channel name (selected channel name in dropdown UI) */
 
     friend class Channel;
 };

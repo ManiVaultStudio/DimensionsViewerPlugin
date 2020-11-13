@@ -21,7 +21,7 @@ Channels::Channels(ModelItem* parent, const QString& datasetName, const QString&
         new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, datasetName, Profile::ProfileType::Mean, Qt::black, 0.25f),
         new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 0.25f),
         new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 0.25f),
-        new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, "", Profile::ProfileType::Differential, QColor(150, 70, 20), 0.25f)
+        new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, "", Profile::ProfileType::Differential, QColor(255, 10, 40), 0.25f)
     })
 {
 }
@@ -134,13 +134,21 @@ const Configuration* Channels::getConfiguration() const
     return dynamic_cast<Configuration*>(parent());
 }
 
-std::int32_t Channels::getNoChannelsEnabled() const
+QVector<Channel*> Channels::getFiltered(const QSet<std::int32_t>& profileTypes, bool* enabled /*= nullptr*/) const
 {
-    auto noChannelsEnabled = 0;
+    QVector<Channel*> channels;
 
-    for (auto channel : _channels)
-        if (channel->_enabled)
-            noChannelsEnabled++;
+    for (auto channel : _channels) {
+        const auto profileType = static_cast<std::int32_t>(channel->getProfile().getProfileType());
 
-    return noChannelsEnabled;
+        if (!profileTypes.contains(profileType))
+            continue;
+
+        if (enabled != nullptr && channel->getData(to_ul(Channel::Column::Enabled), Qt::EditRole).toBool() != *enabled)
+            continue;
+
+        channels << channel;
+    }
+
+    return channels;
 }

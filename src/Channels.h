@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ModelItem.h"
+#include "Profile.h"
 
 class Channel;
 class Configuration;
@@ -126,10 +127,15 @@ protected: // Miscellaneous
     /** Returns parent configuration model item */
     const Configuration* getConfiguration() const;
 
-public:
+public: // Getters
 
-    /** Get number of enabled channels */
-    std::int32_t getNoChannelsEnabled() const;
+    /**
+     * Get (filtered) channels
+     * @param profileTypes Filter profile types
+     * @param enabled Filter enabled/disabled channels
+     * @return Filtered channels
+     */
+    QVector<Channel*> getFiltered(const QSet<std::int32_t>& profileTypes, bool* enabled = nullptr) const;
 
 public: // Overloaded operators
 

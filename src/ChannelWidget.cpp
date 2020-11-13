@@ -47,6 +47,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         if (initialize) {
             _ui->enabledCheckBox->setEnabled(false);
             _ui->enabledCheckBox->setChecked(false);
+            _ui->enabledCheckBox->setText("Channel");
 
             return;
         }

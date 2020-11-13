@@ -7,19 +7,35 @@
 
 Differential::Differential(Channel* channel) :
     _channel(channel),
-    _operandNames(),
-    _operandName()
+    _operandChannelNames(),
+    _operandChannelName()
 {
 }
 
-QStringList Differential::getChannelNames(const Operand& operand) const
+QStringList Differential::getOperandChannelNames(const Operand& operand) const
 {
-    return _operandNames[static_cast<std::int32_t>(operand)];
+    return _operandChannelNames[static_cast<std::int32_t>(operand)];
 }
 
-QString Differential::getChannelName(const Operand& operand) const
+QString Differential::getOperandChannelName(const Operand& operand) const
 {
-    return _operandName[static_cast<std::int32_t>(operand)];
+    return _operandChannelName[static_cast<std::int32_t>(operand)];
+}
+
+bool Differential::isPrimed() const
+{
+    return getCandidateChannelNames().count() >= 2;
+}
+
+bool Differential::isValid() const
+{
+    if (_operandChannelName[to_ul(Operand::ChannelA)] == "")
+        return false;
+
+    if (_operandChannelName[to_ul(Operand::ChannelB)] == "")
+        return false;
+
+    return true;
 }
 
 QStringList Differential::getCandidateChannelNames() const
@@ -49,22 +65,22 @@ void Differential::update()
     {
         case 1:
         {
-            _operandNames[to_ul(Operand::ChannelA)] = QStringList();
-            _operandNames[to_ul(Operand::ChannelB)] = QStringList();
+            _operandChannelNames[to_ul(Operand::ChannelA)] = QStringList();
+            _operandChannelNames[to_ul(Operand::ChannelB)] = QStringList();
 
-            _operandName[to_ul(Operand::ChannelA)] = "";
-            _operandName[to_ul(Operand::ChannelB)] = "";
+            _operandChannelName[to_ul(Operand::ChannelA)] = "";
+            _operandChannelName[to_ul(Operand::ChannelB)] = "";
 
             break;
         }
 
         case 2:
         {
-            _operandNames[to_ul(Operand::ChannelA)] = QStringList(candidateChannelNames[0]);
-            _operandNames[to_ul(Operand::ChannelB)] = QStringList(candidateChannelNames[1]);
+            _operandChannelNames[to_ul(Operand::ChannelA)] = QStringList(candidateChannelNames[0]);
+            _operandChannelNames[to_ul(Operand::ChannelB)] = QStringList(candidateChannelNames[1]);
 
-            _operandName[to_ul(Operand::ChannelA)] = candidateChannelNames[0];
-            _operandName[to_ul(Operand::ChannelB)] = candidateChannelNames[1];
+            _operandChannelName[to_ul(Operand::ChannelA)] = candidateChannelNames[0];
+            _operandChannelName[to_ul(Operand::ChannelB)] = candidateChannelNames[1];
 
             break;
         }
@@ -72,6 +88,4 @@ void Differential::update()
         default:
             break;
     }
-
-    _valid = candidateChannelNames.count() >= 2;
 }
