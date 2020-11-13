@@ -49,6 +49,9 @@ public:
      */
     void setOperandChannelName(const Operand& operand, const QString& channelName);
 
+    /** Gets the number of possible combinations */
+    std::int32_t getNumCombinations() const;
+
     /** Gets whether enough candidate channels are available for a differential channel analysis */
     bool isPrimed() const;
 

@@ -23,10 +23,10 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Range types", Channel::Column::RangeTypes },
     { "Range type", Channel::Column::RangeType },
     { "Differential", Channel::Column::Differential },
-    { "Differential operand 1 names", Channel::Column::DifferentialOperandNames1 },
-    { "Differential operand 2 names", Channel::Column::DifferentialOperandNames2 },
-    { "Differential operand 1 name", Channel::Column::DifferentialOperandName1 },
-    { "Differential operand 2 name", Channel::Column::DifferentialOperandName2 },
+    { "Differential operand A names", Channel::Column::DifferentialOperandNamesA },
+    { "Differential operand B names", Channel::Column::DifferentialOperandNamesB },
+    { "Differential operand A name", Channel::Column::DifferentialOperandA },
+    { "Differential operand B name", Channel::Column::DifferentialOperandB },
     { "Styling", Channel::Column::Styling },
     { "Line types", Channel::Column::LineTypes },
     { "Line type profile", Channel::Column::LineTypeProfile },
@@ -262,16 +262,16 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             break;
         }
 
-        case Channel::Column::DifferentialOperandNames1:
+        case Channel::Column::DifferentialOperandNamesA:
             break;
 
-        case Channel::Column::DifferentialOperandName1:
-        case Channel::Column::DifferentialOperandName2:
+        case Channel::Column::DifferentialOperandA:
+        case Channel::Column::DifferentialOperandB:
         {
             if (_profile.getProfileType() == Profile::ProfileType::Differential) {
                 flags |= Qt::ItemIsEditable;
 
-                if (enabled && _differential.isPrimed())
+                if (enabled && _differential.isPrimed() && _differential.getNumCombinations() >= 2)
                     flags |= Qt::ItemIsEnabled;
             }
 
@@ -424,16 +424,16 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::RangeType:
                     return static_cast<std::int32_t>(_profile.getRangeType());
 
-                case Channel::Column::DifferentialOperandNames1:
+                case Channel::Column::DifferentialOperandNamesA:
                     return (_enabled && _differential.isPrimed()) ? _differential.getOperandChannelNames(Differential::Operand::ChannelA) : QStringList();
 
-                case Channel::Column::DifferentialOperandNames2:
+                case Channel::Column::DifferentialOperandNamesB:
                     return (_enabled && _differential.isPrimed()) ? _differential.getOperandChannelNames(Differential::Operand::ChannelB) : QStringList();
 
-                case Channel::Column::DifferentialOperandName1:
+                case Channel::Column::DifferentialOperandA:
                     return (_enabled && _differential.isPrimed()) ? _differential.getOperandChannelName(Differential::Operand::ChannelA) : "";
                 
-                case Channel::Column::DifferentialOperandName2:
+                case Channel::Column::DifferentialOperandB:
                     return (_enabled && _differential.isPrimed()) ? _differential.getOperandChannelName(Differential::Operand::ChannelB) : "";
 
                 case Channel::Column::Styling:
@@ -507,14 +507,14 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::RangeType:
                     return Profile::getRangeTypeName(static_cast<Profile::RangeType>(getData(column, Qt::EditRole).toInt()));
 
-                case Channel::Column::DifferentialOperandNames1:
+                case Channel::Column::DifferentialOperandNamesA:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
-                case Channel::Column::DifferentialOperandNames2:
+                case Channel::Column::DifferentialOperandNamesB:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
-                case Channel::Column::DifferentialOperandName1:
-                case Channel::Column::DifferentialOperandName2:
+                case Channel::Column::DifferentialOperandA:
+                case Channel::Column::DifferentialOperandB:
                     return getData(column, Qt::EditRole);
 
                 case Channel::Column::Styling:
@@ -562,10 +562,10 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::ProfileType:
                 case Channel::Column::RangeTypes:
                 case Channel::Column::RangeType:
-                case Channel::Column::DifferentialOperandNames1:
-                case Channel::Column::DifferentialOperandNames2:
-                case Channel::Column::DifferentialOperandName1:
-                case Channel::Column::DifferentialOperandName2:
+                case Channel::Column::DifferentialOperandNamesA:
+                case Channel::Column::DifferentialOperandNamesB:
+                case Channel::Column::DifferentialOperandA:
+                case Channel::Column::DifferentialOperandB:
                 case Channel::Column::Styling:
                 case Channel::Column::LineTypes:
                 case Channel::Column::LineTypeProfile:
@@ -749,20 +749,26 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                     break;
                 }
 
-                case Channel::Column::DifferentialOperandNames1:
-                case Channel::Column::DifferentialOperandNames2:
+                case Channel::Column::DifferentialOperandNamesA:
+                case Channel::Column::DifferentialOperandNamesB:
                     break;
 
-                case Channel::Column::DifferentialOperandName1:
+                case Channel::Column::DifferentialOperandA:
                 {
                     _differential.setOperandChannelName(Differential::Operand::ChannelA, value.toString());
+
+                    for (int column = to_ul(Channel::Column::_DifferentialStart); column <= to_ul(Channel::Column::_DifferentialEnd); column++)
+                        affectedIndices << index.siblingAtColumn(column);
 
                     break;
                 }
 
-                case Channel::Column::DifferentialOperandName2:
+                case Channel::Column::DifferentialOperandB:
                 {
                     _differential.setOperandChannelName(Differential::Operand::ChannelB, value.toString());
+
+                    for (int column = to_ul(Channel::Column::_DifferentialStart); column <= to_ul(Channel::Column::_DifferentialEnd); column++)
+                        affectedIndices << index.siblingAtColumn(column);
 
                     break;
                 }

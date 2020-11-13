@@ -37,9 +37,14 @@ void Differential::setOperandChannelName(const Operand& operand, const QString& 
         case 2:
         case 3:
         {
-            candidateChannelNames.removeOne(channelName);
+            _operandChannelNames[Operand::ChannelA] = candidateChannelNames;
+            _operandChannelNames[Operand::ChannelB] = candidateChannelNames;
 
-            _operandChannelNames[operand == Operand::ChannelA ? Operand::ChannelB : Operand::ChannelA] = candidateChannelNames;
+            const auto otherOperand = operand == Operand::ChannelA ? Operand::ChannelB : Operand::ChannelA;
+
+            _operandChannelNames[otherOperand].removeOne(channelName);
+            _operandChannelName[otherOperand] = _operandChannelNames[otherOperand].first();
+            _operandChannelNames[operand].removeOne(_operandChannelName[otherOperand]);
 
             break;
         }
@@ -47,6 +52,21 @@ void Differential::setOperandChannelName(const Operand& operand, const QString& 
         default:
             break;
     }
+}
+
+std::int32_t Differential::getNumCombinations() const
+{
+    std::function<int(int)> factorial;
+    
+    factorial = [&factorial](int n) {
+        return n < 2 ? 1 : n * factorial(n - 1);
+    };
+
+    const auto n                = getCandidateChannelNames().count();
+    const auto r                = 2;
+    const auto numCombinations  = factorial(n) / factorial(2) * factorial(n - 2);
+
+    return numCombinations;
 }
 
 bool Differential::isPrimed() const

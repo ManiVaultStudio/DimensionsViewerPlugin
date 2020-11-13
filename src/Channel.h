@@ -45,11 +45,11 @@ public: // Columns and rows
 
         _DifferentialStart = _ProfileEnd,               /** Start of the differential section */
             Differential,                               /** TODO */
-            DifferentialOperandNames1,                  /** TODO */
-            DifferentialOperandNames2,                  /** TODO */
-            DifferentialOperandName1,                   /** TODO */
-            DifferentialOperandName2,                   /** TODO */
-        _DifferentialEnd = DifferentialOperandName2,    /** End of the differential section */
+            DifferentialOperandNamesA,                  /** TODO */
+            DifferentialOperandNamesB,                  /** TODO */
+            DifferentialOperandA,                       /** TODO */
+            DifferentialOperandB,                       /** TODO */
+        _DifferentialEnd = DifferentialOperandB,        /** End of the differential section */
 
         _StylingStart = _DifferentialEnd,               /** Start of the styling section */
             Styling,                                    /** TODO */

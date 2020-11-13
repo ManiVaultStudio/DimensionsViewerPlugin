@@ -40,11 +40,11 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     });
 
     QObject::connect(_ui->differentialOperandAComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Channel::Column::DifferentialOperandName1), currentText, Qt::DisplayRole);
+        setData(to_ul(Channel::Column::DifferentialOperandA), currentText, Qt::EditRole);
     });
 
     QObject::connect(_ui->differentialOperandBComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Channel::Column::DifferentialOperandName2), currentText, Qt::DisplayRole);
+        setData(to_ul(Channel::Column::DifferentialOperandB), currentText, Qt::EditRole);
     });
 
     QObject::connect(_ui->linkedPushButton, &QPushButton::toggled, [this](bool checked) {
@@ -110,7 +110,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->differentialWidget->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("DifferentialOperandNames1", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("DifferentialOperandNamesA", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->differentialOperandAComboBox->setModel(new QStringListModel());
 
@@ -120,7 +120,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->differentialOperandAComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
 
-    addWidgetMapper("DifferentialOperandNames2", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandBComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("DifferentialOperandNamesB", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandBComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->differentialOperandBComboBox->setModel(new QStringListModel());
 
@@ -130,7 +130,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->differentialOperandBComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
 
-    addWidgetMapper("DifferentialOperandName1", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("DifferentialOperandA", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->differentialOperandAComboBox->setEnabled(false);
 
@@ -142,7 +142,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->differentialOperandAComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
     
-    addWidgetMapper("DifferentialOperandName2", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandBComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("DifferentialOperandB", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandBComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->differentialOperandBComboBox->setEnabled(false);
 
@@ -261,10 +261,10 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
     getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
     getWidgetMapper("Differential")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Differential)));
-    getWidgetMapper("DifferentialOperandNames1")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandNames1)));
-    getWidgetMapper("DifferentialOperandNames2")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandNames2)));
-    getWidgetMapper("DifferentialOperandName1")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandName1)));
-    getWidgetMapper("DifferentialOperandName2")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandName2)));
+    getWidgetMapper("DifferentialOperandNamesA")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandNamesA)));
+    getWidgetMapper("DifferentialOperandNamesB")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandNamesB)));
+    getWidgetMapper("DifferentialOperandA")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandA)));
+    getWidgetMapper("DifferentialOperandB")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandB)));
     getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
     getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileTypes)));
     getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)));
