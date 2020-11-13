@@ -590,6 +590,11 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
     return QVariant();
 }
 
+QVariant Channel::getData(const Column& column, const std::int32_t& role) const
+{
+    return getData(static_cast<std::int32_t>(column), role);
+}
+
 QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     QModelIndexList affectedIndices{ index };
@@ -603,44 +608,33 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
     };
 
     const auto synchronizeProfile = [this, &affectedIndices, &index]() {
-        QVector<std::int32_t> channels;
-
-        channels << to_ul(Channels::Row::Subset1);
-        channels << to_ul(Channels::Row::Subset2);
+        const auto channels = getChannels()->getFiltered(Profile::ProfileTypes({ Profile::ProfileType::Mean, Profile::ProfileType::Median }));
 
         for (auto channel : channels) {
-            const auto sibling = getSibling(channel);
-
-            if (sibling->_linked)
-                sibling->_profile = getSibling(to_ul(Channels::Row::Dataset))->_profile;
+            if (channel->getData(Column::Linked, Qt::EditRole).toBool())
+                channel->getProfile() = getSibling(to_ul(Channels::Row::Dataset))->getProfile();
 
             for (int column = to_ul(Channel::Column::_ProfileStart); column <= to_ul(Channel::Column::_ProfileEnd); column++)
-                affectedIndices << index.sibling(channel, column);
+                affectedIndices << index.sibling(channel->getData(Column::Index, Qt::EditRole).toInt(), column);
         }
     };
 
     const auto synchronizeStyling = [this, &affectedIndices, &index]() {
-        QVector<std::int32_t> channels;
-
-        channels << to_ul(Channels::Row::Subset1);
-        channels << to_ul(Channels::Row::Subset2);
-        channels << to_ul(Channels::Row::Differential);
+        const auto channels = getChannels()->getFiltered(Profile::ProfileTypes({ Profile::ProfileType::Mean, Profile::ProfileType::Median }));
 
         for (auto channel : channels) {
-            const auto sibling = getSibling(channel);
-
-            if (sibling->_linked)
-                sibling->_styling = getSibling(to_ul(Channels::Row::Dataset))->_styling;
+            if (channel->getData(Column::Linked, Qt::EditRole).toBool())
+                channel->getStyling() = getSibling(to_ul(Channels::Row::Dataset))->getStyling();
 
             for (int column = to_ul(Channel::Column::_StylingStart); column <= to_ul(Channel::Column::_StylingEnd); column++)
-                affectedIndices << index.sibling(channel, column);
+                affectedIndices << index.sibling(channel->getData(Column::Index, Qt::EditRole).toInt(), column);
         }
     };
 
     const auto updateDifferentialChannel = [this, &affectedIndices, &index, updateChannel]() {
         _differential.update();
 
-        const auto channels = getChannels()->getFiltered(QSet<std::int32_t>({to_ul(Profile::ProfileType::Differential)}));
+        const auto channels = getChannels()->getFiltered(Profile::ProfileTypes({Profile::ProfileType::Differential}));
 
         for (auto channel : channels) {
             updateChannel(static_cast<Channels::Row>(channel->getData(to_ul(Channel::Column::Index), Qt::EditRole).toInt()));

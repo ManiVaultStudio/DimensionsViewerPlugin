@@ -40,6 +40,7 @@ bool Differential::isValid() const
 
 QStringList Differential::getCandidateChannelNames() const
 {
+
     QStringList candidateChannelNames;
 
     for (auto channel : _channel->getChannels()->_channels) {

@@ -134,14 +134,14 @@ const Configuration* Channels::getConfiguration() const
     return dynamic_cast<Configuration*>(parent());
 }
 
-QVector<Channel*> Channels::getFiltered(const QSet<std::int32_t>& profileTypes, bool* enabled /*= nullptr*/) const
+QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled /*= nullptr*/) const
 {
     QVector<Channel*> channels;
 
     for (auto channel : _channels) {
-        const auto profileType = static_cast<std::int32_t>(channel->getProfile().getProfileType());
+        const auto profileType = channel->getProfile().getProfileType();
 
-        if (!profileTypes.contains(profileType))
+        if (!profileTypes.isEmpty() && !profileTypes.contains(profileType))
             continue;
 
         if (enabled != nullptr && channel->getData(to_ul(Channel::Column::Enabled), Qt::EditRole).toBool() != *enabled)

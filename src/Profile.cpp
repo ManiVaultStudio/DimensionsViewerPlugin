@@ -20,19 +20,45 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
 };
 
 Profile::Profile(const ProfileType& profileType) :
-    _profileType(),
+    _locked(profileType == ProfileType::Differential),
+    _profileTypes(),
+    _profileType(profileType),
     _rangeType(RangeType::MinMax),
     _rangeTypes()
 {
-    setProfileType(profileType);
+    switch (_profileType)
+    {
+        case ProfileType::Mean:
+        case ProfileType::Median:
+        {
+            _profileTypes << ProfileType::Mean << ProfileType::Median;
+            break;
+        }
+
+        case ProfileType::Differential:
+        {
+            _profileTypes << ProfileType::Differential;
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    update();
+}
+
+Profile::ProfileTypes Profile::getProfileTypes() const
+{
+    return _profileTypes;
 }
 
 QStringList Profile::getProfileTypeNames() const
 {
     QStringList profileTypeNames;
 
-    for (int i = 1; i <= static_cast<int>(ProfileType::_End); ++i)
-        profileTypeNames << getProfileTypeName(static_cast<ProfileType>(i));
+    for (auto profileType : _profileTypes)
+        profileTypeNames << getProfileTypeName(profileType);
 
     return profileTypeNames;
 
@@ -44,11 +70,51 @@ Profile::ProfileType Profile::getProfileType() const
 
 void Profile::setProfileType(const ProfileType& profileType)
 {
+    if (_locked)
+        return;
+
     if (profileType == _profileType)
         return;
 
     _profileType = profileType;
 
+    update();
+}
+
+Profile::RangeTypes Profile::getRangeTypes() const
+{
+    return _rangeTypes;
+}
+
+QStringList Profile::getRangeTypeNames() const
+{
+    QStringList rangeTypeNames;
+
+    for (auto rangeType : _rangeTypes)
+        rangeTypeNames << getRangeTypeName(rangeType);
+
+    return rangeTypeNames;
+}
+
+Profile::RangeType Profile::getRangeType() const
+{
+    return _rangeType;
+}
+
+void Profile::setRangeType(const RangeType& rangeType)
+{
+    if (_locked)
+        return;
+
+    if (rangeType == _rangeType)
+        return;
+
+    if (_rangeTypes.contains(_rangeType))
+        _rangeType = rangeType;
+}
+
+void Profile::update()
+{
     _rangeTypes.clear();
 
     switch (_profileType)
@@ -85,37 +151,8 @@ void Profile::setProfileType(const ProfileType& profileType)
 
             break;
         }
-        
+
         default:
             break;
     }
-}
-
-Profile::RangeType Profile::getRangeType() const
-{
-    return _rangeType;
-}
-
-void Profile::setRangeType(const RangeType& rangeType)
-{
-    if (rangeType == _rangeType)
-        return;
-
-    if (_rangeTypes.contains(_rangeType))
-        _rangeType = rangeType;
-}
-
-QStringList Profile::getRangeTypeNames() const
-{
-    QStringList rangeTypeNames;
-
-    for (auto rangeType : _rangeTypes)
-        rangeTypeNames << getRangeTypeName(rangeType);
-
-    return rangeTypeNames;
-}
-
-QVector<Profile::RangeType> Profile::getRangeTypes() const
-{
-    return _rangeTypes;
 }

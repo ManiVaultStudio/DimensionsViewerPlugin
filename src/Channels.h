@@ -135,7 +135,7 @@ public: // Getters
      * @param enabled Filter enabled/disabled channels
      * @return Filtered channels
      */
-    QVector<Channel*> getFiltered(const QSet<std::int32_t>& profileTypes, bool* enabled = nullptr) const;
+    QVector<Channel*> getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled = nullptr) const;
 
 public: // Overloaded operators
 

@@ -145,6 +145,14 @@ public: // ModelIndex: Model
     QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
 
     /**
+     * Get data role
+     * @param column Column to fetch data from
+     * @param role Data role
+     * @return Data in variant form
+     */
+    QVariant getData(const Column& column, const std::int32_t& role) const;
+
+    /**
      * Sets data
      * @param index Model index
      * @param value Data value in variant form
@@ -183,17 +191,17 @@ protected: // Miscellaneous
 public: // Getters
 
     /** Get profile settings */
-    const Profile& getProfile() const {
+    Profile& getProfile() {
         return _profile;
     }
 
     /** Get differential settings */
-    const Differential& getDifferential() const {
+    Differential& getDifferential() {
         return _differential;
     }
 
     /** Get styling settings */
-    const Styling& getStyling() const {
+    Styling& getStyling() {
         return _styling;
     }
 
