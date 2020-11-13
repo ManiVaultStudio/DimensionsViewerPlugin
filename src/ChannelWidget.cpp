@@ -39,6 +39,14 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         setData(to_ul(Channel::Column::RangeType), currentText, Qt::DisplayRole);
     });
 
+    QObject::connect(_ui->differentialOperandAComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
+        setData(to_ul(Channel::Column::DifferentialOperandName1), currentText, Qt::DisplayRole);
+    });
+
+    QObject::connect(_ui->differentialOperandBComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
+        setData(to_ul(Channel::Column::DifferentialOperandName2), currentText, Qt::DisplayRole);
+    });
+
     QObject::connect(_ui->linkedPushButton, &QPushButton::toggled, [this](bool checked) {
         setData(to_ul(Channel::Column::Linked), checked);
     });
@@ -102,48 +110,48 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->differentialWidget->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("DifferentialOperandNames1", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandName1ComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("DifferentialOperandNames1", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->differentialOperandName1ComboBox->setModel(new QStringListModel());
+            _ui->differentialOperandAComboBox->setModel(new QStringListModel());
 
             return;
         }
 
-        _ui->differentialOperandName1ComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+        _ui->differentialOperandAComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
 
-    addWidgetMapper("DifferentialOperandNames2", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandName2ComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("DifferentialOperandNames2", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandBComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->differentialOperandName2ComboBox->setModel(new QStringListModel());
+            _ui->differentialOperandBComboBox->setModel(new QStringListModel());
 
             return;
         }
 
-        _ui->differentialOperandName2ComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
+        _ui->differentialOperandBComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
 
-    addWidgetMapper("DifferentialOperandName1", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandName1ComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("DifferentialOperandName1", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->differentialOperandName1ComboBox->setEnabled(false);
+            _ui->differentialOperandAComboBox->setEnabled(false);
 
             return;
         }
 
-        _ui->differentialOperandName1ComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-        _ui->differentialOperandName1ComboBox->setCurrentText(index.data(Qt::EditRole).toString());
-        _ui->differentialOperandName1ComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+        _ui->differentialOperandAComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->differentialOperandAComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
+        _ui->differentialOperandAComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
     
-    addWidgetMapper("DifferentialOperandName2", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandName2ComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
+    addWidgetMapper("DifferentialOperandName2", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandBComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->differentialOperandName2ComboBox->setEnabled(false);
+            _ui->differentialOperandBComboBox->setEnabled(false);
 
             return;
         }
 
-        _ui->differentialOperandName2ComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-        _ui->differentialOperandName2ComboBox->setCurrentText(index.data(Qt::EditRole).toString());
-        _ui->differentialOperandName2ComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+        _ui->differentialOperandBComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+        _ui->differentialOperandBComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
+        _ui->differentialOperandBComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
     
     addWidgetMapper("Color", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {

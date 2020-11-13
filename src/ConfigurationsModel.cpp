@@ -164,14 +164,14 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
         const auto configurationIndex   = hits.first().siblingAtColumn(0);
         const auto channelsIndex        = index(0, 0, configurationIndex);
 
-        QVector<std::int32_t> channels;
+        Channels::Rows channels;
 
-        channels << to_ul(Channels::Row::Subset1);
-        channels << to_ul(Channels::Row::Subset2);
-        channels << to_ul(Channels::Row::Differential);
+        channels << Channels::Row::Subset1;
+        channels << Channels::Row::Subset2;
+        channels << Channels::Row::Differential;
 
         for (auto channel : channels) {
-            const auto channelIndex         = index(channel, 0, channelsIndex);
+            const auto channelIndex         = index(to_ul(channel), 0, channelsIndex);
             const auto datasetNamesIndex    = channelIndex.siblingAtColumn(to_ul(Channel::Column::DatasetNames));
 
             auto datasetNames = datasetNamesIndex.data(Qt::EditRole).toStringList();

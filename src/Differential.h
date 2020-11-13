@@ -1,11 +1,12 @@
 #pragma once
 
 #include <QObject>
+#include <QMap>
 
 class Channel;
 
 /**
- * Differential class
+ * Differential utility class
  *
  * @author T. Kroes
  */
@@ -41,6 +42,13 @@ public:
      */
     QString getOperandChannelName(const Operand& operand) const;
 
+    /**
+     * Set (selected) channel name for \p operand
+     * @param operand Operand
+     * @param channelName Channel name
+     */
+    void setOperandChannelName(const Operand& operand, const QString& channelName);
+
     /** Gets whether enough candidate channels are available for a differential channel analysis */
     bool isPrimed() const;
 
@@ -56,9 +64,9 @@ private:
     QStringList getCandidateChannelNames() const;
 
 private:
-    Channel*        _channel;                       /** Parent channel */
-    QStringList     _operandChannelNames[2];        /** Operand channel names (selectable channel name(s) in dropdown UI) */
-    QString         _operandChannelName[2];         /** Operand channel name (selected channel name in dropdown UI) */
+    Channel*                    _channel;                   /** Parent channel */
+    QMap<Operand, QStringList>  _operandChannelNames;       /** Operand channel names (selectable channel name(s) in dropdown UI) */
+    QMap<Operand, QString>      _operandChannelName;        /** Operand channel name (selected channel name in dropdown UI) */
 
     friend class Channel;
 };

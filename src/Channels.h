@@ -52,6 +52,9 @@ public: // Columns and rows
         _Count  = _End + 1
     };
 
+    /** Rows set alias */
+    using Rows = QSet<Row>;
+
     /** Maps row name to row enum */
     static QMap<QString, Row> const rows;
 
@@ -148,3 +151,7 @@ protected:
     friend class Channel;
     friend class Differential;
 };
+
+inline uint qHash(Channels::Row key, uint seed) {
+    return ::qHash(static_cast<uint>(key), seed);
+}

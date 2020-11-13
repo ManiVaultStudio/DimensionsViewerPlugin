@@ -562,6 +562,10 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::ProfileType:
                 case Channel::Column::RangeTypes:
                 case Channel::Column::RangeType:
+                case Channel::Column::DifferentialOperandNames1:
+                case Channel::Column::DifferentialOperandNames2:
+                case Channel::Column::DifferentialOperandName1:
+                case Channel::Column::DifferentialOperandName2:
                 case Channel::Column::Styling:
                 case Channel::Column::LineTypes:
                 case Channel::Column::LineTypeProfile:
@@ -630,7 +634,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
     };
 
     const auto synchronizeStyling = [this, &affectedIndices, &index]() {
-        const auto channels = getChannels()->getFiltered(Profile::ProfileTypes({ Profile::ProfileType::Mean, Profile::ProfileType::Median }));
+        const auto channels = getChannels()->getFiltered(Profile::ProfileTypes({ Profile::ProfileType::Mean, Profile::ProfileType::Median, Profile::ProfileType::Differential }));
 
         for (auto channel : channels) {
             if (channel->getData(Column::Linked, Qt::EditRole).toBool())
@@ -671,25 +675,33 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
                     switch (row)
                     {
+                        case Channels::Row::Dataset:
+                            break;
+
                         case Channels::Row::Subset1:
                         {
-                            if (noDatasets == 1)
-                                _enabled = true;
+                            if (noDatasets == 1) {
+                                _enabled        = true;
+                                _datasetName    = _datasetNames[0];
+                            }
 
                             break;
                         }
 
                         case Channels::Row::Subset2:
                         {
-                            if (noDatasets >= 2)
-                                _enabled = true;
+                            if (noDatasets == 2) {
+                                _enabled        = true;
+                                _datasetName    = _datasetNames[1];
+                            }
+                                
 
                             break;
                         }
 
                         case Channels::Row::Differential:
                         {
-                            if (noDatasets == 2)
+                            if (noDatasets >= 1)
                                 _enabled = true;
 
                             break;
@@ -700,6 +712,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                     }
 
                     updateChannel(row);
+                    updateDifferentialChannels();
 
                     break;
                 }
@@ -732,6 +745,24 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 case Channel::Column::RangeType:
                 {
                     _profile.setRangeType(static_cast<Profile::RangeType>(value.toInt()));
+
+                    break;
+                }
+
+                case Channel::Column::DifferentialOperandNames1:
+                case Channel::Column::DifferentialOperandNames2:
+                    break;
+
+                case Channel::Column::DifferentialOperandName1:
+                {
+                    _differential.setOperandChannelName(Differential::Operand::ChannelA, value.toString());
+
+                    break;
+                }
+
+                case Channel::Column::DifferentialOperandName2:
+                {
+                    _differential.setOperandChannelName(Differential::Operand::ChannelB, value.toString());
 
                     break;
                 }
