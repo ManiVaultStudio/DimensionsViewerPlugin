@@ -5,13 +5,18 @@
 
 const QMap<QString, Styling::LineType> Styling::lineTypes = {
     { "Solid", Styling::LineType::Solid },
+    { "Dash", Styling::LineType::Dash },
     { "Dot", Styling::LineType::Dot },
-    { "DashDot", Styling::LineType::DashDot }
+    { "DashDot", Styling::LineType::DashDot },
+    { "DashDotDot", Styling::LineType::DashDotDot }
 };
+
+const QSize Styling::LineTypesModel::iconSize = QSize(24, 12);
 
 Styling::Styling() :
     _lineTypeProfile(LineType::Solid),
     _lineTypeRange(LineType::DashDot),
+    _renderPoints(true),
     _opacity(1.0f),
     _color()
 {
@@ -40,6 +45,16 @@ Styling::LineType Styling::getLineTypeRange() const
 void Styling::setLineTypeRange(const LineType& lineTypeRange)
 {
     _lineTypeRange = lineTypeRange;
+}
+
+bool Styling::getRenderPoints() const
+{
+    return _renderPoints;
+}
+
+void Styling::setRenderPoints(const bool& renderPoints)
+{
+    _renderPoints = renderPoints;
 }
 
 float Styling::getOpacity() const

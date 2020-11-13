@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>258</width>
-    <height>151</height>
+    <height>175</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,6 +70,35 @@
           </item>
          </layout>
         </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="colorLabel">
+          <property name="text">
+           <string>Color</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="ColorPickerPushButton" name="colorPushButton" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>22</height>
+           </size>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="opacityLabel">
           <property name="sizePolicy">
@@ -123,32 +152,10 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="colorLabel">
-          <property name="text">
-           <string>Color</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="1">
-         <widget class="ColorPickerPushButton" name="colorPushButton" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>22</height>
-           </size>
+         <widget class="QCheckBox" name="renderPointsCheckBox">
+          <property name="text">
+           <string>Render points</string>
           </property>
          </widget>
         </item>

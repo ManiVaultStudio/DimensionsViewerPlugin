@@ -56,6 +56,7 @@ public: // Columns and rows
             LineTypes,                                  /** Line types */
             LineTypeProfile,                            /** Line type for drawing data profile */
             LineTypeRange,                              /** Line type for drawing data range */
+            RenderPoints,                               /** Render points */
             Opacity,                                    /** Opacity */
             Color,                                      /** Color */
         _StylingEnd = Color,                            /** End of the styling section */
@@ -122,7 +123,7 @@ protected: // Construction
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 */
-	Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
+	Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
 
 public: // ModelIndex: Model
 

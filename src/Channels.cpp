@@ -18,10 +18,10 @@ const QMap<QString, Channels::Row> Channels::rows = {
 Channels::Channels(ModelItem* parent, const QString& datasetName, const QString& dataName) :
     ModelItem("Channels", parent),
     _channels({
-        new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, datasetName, Profile::ProfileType::Mean, Qt::black, 0.25f),
-        new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 0.25f),
-        new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 0.25f),
-        new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, "", Profile::ProfileType::Differential, QColor(255, 10, 40), 0.25f)
+        new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName, Profile::ProfileType::Mean, Qt::black, 1.0f),
+        new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 1.0f),
+        new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 1.0f),
+        new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "", Profile::ProfileType::Differential, QColor(255, 0, 0), 0.5f)
     })
 {
 }
