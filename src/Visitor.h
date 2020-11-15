@@ -1,9 +1,5 @@
 #pragma once
 
-#include <QObject>
-#include <QMap>
-#include <QSet>
-
 class Configurations;
 class Configuration;
 class Channels;

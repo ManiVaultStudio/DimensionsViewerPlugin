@@ -16,7 +16,7 @@ class Configuration;
 class Channels;
 
 /**
- * Channel model item class
+ * Channel tree item class
  *
  * @author T. Kroes
  */
@@ -26,7 +26,7 @@ class Channel : public TreeItem {
 
 public: // Columns and rows
 
-    /** Model item columns */
+    /** Tree item columns */
     enum class Column {
         Type,
         Index,
@@ -86,7 +86,7 @@ public: // Columns and rows
         return columns[columnName];
     }
 
-    /** Model item rows */
+    /** Tree item rows */
     enum class Row {
         Profile,
         Styling,
@@ -114,7 +114,7 @@ protected: // Construction
 
 	/**
 	 * Constructor
-	 * @param parent Parent model item
+	 * @param parent Parent tree item
 	 * @param index Channel index
 	 * @param displayName Channel name in the user interface
 	 * @param enabled Whether the channel is enabled
@@ -180,7 +180,7 @@ public: // Points data functions
 
 protected: // Miscellaneous
 	
-    /** Get parent channels model item */
+    /** Get parent channels tree item */
     const Channels* getChannels() const;
 
     /** Get channels at row */

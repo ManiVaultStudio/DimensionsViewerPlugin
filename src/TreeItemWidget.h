@@ -110,7 +110,7 @@ public: // Construction
 protected:
 
     /**
-     * Sets the model index for this model item widget
+     * Sets the model index for this tree item widget
      * @param modelIndex Persistent model index
      */
     virtual void setModelIndex(const QPersistentModelIndex& modelIndex) = 0;

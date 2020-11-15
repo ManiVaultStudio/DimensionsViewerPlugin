@@ -27,8 +27,8 @@ public: // Construction
 
     /**
      * Constructor
-     * @param type Type of model item
-     * @param parent Parent model item
+     * @param type Type of tree item
+     * @param parent Parent tree item
      */
     TreeItem(const QString& type, TreeItem* parent = nullptr);
 
@@ -80,9 +80,12 @@ public: // Model API
 
 public: // Hierarchy API
 
+    /** Gets children */
+    QVector<TreeItem*> getChildren() const;
+
     /**
-     * Returns a model item node by index
-     * @param index Index of the child model item
+     * Get a tree item node by index
+     * @param index Index of the child tree item
      * @return Model item at index
      */
     virtual TreeItem* getChild(const int& index) const;
@@ -92,30 +95,30 @@ public: // Hierarchy API
 
     /**
      * Returns the child index
-     * @param child Pointer to child model item
+     * @param child Pointer to child tree item
      */
     virtual int getChildIndex(TreeItem* child) const;
 
-    /** Returns the child index of this model item w.r.t. its parent */
+    /** Returns the child index of this tree item w.r.t. its parent */
     int getChildIndex() const;
 
     /** Returns the parent */
     TreeItem* getParent();
 
-    /** Returns whether the model item is a leaf node */
+    /** Returns whether the tree item is a leaf node */
     bool isLeaf() const;
 
 protected: // Visitor API
 
     /** Accept visitor */
-    virtual void accept(Visitor* visitor) const = 0;
+    virtual void accept(Visitor* visitor) const;
 
 public: // Miscellaneous
 
     /** Get the configurations model */
     static const ConfigurationsModel* getModel();
 
-    /** Sets the model item dirty (increase the modified timer with 1) */
+    /** Sets the tree item dirty (increase the modified timer with 1) */
     void setModified() {
         _modified++;
     }
@@ -138,7 +141,7 @@ protected:
 
 protected:
     QString         _type;          /** Name */
-    TreeItem*      _parent;		/** Parent model item */
+    TreeItem*      _parent;		    /** Parent tree item */
     std::int32_t    _modified;      /** Modified time */
 
     static std::int32_t maxNoColumns;

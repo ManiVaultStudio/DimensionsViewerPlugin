@@ -5,7 +5,7 @@
 class Configuration;
 
 /**
- * Model item interface class
+ * Tree item interface class
  *
  * @author Thomas Kroes
  */
@@ -13,7 +13,7 @@ class Configurations : public TreeItem
 {
 public: // Columns and rows
 
-    /** Model item columns */
+    /** Tree item columns */
     enum class Column {
         Type,
 
@@ -72,9 +72,9 @@ public: // TreeItem: model API
 public: // TreeItem: hierarchy API
 
     /**
-     * Returns a model item node by index
-     * @param index Index of the child model item
-     * @return Model item at index
+     * Returns a tree item node by index
+     * @param index Index of the child tree item
+     * @return Tree item at index
      */
     TreeItem* getChild(const int& index) const override;
 
@@ -83,7 +83,7 @@ public: // TreeItem: hierarchy API
 
     /**
      * Returns the child index
-     * @param child Pointer to child model item
+     * @param child Pointer to child tree item
      */
     int getChildIndex(TreeItem* child) const override;
 

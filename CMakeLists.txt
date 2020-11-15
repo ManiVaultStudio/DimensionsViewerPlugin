@@ -36,6 +36,7 @@ file(GLOB MODEL
 	src/Profile.*
 	src/Styling.*
 	src/Visitor.*
+	src/SpecVisitor.*
 )
 
 file(GLOB WIDGETS

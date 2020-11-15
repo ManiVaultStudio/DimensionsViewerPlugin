@@ -25,6 +25,18 @@ QModelIndex TreeItem::index(int row, int column, const QModelIndex& parent /*= Q
     return getModel()->index(row, column, parent);
 }
 
+QVector<TreeItem*> TreeItem::getChildren() const
+{
+    QVector<TreeItem*> children;
+
+    children.resize(getChildCount());
+
+    for (int childIndex = 0; childIndex < getChildCount(); childIndex++)
+        children[0] = getChild(childIndex);
+
+    return children;
+}
+
 TreeItem* TreeItem::getChild(const int& index) const
 {
     return nullptr;
@@ -56,6 +68,12 @@ TreeItem* TreeItem::getParent()
 bool TreeItem::isLeaf() const
 {
     return getChildCount() == 0;
+}
+
+void TreeItem::accept(Visitor* visitor) const
+{
+    for (auto child : getChildren())
+        child->accept(visitor);
 }
 
 const ConfigurationsModel* TreeItem::getModel()

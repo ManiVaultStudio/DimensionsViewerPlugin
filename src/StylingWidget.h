@@ -24,7 +24,7 @@ public: // Construction
 public: // Inherited
 
     /**
-     * Sets the model index for this model item widget
+     * Sets the model index for this tree item widget
      * @param modelIndex Persistent model index
      */
     void setModelIndex(const QPersistentModelIndex& modelIndex) override;

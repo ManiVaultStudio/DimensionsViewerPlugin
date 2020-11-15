@@ -23,7 +23,7 @@ public: // Constants
 
 public: // Columns and rows
 
-    /** Model item columns */
+    /** Tree item columns */
     enum class Column {
         Type,
         Index,
@@ -49,7 +49,7 @@ public: // Columns and rows
         return columns[columnName];
     }
 
-    /** Model item rows */
+    /** Tree item rows */
     enum class Row {
         Channels,
         Miscellaneous,
@@ -63,7 +63,7 @@ public: // Construction
 
 	/**
 	 * Constructor
-	 * @param parent Parent model item
+	 * @param parent Parent tree item
 	 * @param datasetName Name of the primary dataset
 	 * @param dataName Name of the primary data
 	 */
@@ -101,9 +101,9 @@ public: // TreeItem: model API
 public: // TreeItem: hierarchy API
 
     /**
-     * Returns a model item node by index
-     * @param index Index of the child model item
-     * @return Model item at index
+     * Returns a tree item node by index
+     * @param index Index of the child tree item
+     * @return Tree item at index
      */
     TreeItem* getChild(const int& index) const override;
 
@@ -112,7 +112,7 @@ public: // TreeItem: hierarchy API
 
     /**
      * Returns the child index
-     * @param child Pointer to child model item
+     * @param child Pointer to child tree item
      */
     int getChildIndex(TreeItem* child) const override;
 
@@ -123,7 +123,7 @@ public: // TreeItem: visitor API
 
 public: // Miscellaneous
 
-    /** Get channels model item */
+    /** Get channels tree item */
     const Channels* getChannels() const;
 
 public: // Spec
