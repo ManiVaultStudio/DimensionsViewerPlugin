@@ -46,8 +46,10 @@ QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::Di
     if (!index.isValid())
         return QVariant();
 
+    /*
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
+    */
 
     const auto item = index.parent().isValid() ? getItem(index) : &_configurations;
 

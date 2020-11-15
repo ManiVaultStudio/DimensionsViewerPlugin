@@ -74,10 +74,11 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags;
 
-    const auto column       = static_cast<Column>(index.column());
-    const auto noDatasets   = _datasetNames.count();
-    const auto channel      = static_cast<Channels::Row>(_index);
-    const auto enabled      = getData(Column::Enabled, Qt::EditRole).toBool();
+    const auto column               = static_cast<Column>(index.column());
+    const auto noDatasets           = _datasetNames.count();
+    const auto channel              = static_cast<Channels::Row>(_index);
+    const auto enabled              = getData(Column::Enabled, Qt::EditRole).toBool();
+    const auto meanOrMedianChannel  = _profile.getProfileType() == Profile::ProfileType::Mean || _profile.getProfileType() == Profile::ProfileType::Median;
 
     switch (column)
     {
@@ -187,43 +188,11 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
         case Channel::Column::ProfileTypes:
         case Channel::Column::ProfileType:
-        {
-            flags |= Qt::ItemIsEditable;
-
-            if (enabled) {
-                switch (channel)
-                {
-                    case Channels::Row::Dataset:
-                    {
-                        flags |= Qt::ItemIsEnabled;
-
-                        break;
-                    }
-
-                    case Channels::Row::Subset1:
-                    case Channels::Row::Subset2:
-                    {
-                        if (!_linked && (_profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median))
-                            flags |= Qt::ItemIsEnabled;
-
-                        break;
-                    }
-
-                    case Channels::Row::Differential:
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-            break;
-        }
-
         case Channel::Column::RangeTypes:
         case Channel::Column::RangeType:
         {
-            flags |= Qt::ItemIsEditable;
+            //if (meanOrMedianChannel)
+            //    flags |= Qt::ItemIsEditable;
 
             if (enabled) {
                 switch (channel)
@@ -238,7 +207,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
                     case Channels::Row::Subset1:
                     case Channels::Row::Subset2:
                     {
-                        if (!_linked && (_profile.getProfileType() != Profile::ProfileType::Mean || _profile.getProfileType() != Profile::ProfileType::Median))
+                        if (!_linked && meanOrMedianChannel)
                             flags |= Qt::ItemIsEnabled;
 
                         break;
@@ -386,8 +355,8 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
     switch (role)
     {
-        case Qt::EditRole: {
-
+        case Qt::EditRole:
+        {
             switch (static_cast<Column>(column))
             {
                 case Channel::Column::Type:
@@ -488,8 +457,8 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
             break;
         }
 
-        case Qt::DisplayRole: {
-
+        case Qt::DisplayRole:
+        {
             switch (static_cast<Column>(column))
             {
                 case Channel::Column::Type:
@@ -560,6 +529,55 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::NoDimensions:
                 case Channel::Column::NoPoints:
                     return QString::number(getData(column, Qt::EditRole).toInt());
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+        
+        case Qt::ToolTipRole:
+        {
+            const auto tooltip = [&column](const QString& value) {
+                return QString("%1: %2").arg(getColumnTypeName(static_cast<Column>(column)), value);
+            };
+
+            switch (static_cast<Column>(column))
+            {
+                case Channel::Column::Type:
+                case Channel::Column::Index:
+                case Channel::Column::InternalName:
+                case Channel::Column::DisplayName:
+                case Channel::Column::Enabled:
+                case Channel::Column::DatasetNames:
+                case Channel::Column::DatasetName:
+                case Channel::Column::ProfileTypes:
+                case Channel::Column::ProfileType:
+                case Channel::Column::RangeTypes:
+                case Channel::Column::RangeType:
+                case Channel::Column::DifferentialOperandNamesA:
+                case Channel::Column::DifferentialOperandNamesB:
+                case Channel::Column::DifferentialOperandA:
+                case Channel::Column::DifferentialOperandB:
+                    return tooltip(getData(column, Qt::DisplayRole).toString());
+
+                case Channel::Column::Styling:
+                    return getData(column, Qt::DisplayRole).toString();
+
+                case Channel::Column::LineTypes:
+                case Channel::Column::LineTypeProfile:
+                case Channel::Column::LineTypeRange:
+                case Channel::Column::Opacity:
+                case Channel::Column::Color:
+                    return tooltip(getData(column, Qt::DisplayRole).toString());
+
+                case Channel::Column::Linked:
+                    return QString("%1: %2").arg("Linked to dataset", getData(column, Qt::EditRole).toBool() ? "true" : "false");
+
+                case Channel::Column::NoDimensions:
+                case Channel::Column::NoPoints:
+                    return tooltip(getData(column, Qt::DisplayRole).toString());
 
                 default:
                     break;

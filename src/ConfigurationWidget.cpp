@@ -12,9 +12,6 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
-    _ui->treeView->setModel(&getModel());
-    _ui->treeView->setSelectionModel(&getSelectionModel());
-
     QObject::connect(&getSelectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto selectedRows = getSelectionModel().selectedRows();
 

@@ -4,6 +4,7 @@
 #include "ConfigurationWidget.h"
 
 #include <QDebug>
+#include <QSplitter>
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.DimensionsViewerPlugin")
 
@@ -24,12 +25,19 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 
 void DimensionsViewerPlugin::init()
 {
+    auto splitter = new QSplitter();
+
     auto mainLayout = new QVBoxLayout();
 
-    mainLayout->addWidget(_dimensionsViewerWidget, 1);
-    mainLayout->addWidget(reinterpret_cast<QWidget*>(_configurationWidget));
+    splitter->addWidget(_dimensionsViewerWidget);
+    splitter->addWidget(reinterpret_cast<QWidget*>(_configurationWidget));
 
-    setMainLayout(mainLayout);
+    splitter->setStretchFactor(0, 1);
+
+    splitter->setOrientation(Qt::Vertical);
+    splitter->setCollapsible(1, true);
+
+    addWidget(splitter);
 }
 
 void DimensionsViewerPlugin::dataAdded(const QString dataset)
