@@ -1,6 +1,6 @@
 #include "Configurations.h"
 #include "Configuration.h"
-#include "DimensionsViewerPlugin.h"
+#include "Visitor.h"
 
 #include <QMessageBox>
 
@@ -111,6 +111,11 @@ int Configurations::getChildIndex(TreeItem* child) const
         return _configurations.indexOf(configuration);
 
     return 0;
+}
+
+void Configurations::accept(Visitor* visitor) const
+{
+    visitor->visitConfigurations(this);
 }
 
 void Configurations::add(const QString& datasetName, const QString& dataName)

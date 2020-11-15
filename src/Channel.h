@@ -125,7 +125,7 @@ protected: // Construction
 	 */
 	Channel(TreeItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
 
-public: // ModelIndex: Model
+public: // TreeItem: model API
 
     /** Returns the number of columns in the item */
     int columnCount() const override;
@@ -161,6 +161,11 @@ public: // ModelIndex: Model
      * @return Model indices that are affected by the operation
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+
+public: // TreeItem: visitor API
+
+    /** Accept visitor */
+    void accept(Visitor* visitor) const override;
 
 public: // Points data functions
 

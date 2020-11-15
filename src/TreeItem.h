@@ -8,6 +8,7 @@
 class DimensionsViewerPlugin;
 class ConfigurationsModel;
 class CoreInterface;
+class Visitor;
 
 namespace hdps {
     class CoreInterface;
@@ -31,7 +32,7 @@ public: // Construction
      */
     TreeItem(const QString& type, TreeItem* parent = nullptr);
 
-public: // Model
+public: // Model API
 
     /** Returns the number of columns in the item */
     virtual int columnCount() const = 0;
@@ -77,7 +78,7 @@ public: // Model
      */
     QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
 
-public: // Hierarchy
+public: // Hierarchy API
 
     /**
      * Returns a model item node by index
@@ -103,6 +104,11 @@ public: // Hierarchy
 
     /** Returns whether the model item is a leaf node */
     bool isLeaf() const;
+
+protected: // Visitor API
+
+    /** Accept visitor */
+    virtual void accept(Visitor* visitor) const = 0;
 
 public: // Miscellaneous
 

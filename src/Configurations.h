@@ -40,7 +40,7 @@ protected: // Construction
     /** Default constructor */
     Configurations();
 
-public: // ModelIndex: Model
+public: // TreeItem: model API
 
     /** Returns the number of columns in the item */
     int columnCount() const override;
@@ -69,7 +69,7 @@ public: // ModelIndex: Model
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
-public: // ModelIndex: Hierarchy
+public: // TreeItem: hierarchy API
 
     /**
      * Returns a model item node by index
@@ -86,6 +86,11 @@ public: // ModelIndex: Hierarchy
      * @param child Pointer to child model item
      */
     int getChildIndex(TreeItem* child) const override;
+
+public: // TreeItem: visitor API
+
+    /** Accept visitor */
+    void accept(Visitor* visitor) const override;
 
 public: // Miscellaneous
 

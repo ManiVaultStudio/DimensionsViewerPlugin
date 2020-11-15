@@ -1,6 +1,7 @@
 #include "Channels.h"
 #include "Channel.h"
 #include "Configuration.h"
+#include "Visitor.h"
 
 #include <QDebug>
 
@@ -127,6 +128,11 @@ int Channels::getChildIndex(TreeItem* child) const
         return 0;
 
     return _channels.indexOf(channel);
+}
+
+void Channels::accept(Visitor* visitor) const
+{
+    visitor->visitChannels(this);
 }
 
 const Configuration* Channels::getConfiguration() const

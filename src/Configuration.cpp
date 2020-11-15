@@ -1,5 +1,5 @@
 #include "Configuration.h"
-#include "DimensionsViewerPlugin.h"
+#include "Visitor.h"
 
 #include <QDebug>
 
@@ -25,8 +25,6 @@ Configuration::Configuration(TreeItem* parent, const QString& datasetName, const
     noConfigurations++;
 
     _spec["modified"] = 0;
-
-
 }
 
 int Configuration::columnCount() const 
@@ -172,6 +170,11 @@ int Configuration::getChildIndex(TreeItem* child) const
         return static_cast<int>(Row::Channels);
 
     return 0;
+}
+
+void Configuration::accept(Visitor* visitor) const
+{
+    visitor->visitConfiguration(this);
 }
 
 const Channels* Configuration::getChannels() const

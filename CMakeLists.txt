@@ -35,6 +35,7 @@ file(GLOB MODEL
 	src/TreeItem.*
 	src/Profile.*
 	src/Styling.*
+	src/Visitor.*
 )
 
 file(GLOB WIDGETS

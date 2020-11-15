@@ -2,6 +2,7 @@
 #include "Channels.h"
 #include "Configuration.h"
 #include "ConfigurationsModel.h"
+#include "Visitor.h"
 
 #include "Application.h"
 #include "PointData.h"
@@ -953,6 +954,11 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         synchronizeStyling();
 
     return affectedIndices;
+}
+
+void Channel::accept(Visitor* visitor) const
+{
+    visitor->visitChannel(this);
 }
 
 std::int32_t Channel::getNoDimensions() const

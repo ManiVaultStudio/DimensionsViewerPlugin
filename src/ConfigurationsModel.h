@@ -145,10 +145,10 @@ private:
     TreeItem* getItem(const QModelIndex& index) const;
 
 private:
-    DimensionsViewerPlugin*                             _dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
-    Configurations		                                _configurations;				/** Configurations data source */
-    QItemSelectionModel                                 _selectionModel;				/** Selection model */
-    QStringList                                         _datasetNames;                  /** Dataset names */
+    DimensionsViewerPlugin*     _dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
+    Configurations              _configurations;				/** Configurations data source */
+    QItemSelectionModel         _selectionModel;				/** Selection model */
+    QStringList                 _datasetNames;                  /** Dataset names */
 
     friend class Configurations;
 };
