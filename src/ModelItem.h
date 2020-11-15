@@ -22,10 +22,6 @@ class ModelItem : public QObject
 {
     Q_OBJECT
 
-public: // Aliases
-
-    using AffectedColumns = QVector<std::int32_t>;
-
 public: // Construction
 
     /**
@@ -113,6 +109,16 @@ public: // Miscellaneous
     /** Get the configurations model */
     static const ConfigurationsModel* getModel();
 
+    /** Sets the model item dirty (increase the modified timer with 1) */
+    void setModified() {
+        _modified++;
+    }
+
+    /** Gets modified time */
+    std::int32_t getModified() const {
+        return _modified;
+    }
+
 protected:
 
     /**
@@ -125,8 +131,9 @@ protected:
     static hdps::CoreInterface* getCore();
 
 protected:
-    QString                 _type;          /** Name */
-    ModelItem*              _parent;		/** Parent model item */
+    QString         _type;          /** Name */
+    ModelItem*      _parent;		/** Parent model item */
+    std::int32_t    _modified;      /** Modified time */
 
     static std::int32_t maxNoColumns;
 

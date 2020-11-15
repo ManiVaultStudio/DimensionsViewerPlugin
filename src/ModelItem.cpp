@@ -10,7 +10,8 @@ DimensionsViewerPlugin* ModelItem::dimensionsViewerPlugin = nullptr;
 ModelItem::ModelItem(const QString& type, ModelItem* parent /*= nullptr*/) :
     QObject(parent),
     _type(type),
-    _parent(parent)
+    _parent(parent),
+    _modified(-1)
 {
 }
 
