@@ -13,7 +13,7 @@
 using hdps::plugin::ViewPluginFactory;
 using hdps::plugin::ViewPlugin;
 
-class DimensionsViewerWidget;
+class ViewerWidget;
 class ConfigurationWidget;
 
 class DimensionsViewerPlugin : public ViewPlugin
@@ -43,7 +43,7 @@ public:
 
 private:
 	ConfigurationsModel			_configurationsModel;           /** Configurations model */
-	DimensionsViewerWidget*		_dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
+	ViewerWidget*		_dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
     ConfigurationWidget*		_configurationWidget;           /** Configuration widget */
 };
 

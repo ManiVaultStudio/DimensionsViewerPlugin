@@ -11,7 +11,7 @@
 #include <QStringListModel>
 
 ChannelWidget::ChannelWidget(QWidget* parent) :
-    ModelItemWidget(parent),
+    TreeItemWidget(parent),
 	_ui{ std::make_unique<Ui::ChannelWidget>() }
 {
 	_ui->setupUi(this);
@@ -252,7 +252,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
 
 void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setModelIndex(modelIndex);
+    TreeItemWidget::setModelIndex(modelIndex);
 
     _ui->stylingPushButton->setModelIndex(modelIndex);
 

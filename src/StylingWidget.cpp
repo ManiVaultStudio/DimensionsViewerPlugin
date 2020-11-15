@@ -7,7 +7,7 @@
 #include <QStringListModel>
 
 StylingWidget::StylingWidget(QWidget* parent) :
-    ModelItemWidget(parent),
+    TreeItemWidget(parent),
     _ui { std::make_unique<Ui::StylingWidget>() }
 {
     setWindowFlags(Qt::Popup);
@@ -145,7 +145,7 @@ StylingWidget::StylingWidget(QWidget* parent) :
 
 void StylingWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setModelIndex(modelIndex);
+    TreeItemWidget::setModelIndex(modelIndex);
     
     getWidgetMapper("LineTypesProfile")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::LineTypes)));
     getWidgetMapper("LineTypesRange")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::LineTypes)));

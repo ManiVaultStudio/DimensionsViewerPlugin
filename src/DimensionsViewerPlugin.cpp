@@ -1,6 +1,6 @@
 #include "DimensionsViewerPlugin.h"
-#include "ModelItemWidget.h"
-#include "DimensionsViewerWidget.h"
+#include "TreeItemWidget.h"
+#include "ViewerWidget.h"
 #include "ConfigurationWidget.h"
 
 #include <QDebug>
@@ -17,9 +17,9 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     TreeItem::setDimensionsViewerPlugin(this);
-    ModelItemWidget::setDimensionsViewerPlugin(this);
+    TreeItemWidget::setDimensionsViewerPlugin(this);
 
-	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
+	_dimensionsViewerWidget = new ViewerWidget(this);
 	_configurationWidget = new ConfigurationWidget(this);
 }
 

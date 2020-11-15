@@ -246,10 +246,10 @@ const Configurations& ConfigurationsModel::getConfigurations() const
 TreeItem* ConfigurationsModel::getItem(const QModelIndex& index) const
 {
     if (index.isValid()) {
-        auto modelItem = static_cast<TreeItem*>(index.internalPointer());
+        auto treeItem = static_cast<TreeItem*>(index.internalPointer());
 
-        if (modelItem)
-            return modelItem;
+        if (treeItem)
+            return treeItem;
     }
 
     return static_cast<TreeItem*>(const_cast<Configurations*>(&_configurations));

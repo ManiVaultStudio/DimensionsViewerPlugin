@@ -7,7 +7,7 @@
 #include <QDebug>
 
 ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
-    ModelItemWidget(parent),
+    TreeItemWidget(parent),
 	_ui{ std::make_unique<Ui::ConfigurationWidget>() }
 {
 	_ui->setupUi(this);
@@ -27,7 +27,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
 
 void ConfigurationWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setModelIndex(modelIndex);
+    TreeItemWidget::setModelIndex(modelIndex);
 
     _ui->channelsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Channels)));
     _ui->miscellaneousWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Miscellaneous)));

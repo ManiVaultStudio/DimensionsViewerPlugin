@@ -8,7 +8,7 @@
 #include <QDebug>
 
 ChannelsWidget::ChannelsWidget(QWidget* parent) :
-    ModelItemWidget(parent),
+    TreeItemWidget(parent),
 	_ui{ std::make_unique<Ui::ChannelsWidget>() }
 {
 	_ui->setupUi(this);
@@ -16,7 +16,7 @@ ChannelsWidget::ChannelsWidget(QWidget* parent) :
 
 void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setModelIndex(modelIndex);
+    TreeItemWidget::setModelIndex(modelIndex);
 
     _ui->channel1Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Dataset)));
     _ui->channel2Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Subset1)));

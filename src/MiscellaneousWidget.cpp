@@ -5,7 +5,7 @@
 #include <QDebug>
 
 MiscellaneousWidget::MiscellaneousWidget(QWidget* parent) :
-    ModelItemWidget(parent),
+    TreeItemWidget(parent),
 	_ui{ std::make_unique<Ui::MiscellaneousWidget>() }
 {
     _ui->setupUi(this);
@@ -43,5 +43,5 @@ MiscellaneousWidget::MiscellaneousWidget(QWidget* parent) :
 
 void MiscellaneousWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
-    ModelItemWidget::setModelIndex(modelIndex);
+    TreeItemWidget::setModelIndex(modelIndex);
 }

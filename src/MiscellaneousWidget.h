@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ModelItemWidget.h"
+#include "TreeItemWidget.h"
 
 #include <memory>
 
@@ -17,7 +17,7 @@ namespace Ui {
  *
  * @author T. Kroes
  */
-class MiscellaneousWidget : public ModelItemWidget
+class MiscellaneousWidget : public TreeItemWidget
 {
 public: // Construction
 
@@ -27,7 +27,7 @@ public: // Construction
      */
     MiscellaneousWidget(QWidget* parent);
 
-public: // Inherited from ModelItemWidget
+public: // Inherited
 
     /**
      * Sets the model index for this model item widget

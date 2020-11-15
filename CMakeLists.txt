@@ -41,9 +41,9 @@ file(GLOB WIDGETS
 	src/ChannelsWidget.*
 	src/ChannelWidget.*
 	src/ConfigurationWidget.*
-	src/DimensionsViewerWidget.*
+	src/ViewerWidget.*
 	src/MiscellaneousWidget.*
-	src/ModelItemWidget.*
+	src/TreeItemWidget.*
 	src/StylingWidget.*
 	src/StylingPushButton.*
 )

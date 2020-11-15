@@ -1,4 +1,4 @@
-#include "DimensionsViewerWidget.h"
+#include "ViewerWidget.h"
 #include "DimensionsViewerPlugin.h"
 #include "Configuration.h"
 
@@ -8,7 +8,7 @@
 #include <QDropEvent>
 #include <QMimeData>
 
-DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
+ViewerWidget::ViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	QWebEngineView(),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
     _webChannel(new QWebChannel(this)),
@@ -26,7 +26,7 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
     load(QUrl("qrc:DimensionsViewer.html"));
 }
 
-void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
+void ViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
 {
 	const auto items        = dragEnterEvent->mimeData()->text().split("\n");
 	const auto datasetName  = items.at(0);
@@ -36,7 +36,7 @@ void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
 		dragEnterEvent->acceptProposedAction();
 }
 
-void DimensionsViewerWidget::dropEvent(QDropEvent* dropEvent)
+void ViewerWidget::dropEvent(QDropEvent* dropEvent)
 {
 	const auto items        = dropEvent->mimeData()->text().split("\n");
 	const auto datasetName  = items.at(0);

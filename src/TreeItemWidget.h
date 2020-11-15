@@ -10,11 +10,11 @@
 class DimensionsViewerPlugin;
 
 /**
- * Model item widget class
+ * Tree item widget base class
  *
  * @author T. Kroes
  */
-class ModelItemWidget : public QWidget
+class TreeItemWidget : public QWidget
 {
 public:
 
@@ -96,7 +96,7 @@ public:
     protected:
         static QAbstractItemModel*  model;      /** Model to register to */
 
-        friend class ModelItemWidget;
+        friend class TreeItemWidget;
     };
 
 public: // Construction
@@ -105,7 +105,7 @@ public: // Construction
      * Constructor
      * @param parent Parent widget
      */
-    ModelItemWidget(QWidget* parent);
+    TreeItemWidget(QWidget* parent);
 
 protected:
 

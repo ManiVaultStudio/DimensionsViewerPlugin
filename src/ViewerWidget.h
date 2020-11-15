@@ -10,13 +10,13 @@ class QDragEnterEvent;
 class QDropEvent;
 
 /**
- * Dimensions viewer widget class
+ * Viewer widget class
  *
  * UI widget class for displaying dimensions with the Vega (JS visualization)
  *
  * @author T. Kroes
  */
-class DimensionsViewerWidget : public QWebEngineView
+class ViewerWidget : public QWebEngineView
 {
 	Q_OBJECT
 
@@ -26,7 +26,7 @@ public: // Construction
      * Constructor
      * @param dimensionsViewerPlugin Pointer to an instance of the dimensions viewer plugin
      */
-    DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin);
+    ViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
 private: // Drag and drop
 
