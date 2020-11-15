@@ -194,6 +194,8 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             //if (meanOrMedianChannel)
             //    flags |= Qt::ItemIsEditable;
 
+            flags |= Qt::ItemIsEditable;
+
             if (enabled) {
                 switch (channel)
                 {
@@ -550,6 +552,8 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Channel::Column::InternalName:
                 case Channel::Column::DisplayName:
                 case Channel::Column::Enabled:
+                    return QString("%1: %2").arg(getData(to_ul(Column::DisplayName), Qt::DisplayRole).toString(), getData(column, Qt::DisplayRole).toString());
+
                 case Channel::Column::DatasetNames:
                 case Channel::Column::DatasetName:
                 case Channel::Column::ProfileTypes:
@@ -573,7 +577,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                     return tooltip(getData(column, Qt::DisplayRole).toString());
 
                 case Channel::Column::Linked:
-                    return QString("%1: %2").arg("Linked to dataset", getData(column, Qt::EditRole).toBool() ? "true" : "false");
+                    return QString("%1: %2").arg("Linked to dataset", getData(column, Qt::DisplayRole).toString());
 
                 case Channel::Column::NoDimensions:
                 case Channel::Column::NoPoints:
