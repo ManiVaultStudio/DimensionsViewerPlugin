@@ -132,6 +132,8 @@ int Channels::getChildIndex(TreeItem* child) const
 
 void Channels::accept(Visitor* visitor) const
 {
+    TreeItem::accept(visitor);
+
     visitor->visitChannels(this);
 }
 

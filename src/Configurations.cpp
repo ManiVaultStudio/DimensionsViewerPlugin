@@ -115,6 +115,8 @@ int Configurations::getChildIndex(TreeItem* child) const
 
 void Configurations::accept(Visitor* visitor) const
 {
+    TreeItem::accept(visitor);
+
     visitor->visitConfigurations(this);
 }
 

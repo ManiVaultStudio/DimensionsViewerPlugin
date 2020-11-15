@@ -958,6 +958,8 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
 void Channel::accept(Visitor* visitor) const
 {
+    TreeItem::accept(visitor);
+
     visitor->visitChannel(this);
 }
 
