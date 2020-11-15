@@ -7,7 +7,6 @@ std::int32_t Configuration::maxNoDimensions = 100;
 std::int32_t Configuration::noConfigurations = 0;
 
 const QMap<QString, Configuration::Column> Configuration::columns = {
-    { "Type", Configuration::Column::Type },
     { "Index", Configuration::Column::Index },
     { "Dataset name", Configuration::Column::DatasetName },
     { "Data name", Configuration::Column::DataName },
@@ -19,12 +18,9 @@ Configuration::Configuration(TreeItem* parent, const QString& datasetName, const
 	_index(noConfigurations),
     _datasetName(datasetName),
     _dataName(dataName),
-	_channels(this, datasetName, dataName),
-    _spec()
+	_channels(this, datasetName, dataName)
 {
     noConfigurations++;
-
-    _spec["modified"] = 0;
 }
 
 int Configuration::columnCount() const 
@@ -34,13 +30,15 @@ int Configuration::columnCount() const
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
+    if (static_cast<TreeItem::Column>(index.column()) <= TreeItem::Column::_End)
+        return TreeItem::getFlags(index);
+
     Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
     const auto column = static_cast<Column>(index.column());
 
     switch (column)
     {
-        case Column::Type:
         case Column::Index:
         case Column::DatasetName:
         case Column::DataName:
@@ -60,15 +58,15 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 
 QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& role) const
 {
+    if (static_cast<TreeItem::Column>(column) <= TreeItem::Column::_End)
+        return TreeItem::getData(column, role);
+
     switch (role)
     {
         case Qt::EditRole: {
 
             switch (static_cast<Column>(column))
             {
-                case Configuration::Column::Type:
-                    return _type;
-
                 case Configuration::Column::Index:
                     return _index;
 
@@ -89,9 +87,6 @@ QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& 
 
             switch (static_cast<Column>(column))
             {
-                case Configuration::Column::Type:
-                    return getData(column, Qt::EditRole);
-
                 case Configuration::Column::Index:
                     return QString::number(getData(column, Qt::EditRole).toInt());
 
@@ -117,6 +112,9 @@ QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& 
 
 QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
+    if (static_cast<TreeItem::Column>(index.column()) <= TreeItem::Column::_End)
+        return TreeItem::setData(index, value, role);
+
     QModelIndexList affectedIndices{ index };
 
     switch (role)
@@ -125,9 +123,6 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
 
             switch (static_cast<Column>(index.column()))
             {
-                case Configuration::Column::Type:
-                    break;
-
                 default:
                     break;
             }
@@ -174,8 +169,6 @@ int Configuration::getChildIndex(TreeItem* child) const
 
 void Configuration::accept(Visitor* visitor) const
 {
-    TreeItem::accept(visitor);
-
     visitor->visitConfiguration(this);
 }
 
@@ -183,30 +176,3 @@ const Channels* Configuration::getChannels() const
 {
     return &_channels;
 }
-
-void Configuration::updateSpec()
-{
-    /*QVariantMap channels;
-
-    for (auto channel : _channels) {
-        if (!channel->isEnabled())
-            continue;
-
-        channels[channel->getInternalName()] = channel->getSpec();
-    }
-
-    _spec["channels"]               = channels;
-    _spec["showDimensionNames"]     = _showDimensionNames;*/
-}
-
-QVariantMap Configuration::getSpec() const
-{
-	return _spec;
-}
-
-std::int32_t Configuration::getModified() const
-{
-    return _spec["modified"].toInt();
-}
-
-

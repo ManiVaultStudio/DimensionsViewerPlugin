@@ -5,10 +5,6 @@
 
 #include <QDebug>
 
-const QMap<QString, Channels::Column> Channels::columns = {
-    { "Type", Channels::Column::Type }
-};
-
 const QMap<QString, Channels::Row> Channels::rows = {
     { "Dataset", Channels::Row::Dataset },
     { "Subset 1", Channels::Row::Subset1 },
@@ -39,68 +35,12 @@ Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
 
 QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role) const
 {
-    switch (role)
-    {
-        case Qt::EditRole: {
-
-            switch (static_cast<Column>(column))
-            {
-                case Channels::Column::Type:
-                    return _type;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case Qt::DisplayRole: {
-
-            switch (static_cast<Column>(column))
-            {
-                case Channels::Column::Type:
-                    return getData(column, Qt::EditRole);
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-
     return QVariant();
 }
 
 QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices{ index };
-
-    switch (role)
-    {
-        case Qt::EditRole: {
-
-            switch (static_cast<Column>(index.column()))
-            {
-                case Channels::Column::Type:
-                    break;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    return affectedIndices;
+    return QModelIndexList();
 }
 
 TreeItem* Channels::getChild(const int& index) const
@@ -132,8 +72,6 @@ int Channels::getChildIndex(TreeItem* child) const
 
 void Channels::accept(Visitor* visitor) const
 {
-    TreeItem::accept(visitor);
-
     visitor->visitChannels(this);
 }
 

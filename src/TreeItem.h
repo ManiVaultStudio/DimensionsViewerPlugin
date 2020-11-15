@@ -4,6 +4,7 @@
 
 #include <QObject>
 #include <QModelIndex>
+#include <QUuid>
 
 class DimensionsViewerPlugin;
 class ConfigurationsModel;
@@ -22,6 +23,33 @@ namespace hdps {
 class TreeItem : public QObject
 {
     Q_OBJECT
+
+public: // Columns and rows
+
+    /** Tree item columns */
+    enum class Column {
+        Name,
+        DisplayName,
+        UUID,
+        Modified,
+
+        _Start  = Name,
+        _End    = Modified,
+        _Count  = _End + 1
+    };
+
+    /** Maps column name to column enum and vice versa */
+    static QMap<QString, Column> const columns;
+
+    /** Get string representation of column enum */
+    static QString getColumnTypeName(const Column& column) {
+        return columns.key(column);
+    }
+
+    /** Get enum representation from column type name */
+    static Column getColumnTypeEnum(const QString& columnName) {
+        return columns[columnName];
+    }
 
 public: // Construction
 
@@ -42,7 +70,7 @@ public: // Model API
      * @param index Model index
      * @return Item flags for the index
      */
-    virtual Qt::ItemFlags getFlags(const QModelIndex& index) const = 0;
+    virtual Qt::ItemFlags getFlags(const QModelIndex& index) const;
 
     /**
      * Get data
@@ -59,7 +87,7 @@ public: // Model API
      * @param role Data role
      * @return Model indices that are affected by the operation
      */
-    virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) = 0;
+    virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
 
     /**
      * Get data
@@ -67,7 +95,7 @@ public: // Model API
      * @param role Data role
      * @return Data in variant form
      */
-    virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const = 0;
+    virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const;
 
     /**
      * Returns the model index belonging to the given model row and column (wraps the model index())
@@ -108,10 +136,10 @@ public: // Hierarchy API
     /** Returns whether the tree item is a leaf node */
     bool isLeaf() const;
 
-protected: // Visitor API
+public: // Visitor API
 
     /** Accept visitor */
-    virtual void accept(Visitor* visitor) const;
+    virtual void accept(Visitor* visitor) const = 0;
 
 public: // Miscellaneous
 
@@ -128,6 +156,11 @@ public: // Miscellaneous
         return _modified;
     }
 
+    /** Get unique identifier */
+    QUuid getUuid() const {
+        return _uuid;
+    }
+
 protected:
 
     /**
@@ -140,9 +173,11 @@ protected:
     static hdps::CoreInterface* getCore();
 
 protected:
-    QString         _type;          /** Name */
-    TreeItem*      _parent;		    /** Parent tree item */
-    std::int32_t    _modified;      /** Modified time */
+    QString         _internalName;      /** Name */
+    QString         _displayName;       /** Display name */
+    QUuid           _uuid;              /** Unique identifier */
+    TreeItem*       _parent;            /** Parent tree item */
+    std::int32_t    _modified;          /** Modified time */
 
     static std::int32_t maxNoColumns;
 

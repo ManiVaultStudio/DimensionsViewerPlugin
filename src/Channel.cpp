@@ -11,10 +11,7 @@
 #include <QVariantList>
 
 const QMap<QString, Channel::Column> Channel::columns = {
-    { "Type", Channel::Column::Type },
     { "Index", Channel::Column::Index },
-    { "Internal name", Channel::Column::InternalName },
-    { "Display name", Channel::Column::DisplayName },
     { "Enabled", Channel::Column::Enabled },
     { "Dataset names", Channel::Column::DatasetNames },
     { "Dataset name", Channel::Column::DatasetName },
@@ -48,8 +45,6 @@ const QMap<QString, Channel::Row> Channel::rows = {
 Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity /*= 1.0f*/) :
     TreeItem("Channel", parent),
 	_index(index),
-	_internalName(QString("channel%1").arg(QString::number(index))),
-	_displayName(displayName),
 	_enabled(enabled),
     _datasetNames(),
 	_datasetName(datasetName),
@@ -57,10 +52,12 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& di
     _differential(this),
     _linked(linked),
 	_styling(),
-	_spec(),
     _points(nullptr)
 {
     resolvePoints();
+
+    _internalName   = QString("channel%1").arg(QString::number(index)),
+    _displayName    = displayName;
 
     _styling.setColor(color);
     _styling.setOpacity(opacity);
@@ -73,6 +70,9 @@ int Channel::columnCount() const
 
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 {
+    if (static_cast<TreeItem::Column>(index.column()) <= TreeItem::Column::_End)
+        return TreeItem::getFlags(index);
+
     Qt::ItemFlags flags;
 
     const auto column               = static_cast<Column>(index.column());
@@ -83,10 +83,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
-        case Column::Type:
         case Column::Index:
-        case Column::InternalName:
-        case Column::DisplayName:
         {
             flags |= Qt::ItemIsEnabled;
 
@@ -354,6 +351,9 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
 QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) const
 {
+    if (static_cast<TreeItem::Column>(column) <= TreeItem::Column::_End)
+        return TreeItem::getData(column, role);
+
     const auto row = static_cast<Channels::Row>(_index);
 
     switch (role)
@@ -362,17 +362,8 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
         {
             switch (static_cast<Column>(column))
             {
-                case Channel::Column::Type:
-                    return _type;
-
                 case Channel::Column::Index:
                     return _index;
-
-                case Channel::Column::InternalName:
-                    return _internalName;
-
-                case Channel::Column::DisplayName:
-                    return _displayName;
 
                 case Channel::Column::Enabled:
                 {
@@ -464,17 +455,8 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
         {
             switch (static_cast<Column>(column))
             {
-                case Channel::Column::Type:
-                    return getData(column, Qt::EditRole);
-
                 case Channel::Column::Index:
                     return QString::number(getData(column, Qt::EditRole).toInt());
-
-                case Channel::Column::InternalName:
-                    return getData(column, Qt::EditRole);
-
-                case Channel::Column::DisplayName:
-                    return getData(column, Qt::EditRole);
 
                 case Channel::Column::Enabled:
                     return getData(column, Qt::EditRole).toBool() ? "on" : "off";
@@ -548,12 +530,9 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
             switch (static_cast<Column>(column))
             {
-                case Channel::Column::Type:
                 case Channel::Column::Index:
-                case Channel::Column::InternalName:
-                case Channel::Column::DisplayName:
                 case Channel::Column::Enabled:
-                    return QString("%1: %2").arg(getData(to_ul(Column::DisplayName), Qt::DisplayRole).toString(), getData(column, Qt::DisplayRole).toString());
+                    return QString("%1: %2").arg(getData(to_ul(TreeItem::Column::DisplayName), Qt::DisplayRole).toString(), getData(column, Qt::DisplayRole).toString());
 
                 case Channel::Column::DatasetNames:
                 case Channel::Column::DatasetName:
@@ -595,10 +574,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
         {
             switch (static_cast<Column>(column))
             {
-                case Channel::Column::Type:
                 case Channel::Column::Index:
-                case Channel::Column::InternalName:
-                case Channel::Column::DisplayName:
                 case Channel::Column::Enabled:
                 case Channel::Column::DatasetNames:
                 case Channel::Column::DatasetName:
@@ -646,6 +622,9 @@ QVariant Channel::getData(const Column& column, const std::int32_t& role) const
 
 QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
+    if (static_cast<TreeItem::Column>(index.column()) <= TreeItem::Column::_End)
+        return TreeItem::setData(index, value, role);
+
     QModelIndexList affectedIndices{ index };
 
     const auto row      = static_cast<Channels::Row>(_index);
@@ -695,10 +674,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         {
             switch (column)
             {
-                case Channel::Column::Type:
                 case Channel::Column::Index:
-                case Channel::Column::InternalName:
-                case Channel::Column::DisplayName:
                     break;
 
                 case Channel::Column::Enabled:
@@ -879,10 +855,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         {
             switch (column)
             {
-                case Channel::Column::Type:
                 case Channel::Column::Index:
-                case Channel::Column::InternalName:
-                case Channel::Column::DisplayName:
                 case Channel::Column::Enabled:
                 case Channel::Column::DatasetNames:
                 case Channel::Column::DatasetName:
@@ -958,8 +931,6 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
 void Channel::accept(Visitor* visitor) const
 {
-    TreeItem::accept(visitor);
-
     visitor->visitChannel(this);
 }
 
@@ -1015,132 +986,128 @@ bool Channel::isSubset() const
 	return !_points->indices.empty();
 }
 
-void Channel::updateSpec()
-{
-	if (_points == nullptr)
-		return;
 
-	//qDebug() << "Updating dimensions for" << _points->getName();
-
-	const auto& selection = dynamic_cast<Points&>(getCore()->requestSelection(_points->getDataName()));
-	
-	std::vector<std::uint32_t> pointIndices;
-	
-	if (isSubset()) {
-		pointIndices.resize(_points->indices.size());
-		std::iota(pointIndices.begin(), pointIndices.end(), 0);
-	}
-	else {
-		if (selection.indices.size() > 0) {
-			pointIndices = selection.indices;
-		}
-		else {
-			pointIndices.resize(_points->getNumPoints());
-			std::iota(pointIndices.begin(), pointIndices.end(), 0);
-		}
-	}
-
-	std::vector<std::uint32_t> dimensionIndices;
-
-	dimensionIndices.resize(_points->getNumDimensions());
-	std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
-	
-	QVariantList dimensions;
-
-    std::vector<float> dimensionValues;
-
-    dimensionValues.resize(pointIndices.size());
-
-	if (_enabled && !pointIndices.empty()) {
-		_points->visitSourceData([this, &pointIndices, &dimensionIndices, &dimensions, &dimensionValues](auto& pointData) {
-			for (const auto& dimensionIndex : dimensionIndices) {
-				auto localPointIndex = 0;
-
-				for (const auto& pointIndex : pointIndices) {
-					dimensionValues[localPointIndex] = pointData[pointIndex][dimensionIndex];
-					localPointIndex++;
-				}
-
-				QVariantMap dimension;
-
-				dimension["chn"]		= _index;
-				dimension["dimId"]		= dimensionIndex;
-				dimension["dimName"]	= _points->getDimensionNames().at(dimensionIndex);
-
-                const float sum     = std::accumulate(dimensionValues.begin(), dimensionValues.end(), 0.0);
-				const float mean    = sum / dimensionValues.size();
-
-				std::vector<float> diff(dimensionValues.size());
-
-				std::transform(dimensionValues.begin(), dimensionValues.end(), diff.begin(), [mean](double x) { return x - mean; });
-
-				switch (_profile.getProfileType())
-				{
-					case Profile::ProfileType::Mean: {
-						dimension["agg"] = mean;
-						break;
-					}
-
-					case Profile::ProfileType::Median: {
-						std::sort(dimensionValues.begin(), dimensionValues.end());
-						dimension["agg"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
-						break;
-					}
-
-					default:
-						break;
-				}
-
-				switch (_profile.getRangeType())
-				{
-                    case Profile::RangeType::StandardDeviation1: {
-						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-						double stdDev1	= std::sqrt(sqSum / dimensionValues.size());
-
-						dimension["v1"] = mean - stdDev1;
-						dimension["v2"] = mean + stdDev1;
-						break;
-					}
-
-					case Profile::RangeType::StandardDeviation2: {
-						double sqSum	= std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-						double stdDev2	= 2.0 * std::sqrt(sqSum / dimensionValues.size());
-
-						dimension["v1"] = mean - stdDev2;
-						dimension["v2"] = mean + stdDev2;
-						break;
-					}
-
-                    case Profile::RangeType::MinMax: {
-                        auto result = std::minmax_element(dimensionValues.begin(), dimensionValues.end());
-
-                        dimension["min"] = *result.first;
-                        dimension["max"] = *result.second;
-                        break;
-                    }
-
-					default:
-						break;
-				}
-
-				dimensions.append(dimension);
-			}
-		});
-	}
-
-	_spec["enabled"]		= _enabled;
-	_spec["index"]			= _index;
-	_spec["displayName"]    = _displayName;
-	_spec["datasetName"]	= _datasetName;
-	_spec["dimensions"]		= dimensions;
-	_spec["profileType"]	= static_cast<int>(_profile.getProfileType());
-	_spec["rangeType"]		= static_cast<int>(_profile.getRangeType());
-	_spec["canDisplay"]		= canDisplay();
-
-    emit specChanged(this);
-}
-
-QVariantMap Channel::getSpec()
-{
-    return _spec;
-}
+//void Channel::updateSpec()
+//{
+//    if (_points == nullptr)
+//        return;
+//
+//    //qDebug() << "Updating dimensions for" << _points->getName();
+//
+//    const auto& selection = dynamic_cast<Points&>(getCore()->requestSelection(_points->getDataName()));
+//
+//    std::vector<std::uint32_t> pointIndices;
+//
+//    if (isSubset()) {
+//        pointIndices.resize(_points->indices.size());
+//        std::iota(pointIndices.begin(), pointIndices.end(), 0);
+//    }
+//    else {
+//        if (selection.indices.size() > 0) {
+//            pointIndices = selection.indices;
+//        }
+//        else {
+//            pointIndices.resize(_points->getNumPoints());
+//            std::iota(pointIndices.begin(), pointIndices.end(), 0);
+//        }
+//    }
+//
+//    std::vector<std::uint32_t> dimensionIndices;
+//
+//    dimensionIndices.resize(_points->getNumDimensions());
+//    std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
+//
+//    QVariantList dimensions;
+//
+//    std::vector<float> dimensionValues;
+//
+//    dimensionValues.resize(pointIndices.size());
+//
+//    if (_enabled && !pointIndices.empty()) {
+//        _points->visitSourceData([this, &pointIndices, &dimensionIndices, &dimensions, &dimensionValues](auto& pointData) {
+//            for (const auto& dimensionIndex : dimensionIndices) {
+//                auto localPointIndex = 0;
+//
+//                for (const auto& pointIndex : pointIndices) {
+//                    dimensionValues[localPointIndex] = pointData[pointIndex][dimensionIndex];
+//                    localPointIndex++;
+//                }
+//
+//                QVariantMap dimension;
+//
+//                dimension["chn"] = _index;
+//                dimension["dimId"] = dimensionIndex;
+//                dimension["dimName"] = _points->getDimensionNames().at(dimensionIndex);
+//
+//                const float sum = std::accumulate(dimensionValues.begin(), dimensionValues.end(), 0.0);
+//                const float mean = sum / dimensionValues.size();
+//
+//                std::vector<float> diff(dimensionValues.size());
+//
+//                std::transform(dimensionValues.begin(), dimensionValues.end(), diff.begin(), [mean](double x) { return x - mean; });
+//
+//                switch (_profile.getProfileType())
+//                {
+//                    case Profile::ProfileType::Mean: {
+//                        dimension["agg"] = mean;
+//                        break;
+//                    }
+//
+//                    case Profile::ProfileType::Median: {
+//                        std::sort(dimensionValues.begin(), dimensionValues.end());
+//                        dimension["agg"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
+//                        break;
+//                    }
+//
+//                    default:
+//                        break;
+//                }
+//
+//                switch (_profile.getRangeType())
+//                {
+//                    case Profile::RangeType::StandardDeviation1: {
+//                        double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+//                        double stdDev1 = std::sqrt(sqSum / dimensionValues.size());
+//
+//                        dimension["v1"] = mean - stdDev1;
+//                        dimension["v2"] = mean + stdDev1;
+//                        break;
+//                    }
+//
+//                    case Profile::RangeType::StandardDeviation2: {
+//                        double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+//                        double stdDev2 = 2.0 * std::sqrt(sqSum / dimensionValues.size());
+//
+//                        dimension["v1"] = mean - stdDev2;
+//                        dimension["v2"] = mean + stdDev2;
+//                        break;
+//                    }
+//
+//                    case Profile::RangeType::MinMax: {
+//                        auto result = std::minmax_element(dimensionValues.begin(), dimensionValues.end());
+//
+//                        dimension["min"] = *result.first;
+//                        dimension["max"] = *result.second;
+//                        break;
+//                    }
+//
+//                    default:
+//                        break;
+//                }
+//
+//                dimensions.append(dimension);
+//            }
+//        });
+//    }
+//
+//    _spec["enabled"] = _enabled;
+//    _spec["index"] = _index;
+//    _spec["displayName"] = _displayName;
+//    _spec["datasetName"] = _datasetName;
+//    _spec["dimensions"] = dimensions;
+//    _spec["profileType"] = static_cast<int>(_profile.getProfileType());
+//    _spec["rangeType"] = static_cast<int>(_profile.getRangeType());
+//    _spec["canDisplay"] = canDisplay();
+//
+//    emit specChanged(this);
+//}

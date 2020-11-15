@@ -28,10 +28,7 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Type,
-        Index,
-        InternalName,
-        DisplayName,
+        Index = static_cast<std::int32_t>(TreeItem::Column::_Count),
         Enabled,
         DatasetNames,
         DatasetName,
@@ -68,7 +65,7 @@ public: // Columns and rows
             NoPoints,                                   /** TODO */
         _PointsEnd = NoPoints,                          /** TODO */
 
-        _Start  = Type,
+        _Start  = Index,
         _End    = _PointsEnd,
         _Count  = _End + 1
     };
@@ -211,34 +208,19 @@ public: // Getters
         return _styling;
     }
 
-protected: // Spec
-
-	/** Updates the visualization specification */
-	void updateSpec();
-
-    /** Returns the visualization specification */
-    QVariantMap getSpec();
-
-signals:
-
-    /** Signals that the channel spec has changed */
-    void specChanged(Channel* channel);
-
 private:
-	const std::uint32_t		_index;				        /** Index */
-	const QString			_internalName;		        /** Internal name (e.g. channel1, channel2) */
-	QString			        _displayName;		        /** Display name (e.g. dataset, Subset1 and Subset 2) */
-	bool					_enabled;			        /** Whether the channel is enabled or not */
-	bool					_linked;                    /** Whether settings are linked to the settings of the first channel */
-	QStringList             _datasetNames;		        /** Dataset names */
-	QString					_datasetName;		        /** Dataset name */
-    Profile				    _profile;		            /** Profile settings */
-    Differential            _differential;              /** Differential settings */
-    Styling				    _styling;		            /** Style settings */
-	QVariantMap				_spec;				        /** Specification for use in JS visualization client (Vega) */
-	Points*					_points;			        /** Pointer to points dataset */
+    const std::uint32_t     _index;             /** Index */
+    bool                    _enabled;           /** Whether the channel is enabled or not */
+    bool                    _linked;            /** Whether settings are linked to the settings of the first channel */
+    QStringList             _datasetNames;      /** Dataset names */
+    QString                 _datasetName;       /** Dataset name */
+    Profile                 _profile;           /** Profile settings */
+    Differential            _differential;      /** Differential settings */
+    Styling                 _styling;           /** Style settings */
+    Points*                 _points;            /** Pointer to points dataset */
 
 protected:
+	friend class ConfigurationsModel;
 	friend class Channels;
 	friend class Differential;
 };

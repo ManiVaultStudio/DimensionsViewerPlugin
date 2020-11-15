@@ -2,6 +2,8 @@
 #include "DimensionsViewerPlugin.h"
 #include "Configurations.h"
 #include "Configuration.h"
+#include "Channels.h"
+#include "Channel.h"
 
 #include "PointData.h"
 
@@ -67,6 +69,12 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
 
     for (auto affectedIndex : affectedIndices) {
         emit dataChanged(affectedIndex, affectedIndex);
+    }
+
+    const auto selectedConfiguration = getSelectedConfiguration();
+
+    if (selectedConfiguration != nullptr) {
+        emit configurationChanged(selectedConfiguration);
     }
 
     return true;

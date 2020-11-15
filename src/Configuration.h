@@ -25,13 +25,12 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Type,
-        Index,
+        Index = static_cast<std::int32_t>(TreeItem::Column::_Count),
         DatasetName,
         DataName,
         SelectionStamp,
 
-        _Start  = Type,
+        _Start  = Index,
         _End    = SelectionStamp,
         _Count  = _End + 1
     };
@@ -126,31 +125,11 @@ public: // Miscellaneous
     /** Get channels tree item */
     const Channels* getChannels() const;
 
-public: // Spec
-
-    /** Update configuration spec */
-    void updateSpec();
-
-	/** Get configuration spec */
-	QVariantMap getSpec() const;
-
-    /** Get modification time stamp */
-    std::int32_t getModified() const;
-
-private: // Internal
-
-    /**
-     * Updates the differential profile settings
-     * @return Columns that are affected by the operation
-     */
-     //AffectedColumns updateDifferentialProfile();
-
 protected:
-    std::int32_t            _index;                         /** TODO */
-    QString                 _datasetName;                   /** TODO */
-    QString					_dataName;			            /** Name of the points data */
-    Channels		        _channels;                      /** TODO */
-    QVariantMap             _spec;                          /** Specification for use in JS visualization client (Vega) */
+    std::int32_t    _index;             /** TODO */
+    QString         _datasetName;       /** TODO */
+    QString         _dataName;          /** Name of the points data */
+    Channels        _channels;          /** TODO */
 
 protected:
     static std::int32_t maxNoDimensions;

@@ -5,42 +5,40 @@
 #include <QDebug>
 
 SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugin) :
-	_dimensionsViewerPlugin(dimensionsViewerPlugin)
+	_dimensionsViewerPlugin(dimensionsViewerPlugin),
+    _timer(),
+    _specVisitor(),
+    _updateInterval(20)
 {
-    auto& configurationsModel = _dimensionsViewerPlugin->getModel();
+    QObject::connect(&_timer, &QTimer::timeout, [this]() {
+        qDebug() << "Updating";
 
-    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, [this, &configurationsModel](const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/) {
-        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
+        const auto selectedConfiguration = _dimensionsViewerPlugin->getModel().getSelectedConfiguration();
 
-        if (selectedRows.isEmpty())
-            return;
+        selectedConfiguration->accept(&_specVisitor);
 
-        if (selectedRows.first().row() != begin.row())
-            return;
+        qDebug() << _specVisitor.getSpec();
 
-        //configurationsModel.getSelectedConfiguration()->updateSpec();
-
-        //_spec = configurationsModel.getSelectedConfiguration()->getSpec();
+        _timer.stop();
     });
 
-    QObject::connect(&configurationsModel.getSelectionModel(), &QItemSelectionModel::selectionChanged, [this, &configurationsModel](const QItemSelection& selected, const QItemSelection& deselected) {
-        const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
+    QObject::connect(&_dimensionsViewerPlugin->getModel(), &ConfigurationsModel::configurationChanged, [this](const Configuration* configuration) {
+        const auto selectedConfiguration = _dimensionsViewerPlugin->getModel().getSelectedConfiguration();
 
-        if (selectedRows.isEmpty())
+        if (configuration != selectedConfiguration)
             return;
 
-        emit selectionChanged();
+        if (_timer.isActive()) {
+            _timer.stop();
+
+            
+        }
+        
+        _timer.start(_updateInterval);
     });
 }
 
 QVariantMap SpecSynchronizer::getSpec(const int& modified)
 {
-    auto selectedConfiguration = _dimensionsViewerPlugin->getModel().getSelectedConfiguration();
-
-    if (selectedConfiguration != nullptr && selectedConfiguration->getModified() > modified) {
-        selectedConfiguration->updateSpec();
-        return selectedConfiguration->getSpec();
-    }
-
     return QVariantMap();
 }

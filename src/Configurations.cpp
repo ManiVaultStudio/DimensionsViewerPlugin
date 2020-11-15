@@ -4,10 +4,6 @@
 
 #include <QMessageBox>
 
-const QMap<QString, Configurations::Column> Configurations::columns = {
-    { "Type", Configurations::Column::Type }
-};
-
 Configurations::Configurations() :
     TreeItem("Configurations"),
     _configurations()
@@ -16,78 +12,22 @@ Configurations::Configurations() :
 
 int Configurations::columnCount() const 
 {
-    return to_ul(Column::Count);
+    return 0;
 }
 
 Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
 {
-    return getChild(index.row())->getFlags(index);
+    return TreeItem::getFlags(index);
 }
 
 QVariant Configurations::getData(const std::int32_t& column, const std::int32_t& role) const
 {
-    switch (role)
-    {
-        case Qt::EditRole: {
-
-            switch (static_cast<Column>(column))
-            {
-                case Configurations::Column::Type:
-                    return _type;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case Qt::DisplayRole: {
-
-            switch (static_cast<Column>(column))
-            {
-                case Configurations::Column::Type:
-                    return getData(column, Qt::EditRole);
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    return QVariant();
+    return TreeItem::getData(column, role);
 }
 
 QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices{ index };
-
-    switch (role)
-    {
-        case Qt::EditRole: {
-
-            switch (static_cast<Column>(index.column()))
-            {
-                case Configurations::Column::Type:
-                    break;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    return affectedIndices;
+    return TreeItem::setData(index, value, role);
 }
 
 TreeItem* Configurations::getChild(const int& index) const
@@ -115,8 +55,6 @@ int Configurations::getChildIndex(TreeItem* child) const
 
 void Configurations::accept(Visitor* visitor) const
 {
-    TreeItem::accept(visitor);
-
     visitor->visitConfigurations(this);
 }
 

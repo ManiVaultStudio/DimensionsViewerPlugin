@@ -13,15 +13,6 @@ class Configurations : public TreeItem
 {
 public: // Columns and rows
 
-    /** Tree item columns */
-    enum class Column {
-        Type,
-
-        Start   = Type,
-        End     = Type,
-        Count   = End + 1
-    };
-
     /** Maps column name to column enum and vice versa */
     static QMap<QString, Column> const columns;
 

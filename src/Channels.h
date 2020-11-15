@@ -18,28 +18,6 @@ class Channels : public TreeItem {
 
 public: // Columns and rows
 
-    /** Tree item columns */
-    enum class Column {
-        Type,
-
-        _Start  = Type,
-        _End    = Type,
-        _Count  = _End + 1
-    };
-
-    /** Maps column name to column enum and vice versa */
-    static QMap<QString, Column> const columns;
-
-    /** Get string representation of column enum */
-    static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
-    }
-
-    /** Get enum representation from column type name */
-    static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
-    }
-
     /** Tree item rows */
     enum class Row {
         Dataset,
@@ -152,6 +130,7 @@ public: // Overloaded operators
 protected:
     QVector<Channel*>       _channels;
 
+    friend class ConfigurationsModel;
     friend class Configuration;
     friend class Channel;
     friend class Differential;

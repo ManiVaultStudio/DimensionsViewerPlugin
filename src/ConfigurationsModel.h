@@ -144,6 +144,14 @@ public: // Miscellaneous
 private:
     TreeItem* getItem(const QModelIndex& index) const;
 
+signals:
+
+    /**
+     * Signals that a configuration has changed
+     * @param configuration Configuration that changed
+     */
+    void configurationChanged(const Configuration* configuration);
+
 private:
     DimensionsViewerPlugin*     _dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
     Configurations              _configurations;				/** Configurations data source */

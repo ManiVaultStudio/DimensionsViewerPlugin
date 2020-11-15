@@ -1,7 +1,9 @@
 #pragma once
 
+#include "SpecVisitor.h"
+
 #include <QObject>
-#include <QVariantMap>
+#include <QTimer>
 
 class DimensionsViewerPlugin;
 
@@ -39,4 +41,7 @@ signals:
 
 private:
 	DimensionsViewerPlugin*     _dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
+    QTimer                      _timer;                         /** Timer */
+    SpecVisitor                 _specVisitor;                   /** Spec visitor */
+    const std::int32_t          _updateInterval;                /** Update interval */
 };
