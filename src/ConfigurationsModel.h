@@ -142,7 +142,7 @@ public: // Miscellaneous
     const Configurations& getConfigurations() const;
 
 private:
-    ModelItem* getItem(const QModelIndex& index) const;
+    TreeItem* getItem(const QModelIndex& index) const;
 
 private:
     DimensionsViewerPlugin*                             _dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */

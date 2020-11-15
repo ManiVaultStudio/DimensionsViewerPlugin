@@ -9,7 +9,7 @@ const QMap<QString, Configurations::Column> Configurations::columns = {
 };
 
 Configurations::Configurations() :
-    ModelItem("Configurations"),
+    TreeItem("Configurations"),
     _configurations()
 {
 }
@@ -90,7 +90,7 @@ QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant
     return affectedIndices;
 }
 
-ModelItem* Configurations::getChild(const int& index) const
+TreeItem* Configurations::getChild(const int& index) const
 {
     if (index < 0 || index >= _configurations.size())
         return nullptr;
@@ -103,7 +103,7 @@ int Configurations::getChildCount() const
     return _configurations.size();
 }
 
-int Configurations::getChildIndex(ModelItem* child) const
+int Configurations::getChildIndex(TreeItem* child) const
 {
     const auto configuration = dynamic_cast<Configuration*>(child);
 

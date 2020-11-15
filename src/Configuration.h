@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ModelItem.h"
+#include "TreeItem.h"
 #include "Channels.h"
 
 #include <QStringList>
@@ -14,7 +14,7 @@ class DimensionsViewerPlugin;
  *
  * @author T. Kroes
  */
-class Configuration : public ModelItem
+class Configuration : public TreeItem
 {
 public: // Constants
 
@@ -67,7 +67,7 @@ public: // Construction
 	 * @param datasetName Name of the primary dataset
 	 * @param dataName Name of the primary data
 	 */
-	Configuration(ModelItem* parent, const QString& datasetName, const QString& dataName);
+	Configuration(TreeItem* parent, const QString& datasetName, const QString& dataName);
 
 public: // ModelIndex: Model
 
@@ -105,7 +105,7 @@ public: // ModelIndex: Hierarchy
      * @param index Index of the child model item
      * @return Model item at index
      */
-    ModelItem* getChild(const int& index) const override;
+    TreeItem* getChild(const int& index) const override;
 
     /** Returns the number of children */
     int getChildCount() const override;
@@ -114,7 +114,7 @@ public: // ModelIndex: Hierarchy
      * Returns the child index
      * @param child Pointer to child model item
      */
-    int getChildIndex(ModelItem* child) const override;
+    int getChildIndex(TreeItem* child) const override;
 
 public: // Miscellaneous
 

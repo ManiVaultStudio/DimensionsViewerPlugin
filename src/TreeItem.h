@@ -14,11 +14,11 @@ namespace hdps {
 }
 
 /**
- * Model item class
+ * Tree item class
  *
  * @author Thomas Kroes
  */
-class ModelItem : public QObject
+class TreeItem : public QObject
 {
     Q_OBJECT
 
@@ -29,7 +29,7 @@ public: // Construction
      * @param type Type of model item
      * @param parent Parent model item
      */
-    ModelItem(const QString& type, ModelItem* parent = nullptr);
+    TreeItem(const QString& type, TreeItem* parent = nullptr);
 
 public: // Model
 
@@ -84,7 +84,7 @@ public: // Hierarchy
      * @param index Index of the child model item
      * @return Model item at index
      */
-    virtual ModelItem* getChild(const int& index) const;
+    virtual TreeItem* getChild(const int& index) const;
 
     /** Returns the number of children */
     virtual int getChildCount() const;
@@ -93,13 +93,13 @@ public: // Hierarchy
      * Returns the child index
      * @param child Pointer to child model item
      */
-    virtual int getChildIndex(ModelItem* child) const;
+    virtual int getChildIndex(TreeItem* child) const;
 
     /** Returns the child index of this model item w.r.t. its parent */
     int getChildIndex() const;
 
     /** Returns the parent */
-    ModelItem* getParent();
+    TreeItem* getParent();
 
     /** Returns whether the model item is a leaf node */
     bool isLeaf() const;
@@ -132,7 +132,7 @@ protected:
 
 protected:
     QString         _type;          /** Name */
-    ModelItem*      _parent;		/** Parent model item */
+    TreeItem*      _parent;		/** Parent model item */
     std::int32_t    _modified;      /** Modified time */
 
     static std::int32_t maxNoColumns;

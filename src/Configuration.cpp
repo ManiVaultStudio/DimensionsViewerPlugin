@@ -14,8 +14,8 @@ const QMap<QString, Configuration::Column> Configuration::columns = {
     { "Selection stamp", Configuration::Column::SelectionStamp }
 };
 
-Configuration::Configuration(ModelItem* parent, const QString& datasetName, const QString& dataName) :
-    ModelItem("Configuration", parent),
+Configuration::Configuration(TreeItem* parent, const QString& datasetName, const QString& dataName) :
+    TreeItem("Configuration", parent),
 	_index(noConfigurations),
     _datasetName(datasetName),
     _dataName(dataName),
@@ -144,7 +144,7 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
     return affectedIndices;
 }
 
-ModelItem* Configuration::getChild(const int& index) const
+TreeItem* Configuration::getChild(const int& index) const
 {
     switch (static_cast<Row>(index))
     {
@@ -166,7 +166,7 @@ int Configuration::getChildCount() const
     return static_cast<int>(Row::_End);
 }
 
-int Configuration::getChildIndex(ModelItem* child) const
+int Configuration::getChildIndex(TreeItem* child) const
 {
     if (dynamic_cast<Channels*>(child))
         return static_cast<int>(Row::Channels);

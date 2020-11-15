@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ModelItem.h"
+#include "TreeItem.h"
 
 class Configuration;
 
@@ -9,7 +9,7 @@ class Configuration;
  *
  * @author Thomas Kroes
  */
-class Configurations : public ModelItem
+class Configurations : public TreeItem
 {
 public: // Columns and rows
 
@@ -76,7 +76,7 @@ public: // ModelIndex: Hierarchy
      * @param index Index of the child model item
      * @return Model item at index
      */
-    ModelItem* getChild(const int& index) const override;
+    TreeItem* getChild(const int& index) const override;
 
     /** Returns the number of children */
     int getChildCount() const override;
@@ -85,7 +85,7 @@ public: // ModelIndex: Hierarchy
      * Returns the child index
      * @param child Pointer to child model item
      */
-    int getChildIndex(ModelItem* child) const override;
+    int getChildIndex(TreeItem* child) const override;
 
 public: // Miscellaneous
 

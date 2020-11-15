@@ -16,7 +16,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    ModelItem::setDimensionsViewerPlugin(this);
+    TreeItem::setDimensionsViewerPlugin(this);
     ModelItemWidget::setDimensionsViewerPlugin(this);
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
@@ -33,6 +33,7 @@ void DimensionsViewerPlugin::init()
     splitter->addWidget(reinterpret_cast<QWidget*>(_configurationWidget));
 
     splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 0);
 
     splitter->setOrientation(Qt::Vertical);
     splitter->setCollapsible(1, true);

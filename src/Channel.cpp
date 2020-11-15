@@ -44,8 +44,8 @@ const QMap<QString, Channel::Row> Channel::rows = {
     { "Styling", Channel::Row::Styling }
 };
 
-Channel::Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity /*= 1.0f*/) :
-    ModelItem("Channel", parent),
+Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity /*= 1.0f*/) :
+    TreeItem("Channel", parent),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),

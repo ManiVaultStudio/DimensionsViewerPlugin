@@ -32,7 +32,7 @@ file(GLOB MODEL
 	src/Configurations.*
 	src/ConfigurationsModel.*
 	src/Differential.*
-	src/ModelItem.*
+	src/TreeItem.*
 	src/Profile.*
 	src/Styling.*
 )

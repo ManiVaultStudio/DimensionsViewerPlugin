@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ModelItem.h"
+#include "TreeItem.h"
 #include "Profile.h"
 
 class Channel;
@@ -14,7 +14,7 @@ class Configuration;
  *
  * @author T. Kroes
  */
-class Channels : public ModelItem {
+class Channels : public TreeItem {
 
 public: // Columns and rows
 
@@ -76,7 +76,7 @@ protected: // Construction
      * @param datasetName Name of the primary dataset
      * @param dataName Name of the primary data
      */
-	Channels(ModelItem* parent, const QString& datasetName, const QString& dataName);
+	Channels(TreeItem* parent, const QString& datasetName, const QString& dataName);
 
 public: // ModelIndex: Model
 
@@ -114,7 +114,7 @@ public: // ModelIndex: Hierarchy
      * @param index Index of the child model item
      * @return Model item at index
      */
-    ModelItem* getChild(const int& index) const override;
+    TreeItem* getChild(const int& index) const override;
 
     /** Returns the number of children */
     int getChildCount() const override;
@@ -123,7 +123,7 @@ public: // ModelIndex: Hierarchy
      * Returns the child index
      * @param child Pointer to child model item
      */
-    int getChildIndex(ModelItem* child) const override;
+    int getChildIndex(TreeItem* child) const override;
 
 protected: // Miscellaneous
 

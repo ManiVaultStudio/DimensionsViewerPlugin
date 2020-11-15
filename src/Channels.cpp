@@ -15,8 +15,8 @@ const QMap<QString, Channels::Row> Channels::rows = {
     { "Compare", Channels::Row::Differential }
 };
 
-Channels::Channels(ModelItem* parent, const QString& datasetName, const QString& dataName) :
-    ModelItem("Channels", parent),
+Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& dataName) :
+    TreeItem("Channels", parent),
     _channels({
         new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName, Profile::ProfileType::Mean, Qt::black, 1.0f),
         new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 1.0f),
@@ -102,7 +102,7 @@ QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& valu
     return affectedIndices;
 }
 
-ModelItem* Channels::getChild(const int& index) const
+TreeItem* Channels::getChild(const int& index) const
 {
     try
     {
@@ -119,7 +119,7 @@ int Channels::getChildCount() const
     return _channels.size();
 }
 
-int Channels::getChildIndex(ModelItem* child) const
+int Channels::getChildIndex(TreeItem* child) const
 {
     const auto channel = dynamic_cast<Channel*>(child);
 

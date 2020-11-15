@@ -19,7 +19,7 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    ModelItem *parentItem;
+    TreeItem *parentItem;
 
     if (parent.column() > 0)
         return 0;
@@ -27,7 +27,7 @@ int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
     if (!parent.isValid())
         parentItem = const_cast<Configurations*>(&_configurations);
     else
-        parentItem = static_cast<ModelItem*>(parent.internalPointer());
+        parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
     return parentItem->getChildCount();
 }
@@ -36,7 +36,7 @@ int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()
 {
     return 25;
     if (parent.isValid())
-        return static_cast<ModelItem*>(parent.internalPointer())->columnCount();
+        return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
     
     return _configurations.columnCount();
 }
@@ -106,12 +106,12 @@ QModelIndex ConfigurationsModel::index(int row, int column, const QModelIndex& p
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
-    ModelItem* parentItem = nullptr;
+    TreeItem* parentItem = nullptr;
 
     if (!parent.isValid())
         parentItem = const_cast<Configurations*>(&_configurations);
     else
-        parentItem = static_cast<ModelItem*>(parent.internalPointer());
+        parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
     auto childItem = parentItem->getChild(row);
 
@@ -243,14 +243,14 @@ const Configurations& ConfigurationsModel::getConfigurations() const
     return _configurations;
 }
 
-ModelItem* ConfigurationsModel::getItem(const QModelIndex& index) const
+TreeItem* ConfigurationsModel::getItem(const QModelIndex& index) const
 {
     if (index.isValid()) {
-        auto modelItem = static_cast<ModelItem*>(index.internalPointer());
+        auto modelItem = static_cast<TreeItem*>(index.internalPointer());
 
         if (modelItem)
             return modelItem;
     }
 
-    return static_cast<ModelItem*>(const_cast<Configurations*>(&_configurations));
+    return static_cast<TreeItem*>(const_cast<Configurations*>(&_configurations));
 }

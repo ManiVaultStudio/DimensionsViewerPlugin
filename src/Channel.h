@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ModelItem.h"
+#include "TreeItem.h"
 #include "Profile.h"
 #include "Differential.h"
 #include "Styling.h"
@@ -20,7 +20,7 @@ class Channels;
  *
  * @author T. Kroes
  */
-class Channel : public ModelItem {
+class Channel : public TreeItem {
 
     Q_OBJECT
 
@@ -123,7 +123,7 @@ protected: // Construction
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 */
-	Channel(ModelItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
+	Channel(TreeItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
 
 public: // ModelIndex: Model
 
