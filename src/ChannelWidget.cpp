@@ -40,7 +40,8 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     });
 
     QObject::connect(_ui->differentialOperandAComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        //setData(to_ul(Channel::Column::DifferentialOperandA), currentText, Qt::EditRole);
+        //const auto differentialIndex = getChild(to_ul(Channel::Row::Differential));
+        //getModel().setData( to_ul(Channel::Column::DifferentialOperandA), currentText, Qt::EditRole);
     });
 
     QObject::connect(_ui->differentialOperandBComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
@@ -260,11 +261,15 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(TreeItem::Column::DisplayName)));
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
     getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
-    //getWidgetMapper("Differential")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Differential)));
-    //getWidgetMapper("DifferentialOperandNamesA")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandNamesA)));
-    //getWidgetMapper("DifferentialOperandNamesB")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandNamesB)));
-    //getWidgetMapper("DifferentialOperandA")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandA)));
-    //getWidgetMapper("DifferentialOperandB")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DifferentialOperandB)));
+
+    const auto differentialIndex = getChild(to_ul(Channel::Row::Differential));
+
+    getWidgetMapper("Differential")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::Differential), differentialIndex));
+    getWidgetMapper("DifferentialOperandNamesA")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandNamesA), differentialIndex));
+    getWidgetMapper("DifferentialOperandNamesB")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandNamesB), differentialIndex));
+    getWidgetMapper("DifferentialOperandA")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandA), differentialIndex));
+    getWidgetMapper("DifferentialOperandB")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandB), differentialIndex));
+
     getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
     getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileTypes)));
     getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)));

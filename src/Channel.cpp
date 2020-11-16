@@ -571,7 +571,12 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         const auto differentialChannels = getChannels()->getFiltered(Profile::ProfileTypes({ Profile::ProfileType::Differential }));
 
         for (auto differentialChannel : differentialChannels) {
+            
             differentialChannel->getDifferential().update();
+
+            for (int column = to_ul(Channel::Column::_Start); column <= to_ul(Channel::Column::_End); column++)
+                affectedIndices << getModel()->index(to_ul(Row::Differential), column, index);
+
             updateChannel(static_cast<Channels::Row>(differentialChannel->getData(to_ul(Channel::Column::Index), Qt::EditRole).toInt()));
         }
     };
@@ -835,6 +840,39 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         synchronizeStyling();
 
     return affectedIndices;
+}
+
+TreeItem* Channel::getChild(const int& index) const
+{
+    switch (static_cast<Row>(index))
+    {
+        case Row::Profile:
+            return nullptr;
+
+        case Row::Differential:
+            return const_cast<Differential*>(&_differential);
+
+        case Row::Styling:
+            return nullptr;
+
+        default:
+            break;
+    }
+
+    return nullptr;
+}
+
+int Channel::getChildCount() const
+{
+    return static_cast<int>(Row::_Count);
+}
+
+int Channel::getChildIndex(TreeItem* child) const
+{
+    if (dynamic_cast<Differential*>(child))
+        return static_cast<int>(Row::Differential);
+
+    return 0;
 }
 
 void Channel::accept(Visitor* visitor) const

@@ -151,7 +151,7 @@ TreeItem* Configuration::getChild(const int& index) const
 
 int Configuration::getChildCount() const
 {
-    return static_cast<int>(Row::_End);
+    return static_cast<int>(Row::_Count);
 }
 
 int Configuration::getChildIndex(TreeItem* child) const

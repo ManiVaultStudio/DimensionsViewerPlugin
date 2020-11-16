@@ -78,6 +78,7 @@ public: // Columns and rows
     /** Tree item rows */
     enum class Row {
         Profile,
+        Differential,
         Styling,
 
         _Start  = Profile,
@@ -147,6 +148,24 @@ public: // TreeItem: model API
      * @return Model indices that are affected by the operation
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+
+public: // TreeItem: hierarchy API
+
+    /**
+     * Returns a tree item node by index
+     * @param index Index of the child tree item
+     * @return Tree item at index
+     */
+    TreeItem* getChild(const int& index) const override;
+
+    /** Returns the number of children */
+    int getChildCount() const override;
+
+    /**
+        * Returns the child index
+        * @param child Pointer to child tree item
+        */
+    int getChildIndex(TreeItem* child) const override;
 
 public: // TreeItem: visitor API
 
