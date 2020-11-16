@@ -19,6 +19,31 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 	_selectionModel(this),
     _datasetNames()
 {
+    QObject::connect(this, &QAbstractItemModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
+        const auto type = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).data(Qt::EditRole).toString();
+
+        if (type == "Channel") {
+            const auto column = static_cast<Channel::Column>(topLeft.column());
+
+            switch (column)
+            {
+                case Channel::Column::Enabled:
+                {
+                    qDebug() << "Enabled";
+
+                    //for (int column = to_ul(Channel::Column::_Start); column <= to_ul(Channel::Column::_End); column++)
+                    const auto profileIndex = index(to_ul(Channel::Row::Profile), 0, topLeft.siblingAtColumn(0));
+
+                    emit dataChanged(profileIndex.siblingAtColumn(to_ul(Profile::Column::_Start)), profileIndex.siblingAtColumn(to_ul(Profile::Column::_End)));
+                            
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+    });
 }
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const

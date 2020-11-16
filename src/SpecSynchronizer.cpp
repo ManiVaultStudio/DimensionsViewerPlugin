@@ -11,13 +11,13 @@ SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugi
     _updateInterval(20)
 {
     QObject::connect(&_timer, &QTimer::timeout, [this]() {
-        qDebug() << "Updating";
+        //qDebug() << "Updating";
 
         const auto selectedConfiguration = _dimensionsViewerPlugin->getModel().getSelectedConfiguration();
 
         selectedConfiguration->accept(&_specVisitor);
 
-        qDebug() << _specVisitor.getSpec();
+        //qDebug() << _specVisitor.getSpec();
 
         _timer.stop();
     });

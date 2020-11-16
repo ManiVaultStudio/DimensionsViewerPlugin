@@ -28,20 +28,17 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Index = static_cast<std::int32_t>(TreeItem::Column::_Count),
-        Enabled,
+        Index = static_cast<std::int32_t>(TreeItem::Column::_Count),        /** Channel index */
+        Enabled,                                                            /** Whether the ch */
         DatasetNames,
         DatasetName,
-
-        Linked,                                         /** TODO */
-
-        _PointsStart = Linked,                          /** TODO */
-            NoDimensions,                               /** TODO */
-            NoPoints,                                   /** TODO */
-        _PointsEnd = NoPoints,                          /** TODO */
+        Styling,
+        Linked,
+        NoDimensions,                               /** TODO */
+        NoPoints,                                   /** TODO */
 
         _Start  = Index,
-        _End    = _PointsEnd,
+        _End    = NoPoints,
         _Count  = _End + 1
     };
 
