@@ -4,16 +4,12 @@
 
 #include <memory>
 
-#include <QWidget>
-
-class DimensionsViewerPlugin;
-
 namespace Ui {
 	class ConfigurationWidget;
 }
 
 /**
- * Configuration widget class
+ * Configuration tree item widget class
  *
  * @author T. Kroes
  */

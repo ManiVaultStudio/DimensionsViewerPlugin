@@ -4,16 +4,12 @@
 
 #include <memory>
 
-#include <QWidget.h>
-
-class DimensionsViewerPlugin;
-
 namespace Ui {
 	class ChannelWidget;
 }
 
 /**
- * Channel widget class
+ * Channel tree item widget class
  *
  * @author T. Kroes
  */

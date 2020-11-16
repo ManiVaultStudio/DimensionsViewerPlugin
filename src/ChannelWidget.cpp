@@ -27,7 +27,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
             setData(to_ul(Channel::Column::DatasetName), _ui->datasetNameComboBox->currentText());
     });
 
-    QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
+    /*QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
         setData(to_ul(Channel::Column::Color), color);
     });
 
@@ -37,16 +37,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
 
     QObject::connect(_ui->rangeTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         setData(to_ul(Channel::Column::RangeType), currentText, Qt::DisplayRole);
-    });
-
-    QObject::connect(_ui->differentialOperandAComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        //const auto differentialIndex = getChild(to_ul(Channel::Row::Differential));
-        //getModel().setData( to_ul(Channel::Column::DifferentialOperandA), currentText, Qt::EditRole);
-    });
-
-    QObject::connect(_ui->differentialOperandBComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        //setData(to_ul(Channel::Column::DifferentialOperandB), currentText, Qt::EditRole);
-    });
+    });*/
 
     QObject::connect(_ui->linkedPushButton, &QPushButton::toggled, [this](bool checked) {
         setData(to_ul(Channel::Column::Linked), checked);
@@ -98,63 +89,6 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->datasetNameComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
-    addWidgetMapper("Differential", QSharedPointer<WidgetMapper>::create(_ui->differentialWidget, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->differentialWidget->setEnabled(false);
-            _ui->differentialWidget->setVisible(false);
-
-            return;
-        }
-
-        _ui->differentialWidget->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->differentialWidget->setEnabled(index.flags() & Qt::ItemIsEnabled);
-        _ui->differentialWidget->setToolTip(index.data(Qt::ToolTipRole).toString());
-    }));
-
-    addWidgetMapper("DifferentialOperandNamesA", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->differentialOperandAComboBox->setModel(new QStringListModel());
-
-            return;
-        }
-
-        _ui->differentialOperandAComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-    }));
-
-    addWidgetMapper("DifferentialOperandNamesB", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandBComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->differentialOperandBComboBox->setModel(new QStringListModel());
-
-            return;
-        }
-
-        _ui->differentialOperandBComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-    }));
-
-    addWidgetMapper("DifferentialOperandA", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->differentialOperandAComboBox->setEnabled(false);
-
-            return;
-        }
-
-        _ui->differentialOperandAComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-        _ui->differentialOperandAComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
-        _ui->differentialOperandAComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-    }));
-    
-    addWidgetMapper("DifferentialOperandB", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandBComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->differentialOperandBComboBox->setEnabled(false);
-
-            return;
-        }
-
-        _ui->differentialOperandBComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-        _ui->differentialOperandBComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
-        _ui->differentialOperandBComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-    }));
-    
     addWidgetMapper("Color", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->colorPushButton->setEnabled(false);
@@ -168,54 +102,6 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->colorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->colorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
         _ui->colorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-    }));
-
-    addWidgetMapper("ProfileTypes", QSharedPointer<WidgetMapper>::create(_ui->profileTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->profileTypeComboBox->setModel(new QStringListModel());
-            _ui->profileTypeComboBox->setCurrentIndex(-1);
-
-            return;
-        }
-
-        _ui->profileTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-    }));
-
-    addWidgetMapper("ProfileType", QSharedPointer<WidgetMapper>::create(_ui->profileTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->profileTypeComboBox->setEnabled(false);
-
-            return;
-        }
-
-        _ui->profileTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-        _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
-        _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-    }));
-
-    addWidgetMapper("RangeTypes", QSharedPointer<WidgetMapper>::create(_ui->rangeTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->rangeTypeComboBox->setModel(new QStringListModel());
-            _ui->rangeTypeComboBox->setCurrentIndex(-1);
-
-            return;
-        }
-
-        _ui->rangeTypeComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
-    }));
-
-    addWidgetMapper("RangeType", QSharedPointer<WidgetMapper>::create(_ui->rangeTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            _ui->rangeTypeComboBox->setEnabled(false);
-
-            return;
-        }
-
-        _ui->rangeTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-        _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
-        _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
     addWidgetMapper("Styling", QSharedPointer<WidgetMapper>::create(_ui->stylingPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
@@ -258,23 +144,13 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     _ui->stylingPushButton->setModelIndex(modelIndex);
 
     getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Enabled)));
-    getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(TreeItem::Column::DisplayName)));
+    getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(TreeItem::Column::Name)));
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
     getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
 
-    const auto differentialIndex = getChild(to_ul(Channel::Row::Differential));
+    const auto differentialIndex = getChild(to_ul(Channel::Row::Styling));
 
-    getWidgetMapper("Differential")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::Differential), differentialIndex));
-    getWidgetMapper("DifferentialOperandNamesA")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandNamesA), differentialIndex));
-    getWidgetMapper("DifferentialOperandNamesB")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandNamesB), differentialIndex));
-    getWidgetMapper("DifferentialOperandA")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandA), differentialIndex));
-    getWidgetMapper("DifferentialOperandB")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandB), differentialIndex));
-
-    getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
-    getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileTypes)));
-    getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::ProfileType)));
-    getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeTypes)));
-    getWidgetMapper("RangeType")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RangeType)));
-    getWidgetMapper("Styling")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Styling)));
-    getWidgetMapper("LinkedPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Linked)));
+    //getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
+    //getWidgetMapper("Styling")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Styling)));
+    //getWidgetMapper("LinkedPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Linked)));
 }

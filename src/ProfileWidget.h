@@ -2,16 +2,18 @@
 
 #include "TreeItemWidget.h"
 
+#include <memory>
+
 namespace Ui {
-    class StylingWidget;
+	class ProfileWidget;
 }
 
 /**
- * Styling tree item widget class
+ * Profile tree item widget class
  *
  * @author T. Kroes
  */
-class StylingWidget : public TreeItemWidget
+class ProfileWidget : public TreeItemWidget
 {
 public: // Construction
 
@@ -19,7 +21,7 @@ public: // Construction
      * Constructor
      * @param parent Parent widget
      */
-    StylingWidget(QWidget* parent);
+    ProfileWidget(QWidget* parent);
 
 public: // Inherited
 
@@ -30,5 +32,5 @@ public: // Inherited
     void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-    std::unique_ptr<Ui::StylingWidget>	_ui;        /** UI from creator */
+	std::unique_ptr<Ui::ProfileWidget>		_ui;        /** UI from creator */
 };

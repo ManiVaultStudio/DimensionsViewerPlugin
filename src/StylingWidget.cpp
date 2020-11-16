@@ -20,27 +20,27 @@ StylingWidget::StylingWidget(QWidget* parent) :
     move(parent->mapToGlobal(parent->rect().bottomRight()) - QPoint(width(), 0));
 
     QObject::connect(_ui->lineTypeProfileComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Channel::Column::LineTypeProfile), currentText, Qt::DisplayRole);
+        setData(to_ul(Styling::Column::LineTypeProfile), currentText, Qt::DisplayRole);
     });
 
     QObject::connect(_ui->lineTypeRangeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
-        setData(to_ul(Channel::Column::LineTypeRange), currentText, Qt::DisplayRole);
+        setData(to_ul(Styling::Column::LineTypeRange), currentText, Qt::DisplayRole);
     });
 
     QObject::connect(_ui->renderPointsCheckBox, &QCheckBox::stateChanged, [this](int state) {
-        setData(to_ul(Channel::Column::RenderPoints), state);
+        setData(to_ul(Styling::Column::RenderPoints), state);
     });
 
     QObject::connect(_ui->opacitySpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged), [this](double value) {
-        setData(to_ul(Channel::Column::Opacity), static_cast<float>(value));
+        setData(to_ul(Styling::Column::Opacity), static_cast<float>(value));
     });
 
     QObject::connect(_ui->opacitySlider, &QSlider::valueChanged, [this](int value) {
-        setData(to_ul(Channel::Column::Opacity), 0.01f * static_cast<float>(value));
+        setData(to_ul(Styling::Column::Opacity), 0.01f * static_cast<float>(value));
     });
 
     QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
-        setData(to_ul(Channel::Column::Color), color);
+        setData(to_ul(Styling::Column::Color), color);
     });
 
     addWidgetMapper("LineTypesProfile", QSharedPointer<WidgetMapper>::create(_ui->lineTypeProfileComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
@@ -147,12 +147,12 @@ void StylingWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     TreeItemWidget::setModelIndex(modelIndex);
     
-    getWidgetMapper("LineTypesProfile")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::LineTypes)));
-    getWidgetMapper("LineTypesRange")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::LineTypes)));
-    getWidgetMapper("LineTypeProfileComboBox")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::LineTypeProfile)));
-    getWidgetMapper("LineTypeRangeComboBox")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::LineTypeRange)));
-    getWidgetMapper("RenderPointsCheckBox")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::RenderPoints)));
-    getWidgetMapper("OpacitySpinBox")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Opacity)));
-    getWidgetMapper("OpacitySlider")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Opacity)));
-    getWidgetMapper("ColorPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
+    getWidgetMapper("LineTypesProfile")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::LineTypes)));
+    getWidgetMapper("LineTypesRange")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::LineTypes)));
+    getWidgetMapper("LineTypeProfileComboBox")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::LineTypeProfile)));
+    getWidgetMapper("LineTypeRangeComboBox")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::LineTypeRange)));
+    getWidgetMapper("RenderPointsCheckBox")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::RenderPoints)));
+    getWidgetMapper("OpacitySpinBox")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Opacity)));
+    getWidgetMapper("OpacitySlider")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Opacity)));
+    getWidgetMapper("ColorPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Color)));
 }

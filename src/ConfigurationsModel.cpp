@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <QMessageBox>
 
+std::uint32_t ConfigurationsModel::noColumns = 0;
+
 ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin) :
     QAbstractItemModel(static_cast<QObject*>(dimensionsViewerPlugin)),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
@@ -36,7 +38,7 @@ int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
 
 int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    return 25;
+    return noColumns;
 }
 
 QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole*/) const
@@ -98,9 +100,8 @@ Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const
 
 QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole && section == 0) {
-        return "Name";
-    }
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+        return TreeItem::getColumnTypeName(static_cast<TreeItem::Column>(section));
 
     return QVariant();
 }

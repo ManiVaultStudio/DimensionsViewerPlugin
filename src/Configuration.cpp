@@ -14,21 +14,23 @@ const QMap<QString, Configuration::Column> Configuration::columns = {
 };
 
 Configuration::Configuration(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem("Configuration", parent),
+    TreeItem("Configuration", datasetName, parent),
 	_index(noConfigurations),
     _datasetName(datasetName),
     _dataName(dataName),
 	_channels(this, datasetName, dataName)
 {
+    setNumColumns(to_ul(Column::_Count));
+
     noConfigurations++;
 }
 
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
-    if (static_cast<TreeItem::Column>(index.column()) <= TreeItem::Column::_End)
-        return TreeItem::getFlags(index);
+    Qt::ItemFlags flags = TreeItem::getFlags(index);
 
-    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    flags |= Qt::ItemIsEnabled;
+    flags |= Qt::ItemIsSelectable;
 
     const auto column = static_cast<Column>(index.column());
 
@@ -38,11 +40,7 @@ Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
         case Column::DatasetName:
         case Column::DataName:
         case Column::SelectionStamp:
-        {
-            flags |= Qt::ItemIsEnabled;
-
             break;
-        }
 
         default:
             break;

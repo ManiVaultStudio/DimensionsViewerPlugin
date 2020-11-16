@@ -28,13 +28,13 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        InternalName,
-        DisplayName,
-        UUID,
+        Type,
+        Name,
         Modified,
+        UUID,
 
-        _Start  = InternalName,
-        _End    = Modified,
+        _Start  = Type,
+        _End    = UUID,
         _Count  = _End + 1
     };
 
@@ -55,12 +55,16 @@ public: // Construction
 
     /**
      * Constructor
-     * @param type Type of tree item
+     * @param type Type of the tree item
+     * @param name Name of the tree item
      * @param parent Parent tree item
      */
-    TreeItem(const QString& type, TreeItem* parent = nullptr);
+    TreeItem(const QString& type, const QString& name, TreeItem* parent = nullptr);
 
 public: // Model API
+
+    /** Set number of columns */
+    void setNumColumns(const std::uint32_t& numColumns) const;
 
     /**
      * Returns the item flags for the given model index
@@ -170,11 +174,11 @@ protected:
     static hdps::CoreInterface* getCore();
 
 protected:
-    QString         _internalName;      /** Internal name */
-    QString         _displayName;       /** Display name */
-    QUuid           _uuid;              /** Unique identifier */
-    TreeItem*       _parent;            /** Parent tree item */
-    std::int32_t    _modified;          /** Modified time */
+    QString         _type;          /** Type */
+    QString         _name;          /** Display name */
+    std::int32_t    _modified;      /** Modified time */
+    QUuid           _uuid;          /** Unique identifier */
+    TreeItem*       _parent;        /** Parent tree item */
 
     static std::int32_t maxNoColumns;
 

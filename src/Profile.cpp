@@ -1,6 +1,16 @@
 #include "Profile.h"
+#include "Channels.h"
+#include "Channel.h"
+#include "Visitor.h"
 
 #include <QDebug>
+
+const QMap<QString, Profile::Column> Profile::columns = {
+    { "Profile types", Profile::Column::ProfileTypes },
+    { "Profile type", Profile::Column::ProfileType },
+    { "Range types", Profile::Column::RangeTypes },
+    { "Range type", Profile::Column::RangeType }
+};
 
 const QMap<QString, Profile::ProfileType> Profile::profileTypes = {
     { "None", Profile::ProfileType::None },
@@ -19,13 +29,16 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
     { "10/90 perc.", Profile::RangeType::Percentile10 }
 };
 
-Profile::Profile(const ProfileType& profileType) :
+Profile::Profile(TreeItem* parent, const ProfileType& profileType) :
+    TreeItem("Profile", "Profile", parent),
     _locked(profileType == ProfileType::Differential),
     _profileTypes(),
     _profileType(profileType),
     _rangeType(RangeType::MinMax),
     _rangeTypes()
 {
+    setNumColumns(to_ul(Column::_Count));
+
     switch (_profileType)
     {
         case ProfileType::Mean:
@@ -46,6 +59,234 @@ Profile::Profile(const ProfileType& profileType) :
     }
 
     update();
+}
+
+Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
+{
+    Qt::ItemFlags flags = TreeItem::getFlags(index);
+
+    const auto column = static_cast<Column>(index.column());
+    
+    auto channel = dynamic_cast<Channel*>(_parent);
+
+    switch (column)
+    {
+        case Profile::Column::ProfileTypes:
+        case Profile::Column::ProfileType:
+        case Profile::Column::RangeTypes:
+        case Profile::Column::RangeType:
+        {
+            flags |= Qt::ItemIsEditable;
+
+            if (channel->_enabled) {
+                switch (static_cast<Channels::Row>(channel->_index))
+                {
+                    case Channels::Row::Dataset:
+                    {
+                        flags |= Qt::ItemIsEnabled;
+
+                        break;
+                    }
+
+                    case Channels::Row::Subset1:
+                    case Channels::Row::Subset2:
+                    {
+                        const auto meanOrMedian = getProfileType() == Profile::ProfileType::Mean || getProfileType() == Profile::ProfileType::Median;
+
+                        if (!channel->_linked && meanOrMedian)
+                            flags |= Qt::ItemIsEnabled;
+
+                        break;
+                    }
+
+                    case Channels::Row::Differential:
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return flags;
+}
+
+QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) const
+{
+    auto data = TreeItem::getData(column, role);
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            switch (static_cast<Column>(column))
+            {
+                case Profile::Column::ProfileTypes:
+                    return getProfileTypeNames();
+
+                case Profile::Column::ProfileType:
+                    return static_cast<std::int32_t>(getProfileType());
+
+                case Profile::Column::RangeTypes:
+                    return getRangeTypeNames();
+
+                case Profile::Column::RangeType:
+                    return static_cast<std::int32_t>(getRangeType());
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::DisplayRole:
+        {
+            switch (static_cast<Column>(column))
+            {
+                case Profile::Column::ProfileTypes:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Profile::Column::ProfileType:
+                    return Profile::getProfileTypeName(static_cast<Profile::ProfileType>(getData(column, Qt::EditRole).toInt()));
+
+                case Profile::Column::RangeTypes:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Profile::Column::RangeType:
+                    return Profile::getRangeTypeName(static_cast<Profile::RangeType>(getData(column, Qt::EditRole).toInt()));
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::ToolTipRole:
+        {
+            const auto tooltip = [&column](const QString& value) {
+                return QString("%1: %2").arg(getColumnTypeName(static_cast<Column>(column)), value);
+            };
+
+            switch (static_cast<Column>(column))
+            {
+                case Profile::Column::ProfileTypes:
+                case Profile::Column::ProfileType:
+                case Profile::Column::RangeTypes:
+                case Profile::Column::RangeType:
+                    return tooltip(getData(column, Qt::DisplayRole).toString());
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return data;
+}
+
+QVariant Profile::getData(const Column& column, const std::int32_t& role) const
+{
+    return getData(static_cast<std::int32_t>(column), role);
+}
+
+QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+{
+    QModelIndexList affectedIndices = TreeItem::setData(index, value, role);
+
+    const auto column = static_cast<Column>(index.column());
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            switch (column)
+            {
+                case Profile::Column::ProfileTypes:
+                    break;
+
+                case Profile::Column::ProfileType:
+                {
+                    setProfileType(static_cast<Profile::ProfileType>(value.toInt()));
+
+                    affectedIndices << index.siblingAtColumn(to_ul(Profile::Column::RangeTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Profile::Column::RangeType));
+
+                    break;
+                }
+
+                case Profile::Column::RangeTypes:
+                    break;
+
+                case Profile::Column::RangeType:
+                {
+                    setRangeType(static_cast<Profile::RangeType>(value.toInt()));
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::DisplayRole:
+        {
+            switch (column)
+            {
+                case Profile::Column::ProfileTypes:
+                    break;
+
+                case Profile::Column::ProfileType:
+                {
+                    setProfileType(Profile::getProfileTypeEnum(value.toString()));
+
+                    affectedIndices << index.siblingAtColumn(to_ul(Profile::Column::RangeTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Profile::Column::RangeType));
+
+                    break;
+                }
+
+                case Profile::Column::RangeTypes:
+                    break;
+
+                case Profile::Column::RangeType:
+                {
+                    setRangeType(Profile::getRangeTypeEnum(value.toString()));
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return affectedIndices;
+}
+
+void Profile::accept(Visitor* visitor) const
+{
+    visitor->visitProfile(this);
 }
 
 Profile::ProfileTypes Profile::getProfileTypes() const

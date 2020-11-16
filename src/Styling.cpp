@@ -1,7 +1,18 @@
 #include "Styling.h"
 #include "Channel.h"
+#include "Visitor.h"
 
 #include <QDebug>
+
+const QMap<QString, Styling::Column> Styling::columns = {
+    { "Styling", Styling::Column::Styling },
+    { "Line types", Styling::Column::LineTypes },
+    { "Line type profile", Styling::Column::LineTypeProfile },
+    { "Line type range", Styling::Column::LineTypeRange },
+    { "Render points", Styling::Column::RenderPoints },
+    { "Opacity", Styling::Column::Opacity },
+    { "Color", Styling::Column::Color }
+};
 
 const QMap<QString, Styling::LineType> Styling::lineTypes = {
     { "Solid", Styling::LineType::Solid },
@@ -13,66 +24,287 @@ const QMap<QString, Styling::LineType> Styling::lineTypes = {
 
 const QSize Styling::LineTypesModel::iconSize = QSize(24, 12);
 
-Styling::Styling() :
+Styling::Styling(TreeItem* parent) :
+    TreeItem("Styling", "Styling", parent),
     _lineTypeProfile(LineType::Solid),
     _lineTypeRange(LineType::DashDot),
     _renderPoints(true),
     _opacity(1.0f),
     _color()
 {
+    setNumColumns(to_ul(Column::_Count));
 }
 
-QStringList Styling::getLineTypeNames() const
+Qt::ItemFlags Styling::getFlags(const QModelIndex& index) const
 {
-    return QStringList(lineTypes.keys());
+    Qt::ItemFlags flags = TreeItem::getFlags(index);
+
+    const auto column = static_cast<Column>(index.column());
+
+    switch (column)
+    {
+        case Styling::Column::RenderPoints:
+        {
+            flags |= Qt::ItemIsEditable | Qt::ItemIsEnabled;
+
+            break;
+        }
+
+        case Styling::Column::Styling:
+        {
+            flags |= Qt::ItemIsEditable;
+
+            /*switch (channel)
+            {
+                case Channels::Row::Dataset:
+                {
+                    bool enabled = true;
+
+                    const auto channelsEnabled = getChannels()->getFiltered(Profile::ProfileTypes(), &enabled);
+
+                    if (!channelsEnabled.isEmpty())
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Row::Subset1:
+                case Channels::Row::Subset2:
+                case Channels::Row::Differential:
+                {
+                    if (enabled && !_linked)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                default:
+                    break;
+            }*/
+
+            break;
+        }
+
+        case Styling::Column::LineTypes:
+        case Styling::Column::LineTypeProfile:
+        case Styling::Column::LineTypeRange:
+        case Styling::Column::Opacity:
+        case Styling::Column::Color:
+        {
+            /*flags |= Qt::ItemIsEditable;
+
+            if (enabled)
+                flags |= Qt::ItemIsEnabled;*/
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return flags;
 }
 
-Styling::LineType Styling::getLineTypeProfile() const
+QVariant Styling::getData(const std::int32_t& column, const std::int32_t& role) const
 {
-    return _lineTypeProfile;
+    auto data = TreeItem::getData(column, role);
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            switch (static_cast<Column>(column))
+            {
+                case Styling::Column::Styling:
+                    return "Styling";
+
+                case Styling::Column::LineTypes:
+                    return QStringList(lineTypes.keys());
+
+                case Styling::Column::LineTypeProfile:
+                    return static_cast<std::int32_t>(_lineTypeProfile);
+
+                case Styling::Column::LineTypeRange:
+                    return static_cast<std::int32_t>(_lineTypeRange);
+
+                case Styling::Column::RenderPoints:
+                    return _renderPoints;
+
+                case Styling::Column::Opacity:
+                    return _opacity;
+
+                case Styling::Column::Color:
+                    return QVariant::fromValue(_color);
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::DisplayRole:
+        {
+            switch (static_cast<Column>(column))
+            {
+                case Styling::Column::Styling:
+                    return getData(column, Qt::EditRole);
+
+                case Styling::Column::LineTypes:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Styling::Column::LineTypeProfile:
+                case Styling::Column::LineTypeRange:
+                    return Styling::getLineTypeName(static_cast<Styling::LineType>(getData(column, Qt::EditRole).toInt()));
+
+                case Styling::Column::RenderPoints:
+                    return getData(column, Qt::EditRole).toBool() ? "on" : "off";
+
+                case Styling::Column::Opacity:
+                    return QString::number(getData(column, Qt::EditRole).toFloat(), 'f', 2);
+
+                case Styling::Column::Color:
+                    return getData(column, Qt::EditRole).value<QColor>().name();
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::ToolTipRole:
+        {
+            const auto tooltip = [&column](const QString& value) {
+                return QString("%1: %2").arg(getColumnTypeName(static_cast<Column>(column)), value);
+            };
+
+            switch (static_cast<Column>(column))
+            {
+                case Styling::Column::Styling:
+                    return getData(column, Qt::DisplayRole).toString();
+
+                case Styling::Column::LineTypes:
+                case Styling::Column::LineTypeProfile:
+                case Styling::Column::LineTypeRange:
+                case Styling::Column::RenderPoints:
+                case Styling::Column::Opacity:
+                case Styling::Column::Color:
+                    return tooltip(getData(column, Qt::DisplayRole).toString());
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return data;
 }
 
-void Styling::setLineTypeProfile(const LineType& lineTypeProfile)
+QVariant Styling::getData(const Column& column, const std::int32_t& role) const
 {
-    _lineTypeProfile = lineTypeProfile;
+    return getData(static_cast<std::int32_t>(column), role);
 }
 
-Styling::LineType Styling::getLineTypeRange() const
+QModelIndexList Styling::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    return _lineTypeRange;
+    QModelIndexList affectedIndices = TreeItem::setData(index, value, role);
+
+    const auto column = static_cast<Column>(index.column());
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            switch (column)
+            {
+                case Styling::Column::Styling:
+                case Styling::Column::LineTypes:
+                    break;
+
+                case Styling::Column::LineTypeProfile:
+                case Styling::Column::LineTypeRange:
+                {
+                    _lineTypeProfile = static_cast<Styling::LineType>(value.toInt());
+
+                    break;
+                }
+
+                case Styling::Column::RenderPoints:
+                {
+                    _renderPoints = value.toBool();
+
+                    break;
+                }
+
+                case Styling::Column::Opacity:
+                {
+                    _opacity = value.toFloat();
+
+                    break;
+                }
+
+                case Styling::Column::Color:
+                {
+                    _color = value.value<QColor>();
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::DisplayRole:
+        {
+            switch (column)
+            {
+                case Styling::Column::Styling:
+                case Styling::Column::LineTypes:
+                    break;
+
+                case Styling::Column::LineTypeProfile:
+                {
+                    _lineTypeProfile = Styling::getLineTypeEnum(value.toString());
+
+                    break;
+                }
+
+                case Styling::Column::LineTypeRange:
+                {
+                    _lineTypeRange = Styling::getLineTypeEnum(value.toString());
+
+                    break;
+                }
+
+                case Styling::Column::Opacity:
+                case Styling::Column::Color:
+                    break;
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return affectedIndices;
 }
 
-void Styling::setLineTypeRange(const LineType& lineTypeRange)
+void Styling::accept(Visitor* visitor) const
 {
-    _lineTypeRange = lineTypeRange;
-}
-
-bool Styling::getRenderPoints() const
-{
-    return _renderPoints;
-}
-
-void Styling::setRenderPoints(const bool& renderPoints)
-{
-    _renderPoints = renderPoints;
-}
-
-float Styling::getOpacity() const
-{
-    return _opacity;
-}
-
-void Styling::setOpacity(const float& opacity)
-{
-    _opacity = opacity;
-}
-
-QColor Styling::getColor() const
-{
-    return _color;
-}
-
-void Styling::setColor(const QColor& color)
-{
-    _color = color;
+    visitor->visitStyling(this);
 }

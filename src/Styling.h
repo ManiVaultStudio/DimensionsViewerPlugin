@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.h"
+#include "TreeItem.h"
 
 #include <QObject>
 #include <QMap>
@@ -15,9 +15,37 @@
  *
  * @author T. Kroes
  */
-class Styling {
+class Styling : public TreeItem {
 
 public: // Columns and rows
+
+    /** Tree item columns */
+    enum class Column {
+        Styling = static_cast<std::int32_t>(TreeItem::Column::_Count),      /** Styling */
+        LineTypes,                                                          /** Line types */
+        LineTypeProfile,                                                    /** Line type for drawing data profile */
+        LineTypeRange,                                                      /** Line type for drawing data range */
+        RenderPoints,                                                       /** Render points */
+        Opacity,                                                            /** Opacity */
+        Color,                                                              /** Color */
+
+        _Start  = Styling,
+        _End    = Color,
+        _Count  = _End + 1
+    };
+
+    /** Maps column name to column enum */
+    static QMap<QString, Column> const columns;
+
+    /** Get column name from column enum */
+    static QString getColumnTypeName(const Column& column) {
+        return columns.key(column);
+    }
+
+    /** Get column enum from column name */
+    static Column getColumnTypeEnum(const QString& columnName) {
+        return columns[columnName];
+    }
 
 public: // Enumerations
     
@@ -129,8 +157,50 @@ public: // Line types model
 
 public: // Construction
 
-    /** Default constructor */
-    Styling();
+    /**
+     * Constructor
+     * @param parent Parent tree item
+     */
+    Styling(TreeItem* parent);
+
+public: // TreeItem: model API
+
+    /**
+     * Returns the item flags for the given model index
+     * @param index Model index
+     * @return Item flags for the index
+     */
+    Qt::ItemFlags getFlags(const QModelIndex& index) const override;
+
+    /**
+        * Get data role
+        * @param column Column to fetch data from
+        * @param role Data role
+        * @return Data in variant form
+        */
+    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
+
+    /**
+        * Get data role
+        * @param column Column to fetch data from
+        * @param role Data role
+        * @return Data in variant form
+        */
+    QVariant getData(const Column& column, const std::int32_t& role) const;
+
+    /**
+        * Sets data
+        * @param index Model index
+        * @param value Data value in variant form
+        * @param role Data role
+        * @return Model indices that are affected by the operation
+        */
+    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+
+public: // TreeItem: visitor API
+
+    /** Accept visitor */
+    void accept(Visitor* visitor) const override;
 
 public: // Operators
 
@@ -145,60 +215,12 @@ public: // Operators
         return *this;
     }
 
-public: // Getters/setters
-
-    /** Gets line type names */
-    QStringList getLineTypeNames() const;
-
-    /** Gets profile line type */
-    LineType getLineTypeProfile() const;
-
-    /**
-     * Sets profile line type
-     * @param lineTypeProfile Line type for profile
-     */
-    void setLineTypeProfile(const LineType& lineTypeProfile);
-
-    /** Gets range line type */
-    LineType getLineTypeRange() const;
-
-    /**
-     * Sets range line type
-     * @param lineTypeRange Line type for range
-     */
-    void setLineTypeRange(const LineType& lineTypeRange);
-
-    /** Gets render points setting */
-    bool getRenderPoints() const;
-
-    /**
-     * Sets render points setting
-     * @param renderPoints Render points
-     */
-    void setRenderPoints(const bool& renderPoints);
-
-    /** Gets opacity */
-    float getOpacity() const;
-
-    /**
-     * Sets opacity
-     * @param opacity Opacity
-     */
-    void setOpacity(const float& opacity);
-
-    /** Gets color */
-    QColor getColor() const;
-
-    /**
-     * Sets color
-     * @param color Color
-     */
-    void setColor(const QColor& color);
-    
-private:
+protected:
     LineType    _lineTypeProfile;       /** Line type for drawing data profile */
     LineType    _lineTypeRange;         /** Line type for drawing data range */
     bool        _renderPoints;          /** Whether to render points */
     float       _opacity;               /** Opacity for data range */
     QColor      _color;                 /** Color */
+
+    friend class Channel;
 };

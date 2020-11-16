@@ -8,19 +8,26 @@ std::int32_t TreeItem::maxNoColumns = 25;
 DimensionsViewerPlugin* TreeItem::dimensionsViewerPlugin = nullptr;
 
 const QMap<QString, TreeItem::Column> TreeItem::columns = {
-    { "Internal name", TreeItem::Column::InternalName },
-    { "Display name", TreeItem::Column::DisplayName },
-    { "UUID", TreeItem::Column::UUID },
-    { "Modified", TreeItem::Column::Modified }
+    { "Type", TreeItem::Column::Type },
+    { "Name", TreeItem::Column::Name },
+    { "Modified", TreeItem::Column::Modified },
+    { "UUID", TreeItem::Column::UUID }
 };
 
-TreeItem::TreeItem(const QString& type, TreeItem* parent /*= nullptr*/) :
+TreeItem::TreeItem(const QString& type, const QString& name, TreeItem* parent /*= nullptr*/) :
     QObject(parent),
-    _internalName(type),
-    _parent(parent),
+    _type(type),
+    _name(name),
+    _modified(-1),
     _uuid(QUuid::createUuid()),
-    _modified(-1)
+    _parent(parent)
 {
+    setNumColumns(to_ul(Column::_Count));
+}
+
+void TreeItem::setNumColumns(const std::uint32_t& numColumns) const
+{
+    ConfigurationsModel::noColumns = std::max(ConfigurationsModel::noColumns, numColumns);
 }
 
 Qt::ItemFlags TreeItem::getFlags(const QModelIndex& index) const
@@ -41,11 +48,11 @@ QVariant TreeItem::getData(const std::int32_t& column, const std::int32_t& role)
 
             switch (static_cast<Column>(column))
             {
-                case TreeItem::Column::InternalName:
-                    return _internalName;
+                case TreeItem::Column::Type:
+                    return _type;
 
-                case TreeItem::Column::DisplayName:
-                    return _displayName;
+                case TreeItem::Column::Name:
+                    return _name;
 
                 case TreeItem::Column::UUID:
                     return _uuid;
@@ -64,10 +71,10 @@ QVariant TreeItem::getData(const std::int32_t& column, const std::int32_t& role)
 
             switch (static_cast<Column>(column))
             {
-                case TreeItem::Column::InternalName:
+                case TreeItem::Column::Type:
                     return getData(column, Qt::EditRole);
 
-                case TreeItem::Column::DisplayName:
+                case TreeItem::Column::Name:
                     return getData(column, Qt::EditRole);
 
                 case TreeItem::Column::UUID:
@@ -102,16 +109,12 @@ QModelIndexList TreeItem::setData(const QModelIndex& index, const QVariant& valu
 
             switch (column)
             {
-                case TreeItem::Column::InternalName:
-                {
-                    _internalName = value.toString();
-
+                case TreeItem::Column::Type:
                     break;
-                }
 
-                case TreeItem::Column::DisplayName:
+                case TreeItem::Column::Name:
                 {
-                    _displayName = value.toString();
+                    _name = value.toString();
 
                     break;
                 }

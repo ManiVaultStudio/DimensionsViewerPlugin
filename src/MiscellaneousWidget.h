@@ -4,16 +4,12 @@
 
 #include <memory>
 
-#include <QWidget.h>
-
-class DimensionsViewerPlugin;
-
 namespace Ui {
 	class MiscellaneousWidget;
 }
 
 /**
- * Miscellaneous settings widget class
+ * Miscellaneous tree item widget class
  *
  * @author T. Kroes
  */

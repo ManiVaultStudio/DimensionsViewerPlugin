@@ -8,7 +8,7 @@
 class Channel;
 
 /**
- * Differential utility class
+ * Differential tree item class
  *
  * @author T. Kroes
  */
@@ -18,11 +18,11 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Differential,                               /** TODO */
-        DifferentialOperandNamesA,                  /** TODO */
-        DifferentialOperandNamesB,                  /** TODO */
-        DifferentialOperandA,                       /** TODO */
-        DifferentialOperandB,                       /** TODO */
+        Differential = static_cast<std::int32_t>(TreeItem::Column::_Count),     /** TODO */
+        DifferentialOperandNamesA,                                              /** TODO */
+        DifferentialOperandNamesB,                                              /** TODO */
+        DifferentialOperandA,                                                   /** TODO */
+        DifferentialOperandB,                                                   /** TODO */
 
         _Start  = Differential,
         _End    = DifferentialOperandB,

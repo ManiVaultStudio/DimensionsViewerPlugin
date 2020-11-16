@@ -1,15 +1,44 @@
 #pragma once
 
+#include "TreeItem.h"
+
 #include <QObject>
 #include <QMap>
 #include <QSet>
 
 /**
- * Profile utility class
+ * Profile tree item class
  *
  * @author T. Kroes
  */
-class Profile {
+class Profile : public TreeItem {
+
+public: // Columns and rows
+
+    /** Tree item columns */
+    enum class Column {
+        ProfileTypes = static_cast<std::int32_t>(TreeItem::Column::_Count),     /** Available profile types */
+        ProfileType,                                                            /** Current profile type */
+        RangeTypes,                                                             /** Available range types */
+        RangeType,                                                              /** Current range type */
+
+        _Start  = ProfileTypes,
+        _End    = RangeType,
+        _Count  = _End + 1
+    };
+
+    /** Maps column name to column enum */
+    static QMap<QString, Column> const columns;
+
+    /** Get column name from column enum */
+    static QString getColumnTypeName(const Column& column) {
+        return columns.key(column);
+    }
+
+    /** Get column enum from column name */
+    static Column getColumnTypeEnum(const QString& columnName) {
+        return columns[columnName];
+    }
 
 public: // Enumerations
 
@@ -76,9 +105,49 @@ public: // Construction
 
     /**
      * Constructor
+     * @param parent Parent tree item
      * @param profileType Profile type
      */
-    Profile(const ProfileType& profileType);
+    Profile(TreeItem* parent, const ProfileType& profileType);
+
+public: // TreeItem: model API
+
+    /**
+     * Returns the item flags for the given model index
+     * @param index Model index
+     * @return Item flags for the index
+     */
+    Qt::ItemFlags getFlags(const QModelIndex& index) const override;
+
+    /**
+     * Get data role
+     * @param column Column to fetch data from
+     * @param role Data role
+     * @return Data in variant form
+     */
+    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
+
+    /**
+     * Get data role
+     * @param column Column to fetch data from
+     * @param role Data role
+     * @return Data in variant form
+     */
+    QVariant getData(const Column& column, const std::int32_t& role) const;
+
+    /**
+     * Sets data
+     * @param index Model index
+     * @param value Data value in variant form
+     * @param role Data role
+     * @return Model indices that are affected by the operation
+     */
+    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+
+public: // TreeItem: visitor API
+
+    /** Accept visitor */
+    void accept(Visitor* visitor) const override;
 
 public: // Operators
 

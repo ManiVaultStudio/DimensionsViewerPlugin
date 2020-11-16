@@ -14,16 +14,17 @@ const QMap<QString, Differential::Column> Differential::columns = {
 };
 
 Differential::Differential(TreeItem* parent) :
-    TreeItem("Differential", parent),
+    TreeItem("Differential", "Differential", parent),
     _channel(dynamic_cast<Channel*>(parent)),
     _operandChannelNames(),
     _operandChannelName()
 {
+    setNumColumns(to_ul(Column::_Count));
 }
 
 Qt::ItemFlags Differential::getFlags(const QModelIndex& index) const
 {
-    Qt::ItemFlags flags;
+    Qt::ItemFlags flags = TreeItem::getFlags(index);
 
     const auto column = static_cast<Column>(index.column());
 
@@ -66,6 +67,8 @@ Qt::ItemFlags Differential::getFlags(const QModelIndex& index) const
 
 QVariant Differential::getData(const std::int32_t& column, const std::int32_t& role) const
 {
+    auto data = TreeItem::getData(column, role);
+
     switch (role)
     {
         case Qt::EditRole:
@@ -137,7 +140,7 @@ QVariant Differential::getData(const std::int32_t& column, const std::int32_t& r
             break;
     }
 
-    return QVariant();
+    return data;
 }
 
 QVariant Differential::getData(const Column& column, const std::int32_t& role) const
@@ -147,7 +150,7 @@ QVariant Differential::getData(const Column& column, const std::int32_t& role) c
 
 QModelIndexList Differential::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices{ index };
+    QModelIndexList affectedIndices = TreeItem::setData(index, value, role);
 
     const auto column = static_cast<Column>(index.column());
 

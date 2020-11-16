@@ -45,6 +45,8 @@ file(GLOB WIDGETS
 	src/ConfigurationWidget.*
 	src/ViewerWidget.*
 	src/MiscellaneousWidget.*
+	src/ProfileWidget.*
+	src/DifferentialWidget.*
 	src/TreeItemWidget.*
 	src/StylingWidget.*
 	src/StylingPushButton.*

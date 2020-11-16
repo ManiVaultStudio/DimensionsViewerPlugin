@@ -33,23 +33,6 @@ public: // Columns and rows
         DatasetNames,
         DatasetName,
 
-        _ProfileStart = DatasetName,                    /** Start of the profile section */
-            ProfileTypes,                               /** Available profile types */
-            ProfileType,                                /** Current profile type */
-            RangeTypes,                                 /** Available range types */
-            RangeType,                                  /** Current range type */
-        _ProfileEnd = RangeType,                        /** End of the profile section */
-
-        _StylingStart = _ProfileEnd,               /** Start of the styling section */
-            Styling,                                    /** TODO */
-            LineTypes,                                  /** Line types */
-            LineTypeProfile,                            /** Line type for drawing data profile */
-            LineTypeRange,                              /** Line type for drawing data range */
-            RenderPoints,                               /** Render points */
-            Opacity,                                    /** Opacity */
-            Color,                                      /** Color */
-        _StylingEnd = Color,                            /** End of the styling section */
-
         Linked,                                         /** TODO */
 
         _PointsStart = Linked,                          /** TODO */
@@ -113,7 +96,7 @@ protected: // Construction
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 */
-	Channel(TreeItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
+	Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
 
 public: // TreeItem: model API
 
@@ -189,9 +172,9 @@ protected: // Miscellaneous
     const Channels* getChannels() const;
 
     /** Get channels at row */
-    const Channel* getSibling(const std::int32_t& row) const;
+    //const Channel* getSibling(const std::int32_t& row) const;
 
-    Channel* getSibling(const std::int32_t& row);
+    //Channel* getSibling(const std::int32_t& row);
 
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
@@ -231,4 +214,5 @@ protected:
 	friend class ConfigurationsModel;
 	friend class Channels;
 	friend class Differential;
+	friend class Profile;
 };

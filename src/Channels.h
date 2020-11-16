@@ -120,12 +120,20 @@ public: // Getters
      */
     QVector<Channel*> getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled = nullptr) const;
 
+    //Channel* getChannel(const Row& row);
+
 public: // Overloaded operators
 
-    Channel* operator [](int i) const { return _channels[i]; }
+    /**
+     * Bracket operator
+     * @param row Row enum
+     */
+    Channel* operator [](const Row& row) const {
+        return _channels[row];
+    }
 
 protected:
-    QVector<Channel*>       _channels;
+    QMap<Row, Channel*>     _channels;        /** Channels map */
 
     friend class ConfigurationsModel;
     friend class Configuration;

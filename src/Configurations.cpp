@@ -5,7 +5,7 @@
 #include <QMessageBox>
 
 Configurations::Configurations() :
-    TreeItem("Configurations"),
+    TreeItem("Configurations", "Configurations"),
     _configurations()
 {
 }

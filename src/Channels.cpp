@@ -13,36 +13,37 @@ const QMap<QString, Channels::Row> Channels::rows = {
 };
 
 Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem("Channels", parent),
-    _channels({
-        new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName, Profile::ProfileType::Mean, Qt::black, 1.0f),
-        new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 1.0f),
-        new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 1.0f),
-        new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "", Profile::ProfileType::Differential, QColor(255, 0, 0), 0.5f)
-    })
+    TreeItem("Channels", "Channels", parent),
+    _channels()
 {
+    setNumColumns(to_ul(Column::_Count));
+
+    _channels[Row::Dataset]         = new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName, Profile::ProfileType::Mean, Qt::black, 1.0f);
+    _channels[Row::Subset1]         = new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 1.0f);
+    _channels[Row::Subset2]         = new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 1.0f);
+    _channels[Row::Differential]    = new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "", Profile::ProfileType::Differential, QColor(255, 20, 20), 0.5f);
 }
 
 Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
 {
-    return Qt::NoItemFlags;
+    return TreeItem::getFlags(index);
 }
 
 QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role) const
 {
-    return QVariant();
+    return TreeItem::getData(column, role);
 }
 
 QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    return QModelIndexList();
+    return TreeItem::setData(index, value, role);
 }
 
 TreeItem* Channels::getChild(const int& index) const
 {
     try
     {
-        return _channels[index];
+        return _channels[static_cast<Row>(index)];
     }
     catch (std::exception exception)
     {
@@ -62,7 +63,7 @@ int Channels::getChildIndex(TreeItem* child) const
     if (channel == nullptr)
         return 0;
 
-    return _channels.indexOf(channel);
+    return _channels.values().indexOf(channel);
 }
 
 void Channels::accept(Visitor* visitor) const

@@ -48,7 +48,7 @@ public:
      * Visit a \p profile tree item
      * @param profile Profile tree item
      */
-    void visitProfile(const Profile* erofile);
+    void visitProfile(const Profile* profile);
 
     /**
      * Visit a \p differential tree item
