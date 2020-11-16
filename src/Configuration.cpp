@@ -23,11 +23,6 @@ Configuration::Configuration(TreeItem* parent, const QString& datasetName, const
     noConfigurations++;
 }
 
-int Configuration::columnCount() const 
-{
-    return to_ul(Column::_Count);
-}
-
 Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
 {
     if (static_cast<TreeItem::Column>(index.column()) <= TreeItem::Column::_End)

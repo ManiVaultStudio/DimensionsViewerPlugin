@@ -40,15 +40,7 @@ public: // Columns and rows
             RangeType,                                  /** Current range type */
         _ProfileEnd = RangeType,                        /** End of the profile section */
 
-        _DifferentialStart = _ProfileEnd,               /** Start of the differential section */
-            Differential,                               /** TODO */
-            DifferentialOperandNamesA,                  /** TODO */
-            DifferentialOperandNamesB,                  /** TODO */
-            DifferentialOperandA,                       /** TODO */
-            DifferentialOperandB,                       /** TODO */
-        _DifferentialEnd = DifferentialOperandB,        /** End of the differential section */
-
-        _StylingStart = _DifferentialEnd,               /** Start of the styling section */
+        _StylingStart = _ProfileEnd,               /** Start of the styling section */
             Styling,                                    /** TODO */
             LineTypes,                                  /** Line types */
             LineTypeProfile,                            /** Line type for drawing data profile */
@@ -123,9 +115,6 @@ protected: // Construction
 	Channel(TreeItem* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
 
 public: // TreeItem: model API
-
-    /** Returns the number of columns in the item */
-    int columnCount() const override;
 
     /**
      * Returns the item flags for the given model index

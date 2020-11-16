@@ -28,12 +28,12 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Name,
+        InternalName,
         DisplayName,
         UUID,
         Modified,
 
-        _Start  = Name,
+        _Start  = InternalName,
         _End    = Modified,
         _Count  = _End + 1
     };
@@ -61,9 +61,6 @@ public: // Construction
     TreeItem(const QString& type, TreeItem* parent = nullptr);
 
 public: // Model API
-
-    /** Returns the number of columns in the item */
-    virtual int columnCount() const = 0;
 
     /**
      * Returns the item flags for the given model index
@@ -173,7 +170,7 @@ protected:
     static hdps::CoreInterface* getCore();
 
 protected:
-    QString         _internalName;      /** Name */
+    QString         _internalName;      /** Internal name */
     QString         _displayName;       /** Display name */
     QUuid           _uuid;              /** Unique identifier */
     TreeItem*       _parent;            /** Parent tree item */

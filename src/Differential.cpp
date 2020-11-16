@@ -2,14 +2,202 @@
 #include "Channels.h"
 #include "Channel.h"
 #include "Profile.h"
+#include "Visitor.h"
 
 #include <QDebug>
 
-Differential::Differential(Channel* channel) :
-    _channel(channel),
+const QMap<QString, Differential::Column> Differential::columns = {
+    { "Differential operand A names", Differential::Column::DifferentialOperandNamesA },
+    { "Differential operand B names", Differential::Column::DifferentialOperandNamesB },
+    { "Differential operand A name", Differential::Column::DifferentialOperandA },
+    { "Differential operand B name", Differential::Column::DifferentialOperandB }
+};
+
+Differential::Differential(TreeItem* parent) :
+    TreeItem("Differential", parent),
+    _channel(dynamic_cast<Channel*>(parent)),
     _operandChannelNames(),
     _operandChannelName()
 {
+}
+
+Qt::ItemFlags Differential::getFlags(const QModelIndex& index) const
+{
+    Qt::ItemFlags flags;
+
+    const auto column = static_cast<Column>(index.column());
+
+    switch (column)
+    {
+        case Differential::Column::Differential:
+        {
+            if (_channel->_profile.getProfileType() == Profile::ProfileType::Differential) {
+                flags |= Qt::ItemIsEditable;
+
+                if (_channel->_enabled)
+                    flags |= Qt::ItemIsEnabled;
+            }
+
+            break;
+        }
+
+        case Differential::Column::DifferentialOperandNamesA:
+            break;
+
+        case Differential::Column::DifferentialOperandA:
+        case Differential::Column::DifferentialOperandB:
+        {
+            if (_channel->_profile.getProfileType() == Profile::ProfileType::Differential) {
+                flags |= Qt::ItemIsEditable;
+
+                if (_channel->_enabled && isPrimed() && getNumCombinations() >= 2)
+                    flags |= Qt::ItemIsEnabled;
+            }
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return flags;
+}
+
+QVariant Differential::getData(const std::int32_t& column, const std::int32_t& role) const
+{
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            switch (static_cast<Column>(column))
+            {
+                case Differential::Column::DifferentialOperandNamesA:
+                    return (_channel->_enabled && isPrimed()) ? getOperandChannelNames(Differential::Operand::ChannelA) : QStringList();
+
+                case Differential::Column::DifferentialOperandNamesB:
+                    return (_channel->_enabled && isPrimed()) ? getOperandChannelNames(Differential::Operand::ChannelB) : QStringList();
+
+                case Differential::Column::DifferentialOperandA:
+                    return (_channel->_enabled && isPrimed()) ? getOperandChannelName(Differential::Operand::ChannelA) : "";
+
+                case Differential::Column::DifferentialOperandB:
+                    return (_channel->_enabled && isPrimed()) ? getOperandChannelName(Differential::Operand::ChannelB) : "";
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::DisplayRole:
+        {
+            switch (static_cast<Column>(column))
+            {
+                case Differential::Column::DifferentialOperandNamesA:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Differential::Column::DifferentialOperandNamesB:
+                    return getData(column, Qt::EditRole).toStringList().join(", ");
+
+                case Differential::Column::DifferentialOperandA:
+                case Differential::Column::DifferentialOperandB:
+                    return getData(column, Qt::EditRole);
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Qt::ToolTipRole:
+        {
+            const auto tooltip = [&column](const QString& value) {
+                return QString("%1: %2").arg(getColumnTypeName(static_cast<Column>(column)), value);
+            };
+
+            switch (static_cast<Column>(column))
+            {
+                case Differential::Column::DifferentialOperandNamesA:
+                case Differential::Column::DifferentialOperandNamesB:
+                case Differential::Column::DifferentialOperandA:
+                case Differential::Column::DifferentialOperandB:
+                    return tooltip(getData(column, Qt::DisplayRole).toString());
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+QVariant Differential::getData(const Column& column, const std::int32_t& role) const
+{
+    return getData(static_cast<std::int32_t>(column), role);
+}
+
+QModelIndexList Differential::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+{
+    QModelIndexList affectedIndices{ index };
+
+    const auto column = static_cast<Column>(index.column());
+
+    switch (role)
+    {
+        case Qt::EditRole:
+        {
+            switch (column)
+            {
+                case Differential::Column::DifferentialOperandNamesA:
+                case Differential::Column::DifferentialOperandNamesB:
+                    break;
+
+                case Differential::Column::DifferentialOperandA:
+                {
+                    setOperandChannelName(Differential::Operand::ChannelA, value.toString());
+
+                    for (int column = to_ul(Differential::Column::_Start); column <= to_ul(Differential::Column::_End); column++)
+                        affectedIndices << index.siblingAtColumn(column);
+
+                    break;
+                }
+
+                case Differential::Column::DifferentialOperandB:
+                {
+                    setOperandChannelName(Differential::Operand::ChannelB, value.toString());
+
+                    for (int column = to_ul(Differential::Column::_Start); column <= to_ul(Differential::Column::_End); column++)
+                        affectedIndices << index.siblingAtColumn(column);
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return affectedIndices;
+}
+
+void Differential::accept(Visitor* visitor) const
+{
+    visitor->visitDifferential(this);
 }
 
 QStringList Differential::getOperandChannelNames(const Operand& operand) const

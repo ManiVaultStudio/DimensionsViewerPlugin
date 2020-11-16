@@ -10,11 +10,6 @@ Configurations::Configurations() :
 {
 }
 
-int Configurations::columnCount() const 
-{
-    return 0;
-}
-
 Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
 {
     return TreeItem::getFlags(index);

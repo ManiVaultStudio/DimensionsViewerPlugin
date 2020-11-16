@@ -70,9 +70,6 @@ public: // Construction
 
 public: // TreeItem: model API
 
-    /** Returns the number of columns in the item */
-    int columnCount() const override;
-
     /**
      * Returns the item flags for the given model index
      * @param index Model index

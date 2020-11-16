@@ -44,12 +44,30 @@ public:
      */
     void visitChannel(const Channel* channel) override;
 
+    /**
+     * Visit a \p profile tree item
+     * @param profile Profile tree item
+     */
+    void visitProfile(const Profile* erofile);
+
+    /**
+     * Visit a \p differential tree item
+     * @param differential Differential tree item
+     */
+    void visitDifferential(const Differential* differential);
+
+    /**
+     * Visit a \p styling tree item
+     * @param styling Styling tree item
+     */
+    void visitStyling(const Styling* styling);
+
     /** Gets the visualization spec */
     QVariantMap getSpec() const {
         return _spec;
     }
 
 private:
-    QMap<QUuid, QVariantMap>    _items;     /**  */
-    QVariantMap                 _spec;      /** Specification for use in JS visualization client (Vega) */
+    QMap<QUuid, QVariantMap>    _children;      /** Cached children */
+    QVariantMap                 _spec;          /** Specification for use in JS visualization client (Vega) */
 };
