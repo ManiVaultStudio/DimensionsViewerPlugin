@@ -86,7 +86,7 @@ QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileType
         if (!profileTypes.isEmpty() && !profileTypes.contains(profileType))
             continue;
 
-        if (enabled != nullptr && channel->getData(to_ul(Channel::Column::Enabled), Qt::EditRole).toBool() != *enabled)
+        if (enabled != nullptr && channel->getData(to_ul(TreeItem::Column::Enabled), Qt::EditRole).toBool() != *enabled)
             continue;
 
         channels << channel;

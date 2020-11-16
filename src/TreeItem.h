@@ -28,10 +28,11 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Type,
-        Name,
-        Modified,
-        UUID,
+        Type,               /** Type of tree item */
+        Name,               /** Name of tree item */
+        Enabled,            /** Whether the tree item is enabled or not */
+        Modified,           /** Last modified integer stamp */
+        UUID,               /** Universal unique identifier */
 
         _Start  = Type,
         _End    = UUID,
@@ -176,6 +177,7 @@ protected:
 protected:
     QString         _type;          /** Type */
     QString         _name;          /** Display name */
+    bool            _enabled;       /** Whether the tree item is enabled or not */
     std::int32_t    _modified;      /** Modified time */
     QUuid           _uuid;          /** Unique identifier */
     TreeItem*       _parent;        /** Parent tree item */

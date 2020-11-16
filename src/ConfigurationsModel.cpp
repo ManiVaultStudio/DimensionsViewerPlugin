@@ -25,20 +25,48 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
         if (type == "Channel") {
             const auto column = static_cast<Channel::Column>(topLeft.column());
 
-            switch (column)
+            if (topLeft.column() == to_ul(TreeItem::Column::Enabled))
             {
-                case Channel::Column::Enabled:
+                qDebug() << "Enabled";
+
+                const auto channelIndex = topLeft.siblingAtColumn(0);
+
+                emit dataChanged(channelIndex.siblingAtColumn(to_ul(Channel::Column::_Start)), channelIndex.siblingAtColumn(to_ul(Channel::Column::_End)));
+
+                const auto profileIndex = index(to_ul(Channel::Row::Profile), 0, channelIndex);
+
+                emit dataChanged(profileIndex.siblingAtColumn(to_ul(Profile::Column::_Start)), profileIndex.siblingAtColumn(to_ul(Profile::Column::_End)));
+
+                
+            }
+
+            
+        }
+
+        if (type == "Profile") {
+            const auto channelsIndex = topLeft.siblingAtColumn(0).parent().parent();
+
+            switch (static_cast<Profile::Column>(topLeft.column()))
+            {
+                
+                case Profile::Column::ProfileType:
                 {
-                    qDebug() << "Enabled";
+                    if (topLeft.row() == static_cast<std::int32_t>(Channels::Row::Dataset)) {
+                        Channels::Rows channels;
 
-                    //for (int column = to_ul(Channel::Column::_Start); column <= to_ul(Channel::Column::_End); column++)
-                    const auto profileIndex = index(to_ul(Channel::Row::Profile), 0, topLeft.siblingAtColumn(0));
+                        channels << Channels::Row::Subset1 << Channels::Row::Subset2;
 
-                    emit dataChanged(profileIndex.siblingAtColumn(to_ul(Profile::Column::_Start)), profileIndex.siblingAtColumn(to_ul(Profile::Column::_End)));
-                            
+                        for (auto channel : channels) {
+                            const auto channelIndex = index(to_ul(channel), 0, channelsIndex);
+                            const auto profileIndex = index(to_ul(Channel::Row::Profile), to_ul(Profile::Column::ProfileType), channelIndex);
+
+                            setData(profileIndex, topLeft.data(Qt::EditRole), Qt::EditRole);
+                        }
+
+                    }
+
                     break;
                 }
-
                 default:
                     break;
             }

@@ -65,7 +65,7 @@ void SpecVisitor::visitChannel(const Channel* channel)
     channelSpec["uuid"]         = channel->getData(to_ul(TreeItem::Column::UUID), Qt::EditRole).toString();
     channelSpec["modified"]     = channel->getData(to_ul(TreeItem::Column::Modified), Qt::EditRole).toInt();
 
-    channelSpec["enabled"]      = channel->getData(to_ul(Channel::Column::Enabled), Qt::EditRole).toBool();
+    channelSpec["enabled"]      = channel->getData(to_ul(TreeItem::Column::Enabled), Qt::EditRole).toBool();
     channelSpec["index"]        = channel->getData(to_ul(Channel::Column::Index), Qt::EditRole).toInt();
     channelSpec["datasetName"]  = channel->getData(to_ul(Channel::Column::DatasetName), Qt::EditRole).toString();
 

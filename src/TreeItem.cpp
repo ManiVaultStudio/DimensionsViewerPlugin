@@ -10,6 +10,7 @@ DimensionsViewerPlugin* TreeItem::dimensionsViewerPlugin = nullptr;
 const QMap<QString, TreeItem::Column> TreeItem::columns = {
     { "Type", TreeItem::Column::Type },
     { "Name", TreeItem::Column::Name },
+    { "Enabled", TreeItem::Column::Enabled },
     { "Modified", TreeItem::Column::Modified },
     { "UUID", TreeItem::Column::UUID }
 };
@@ -18,6 +19,7 @@ TreeItem::TreeItem(const QString& type, const QString& name, TreeItem* parent /*
     QObject(parent),
     _type(type),
     _name(name),
+    _enabled(true),
     _modified(-1),
     _uuid(QUuid::createUuid()),
     _parent(parent)
@@ -54,6 +56,9 @@ QVariant TreeItem::getData(const std::int32_t& column, const std::int32_t& role)
                 case TreeItem::Column::Name:
                     return _name;
 
+                case TreeItem::Column::Enabled:
+                    return _enabled;
+
                 case TreeItem::Column::UUID:
                     return _uuid;
 
@@ -77,11 +82,32 @@ QVariant TreeItem::getData(const std::int32_t& column, const std::int32_t& role)
                 case TreeItem::Column::Name:
                     return getData(column, Qt::EditRole);
 
+                case TreeItem::Column::Enabled:
+                    return getData(column, Qt::EditRole).toBool() ? "on" : "off";
+
                 case TreeItem::Column::UUID:
                     return getData(column, Qt::EditRole).toUuid().toString();
 
                 case TreeItem::Column::Modified:
                     return QString::number(getData(column, Qt::EditRole).toInt());
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+        
+        case Qt::ToolTipRole:
+        {
+            const auto tooltip = [&column](const QString& value) {
+                return QString("%1: %2").arg(getColumnTypeName(static_cast<Column>(column)), value);
+            };
+
+            switch (static_cast<Column>(column))
+            {
+                case Column::Enabled:
+                    return QString("%1: %2").arg(getData(to_ul(TreeItem::Column::Name), Qt::DisplayRole).toString(), getData(column, Qt::DisplayRole).toString());
 
                 default:
                     break;
@@ -115,6 +141,13 @@ QModelIndexList TreeItem::setData(const QModelIndex& index, const QVariant& valu
                 case TreeItem::Column::Name:
                 {
                     _name = value.toString();
+
+                    break;
+                }
+
+                case TreeItem::Column::Enabled:
+                {
+                    _enabled = value.toBool();
 
                     break;
                 }

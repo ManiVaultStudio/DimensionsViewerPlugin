@@ -17,7 +17,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
 	_ui->setupUi(this);
 
     QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
-        setData(to_ul(Channel::Column::Enabled), state);
+        setData(to_ul(TreeItem::Column::Enabled), state);
     });
     
     QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
@@ -146,14 +146,14 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 
     _ui->stylingPushButton->setModelIndex(modelIndex);
 
-    getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Enabled)));
+    getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(TreeItem::Column::Enabled)));
     getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(TreeItem::Column::Name)));
     getWidgetMapper("DatasetNames")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetNames)));
     getWidgetMapper("DatasetName")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::DatasetName)));
 
-    const auto differentialIndex = getChild(to_ul(Channel::Row::Styling));
+    const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
 
-    //getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Color)));
-    //getWidgetMapper("Styling")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Styling)));
-    //getWidgetMapper("LinkedPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Linked)));
+    getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Color), stylingIndex));
+    getWidgetMapper("Styling")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Styling)));
+    getWidgetMapper("LinkedPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Column::Linked)));
 }

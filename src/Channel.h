@@ -29,7 +29,6 @@ public: // Columns and rows
     /** Tree item columns */
     enum class Column {
         Index = static_cast<std::int32_t>(TreeItem::Column::_Count),        /** Channel index */
-        Enabled,                                                            /** Whether the ch */
         DatasetNames,
         DatasetName,
         Styling,
@@ -198,7 +197,6 @@ public: // Getters
 
 private:
     const std::uint32_t     _index;             /** Index */
-    bool                    _enabled;           /** Whether the channel is enabled or not */
     bool                    _linked;            /** Whether settings are linked to the settings of the first channel */
     QStringList             _datasetNames;      /** Dataset names */
     QString                 _datasetName;       /** Dataset name */
