@@ -181,7 +181,7 @@ protected: // Miscellaneous
 public: // Getters
 
     /** Get profile settings */
-    Profile& getProfile() {
+    QSharedPointer<Profile> getProfile() {
         return _profile;
     }
 
@@ -196,14 +196,14 @@ public: // Getters
     }
 
 private:
-    const std::uint32_t     _index;             /** Index */
-    bool                    _linked;            /** Whether settings are linked to the settings of the first channel */
-    QStringList             _datasetNames;      /** Dataset names */
-    QString                 _datasetName;       /** Dataset name */
-    Profile                 _profile;           /** Profile settings */
-    Differential            _differential;      /** Differential settings */
-    Styling                 _styling;           /** Style settings */
-    Points*                 _points;            /** Pointer to points dataset */
+    const std::uint32_t         _index;             /** Index */
+    bool                        _linked;            /** Whether settings are linked to the settings of the first channel */
+    QStringList                 _datasetNames;      /** Dataset names */
+    QString                     _datasetName;       /** Dataset name */
+    QSharedPointer<Profile>     _profile;           /** Profile settings */
+    Differential                _differential;      /** Differential settings */
+    Styling                     _styling;           /** Style settings */
+    Points*                     _points;            /** Pointer to points dataset */
 
 protected:
 	friend class ConfigurationsModel;

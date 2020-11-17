@@ -9,7 +9,8 @@ const QMap<QString, Profile::Column> Profile::columns = {
     { "Profile types", Profile::Column::ProfileTypes },
     { "Profile type", Profile::Column::ProfileType },
     { "Range types", Profile::Column::RangeTypes },
-    { "Range type", Profile::Column::RangeType }
+    { "Range type", Profile::Column::RangeType },
+    { "Is aggregate", Profile::Column::IsAggregate }
 };
 
 const QMap<QString, Profile::ProfileType> Profile::profileTypes = {
@@ -29,7 +30,7 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
     { "10/90 perc.", Profile::RangeType::Percentile10 }
 };
 
-Profile::Profile(TreeItem* parent, const ProfileType& profileType) :
+Profile::Profile(TreeItem* parent /*= nullptr*/, const ProfileType& profileType /*= ProfileType::Mean*/) :
     TreeItem("Profile", "Profile", parent),
     _locked(profileType == ProfileType::Differential),
     _profileTypes(),
@@ -71,10 +72,9 @@ Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
-        case Profile::Column::ProfileTypes:
-        case Profile::Column::ProfileType:
-        case Profile::Column::RangeTypes:
-        case Profile::Column::RangeType:
+        case Column::ProfileType:
+        case Column::RangeTypes:
+        case Column::RangeType:
         {
             flags |= Qt::ItemIsEditable;
 
@@ -110,6 +110,9 @@ Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
             break;
         }
 
+        case Column::IsAggregate:
+            break;
+
         default:
             break;
     }
@@ -127,17 +130,20 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
         {
             switch (static_cast<Column>(column))
             {
-                case Profile::Column::ProfileTypes:
+                case Column::ProfileTypes:
                     return getProfileTypeNames();
 
-                case Profile::Column::ProfileType:
+                case Column::ProfileType:
                     return static_cast<std::int32_t>(getProfileType());
 
-                case Profile::Column::RangeTypes:
+                case Column::RangeTypes:
                     return getRangeTypeNames();
 
-                case Profile::Column::RangeType:
+                case Column::RangeType:
                     return static_cast<std::int32_t>(getRangeType());
+
+                case Column::IsAggregate:
+                    return _profileType == ProfileType::Differential;
 
                 default:
                     break;
@@ -150,17 +156,20 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
         {
             switch (static_cast<Column>(column))
             {
-                case Profile::Column::ProfileTypes:
+                case Column::ProfileTypes:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
-                case Profile::Column::ProfileType:
+                case Column::ProfileType:
                     return Profile::getProfileTypeName(static_cast<Profile::ProfileType>(getData(column, Qt::EditRole).toInt()));
 
-                case Profile::Column::RangeTypes:
+                case Column::RangeTypes:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
-                case Profile::Column::RangeType:
+                case Column::RangeType:
                     return Profile::getRangeTypeName(static_cast<Profile::RangeType>(getData(column, Qt::EditRole).toInt()));
+
+                case Column::IsAggregate:
+                    return getData(column, Qt::EditRole).toBool() ? "yes" : "no";
 
                 default:
                     break;
@@ -177,10 +186,11 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
 
             switch (static_cast<Column>(column))
             {
-                case Profile::Column::ProfileTypes:
-                case Profile::Column::ProfileType:
-                case Profile::Column::RangeTypes:
-                case Profile::Column::RangeType:
+                case Column::ProfileTypes:
+                case Column::ProfileType:
+                case Column::RangeTypes:
+                case Column::RangeType:
+                case Column::IsAggregate:
                     return tooltip(getData(column, Qt::DisplayRole).toString());
 
                 default:
@@ -214,28 +224,31 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
         {
             switch (column)
             {
-                case Profile::Column::ProfileTypes:
+                case Column::ProfileTypes:
                     break;
 
-                case Profile::Column::ProfileType:
+                case Column::ProfileType:
                 {
                     setProfileType(static_cast<Profile::ProfileType>(value.toInt()));
 
-                    affectedIndices << index.siblingAtColumn(to_ul(Profile::Column::RangeTypes));
-                    affectedIndices << index.siblingAtColumn(to_ul(Profile::Column::RangeType));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeType));
 
                     break;
                 }
 
-                case Profile::Column::RangeTypes:
+                case Column::RangeTypes:
                     break;
 
-                case Profile::Column::RangeType:
+                case Column::RangeType:
                 {
                     setRangeType(static_cast<Profile::RangeType>(value.toInt()));
 
                     break;
                 }
+
+                case Column::IsAggregate:
+                    break;
 
                 default:
                     break;
@@ -248,28 +261,31 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
         {
             switch (column)
             {
-                case Profile::Column::ProfileTypes:
+                case Column::ProfileTypes:
                     break;
 
-                case Profile::Column::ProfileType:
+                case Column::ProfileType:
                 {
                     setProfileType(Profile::getProfileTypeEnum(value.toString()));
 
-                    affectedIndices << index.siblingAtColumn(to_ul(Profile::Column::RangeTypes));
-                    affectedIndices << index.siblingAtColumn(to_ul(Profile::Column::RangeType));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeTypes));
+                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeType));
 
                     break;
                 }
 
-                case Profile::Column::RangeTypes:
+                case Column::RangeTypes:
                     break;
 
-                case Profile::Column::RangeType:
+                case Column::RangeType:
                 {
                     setRangeType(Profile::getRangeTypeEnum(value.toString()));
 
                     break;
                 }
+
+                case Column::IsAggregate:
+                    break;
 
                 default:
                     break;

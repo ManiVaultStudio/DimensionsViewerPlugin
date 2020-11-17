@@ -32,7 +32,7 @@ Qt::ItemFlags Differential::getFlags(const QModelIndex& index) const
     {
         case Differential::Column::Differential:
         {
-            if (_channel->_profile.getProfileType() == Profile::ProfileType::Differential) {
+            if (_channel->_profile->getProfileType() == Profile::ProfileType::Differential) {
                 flags |= Qt::ItemIsEditable;
 
                 if (_channel->_enabled)
@@ -48,7 +48,7 @@ Qt::ItemFlags Differential::getFlags(const QModelIndex& index) const
         case Differential::Column::DifferentialOperandA:
         case Differential::Column::DifferentialOperandB:
         {
-            if (_channel->_profile.getProfileType() == Profile::ProfileType::Differential) {
+            if (_channel->_profile->getProfileType() == Profile::ProfileType::Differential) {
                 flags |= Qt::ItemIsEditable;
 
                 if (_channel->_enabled && isPrimed() && getNumCombinations() >= 2)

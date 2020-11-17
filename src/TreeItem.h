@@ -22,8 +22,6 @@ namespace hdps {
  */
 class TreeItem : public QObject
 {
-    Q_OBJECT
-
 public: // Columns and rows
 
     /** Tree item columns */
@@ -181,8 +179,6 @@ protected:
     std::int32_t    _modified;      /** Modified time */
     QUuid           _uuid;          /** Unique identifier */
     TreeItem*       _parent;        /** Parent tree item */
-
-    static std::int32_t maxNoColumns;
 
 private:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;

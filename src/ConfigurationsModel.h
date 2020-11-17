@@ -18,6 +18,14 @@ class ConfigurationsModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
+public: // Extend roles
+
+    /** User roles */
+    enum class Role {
+        IconFontRole = Qt::UserRole,
+        IconFontCharacterRole
+    };
+
 public: // Alias(es)
 
     /** Rule function executed when data changes */

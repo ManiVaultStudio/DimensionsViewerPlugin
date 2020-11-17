@@ -131,9 +131,9 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->linkedPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
         _ui->linkedPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->linkedPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
-        _ui->linkedPushButton->setFont(index.data(Qt::FontRole).value<QFont>());
+        _ui->linkedPushButton->setFont(index.data(to_ul(ConfigurationsModel::Role::IconFontRole)).value<QFont>());
         _ui->linkedPushButton->setChecked(index.data(Qt::EditRole).toBool());
-        _ui->linkedPushButton->setText(index.data(Qt::DisplayRole).toString());
+        _ui->linkedPushButton->setText(index.data(to_ul(ConfigurationsModel::Role::IconFontCharacterRole)).toString());
     }));
 }
 

@@ -4,7 +4,6 @@
 
 #include "CoreInterface.h"
 
-std::int32_t TreeItem::maxNoColumns = 25;
 DimensionsViewerPlugin* TreeItem::dimensionsViewerPlugin = nullptr;
 
 const QMap<QString, TreeItem::Column> TreeItem::columns = {

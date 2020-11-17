@@ -71,17 +71,12 @@ void Channels::accept(Visitor* visitor) const
     visitor->visitChannels(this);
 }
 
-const Configuration* Channels::getConfiguration() const
-{
-    return dynamic_cast<Configuration*>(parent());
-}
-
 QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled /*= nullptr*/) const
 {
     QVector<Channel*> channels;
 
     for (auto channel : _channels) {
-        const auto profileType = channel->getProfile().getProfileType();
+        const auto profileType = channel->getProfile()->getProfileType();
 
         if (!profileTypes.isEmpty() && !profileTypes.contains(profileType))
             continue;

@@ -105,11 +105,6 @@ public: // TreeItem: visitor API
     /** Accept visitor */
     void accept(Visitor* visitor) const override;
 
-protected: // Miscellaneous
-
-    /** Returns parent configuration tree item */
-    const Configuration* getConfiguration() const;
-
 public: // Getters
 
     /**
@@ -119,8 +114,6 @@ public: // Getters
      * @return Filtered channels
      */
     QVector<Channel*> getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled = nullptr) const;
-
-    //Channel* getChannel(const Row& row);
 
 public: // Overloaded operators
 

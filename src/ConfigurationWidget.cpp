@@ -33,5 +33,4 @@ void ConfigurationWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     TreeItemWidget::setModelIndex(modelIndex);
 
     _ui->channelsWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Channels)));
-    _ui->miscellaneousWidget->setModelIndex(getChild(static_cast<int>(Configuration::Row::Miscellaneous)));
 }

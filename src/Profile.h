@@ -21,6 +21,7 @@ public: // Columns and rows
         ProfileType,                                                            /** Current profile type */
         RangeTypes,                                                             /** Available range types */
         RangeType,                                                              /** Current range type */
+        IsAggregate,                                                            /** Whether the profile is the combination of one or more others */
 
         _Start  = ProfileTypes,
         _End    = RangeType,
@@ -108,7 +109,7 @@ public: // Construction
      * @param parent Parent tree item
      * @param profileType Profile type
      */
-    Profile(TreeItem* parent, const ProfileType& profileType);
+    Profile(TreeItem* parent = nullptr, const ProfileType& profileType = ProfileType::Mean);
 
 public: // TreeItem: model API
 

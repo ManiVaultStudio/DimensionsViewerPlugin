@@ -30,7 +30,7 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& na
 	_index(index),
     _datasetNames(),
 	_datasetName(datasetName),
-	_profile(this, profileType),
+	_profile(QSharedPointer<Profile>::create(this, profileType)),
     _differential(this),
     _linked(linked),
 	_styling(this),
@@ -298,7 +298,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                     return getData(column, Qt::EditRole);
 
                 case Column::Linked:
-                    return hdps::Application::getIconFont("FontAwesome").getIconCharacter(_linked ? "link" : "unlink");
+                    return getData(column, Qt::EditRole).toBool() ? "on" : "off";
 
                 case Column::NoDimensions:
                 case Column::NoPoints:
@@ -340,7 +340,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
             break;
         }
 
-        case Qt::FontRole:
+        case to_ul(ConfigurationsModel::Role::IconFontRole):
         {
             switch (static_cast<Column>(column))
             {
@@ -363,6 +363,29 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
             break;
         }
 
+        case to_ul(ConfigurationsModel::Role::IconFontCharacterRole):
+        {
+            switch (static_cast<Column>(column))
+            {
+                case Column::Index:
+                case Column::DatasetNames:
+                case Column::DatasetName:
+                    break;
+
+                case Column::Linked:
+                    return hdps::Application::getIconFont("FontAwesome").getIconCharacter(_linked ? "link" : "unlink");
+
+                case Column::NoDimensions:
+                case Column::NoPoints:
+                    break;
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+        
         default:
             break;
     }
@@ -508,7 +531,7 @@ TreeItem* Channel::getChild(const int& index) const
     switch (static_cast<Row>(index))
     {
         case Row::Profile:
-            return const_cast<Profile*>(&_profile);
+            return const_cast<Profile*>(_profile.get());
 
         case Row::Differential:
             return const_cast<Differential*>(&_differential);
