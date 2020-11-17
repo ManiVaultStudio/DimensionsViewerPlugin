@@ -33,6 +33,9 @@ public: // Columns and rows
         _Count  = _End + 1
     };
 
+    /** Columns set alias */
+    using Columns = QSet<Column>;
+
     /** Maps column name to column enum */
     static QMap<QString, Column> const columns;
 
@@ -210,3 +213,8 @@ protected:
 
     friend class Channel;
 };
+
+/** Get scoped enum in columns set to work */
+inline uint qHash(Styling::Column key, uint seed) {
+    return ::qHash(static_cast<uint>(key), seed);
+}

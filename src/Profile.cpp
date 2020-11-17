@@ -9,8 +9,7 @@ const QMap<QString, Profile::Column> Profile::columns = {
     { "Profile types", Profile::Column::ProfileTypes },
     { "Profile type", Profile::Column::ProfileType },
     { "Range types", Profile::Column::RangeTypes },
-    { "Range type", Profile::Column::RangeType },
-    { "Is aggregate", Profile::Column::IsAggregate }
+    { "Range type", Profile::Column::RangeType }
 };
 
 const QMap<QString, Profile::ProfileType> Profile::profileTypes = {
@@ -110,9 +109,6 @@ Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
             break;
         }
 
-        case Column::IsAggregate:
-            break;
-
         default:
             break;
     }
@@ -142,9 +138,6 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Column::RangeType:
                     return static_cast<std::int32_t>(getRangeType());
 
-                case Column::IsAggregate:
-                    return _profileType == ProfileType::Differential;
-
                 default:
                     break;
             }
@@ -168,9 +161,6 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Column::RangeType:
                     return Profile::getRangeTypeName(static_cast<Profile::RangeType>(getData(column, Qt::EditRole).toInt()));
 
-                case Column::IsAggregate:
-                    return getData(column, Qt::EditRole).toBool() ? "yes" : "no";
-
                 default:
                     break;
             }
@@ -190,7 +180,6 @@ QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Column::ProfileType:
                 case Column::RangeTypes:
                 case Column::RangeType:
-                case Column::IsAggregate:
                     return tooltip(getData(column, Qt::DisplayRole).toString());
 
                 default:
@@ -247,9 +236,6 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
                     break;
                 }
 
-                case Column::IsAggregate:
-                    break;
-
                 default:
                     break;
             }
@@ -283,9 +269,6 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
 
                     break;
                 }
-
-                case Column::IsAggregate:
-                    break;
 
                 default:
                     break;

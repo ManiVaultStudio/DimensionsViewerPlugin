@@ -175,9 +175,15 @@ QModelIndexList Styling::setData(const QModelIndex& index, const QVariant& value
                     break;
 
                 case Styling::Column::LineTypeProfile:
-                case Styling::Column::LineTypeRange:
                 {
                     _lineTypeProfile = static_cast<Styling::LineType>(value.toInt());
+
+                    break;
+                }
+
+                case Styling::Column::LineTypeRange:
+                {
+                    _lineTypeRange = static_cast<Styling::LineType>(value.toInt());
 
                     break;
                 }

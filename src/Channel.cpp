@@ -17,7 +17,8 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Dataset name", Channel::Column::DatasetName },
     { "Linked", Channel::Column::Linked },
     { "Number of dimensions", Channel::Column::NoDimensions },
-    { "Number of points", Channel::Column::NoPoints }
+    { "Number of points", Channel::Column::NoPoints },
+    { "Is aggregate", Channel::Column::IsAggregate }
 };
 
 const QMap<QString, Channel::Row> Channel::rows = {
@@ -222,6 +223,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
         case Column::NoDimensions:
         case Column::NoPoints:
+        case Column::IsAggregate:
             break;
 
         default:
@@ -236,22 +238,6 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
     auto data = TreeItem::getData(column, role);
 
     const auto row = static_cast<Channels::Row>(_index);
-
-    /*if (column == static_cast<int>(TreeItem::Column::Enabled)) {
-        switch (row)
-        {
-            case Channels::Row::Dataset:
-            case Channels::Row::Subset1:
-            case Channels::Row::Subset2:
-                return _enabled;
-
-            case Channels::Row::Differential:
-                return _enabled && _differential.isPrimed();
-
-            default:
-                break;
-        }
-    }*/
 
     switch (role)
     {
@@ -276,6 +262,9 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
                 case Column::NoPoints:
                     return getNoPoints();
+
+                case Column::IsAggregate:
+                    return _profile->getProfileType() == Profile::ProfileType::Differential;
 
                 default:
                     break;
@@ -304,6 +293,9 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Column::NoPoints:
                     return QString::number(getData(column, Qt::EditRole).toInt());
 
+                case Column::IsAggregate:
+                    return getData(column, Qt::EditRole).toBool() ? "yes" : "no";
+
                 default:
                     break;
             }
@@ -331,6 +323,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
                 case Column::NoDimensions:
                 case Column::NoPoints:
+                case Column::IsAggregate:
                     return tooltip(getData(column, Qt::DisplayRole).toString());
 
                 default:
@@ -354,6 +347,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
                 case Column::NoDimensions:
                 case Column::NoPoints:
+                case Column::IsAggregate:
                     break;
 
                 default:
@@ -377,6 +371,7 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
                 case Column::NoDimensions:
                 case Column::NoPoints:
+                case Column::IsAggregate:
                     break;
 
                 default:
@@ -491,6 +486,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
                 case Column::NoDimensions:
                 case Column::NoPoints:
+                case Column::IsAggregate:
                     break;
 
                 default:
@@ -510,6 +506,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 case Column::Linked:
                 case Column::NoDimensions:
                 case Column::NoPoints:
+                case Column::IsAggregate:
                     break;
 
                 default:

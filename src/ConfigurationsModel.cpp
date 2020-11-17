@@ -19,7 +19,7 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 	_selectionModel(this),
     _datasetNames()
 {
-    const auto synchronizeProfiles = [this](const QModelIndex& channels) {
+    const auto synchronizeChannels = [this](const QModelIndex& channels) {
         const auto datasetChannel   = index(to_ul(Channels::Row::Dataset), 0, channels);
         const auto sourceProfile    = index(to_ul(Channel::Row::Profile), 0, datasetChannel);
         const auto profileIndices   = match(channels.siblingAtColumn(to_ul(TreeItem::Column::Type)), Qt::EditRole, "Profile", -1, Qt::MatchRecursive | Qt::MatchExactly);
@@ -28,38 +28,59 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
             const auto channel              = profile.parent();
             const auto channelIndex         = channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
             const auto isChannelLinked      = channel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
-            const auto isProfileAggregate   = profile.siblingAtColumn(to_ul(Profile::Column::IsAggregate)).data(Qt::EditRole).toBool();
+            const auto isChannelAggregate   = channel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
 
-            if (channelIndex >= 1 && isChannelLinked && !isProfileAggregate) {
-                setData(profile.siblingAtColumn(to_ul(Profile::Column::ProfileTypes)), sourceProfile.siblingAtColumn(to_ul(Profile::Column::ProfileTypes)).data(Qt::EditRole), Qt::EditRole);
-                setData(profile.siblingAtColumn(to_ul(Profile::Column::ProfileType)), sourceProfile.siblingAtColumn(to_ul(Profile::Column::ProfileType)).data(Qt::EditRole), Qt::EditRole);
-                setData(profile.siblingAtColumn(to_ul(Profile::Column::RangeTypes)), sourceProfile.siblingAtColumn(to_ul(Profile::Column::RangeTypes)).data(Qt::EditRole), Qt::EditRole);
-                setData(profile.siblingAtColumn(to_ul(Profile::Column::RangeType)), sourceProfile.siblingAtColumn(to_ul(Profile::Column::RangeType)).data(Qt::EditRole), Qt::EditRole);
+            if (channelIndex >= 1) {
+                if (isChannelLinked) {
+                    if (!isChannelAggregate) {
+                        const Profile::Columns copyColumns{
+                            Profile::Column::ProfileTypes,
+                            Profile::Column::ProfileType,
+                            Profile::Column::RangeTypes,
+                            Profile::Column::RangeType
+                        };
+
+                        for (auto copyColumn : copyColumns)
+                            setData(profile.siblingAtColumn(to_ul(copyColumn)), sourceProfile.siblingAtColumn(to_ul(copyColumn)).data(Qt::EditRole), Qt::EditRole);
+                    }
+                }
+                else {
+                    emit dataChanged(profile.siblingAtColumn(to_ul(Profile::Column::_Start)), profile.siblingAtColumn(to_ul(Profile::Column::_End)));
+                }
+            }
+        }
+
+        const auto sourceStyling    = index(to_ul(Channel::Row::Styling), 0, datasetChannel);
+        const auto stylingIndices   = match(channels.siblingAtColumn(to_ul(TreeItem::Column::Type)), Qt::EditRole, "Styling", -1, Qt::MatchRecursive | Qt::MatchExactly);
+
+        for (auto styling : stylingIndices) {
+            const auto channel              = styling.parent();
+            const auto channelIndex         = channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
+            const auto isChannelLinked      = channel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
+            const auto isChannelAggregate   = channel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
+
+            if (channelIndex >= 1) {
+                if (isChannelLinked) {
+                    if (!isChannelAggregate) {
+                        const Styling::Columns copyColumns{
+                            Styling::Column::LineTypeProfile,
+                            Styling::Column::LineTypeRange,
+                            Styling::Column::RenderPoints,
+                            Styling::Column::Opacity
+                        };
+
+                        for (auto copyColumn : copyColumns)
+                            setData(styling.siblingAtColumn(to_ul(copyColumn)), sourceStyling.siblingAtColumn(to_ul(copyColumn)).data(Qt::EditRole), Qt::EditRole);
+                    }
+                }
+                else {
+                    emit dataChanged(styling.siblingAtColumn(to_ul(Styling::Column::_Start)), styling.siblingAtColumn(to_ul(Styling::Column::_End)));
+                }
             }
         }
     };
 
-    const auto synchronizeStyling = [this](const QModelIndex& channels) {
-        //const auto datasetChannel   = index(to_ul(Channels::Row::Dataset), 0, channels);
-        //const auto sourceStyling    = index(to_ul(Channel::Row::Styling), 0, datasetChannel);
-        //const auto stylingIndices   = match(channels.siblingAtColumn(to_ul(TreeItem::Column::Type)), Qt::EditRole, "Styling", -1, Qt::MatchRecursive | Qt::MatchExactly);
-
-        //for (auto styling : stylingIndices) {
-        //    const auto channel              = styling.parent();
-        //    const auto channelIndex         = channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
-        //    const auto isChannelLinked      = channel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
-        //    const auto isProfileAggregate   = styling.siblingAtColumn(to_ul(Profile::Column::IsAggregate)).data(Qt::EditRole).toBool();
-
-        //    if (channelIndex >= 1 && isChannelLinked && !isProfileAggregate) {
-        //        setData(styling.siblingAtColumn(to_ul(Profile::Column::ProfileTypes)), sourceStyling.siblingAtColumn(to_ul(Profile::Column::ProfileTypes)).data(Qt::EditRole), Qt::EditRole);
-        //        setData(styling.siblingAtColumn(to_ul(Profile::Column::ProfileType)), sourceStyling.siblingAtColumn(to_ul(Profile::Column::ProfileType)).data(Qt::EditRole), Qt::EditRole);
-        //        setData(styling.siblingAtColumn(to_ul(Profile::Column::RangeTypes)), sourceStyling.siblingAtColumn(to_ul(Profile::Column::RangeTypes)).data(Qt::EditRole), Qt::EditRole);
-        //        setData(styling.siblingAtColumn(to_ul(Profile::Column::RangeType)), sourceStyling.siblingAtColumn(to_ul(Profile::Column::RangeType)).data(Qt::EditRole), Qt::EditRole);
-        //    }
-        //}
-    };
-
-    QObject::connect(this, &QAbstractItemModel::dataChanged, [this, synchronizeProfiles, synchronizeStyling](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
+    QObject::connect(this, &QAbstractItemModel::dataChanged, [this, synchronizeChannels](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
         const auto type = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).data(Qt::EditRole).toString();
 
         if (type == "Channel") {
@@ -73,20 +94,13 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
                 const auto channelIndex = topLeft.siblingAtColumn(0);
 
                 emit dataChanged(channelIndex.siblingAtColumn(to_ul(Channel::Column::_Start)), channelIndex.siblingAtColumn(to_ul(Channel::Column::_End)));
-
-                const auto profileIndex = index(to_ul(Channel::Row::Profile), 0, channelIndex);
-
-                emit dataChanged(profileIndex.siblingAtColumn(to_ul(Profile::Column::_Start)), profileIndex.siblingAtColumn(to_ul(Profile::Column::_End)));
-
-                
             }
 
             switch (column)
             {
                 case Channel::Column::Linked:
                 {
-                    synchronizeProfiles(channel.parent());
-                    synchronizeStyling(channel.parent());
+                    synchronizeChannels(channel.parent());
 
                     break;
                 }
@@ -109,7 +123,30 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
                     const auto channel = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).parent();
 
                     if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() == 0)
-                        synchronizeProfiles(channel.parent());
+                        synchronizeChannels(channel.parent());
+
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        if (type == "Styling") {
+            const auto column = static_cast<Styling::Column>(topLeft.column());
+
+            switch (column)
+            {
+                case Styling::Column::LineTypes:
+                case Styling::Column::LineTypeProfile:
+                case Styling::Column::LineTypeRange:
+                case Styling::Column::RenderPoints:
+                case Styling::Column::Opacity:
+                {
+                    const auto channel = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).parent();
+
+                    if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() == 0)
+                        synchronizeChannels(channel.parent());
 
                     break;
                 }

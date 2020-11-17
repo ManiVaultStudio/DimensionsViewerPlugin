@@ -28,13 +28,14 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Index = static_cast<std::int32_t>(TreeItem::Column::_Count),        /** Channel index */
-        DatasetNames,
-        DatasetName,
-        Styling,
-        Linked,
-        NoDimensions,                               /** TODO */
-        NoPoints,                                   /** TODO */
+        Index = static_cast<std::int32_t>(TreeItem::Column::_Count),            /** Channel index */
+        DatasetNames,                                                           /** Candidate dataset name(s) */
+        DatasetName,                                                            /** Candidate dataset name */
+        Styling,                                                                /** Styling properties */
+        Linked,                                                                 /** Whether the channel is linked to another channel */
+        NoDimensions,                                                           /** Number of points in the referenced points dataset */
+        NoPoints,                                                               /** Number of dimensions in the referenced points dataset */
+        IsAggregate,                                                            /** Whether the channel is the combination of one or more other channels */
 
         _Start  = Index,
         _End    = NoPoints,
