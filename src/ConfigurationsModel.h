@@ -21,7 +21,7 @@ class ConfigurationsModel : public QAbstractItemModel
 public: // Extend roles
 
     /** User roles */
-    enum class Role {
+    enum Role {
         IconFontRole = Qt::UserRole,
         IconFontCharacterRole
     };

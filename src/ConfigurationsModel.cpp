@@ -25,14 +25,14 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
         const auto profileIndices   = match(channels.siblingAtColumn(to_ul(TreeItem::Column::Type)), Qt::EditRole, "Profile", -1, Qt::MatchRecursive | Qt::MatchExactly);
 
         for (auto profile : profileIndices) {
-            const auto channel              = profile.parent();
-            const auto channelIndex         = channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
-            const auto isChannelLinked      = channel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
-            const auto isChannelAggregate   = channel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
+            const auto channel          = profile.parent();
+            const auto channelIndex     = channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
+            const auto isLinked         = channel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
+            const auto isAggregate      = channel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
 
             if (channelIndex >= 1) {
-                if (isChannelLinked) {
-                    if (!isChannelAggregate) {
+                if (isLinked) {
+                    if (!isAggregate) {
                         const Profile::Columns copyColumns{
                             Profile::Column::ProfileTypes,
                             Profile::Column::ProfileType,
@@ -54,14 +54,14 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
         const auto stylingIndices   = match(channels.siblingAtColumn(to_ul(TreeItem::Column::Type)), Qt::EditRole, "Styling", -1, Qt::MatchRecursive | Qt::MatchExactly);
 
         for (auto styling : stylingIndices) {
-            const auto channel              = styling.parent();
-            const auto channelIndex         = channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
-            const auto isChannelLinked      = channel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
-            const auto isChannelAggregate   = channel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
+            const auto channel          = styling.parent();
+            const auto channelIndex     = channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
+            const auto isLinked         = channel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
+            const auto isAggregate      = channel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
 
             if (channelIndex >= 1) {
-                if (isChannelLinked) {
-                    if (!isChannelAggregate) {
+                if (isLinked) {
+                    if (!isAggregate) {
                         const Styling::Columns copyColumns{
                             Styling::Column::LineTypeProfile,
                             Styling::Column::LineTypeRange,
