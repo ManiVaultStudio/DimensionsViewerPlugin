@@ -39,6 +39,12 @@ QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& valu
     return TreeItem::setData(index, value, role);
 }
 
+QModelIndexList Channels::getAffectedIndices(const QModelIndex& index) const
+{
+    QModelIndexList affectedIndices{ index };
+    return affectedIndices;
+}
+
 TreeItem* Channels::getChild(const int& index) const
 {
     try

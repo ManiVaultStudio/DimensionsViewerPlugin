@@ -78,6 +78,8 @@ public: // Columns and rows
         _Count  = _End + 1
     };
 
+    /** Rows set alias */
+    using Rows = QSet<Row>;
 
     /** Maps row name to row enum */
     static QMap<QString, Row> const rows;
@@ -141,6 +143,18 @@ public: // TreeItem: model API
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
+    /**
+     * Get indices that are affected by a data change of \p index
+     * @param index Model index which changed
+     * @return Affected model indices
+     */
+    QModelIndexList getAffectedIndices(const QModelIndex& index) const override;
+
+    /** Get number of columns */
+    std::uint32_t getColumnCount() const override {
+        return to_ul(Column::_Count);
+    };
+
 public: // TreeItem: hierarchy API
 
     /**
@@ -183,29 +197,29 @@ protected: // Miscellaneous
 public: // Getters
 
     /** Get profile settings */
-    QSharedPointer<Profile> getProfile() {
+    Profile* getProfile() {
         return _profile;
     }
 
     /** Get differential settings */
-    Differential& getDifferential() {
+    Differential* getDifferential() {
         return _differential;
     }
 
     /** Get styling settings */
-    Styling& getStyling() {
+    Styling* getStyling() {
         return _styling;
     }
 
 private:
-    const std::uint32_t         _index;             /** Index */
-    bool                        _linked;            /** Whether settings are linked to the settings of the first channel */
-    QStringList                 _datasetNames;      /** Dataset names */
-    QString                     _datasetName;       /** Dataset name */
-    QSharedPointer<Profile>     _profile;           /** Profile settings */
-    Differential                _differential;      /** Differential settings */
-    Styling                     _styling;           /** Style settings */
-    Points*                     _points;            /** Pointer to points dataset */
+    const std::uint32_t     _index;             /** Index */
+    bool                    _linked;            /** Whether settings are linked to the settings of the first channel */
+    QStringList             _datasetNames;      /** Dataset names */
+    QString                 _datasetName;       /** Dataset name */
+    Profile*                _profile;           /** Profile settings */
+    Differential*           _differential;      /** Differential settings */
+    Styling*                _styling;           /** Style settings */
+    Points*                 _points;            /** Pointer to points dataset */
 
 protected:
 	friend class ConfigurationsModel;
@@ -216,5 +230,10 @@ protected:
 
 /** Get scoped enum in columns set to work */
 inline uint qHash(Channel::Column key, uint seed) {
+    return ::qHash(static_cast<uint>(key), seed);
+}
+
+/** Get scoped enum in rows set to work */
+inline uint qHash(Channel::Row key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }

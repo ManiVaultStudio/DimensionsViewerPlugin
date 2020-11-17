@@ -39,7 +39,7 @@ Qt::ItemFlags Styling::getFlags(const QModelIndex& index) const
     Qt::ItemFlags flags = TreeItem::getFlags(index);
 
     const auto column = static_cast<Column>(index.column());
-
+    
     switch (column)
     {
         case Styling::Column::LineTypes:
@@ -50,7 +50,9 @@ Qt::ItemFlags Styling::getFlags(const QModelIndex& index) const
         case Styling::Column::Color:
         {
             flags |= Qt::ItemIsEditable;
-            flags |= Qt::ItemIsEnabled;
+            
+            if (getChannel()->getData(Channel::Column::Enabled, Qt::EditRole).toBool())
+                flags |= Qt::ItemIsEnabled;
 
             break;
         }
@@ -256,7 +258,18 @@ QModelIndexList Styling::setData(const QModelIndex& index, const QVariant& value
     return affectedIndices;
 }
 
+QModelIndexList Styling::getAffectedIndices(const QModelIndex& index) const
+{
+    QModelIndexList affectedIndices{ index };
+    return affectedIndices;
+}
+
 void Styling::accept(Visitor* visitor) const
 {
     visitor->visitStyling(this);
+}
+
+const Channel* Styling::getChannel() const
+{
+    return dynamic_cast<Channel*>(_parent);
 }

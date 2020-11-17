@@ -42,6 +42,18 @@ public: // TreeItem: model API
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
+    /**
+     * Get indices that are affected by a data change of \p index
+     * @param index Model index which changed
+     * @return Affected model indices
+     */
+    QModelIndexList getAffectedIndices(const QModelIndex& index) const override;
+
+    /** Get number of columns */
+    std::uint32_t getColumnCount() const override {
+        return 0;
+    };
+
 public: // TreeItem: hierarchy API
 
     /**

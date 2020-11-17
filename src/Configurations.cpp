@@ -25,6 +25,12 @@ QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant
     return TreeItem::setData(index, value, role);
 }
 
+QModelIndexList Configurations::getAffectedIndices(const QModelIndex& index) const
+{
+    QModelIndexList affectedIndices{ index };
+    return affectedIndices;
+}
+
 TreeItem* Configurations::getChild(const int& index) const
 {
     if (index < 0 || index >= _configurations.size())

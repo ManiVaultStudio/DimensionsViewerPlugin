@@ -198,6 +198,12 @@ QModelIndexList Differential::setData(const QModelIndex& index, const QVariant& 
     return affectedIndices;
 }
 
+QModelIndexList Differential::getAffectedIndices(const QModelIndex& index) const
+{
+    QModelIndexList affectedIndices{ index };
+    return affectedIndices;
+}
+
 void Differential::accept(Visitor* visitor) const
 {
     visitor->visitDifferential(this);

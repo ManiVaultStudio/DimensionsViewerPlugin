@@ -106,6 +106,16 @@ public: // Model API
      */
     QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
 
+    /**
+     * Get indices that are affected by a data change of \p index
+     * @param index Model index which changed
+     * @return Affected model indices
+     */
+    virtual QModelIndexList getAffectedIndices(const QModelIndex& index) const = 0;
+
+    /** Get number of columns */
+    virtual std::uint32_t getColumnCount() const = 0;
+
 public: // Hierarchy API
 
     /** Gets children */

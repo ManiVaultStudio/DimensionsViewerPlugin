@@ -130,6 +130,12 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
     return affectedIndices;
 }
 
+QModelIndexList Configuration::getAffectedIndices(const QModelIndex& index) const
+{
+    QModelIndexList affectedIndices{ index };
+    return affectedIndices;
+}
+
 TreeItem* Configuration::getChild(const int& index) const
 {
     switch (static_cast<Row>(index))

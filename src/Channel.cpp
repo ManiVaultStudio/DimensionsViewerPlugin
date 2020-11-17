@@ -29,12 +29,12 @@ const QMap<QString, Channel::Row> Channel::rows = {
 Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity /*= 1.0f*/) :
     TreeItem("Channel", name, parent),
 	_index(index),
+    _linked(linked),
     _datasetNames(),
 	_datasetName(datasetName),
-	_profile(QSharedPointer<Profile>::create(this, profileType)),
-    _differential(this),
-    _linked(linked),
-	_styling(this),
+	_profile(new Profile(this, profileType)),
+    _differential(new Differential(this)),
+	_styling(new Styling(this)),
     _points(nullptr)
 {
     setNumColumns(to_ul(Column::_Count));
@@ -43,8 +43,8 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& na
 
     resolvePoints();
 
-    _styling._color     = color;
-    _styling._opacity   = opacity;
+    _styling->_color    = color;
+    _styling->_opacity  = opacity;
 }
 
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
@@ -55,50 +55,53 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
     const auto noDatasets           = _datasetNames.count();
     const auto channel              = static_cast<Channels::Row>(_index);
 
-    if (index.column() == static_cast<int>(TreeItem::Column::Enabled)) {
-        flags |= Qt::ItemIsEditable;
-
-        switch (channel)
-        {
-            case Channels::Row::Dataset:
-            {
-                if (noDatasets >= 1)
-                    flags |= Qt::ItemIsEnabled;
-
-                break;
-            }
-
-            case Channels::Row::Subset1:
-            {
-                if (noDatasets >= 1)
-                    flags |= Qt::ItemIsEnabled;
-
-                break;
-            }
-
-            case Channels::Row::Subset2:
-            {
-                if (noDatasets >= 2)
-                    flags |= Qt::ItemIsEnabled;
-
-                break;
-            }
-
-            case Channels::Row::Differential:
-            {
-                if (_differential.isPrimed())
-                    flags |= Qt::ItemIsEnabled;
-
-                break;
-            }
-
-            default:
-                break;
-        }
-    }
-
     switch (column)
     {
+        case Column::Enabled:
+        {
+            flags |= Qt::ItemIsEditable;
+
+            switch (channel)
+            {
+                case Channels::Row::Dataset:
+                {
+                    if (noDatasets >= 1)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Row::Subset1:
+                {
+                    if (noDatasets >= 1)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Row::Subset2:
+                {
+                    if (noDatasets >= 2)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                case Channels::Row::Differential:
+                {
+                    if (_differential->isPrimed())
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
         case Column::Index:
         {
             flags |= Qt::ItemIsEnabled;
@@ -395,15 +398,10 @@ QVariant Channel::getData(const Column& column, const std::int32_t& role) const
 
 QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices = TreeItem::setData(index, value, role);
+    QModelIndexList affectedIndices = TreeItem::setData(index, value, role) << getAffectedIndices(index);
 
     const auto row      = static_cast<Channels::Row>(_index);
     const auto column   = static_cast<Column>(index.column());
-
-    const auto updateChannel = [this, &affectedIndices, &index]() {
-        for (int column = to_ul(Column::_Start); column <= to_ul(Column::_End); column++)
-            affectedIndices << index.siblingAtColumn(column);
-    };
 
     switch (role)
     {
@@ -411,8 +409,10 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         {
             switch (column)
             {
-                case Column::Index:
+                case Column::Enabled:
+                {
                     break;
+                }
 
                 case Column::DatasetNames:
                 {
@@ -458,8 +458,6 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                             break;
                     }
 
-                    updateChannel();
-
                     break;
                 }
 
@@ -475,8 +473,6 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 case Column::Linked:
                 {
                     _linked = value.toBool();
-
-                    updateChannel();
 
                     break;
                 }
@@ -520,18 +516,123 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
     return affectedIndices;
 }
 
+QModelIndexList Channel::getAffectedIndices(const QModelIndex& index) const
+{
+    QModelIndexList affectedIndices{ index };
+
+    const auto row      = static_cast<Channels::Row>(_index);
+    const auto column   = static_cast<Column>(index.column());
+    const auto channel  = index.siblingAtColumn(0);
+
+    const auto updateChannel = [this, index, &affectedIndices](const Channel::Columns& columns) {
+        for (auto column : columns)
+            affectedIndices << index.siblingAtColumn(to_ul(column));
+    };
+    
+    const auto updateStyling = [this, &affectedIndices, channel]() {
+        Styling::Columns columns{
+            Styling::Column::Color
+        };
+
+        const auto styling = getModel()->index(to_ul(Channel::Row::Styling), 0, channel);
+
+        for (auto column : columns)
+            affectedIndices << styling.siblingAtColumn(to_ul(column));
+    };
+    
+    const auto updateProfile = [this, &affectedIndices, channel]() {
+        Profile::Columns columns{
+            Profile::Column::ProfileTypes,
+            Profile::Column::ProfileType,
+            Profile::Column::RangeTypes,
+            Profile::Column::RangeType,
+        };
+
+        const auto profile = getModel()->index(to_ul(Channel::Row::Profile), 0, channel);
+
+        for (auto column : columns)
+            affectedIndices << profile.siblingAtColumn(to_ul(column));
+    };
+
+    switch (column)
+    {
+        case Column::Enabled:
+        {
+            updateChannel(Channel::Columns{
+                Channel::Column::DatasetName,
+                Channel::Column::Styling,
+                Channel::Column::Linked
+            });
+
+            updateStyling();
+            
+            switch (row)
+            {
+                case Channels::Row::Dataset:
+                case Channels::Row::Subset1:
+                case Channels::Row::Subset2:
+                {
+                    affectedIndices << channel.siblingAtRow(to_ul(Channels::Row::Differential)).siblingAtColumn(to_ul(Channel::Column::Enabled));
+                    break;
+                }
+
+                case Channels::Row::Differential:
+                    break;
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Column::DatasetNames:
+        {
+            updateChannel(Channel::Columns{
+                Channel::Column::DatasetName,
+                Channel::Column::Enabled,
+                Channel::Column::Styling,
+                Channel::Column::Linked
+            });
+
+            break;
+        }
+
+        case Column::Linked:
+        {
+            updateChannel(Channel::Columns{
+                Channel::Column::Enabled,
+                Channel::Column::Styling,
+                Channel::Column::Linked
+            });
+
+            updateProfile();
+
+            break;
+        }
+
+        case Column::IsAggregate:
+            break;
+
+        default:
+            break;
+    }
+
+    return affectedIndices;
+}
+
 TreeItem* Channel::getChild(const int& index) const
 {
     switch (static_cast<Row>(index))
     {
         case Row::Profile:
-            return const_cast<Profile*>(_profile.get());
+            return const_cast<Profile*>(_profile);
 
         case Row::Differential:
-            return const_cast<Differential*>(&_differential);
+            return const_cast<Differential*>(_differential);
 
         case Row::Styling:
-            return const_cast<Styling*>(&_styling);
+            return const_cast<Styling*>(_styling);
 
         default:
             break;

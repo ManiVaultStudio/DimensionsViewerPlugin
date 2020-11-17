@@ -19,9 +19,8 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 	_selectionModel(this),
     _datasetNames()
 {
+    /*
     const auto updateChannel = [this](const QModelIndex& channel) {
-        emit dataChanged(channel.siblingAtColumn(to_ul(Channel::Column::_Start)), channel.siblingAtColumn(to_ul(Channel::Column::_End)));
-        
         if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() >= 1)
             return;
 
@@ -73,30 +72,6 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
     QObject::connect(this, &QAbstractItemModel::dataChanged, [this, updateChannel](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
         const auto type = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).data(Qt::EditRole).toString();
 
-        if (type == "Channel") {
-            const auto channel  = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type));
-
-            switch (topLeft.column())
-            {
-                case static_cast<int>(TreeItem::Column::Enabled) :
-                {
-                    updateChannel(channel.parent());
-
-                    break;
-                }
-
-                case static_cast<int>(Channel::Column::Linked):
-                {
-                    updateChannel(channel.parent());
-
-                    break;
-                }
-
-                default:
-                    break;
-            }
-        }
-
         if (type == "Profile") {
             const auto column = static_cast<Profile::Column>(topLeft.column());
             
@@ -142,6 +117,7 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
             }
         }
     });
+    */
 }
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const

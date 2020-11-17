@@ -6,6 +6,8 @@
 #include <QMap>
 #include <QSet>
 
+class Channel;
+
 /**
  * Profile tree item class
  *
@@ -156,6 +158,18 @@ public: // TreeItem: model API
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
+    /**
+     * Get indices that are affected by a data change of \p index
+     * @param index Model index which changed
+     * @return Affected model indices
+     */
+    QModelIndexList getAffectedIndices(const QModelIndex& index) const override;
+
+    /** Get number of columns */
+    std::uint32_t getColumnCount() const override {
+        return to_ul(Column::_Count);
+    };
+
 public: // TreeItem: visitor API
 
     /** Accept visitor */
@@ -193,11 +207,14 @@ public: // Getters/setters
      */
     void setRangeType(const RangeType& rangeType);
 
-private:
+private: // Miscellaneous
 
     /** Updates the internals */
     void update();
     
+    /** get channel */
+    const Channel* getChannel() const;
+
 private:
     bool            _locked;            /** Whether settings are locked */
     ProfileTypes    _profileTypes;      /** Current profile type */

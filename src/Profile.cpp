@@ -2,6 +2,7 @@
 #include "Channels.h"
 #include "Channel.h"
 #include "Visitor.h"
+#include "ConfigurationsModel.h"
 
 #include <QDebug>
 
@@ -203,7 +204,7 @@ QVariant Profile::getData(const Column& column, const std::int32_t& role) const
 
 QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices = TreeItem::setData(index, value, role);
+    QModelIndexList affectedIndices = TreeItem::setData(index, value, role) << getAffectedIndices(index);
 
     const auto column = static_cast<Column>(index.column());
 
@@ -217,24 +218,15 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
                     break;
 
                 case Column::ProfileType:
-                {
                     setProfileType(static_cast<Profile::ProfileType>(value.toInt()));
-
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeTypes));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeType));
-
                     break;
-                }
 
                 case Column::RangeTypes:
                     break;
 
                 case Column::RangeType:
-                {
                     setRangeType(static_cast<Profile::RangeType>(value.toInt()));
-
                     break;
-                }
 
                 default:
                     break;
@@ -251,24 +243,15 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
                     break;
 
                 case Column::ProfileType:
-                {
                     setProfileType(Profile::getProfileTypeEnum(value.toString()));
-
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeTypes));
-                    affectedIndices << index.siblingAtColumn(to_ul(Column::RangeType));
-
                     break;
-                }
 
                 case Column::RangeTypes:
                     break;
 
                 case Column::RangeType:
-                {
                     setRangeType(Profile::getRangeTypeEnum(value.toString()));
-
                     break;
-                }
 
                 default:
                     break;
@@ -279,6 +262,60 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
         default:
             break;
     }
+
+    return affectedIndices;
+}
+
+QModelIndexList Profile::getAffectedIndices(const QModelIndex& index) const
+{
+    QModelIndexList affectedIndices{ index };
+    
+    const auto column = static_cast<Column>(index.column());
+
+    switch (column)
+    {
+        case Column::ProfileTypes:
+        {
+            break;
+        }
+
+        case Column::ProfileType:
+        {
+            affectedIndices << index.siblingAtColumn(to_ul(Column::RangeTypes));
+            affectedIndices << index.siblingAtColumn(to_ul(Column::RangeType));
+
+            break;
+        }
+
+        case Column::RangeTypes:
+        {
+            break;
+        }
+
+        case Column::RangeType:
+        {
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    //const auto channel = index.siblingAtColumn(0).parent();
+
+    //if (channel.row() == to_ul(Channels::Row::Dataset)) {
+    //    Channels::Rows updateRows{
+    //        Channels::Row::Subset1,
+    //        Channels::Row::Subset2
+    //    };
+
+    //    for (auto row : updateRows) {
+    //        affectedIndices << getModel()->index(to_ul(row), to_ul(Column::ProfileTypes), channel);
+    //        affectedIndices << getModel()->index(to_ul(row), to_ul(Column::ProfileType), channel);
+    //        affectedIndices << getModel()->index(to_ul(row), to_ul(Column::RangeTypes), channel);
+    //        affectedIndices << getModel()->index(to_ul(row), to_ul(Column::RangeType), channel);
+    //    }
+    //}
 
     return affectedIndices;
 }
@@ -395,4 +432,9 @@ void Profile::update()
         default:
             break;
     }
+}
+
+const Channel* Profile::getChannel() const
+{
+    return dynamic_cast<Channel*>(_parent);
 }
