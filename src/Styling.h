@@ -21,15 +21,14 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Styling = static_cast<std::int32_t>(TreeItem::Column::_Count),      /** Styling */
-        LineTypes,                                                          /** Line types */
+        LineTypes = static_cast<std::int32_t>(TreeItem::Column::_Count),    /** Line types */
         LineTypeProfile,                                                    /** Line type for drawing data profile */
         LineTypeRange,                                                      /** Line type for drawing data range */
         RenderPoints,                                                       /** Render points */
         Opacity,                                                            /** Opacity */
         Color,                                                              /** Color */
 
-        _Start  = Styling,
+        _Start  = LineTypes,
         _End    = Color,
         _Count  = _End + 1
     };
@@ -201,19 +200,6 @@ public: // TreeItem: visitor API
 
     /** Accept visitor */
     void accept(Visitor* visitor) const override;
-
-public: // Operators
-
-    Styling& operator=(const Styling& other)
-    {
-        _lineTypeProfile    = other._lineTypeProfile;
-        _lineTypeRange      = other._lineTypeRange;
-        _renderPoints       = other._renderPoints;
-        _opacity            = other._opacity;
-        //_color              = other._color;
-
-        return *this;
-    }
 
 protected:
     LineType    _lineTypeProfile;       /** Line type for drawing data profile */

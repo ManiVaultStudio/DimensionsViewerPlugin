@@ -143,8 +143,7 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 
     _ui->differentialWidget->setModelIndex(getChild(static_cast<int>(Channel::Row::Differential)));
     _ui->profileWidget->setModelIndex(getChild(static_cast<int>(Channel::Row::Profile)));
-
-    _ui->stylingPushButton->setModelIndex(modelIndex);
+    _ui->stylingPushButton->setModelIndex(getChild(static_cast<int>(Channel::Row::Styling)));
 
     getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(TreeItem::Column::Enabled)));
     getWidgetMapper("DisplayName")->setModelIndex(getSiblingAtColumn(to_ul(TreeItem::Column::Name)));

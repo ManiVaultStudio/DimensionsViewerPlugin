@@ -5,7 +5,6 @@
 #include <QDebug>
 
 const QMap<QString, Styling::Column> Styling::columns = {
-    { "Styling", Styling::Column::Styling },
     { "Line types", Styling::Column::LineTypes },
     { "Line type profile", Styling::Column::LineTypeProfile },
     { "Line type range", Styling::Column::LineTypeRange },
@@ -43,58 +42,15 @@ Qt::ItemFlags Styling::getFlags(const QModelIndex& index) const
 
     switch (column)
     {
-        case Styling::Column::RenderPoints:
-        {
-            flags |= Qt::ItemIsEditable | Qt::ItemIsEnabled;
-
-            break;
-        }
-
-        case Styling::Column::Styling:
-        {
-            flags |= Qt::ItemIsEditable;
-
-            /*switch (channel)
-            {
-                case Channels::Row::Dataset:
-                {
-                    bool enabled = true;
-
-                    const auto channelsEnabled = getChannels()->getFiltered(Profile::ProfileTypes(), &enabled);
-
-                    if (!channelsEnabled.isEmpty())
-                        flags |= Qt::ItemIsEnabled;
-
-                    break;
-                }
-
-                case Channels::Row::Subset1:
-                case Channels::Row::Subset2:
-                case Channels::Row::Differential:
-                {
-                    if (enabled && !_linked)
-                        flags |= Qt::ItemIsEnabled;
-
-                    break;
-                }
-
-                default:
-                    break;
-            }*/
-
-            break;
-        }
-
         case Styling::Column::LineTypes:
         case Styling::Column::LineTypeProfile:
         case Styling::Column::LineTypeRange:
+        case Styling::Column::RenderPoints:
         case Styling::Column::Opacity:
         case Styling::Column::Color:
         {
-            /*flags |= Qt::ItemIsEditable;
-
-            if (enabled)
-                flags |= Qt::ItemIsEnabled;*/
+            flags |= Qt::ItemIsEditable;
+            flags |= Qt::ItemIsEnabled;
 
             break;
         }
@@ -116,9 +72,6 @@ QVariant Styling::getData(const std::int32_t& column, const std::int32_t& role) 
         {
             switch (static_cast<Column>(column))
             {
-                case Styling::Column::Styling:
-                    return "Styling";
-
                 case Styling::Column::LineTypes:
                     return QStringList(lineTypes.keys());
 
@@ -148,9 +101,6 @@ QVariant Styling::getData(const std::int32_t& column, const std::int32_t& role) 
         {
             switch (static_cast<Column>(column))
             {
-                case Styling::Column::Styling:
-                    return getData(column, Qt::EditRole);
-
                 case Styling::Column::LineTypes:
                     return getData(column, Qt::EditRole).toStringList().join(", ");
 
@@ -182,9 +132,6 @@ QVariant Styling::getData(const std::int32_t& column, const std::int32_t& role) 
 
             switch (static_cast<Column>(column))
             {
-                case Styling::Column::Styling:
-                    return getData(column, Qt::DisplayRole).toString();
-
                 case Styling::Column::LineTypes:
                 case Styling::Column::LineTypeProfile:
                 case Styling::Column::LineTypeRange:
@@ -224,7 +171,6 @@ QModelIndexList Styling::setData(const QModelIndex& index, const QVariant& value
         {
             switch (column)
             {
-                case Styling::Column::Styling:
                 case Styling::Column::LineTypes:
                     break;
 
@@ -268,7 +214,6 @@ QModelIndexList Styling::setData(const QModelIndex& index, const QVariant& value
         {
             switch (column)
             {
-                case Styling::Column::Styling:
                 case Styling::Column::LineTypes:
                     break;
 
@@ -286,6 +231,7 @@ QModelIndexList Styling::setData(const QModelIndex& index, const QVariant& value
                     break;
                 }
 
+                case Styling::Column::RenderPoints:
                 case Styling::Column::Opacity:
                 case Styling::Column::Color:
                     break;

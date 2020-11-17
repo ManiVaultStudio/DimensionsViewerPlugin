@@ -150,23 +150,6 @@ public: // TreeItem: visitor API
     /** Accept visitor */
     void accept(Visitor* visitor) const override;
 
-public: // Operators
-
-    /**
-     * Assignment operator
-     * @param other Other profile
-     */
-    Profile& operator=(const Profile& other)
-    {
-        _locked         = other._locked;
-        _profileTypes   = other._profileTypes;
-        _profileType    = other._profileType;
-        _rangeTypes     = other._rangeTypes;
-        _rangeType      = other._rangeType;
-
-        return *this;
-    }
-
 public: // Getters/setters
 
     /** Gets the profile types */
