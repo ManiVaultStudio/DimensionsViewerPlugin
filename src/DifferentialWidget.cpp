@@ -21,19 +21,6 @@ DifferentialWidget::DifferentialWidget(QWidget* parent) :
         //setData(to_ul(Channel::Column::DifferentialOperandB), currentText, Qt::EditRole);
     });
     
-    addWidgetMapper("Differential", QSharedPointer<WidgetMapper>::create(this, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
-            setEnabled(false);
-            setVisible(false);
-
-            return;
-        }
-
-        setVisible(index.flags() & Qt::ItemIsEditable);
-        setEnabled(index.flags() & Qt::ItemIsEnabled);
-        setToolTip(index.data(Qt::ToolTipRole).toString());
-    }));
-
     addWidgetMapper("DifferentialOperandNamesA", QSharedPointer<WidgetMapper>::create(_ui->differentialOperandAComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->differentialOperandAComboBox->setModel(new QStringListModel());
@@ -83,7 +70,6 @@ void DifferentialWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     TreeItemWidget::setModelIndex(modelIndex);
 
-    getWidgetMapper("Differential")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::Differential)));
     getWidgetMapper("DifferentialOperandNamesA")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandNamesA)));
     getWidgetMapper("DifferentialOperandNamesB")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandNamesB)));
     getWidgetMapper("DifferentialOperandA")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandA)));

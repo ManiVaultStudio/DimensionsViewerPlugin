@@ -263,6 +263,34 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
             break;
     }
 
+    /*const auto channel = index.siblingAtColumn(0).parent();
+
+    if (channel.row() == to_ul(Channels::Row::Dataset)) {
+        Channels::Rows updateRows{
+            Channels::Row::Subset1,
+            Channels::Row::Subset2
+        };
+
+        for (auto updateRow : updateRows) {
+            const auto otherChannel = channel.siblingAtRow(to_ul(updateRow));
+
+            if (!otherChannel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool())
+                continue;
+
+            const auto otherProfile = getModel()->index(to_ul(Channel::Row::Profile), 0, otherChannel);
+
+            Columns updateColumns {
+                Column::ProfileTypes,
+                Column::ProfileType,
+                Column::RangeTypes,
+                Column::RangeType
+            };
+
+            for (auto updateColumn : updateColumns)
+                getModel()->setData(otherProfile.siblingAtColumn(to_ul(updateColumn)), getData(updateColumn, Qt::EditRole));
+        }
+    }*/
+
     return affectedIndices;
 }
 

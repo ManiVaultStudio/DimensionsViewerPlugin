@@ -40,6 +40,8 @@ public: // Columns and rows
         Index,                          /** Channel index */
         DatasetNames,                   /** Candidate dataset name(s) */
         DatasetName,                    /** Candidate dataset name */
+        Differential,                   /** Differential */
+        Profile,                        /** Profile */
         Styling,                        /** Styling properties */
         Linked,                         /** Whether the channel is linked to another channel */
         NoDimensions,                   /** Number of points in the referenced points dataset */

@@ -33,13 +33,10 @@ ProfileWidget::ProfileWidget(QWidget* parent) :
 
     addWidgetMapper("ProfileType", QSharedPointer<WidgetMapper>::create(_ui->profileTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->profileTypeComboBox->setEnabled(false);
-
             return;
         }
 
         _ui->profileTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->profileTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->profileTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
         _ui->profileTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
@@ -57,13 +54,10 @@ ProfileWidget::ProfileWidget(QWidget* parent) :
 
     addWidgetMapper("RangeType", QSharedPointer<WidgetMapper>::create(_ui->rangeTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->rangeTypeComboBox->setEnabled(false);
-
             return;
         }
 
         _ui->rangeTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->rangeTypeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
         _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));

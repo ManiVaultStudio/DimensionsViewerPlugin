@@ -154,7 +154,7 @@ public: // Visitor API
 public: // Miscellaneous
 
     /** Get the configurations model */
-    static const ConfigurationsModel* getModel();
+    static ConfigurationsModel* getModel();
 
     /** Sets the tree item dirty (increase the modified timer with 1) */
     void setModified() {

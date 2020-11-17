@@ -15,6 +15,9 @@ const QMap<QString, Channel::Column> Channel::columns = {
     { "Dataset names", Channel::Column::DatasetNames },
     { "Dataset name", Channel::Column::DatasetName },
     { "Dataset name", Channel::Column::DatasetName },
+    { "Differential", Channel::Column::Differential },
+    { "Profile", Channel::Column::Profile },
+    { "Styling", Channel::Column::Styling },
     { "Linked", Channel::Column::Linked },
     { "Number of dimensions", Channel::Column::NoDimensions },
     { "Number of points", Channel::Column::NoPoints },
@@ -159,6 +162,56 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
             break;
         }
 
+        case Column::Differential:
+        {
+            switch (channel)
+            {
+                case Channels::Row::Dataset:
+                case Channels::Row::Subset1:
+                case Channels::Row::Subset2:
+                    break;
+
+                case Channels::Row::Differential:
+                {
+                    flags |= Qt::ItemIsEditable;
+
+                    if (_enabled)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case Column::Profile:
+        {
+            flags |= Qt::ItemIsEditable;
+
+            switch (channel)
+            {
+                case Channels::Row::Dataset:
+                case Channels::Row::Subset1:
+                case Channels::Row::Subset2:
+                case Channels::Row::Differential:
+                {
+                    if (_enabled && !_linked)
+                        flags |= Qt::ItemIsEnabled;
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
         case Column::Styling:
         {
             flags |= Qt::ItemIsEditable;
@@ -257,6 +310,15 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Column::DatasetName:
                     return _datasetName;
 
+                case Column::Differential:
+                    return QVariant::fromValue(_differential);
+
+                case Column::Profile:
+                    return QVariant::fromValue(_profile);
+
+                case Column::Styling:
+                    return QVariant::fromValue(_styling);
+
                 case Column::Linked:
                     return _linked;
 
@@ -288,6 +350,15 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
 
                 case Column::DatasetName:
                     return getData(column, Qt::EditRole);
+                
+                case Column::Differential:
+                    return "Differential";
+
+                case Column::Profile:
+                    return "Profile";
+
+                case Column::Styling:
+                    return "Styling";
 
                 case Column::Linked:
                     return getData(column, Qt::EditRole).toBool() ? "on" : "off";
@@ -321,6 +392,11 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Column::DatasetName:
                     return getData(column, Qt::DisplayRole).toString();
 
+                case Column::Differential:
+                case Column::Profile:
+                case Column::Styling:
+                    return QString("%1 settings").arg(getColumnTypeName(static_cast<Column>(column)));
+
                 case Column::Linked:
                     return QString("%1: %2").arg("Linked to dataset", getData(column, Qt::DisplayRole).toString());
 
@@ -343,6 +419,9 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Column::Index:
                 case Column::DatasetNames:
                 case Column::DatasetName:
+                case Column::Differential:
+                case Column::Profile:
+                case Column::Styling:
                     break;
 
                 case Column::Linked:
@@ -367,6 +446,9 @@ QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) 
                 case Column::Index:
                 case Column::DatasetNames:
                 case Column::DatasetName:
+                case Column::Differential:
+                case Column::Profile:
+                case Column::Styling:
                     break;
 
                 case Column::Linked:
@@ -460,6 +542,11 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
 
                     break;
                 }
+                
+                case Column::Differential:
+                case Column::Profile:
+                case Column::Styling:
+                    break;
 
                 case Column::DatasetName:
                 {
@@ -496,6 +583,9 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 case Column::Index:
                 case Column::DatasetNames:
                 case Column::DatasetName:
+                case Column::Differential:
+                case Column::Profile:
+                case Column::Styling:
                 case Column::Linked:
                 case Column::NoDimensions:
                 case Column::NoPoints:
@@ -558,10 +648,12 @@ QModelIndexList Channel::getAffectedIndices(const QModelIndex& index) const
     {
         case Column::Enabled:
         {
-            updateChannel(Channel::Columns{
-                Channel::Column::DatasetName,
-                Channel::Column::Styling,
-                Channel::Column::Linked
+            updateChannel(Columns{
+                Column::DatasetName,
+                Column::Differential,
+                Column::Profile,
+                Column::Styling,
+                Column::Linked
             });
 
             updateStyling();
@@ -572,7 +664,7 @@ QModelIndexList Channel::getAffectedIndices(const QModelIndex& index) const
                 case Channels::Row::Subset1:
                 case Channels::Row::Subset2:
                 {
-                    affectedIndices << channel.siblingAtRow(to_ul(Channels::Row::Differential)).siblingAtColumn(to_ul(Channel::Column::Enabled));
+                    affectedIndices << channel.siblingAtRow(to_ul(Channels::Row::Differential)).siblingAtColumn(to_ul(Column::Enabled));
                     break;
                 }
 
@@ -588,11 +680,13 @@ QModelIndexList Channel::getAffectedIndices(const QModelIndex& index) const
 
         case Column::DatasetNames:
         {
-            updateChannel(Channel::Columns{
-                Channel::Column::DatasetName,
-                Channel::Column::Enabled,
-                Channel::Column::Styling,
-                Channel::Column::Linked
+            updateChannel(Columns{
+                Column::DatasetName,
+                Column::Enabled,
+                Column::Differential,
+                Column::Profile,
+                Column::Styling,
+                Column::Linked
             });
 
             break;
@@ -600,10 +694,12 @@ QModelIndexList Channel::getAffectedIndices(const QModelIndex& index) const
 
         case Column::Linked:
         {
-            updateChannel(Channel::Columns{
-                Channel::Column::Enabled,
-                Channel::Column::Styling,
-                Channel::Column::Linked
+            updateChannel(Columns{
+                Column::Enabled,
+                Column::Differential,
+                Column::Profile,
+                Column::Styling,
+                Column::Linked
             });
 
             updateProfile();

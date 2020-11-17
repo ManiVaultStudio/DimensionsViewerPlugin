@@ -217,7 +217,7 @@ bool TreeItem::isLeaf() const
     return getChildCount() == 0;
 }
 
-const ConfigurationsModel* TreeItem::getModel()
+ConfigurationsModel* TreeItem::getModel()
 {
     return &dimensionsViewerPlugin->getModel();
 }
