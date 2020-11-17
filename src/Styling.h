@@ -21,12 +21,21 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        LineTypes = static_cast<std::int32_t>(TreeItem::Column::_Count),    /** Line types */
-        LineTypeProfile,                                                    /** Line type for drawing data profile */
-        LineTypeRange,                                                      /** Line type for drawing data range */
-        RenderPoints,                                                       /** Render points */
-        Opacity,                                                            /** Opacity */
-        Color,                                                              /** Color */
+        
+        /** Derived tree item columns */
+        Type,                           /** Type of tree item */
+        Name,                           /** Name of tree item */
+        Enabled,                        /** Whether the tree item is enabled or not */
+        Modified,                       /** Last modified integer stamp */
+        UUID,                           /** Universal unique identifier */
+
+        /** Styling tree item columns */
+        LineTypes,                      /** Line types */
+        LineTypeProfile,                /** Line type for drawing data profile */
+        LineTypeRange,                  /** Line type for drawing data range */
+        RenderPoints,                   /** Render points */
+        Opacity,                        /** Opacity */
+        Color,                          /** Color */
 
         _Start  = LineTypes,
         _End    = Color,

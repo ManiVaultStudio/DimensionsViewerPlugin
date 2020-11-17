@@ -16,19 +16,23 @@ class DimensionsViewerPlugin;
  */
 class Configuration : public TreeItem
 {
-public: // Constants
-
-    /** The number of channels in the configuration */
-    static const std::int32_t noChannels = 3;
-
 public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Index = static_cast<std::int32_t>(TreeItem::Column::_Count),
-        DatasetName,
-        DataName,
-        SelectionStamp,
+
+        /** Derived tree item columns */
+        Type,                           /** Type of tree item */
+        Name,                           /** Name of tree item */
+        Enabled,                        /** Whether the tree item is enabled or not */
+        Modified,                       /** Last modified integer stamp */
+        UUID,                           /** Universal unique identifier */
+
+        /** Configuration tree item columns */
+        Index,                          /** I-th configuration */
+        DatasetName,                    /** Name of the points dataset */
+        DataName,                       /** Name of the points data */
+        SelectionStamp,                 /** Selection stamp */
 
         _Start  = Index,
         _End    = SelectionStamp,

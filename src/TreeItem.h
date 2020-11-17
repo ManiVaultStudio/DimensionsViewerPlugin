@@ -26,11 +26,11 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Type,               /** Type of tree item */
-        Name,               /** Name of tree item */
-        Enabled,            /** Whether the tree item is enabled or not */
-        Modified,           /** Last modified integer stamp */
-        UUID,               /** Universal unique identifier */
+        Type,                           /** Type of tree item */
+        Name,                           /** Name of tree item */
+        Enabled,                        /** Whether the tree item is enabled or not */
+        Modified,                       /** Last modified integer stamp */
+        UUID,                           /** Universal unique identifier */
 
         _Start  = Type,
         _End    = UUID,

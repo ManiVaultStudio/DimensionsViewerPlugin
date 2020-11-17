@@ -19,17 +19,23 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 	_selectionModel(this),
     _datasetNames()
 {
-    const auto synchronizeChannels = [this](const QModelIndex& channels) {
+    const auto updateChannel = [this](const QModelIndex& channel) {
+        emit dataChanged(channel.siblingAtColumn(to_ul(Channel::Column::_Start)), channel.siblingAtColumn(to_ul(Channel::Column::_End)));
+        
+        if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() >= 1)
+            return;
+
+        const auto channels         = channel.parent();
         const auto datasetChannel   = index(to_ul(Channels::Row::Dataset), 0, channels);
         const auto sourceProfile    = index(to_ul(Channel::Row::Profile), 0, datasetChannel);
         const auto sourceStyling    = index(to_ul(Channel::Row::Styling), 0, datasetChannel);
 
-        for (auto channel : match(channels.siblingAtColumn(to_ul(TreeItem::Column::Type)), Qt::EditRole, "Channel", -1, Qt::MatchRecursive | Qt::MatchExactly)) {
-            const auto targetProfile    = index(to_ul(Channel::Row::Profile), 0, channel);
-            const auto targetStyling    = index(to_ul(Channel::Row::Styling), 0, channel);
-            const auto channelIndex     = channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
-            const auto isLinked         = channel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
-            const auto isAggregate      = channel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
+        for (auto targetChannel : match(channels.siblingAtColumn(to_ul(TreeItem::Column::Type)), Qt::EditRole, "Channel", -1, Qt::MatchRecursive | Qt::MatchExactly)) {
+            const auto targetProfile    = index(to_ul(Channel::Row::Profile), 0, targetChannel);
+            const auto targetStyling    = index(to_ul(Channel::Row::Styling), 0, targetChannel);
+            const auto channelIndex     = targetChannel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
+            const auto isLinked         = targetChannel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
+            const auto isAggregate      = targetChannel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
 
             if (channelIndex == 0)
                 continue;
@@ -64,27 +70,24 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
         }
     };
 
-    QObject::connect(this, &QAbstractItemModel::dataChanged, [this, synchronizeChannels](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
+    QObject::connect(this, &QAbstractItemModel::dataChanged, [this, updateChannel](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
         const auto type = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).data(Qt::EditRole).toString();
 
         if (type == "Channel") {
-            const auto column   = static_cast<Channel::Column>(topLeft.column());
             const auto channel  = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type));
 
-            if (topLeft.column() == to_ul(TreeItem::Column::Enabled))
+            switch (topLeft.column())
             {
-                qDebug() << "Enabled";
-
-                const auto channelIndex = topLeft.siblingAtColumn(0);
-
-                emit dataChanged(channelIndex.siblingAtColumn(to_ul(Channel::Column::_Start)), channelIndex.siblingAtColumn(to_ul(Channel::Column::_End)));
-            }
-
-            switch (column)
-            {
-                case Channel::Column::Linked:
+                case static_cast<int>(TreeItem::Column::Enabled) :
                 {
-                    synchronizeChannels(channel.parent());
+                    updateChannel(channel.parent());
+
+                    break;
+                }
+
+                case static_cast<int>(Channel::Column::Linked):
+                {
+                    updateChannel(channel.parent());
 
                     break;
                 }
@@ -107,7 +110,7 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
                     const auto channel = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).parent();
 
                     if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() == 0)
-                        synchronizeChannels(channel.parent());
+                        updateChannel(channel.parent());
 
                     break;
                 }
@@ -130,7 +133,7 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
                     const auto channel = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).parent();
 
                     if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() == 0)
-                        synchronizeChannels(channel.parent());
+                        updateChannel(channel.parent());
 
                     break;
                 }

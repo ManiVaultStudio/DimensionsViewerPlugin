@@ -20,10 +20,10 @@ public: // Columns and rows
 
     /** Tree item rows */
     enum class Row {
-        Dataset,
-        Subset1,
-        Subset2,
-        Differential,
+        Dataset,                        /** Primary dataset channel */
+        Subset1,                        /** First subset */
+        Subset2,                        /** Second subset */
+        Differential,                   /** Compare channels */
 
         _Start  = Dataset,
         _End    = Differential,

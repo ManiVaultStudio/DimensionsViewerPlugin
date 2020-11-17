@@ -28,19 +28,31 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Index = static_cast<std::int32_t>(TreeItem::Column::_Count),            /** Channel index */
-        DatasetNames,                                                           /** Candidate dataset name(s) */
-        DatasetName,                                                            /** Candidate dataset name */
-        Styling,                                                                /** Styling properties */
-        Linked,                                                                 /** Whether the channel is linked to another channel */
-        NoDimensions,                                                           /** Number of points in the referenced points dataset */
-        NoPoints,                                                               /** Number of dimensions in the referenced points dataset */
-        IsAggregate,                                                            /** Whether the channel is the combination of one or more other channels */
+
+        /** Derived tree item columns */
+        Type,                           /** Type of tree item */
+        Name,                           /** Name of tree item */
+        Enabled,                        /** Whether the tree item is enabled or not */
+        Modified,                       /** Last modified integer stamp */
+        UUID,                           /** Universal unique identifier */
+
+        /** Channel tree item columns */
+        Index,                          /** Channel index */
+        DatasetNames,                   /** Candidate dataset name(s) */
+        DatasetName,                    /** Candidate dataset name */
+        Styling,                        /** Styling properties */
+        Linked,                         /** Whether the channel is linked to another channel */
+        NoDimensions,                   /** Number of points in the referenced points dataset */
+        NoPoints,                       /** Number of dimensions in the referenced points dataset */
+        IsAggregate,                    /** Whether the channel is the combination of one or more other channels */
 
         _Start  = Index,
         _End    = NoPoints,
         _Count  = _End + 1
     };
+
+    /** Columns set alias */
+    using Columns = QSet<Column>;
 
     /** Maps column name to column enum */
     static QMap<QString, Column> const columns;
@@ -168,17 +180,6 @@ protected: // Miscellaneous
     /** Get parent channels tree item */
     const Channels* getChannels() const;
 
-    /** Get channels at row */
-    //const Channel* getSibling(const std::int32_t& row) const;
-
-    //Channel* getSibling(const std::int32_t& row);
-
-    /** Returns whether the channel can be displayed in the viewer */
-    bool canDisplay() const;
-
-	/** Returns if the referenced dataset is a subset */
-	bool isSubset() const;
-
 public: // Getters
 
     /** Get profile settings */
@@ -212,3 +213,8 @@ protected:
 	friend class Differential;
 	friend class Profile;
 };
+
+/** Get scoped enum in columns set to work */
+inline uint qHash(Channel::Column key, uint seed) {
+    return ::qHash(static_cast<uint>(key), seed);
+}

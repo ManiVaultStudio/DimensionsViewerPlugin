@@ -18,11 +18,20 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Differential = static_cast<std::int32_t>(TreeItem::Column::_Count),     /** TODO */
-        DifferentialOperandNamesA,                                              /** TODO */
-        DifferentialOperandNamesB,                                              /** TODO */
-        DifferentialOperandA,                                                   /** TODO */
-        DifferentialOperandB,                                                   /** TODO */
+
+        /** Derived tree item columns */
+        Type,                           /** Type of tree item */
+        Name,                           /** Name of tree item */
+        Enabled,                        /** Whether the tree item is enabled or not */
+        Modified,                       /** Last modified integer stamp */
+        UUID,                           /** Universal unique identifier */
+
+        /** Differential tree item columns */
+        Differential,                   /** Differential */
+        DifferentialOperandNamesA,      /** Candidate channel names for operand A */
+        DifferentialOperandNamesB,      /** Candidate channel names for operand B */
+        DifferentialOperandA,           /** Selected channel name for operand A */
+        DifferentialOperandB,           /** Selected channel name for operand B */
 
         _Start  = Differential,
         _End    = DifferentialOperandB,

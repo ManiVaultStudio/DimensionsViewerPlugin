@@ -400,9 +400,9 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
     const auto row      = static_cast<Channels::Row>(_index);
     const auto column   = static_cast<Column>(index.column());
 
-    const auto updateChannel = [this, &affectedIndices, &index](const Channels::Row& channel) {
+    const auto updateChannel = [this, &affectedIndices, &index]() {
         for (int column = to_ul(Column::_Start); column <= to_ul(Column::_End); column++)
-            affectedIndices << index.sibling(static_cast<int>(channel), column);
+            affectedIndices << index.siblingAtColumn(column);
     };
 
     switch (role)
@@ -458,8 +458,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                             break;
                     }
 
-                    updateChannel(row);
-                    //updateDifferentialChannels();
+                    updateChannel();
 
                     break;
                 }
@@ -477,9 +476,7 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
                 {
                     _linked = value.toBool();
 
-                    updateChannel(row);
-                    //synchronizeProfile();
-                    //synchronizeStyling();
+                    updateChannel();
 
                     break;
                 }
@@ -593,32 +590,6 @@ const Channels* Channel::getChannels() const
 {
     return dynamic_cast<Channels*>(_parent);
 }
-
-//const Channel* Channel::getSibling(const std::int32_t& row) const
-//{
-//    return (*getChannels())[row];
-//}
-//
-//Channel* Channel::getSibling(const std::int32_t& row)
-//{
-//    const auto constThis = const_cast<const Channel*>(this);
-//
-//    return const_cast<Channel*>(constThis->getSibling(row));
-//}
-
-bool Channel::canDisplay() const
-{
-    return _enabled;
-}
-
-bool Channel::isSubset() const
-{
-	if (_points == nullptr)
-		return false;
-
-	return !_points->indices.empty();
-}
-
 
 //void Channel::updateSpec()
 //{

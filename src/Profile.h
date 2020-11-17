@@ -17,10 +17,19 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        ProfileTypes = static_cast<std::int32_t>(TreeItem::Column::_Count),     /** Available profile types */
-        ProfileType,                                                            /** Current profile type */
-        RangeTypes,                                                             /** Available range types */
-        RangeType,                                                              /** Current range type */
+
+        /** Derived tree item columns */
+        Type,                           /** Type of tree item */
+        Name,                           /** Name of tree item */
+        Enabled,                        /** Whether the tree item is enabled or not */
+        Modified,                       /** Last modified integer stamp */
+        UUID,                           /** Universal unique identifier */
+
+        /** Styling tree item columns */
+        ProfileTypes,                   /** Available profile types */
+        ProfileType,                    /** Current profile type */
+        RangeTypes,                     /** Available range types */
+        RangeType,                      /** Current range type */
 
         _Start  = ProfileTypes,
         _End    = RangeType,

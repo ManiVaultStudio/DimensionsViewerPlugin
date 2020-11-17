@@ -11,21 +11,6 @@ class Configuration;
  */
 class Configurations : public TreeItem
 {
-public: // Columns and rows
-
-    /** Maps column name to column enum and vice versa */
-    static QMap<QString, Column> const columns;
-
-    /** Get string representation of column enum */
-    static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
-    }
-
-    /** Get enum representation from column type name */
-    static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
-    }
-
 protected: // Construction
 
     /** Default constructor */
