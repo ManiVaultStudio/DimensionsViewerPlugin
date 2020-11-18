@@ -83,13 +83,12 @@ public: // Model API
     QVariant getData(const QModelIndex& index, const int& role) const;
 
     /**
-     * Sets data
+     * Set data
      * @param index Model index
      * @param value Data value in variant form
      * @param role Data role
-     * @return Model indices that are affected by the operation
      */
-    virtual QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
+    virtual void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) = 0;
 
     /**
      * Get data

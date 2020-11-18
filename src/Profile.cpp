@@ -239,9 +239,9 @@ QVariant Profile::getData(const Column& column, const std::int32_t& role) const
     return getData(static_cast<std::int32_t>(column), role);
 }
 
-QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Profile::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices = TreeItem::setData(index, value, role);
+    TreeItem::setData(index, value, role);
 
     const auto column = static_cast<Column>(index.column());
 
@@ -321,8 +321,6 @@ QModelIndexList Profile::setData(const QModelIndex& index, const QVariant& value
         default:
             break;
     }
-
-    return affectedIndices;
 }
 
 void Profile::accept(Visitor* visitor) const

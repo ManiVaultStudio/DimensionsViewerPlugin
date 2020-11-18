@@ -149,9 +149,9 @@ QVariant Differential::getData(const Column& column, const std::int32_t& role) c
     return getData(static_cast<std::int32_t>(column), role);
 }
 
-QModelIndexList Differential::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Differential::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices = TreeItem::setData(index, value, role);
+    TreeItem::setData(index, value, role);
 
     const auto column = static_cast<Column>(index.column());
 
@@ -166,24 +166,12 @@ QModelIndexList Differential::setData(const QModelIndex& index, const QVariant& 
                     break;
 
                 case Differential::Column::DifferentialOperandA:
-                {
                     setOperandChannelName(Differential::Operand::ChannelA, value.toString());
-
-                    for (int column = to_ul(Differential::Column::_Start); column <= to_ul(Differential::Column::_End); column++)
-                        affectedIndices << index.siblingAtColumn(column);
-
                     break;
-                }
 
                 case Differential::Column::DifferentialOperandB:
-                {
                     setOperandChannelName(Differential::Operand::ChannelB, value.toString());
-
-                    for (int column = to_ul(Differential::Column::_Start); column <= to_ul(Differential::Column::_End); column++)
-                        affectedIndices << index.siblingAtColumn(column);
-
                     break;
-                }
 
                 default:
                     break;
@@ -195,8 +183,6 @@ QModelIndexList Differential::setData(const QModelIndex& index, const QVariant& 
         default:
             break;
     }
-
-    return affectedIndices;
 }
 
 void Differential::accept(Visitor* visitor) const

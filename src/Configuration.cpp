@@ -104,12 +104,9 @@ QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& 
     return QVariant();
 }
 
-QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Configuration::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<TreeItem::Column>(index.column()) <= TreeItem::Column::_End)
-        return TreeItem::setData(index, value, role);
-
-    QModelIndexList affectedIndices{ index };
+    TreeItem::setData(index, value, role);
 
     switch (role)
     {
@@ -127,8 +124,6 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
         default:
             break;
     }
-
-    return affectedIndices;
 }
 
 TreeItem* Configuration::getChild(const int& index) const

@@ -142,7 +142,7 @@ public: // TreeItem: model API
     QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
 
     /**
-     * Get data role
+     * Get data
      * @param column Column to fetch data from
      * @param role Data role
      * @return Data in variant form
@@ -150,13 +150,12 @@ public: // TreeItem: model API
     QVariant getData(const Column& column, const std::int32_t& role) const;
 
     /**
-     * Sets data
+     * Set data
      * @param index Model index
      * @param value Data value in variant form
      * @param role Data role
-     * @return Model indices that are affected by the operation
      */
-    QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+    void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
     /** Get number of columns */
     std::uint32_t getColumnCount() const override {
@@ -190,6 +189,7 @@ protected:
     RangeTypes      _rangeTypes;        /** Available range types (depends on the current profile type) */
     RangeType       _rangeType;         /** Current range type */
 
+    friend class Channels;
     friend class Channel;
 };
 

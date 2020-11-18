@@ -50,25 +50,26 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& na
     _styling->_opacity  = opacity;
 
     QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
-        Columns updateColumns;
+        QModelIndexList updateIndices;
 
         switch (static_cast<Column>(modelIndex.column()))
         {
             case Column::Enabled:
             case Column::Linked:
             {
-                updateColumns << Column::Profile;
-                updateColumns << Column::Styling;
-                updateColumns << Column::Linked;
+                updateIndices << getSiblingAtColumn(to_ul(Column::Profile));
+                updateIndices << getSiblingAtColumn(to_ul(Column::Styling));
+                updateIndices << getSiblingAtColumn(to_ul(Column::Linked));
 
                 break;
             }
 
             case Column::DatasetNames:
             {
-                updateColumns << Column::Enabled;
-                updateColumns << Column::Profile;
-                updateColumns << Column::Styling;
+                updateIndices << getSiblingAtColumn(to_ul(Column::Enabled));
+                updateIndices << getSiblingAtColumn(to_ul(Column::Profile));
+                updateIndices << getSiblingAtColumn(to_ul(Column::Styling));
+                updateIndices << getSiblingAtColumn(to_ul(Column::Linked));
 
                 break;
             }
@@ -77,8 +78,8 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& na
                 break;
         }
 
-        for (auto updateColumn : updateColumns)
-            emit getModel()->dataChanged(modelIndex.siblingAtColumn(to_ul(updateColumn)), modelIndex.siblingAtColumn(to_ul(updateColumn)));
+        for (auto updateIndex : updateIndices)
+            emit getModel()->dataChanged(updateIndex, updateIndex);
     });
 }
 
@@ -510,9 +511,9 @@ QVariant Channel::getData(const Column& column, const std::int32_t& role) const
     return getData(static_cast<std::int32_t>(column), role);
 }
 
-QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices = TreeItem::setData(index, value, role);
+    TreeItem::setData(index, value, role);
 
     const auto row      = static_cast<Channels::Row>(_index);
     const auto column   = static_cast<Column>(index.column());
@@ -634,8 +635,6 @@ QModelIndexList Channel::setData(const QModelIndex& index, const QVariant& value
         default:
             break;
     }
-
-    return affectedIndices;
 }
 
 TreeItem* Channel::getChild(const int& index) const

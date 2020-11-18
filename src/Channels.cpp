@@ -24,6 +24,27 @@ Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& 
     _channels[Row::Subset2]         = new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 1.0f);
     _channels[Row::Differential]    = new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "", Profile::ProfileType::Differential, QColor(255, 20, 20), 0.5f);
 
+    QObject::connect(_channels[Row::Dataset], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
+        if (static_cast<Channel::Column>(modelIndex.column()) == Channel::Column::Enabled) {
+            const auto enabledIndex = _channels[Row::Differential]->getSiblingAtColumn(to_ul(Channel::Column::Enabled));
+            emit getModel()->dataChanged(enabledIndex, enabledIndex);
+        }
+    });
+
+    QObject::connect(_channels[Row::Subset1], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
+        if (static_cast<Channel::Column>(modelIndex.column()) == Channel::Column::Enabled) {
+            const auto enabledIndex = _channels[Row::Differential]->getSiblingAtColumn(to_ul(Channel::Column::Enabled));
+            emit getModel()->dataChanged(enabledIndex, enabledIndex);
+        }
+    });
+
+    QObject::connect(_channels[Row::Subset2], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
+        if (static_cast<Channel::Column>(modelIndex.column()) == Channel::Column::Enabled) {
+            const auto enabledIndex = _channels[Row::Differential]->getSiblingAtColumn(to_ul(Channel::Column::Enabled));
+            emit getModel()->dataChanged(enabledIndex, enabledIndex);
+        }
+    });
+
     QObject::connect(_channels[Row::Dataset]->getProfile(), &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
         switch (static_cast<Profile::Column>(modelIndex.column()))
         {
@@ -79,9 +100,9 @@ QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role)
     return TreeItem::getData(column, role);
 }
 
-QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Channels::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    return TreeItem::setData(index, value, role);
+    TreeItem::setData(index, value, role);
 }
 
 TreeItem* Channels::getChild(const int& index) const
@@ -120,8 +141,8 @@ QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileType
 {
     QVector<Channel*> channels;
 
-    /*for (auto channel : _channels) {
-        const auto profileType = channel->getProfile()->getProfileType();
+    for (auto channel : _channels) {
+        const auto profileType = channel->getProfile()->_profileType;
 
         if (!profileTypes.isEmpty() && !profileTypes.contains(profileType))
             continue;
@@ -130,7 +151,7 @@ QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileType
             continue;
 
         channels << channel;
-    }*/
+    }
 
     return channels;
 }

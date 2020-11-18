@@ -21,9 +21,9 @@ QVariant Configurations::getData(const std::int32_t& column, const std::int32_t&
     return TreeItem::getData(column, role);
 }
 
-QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Configurations::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    return TreeItem::setData(index, value, role);
+    TreeItem::setData(index, value, role);
 }
 
 TreeItem* Configurations::getChild(const int& index) const

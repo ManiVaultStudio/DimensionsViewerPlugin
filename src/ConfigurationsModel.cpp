@@ -162,12 +162,10 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
 
     auto item = getItem(index);
 
-    const auto affectedIndices = item->setData(index, value, role);
+    item->setData(index, value, role);
 
-    for (auto affectedIndex : affectedIndices) {
-        emit dataChanged(affectedIndex, affectedIndex);
-        emit item->dataChanged(affectedIndex);
-    }
+    emit dataChanged(index, index);
+    emit item->dataChanged(index);
 
     const auto selectedConfiguration = getSelectedConfiguration();
 

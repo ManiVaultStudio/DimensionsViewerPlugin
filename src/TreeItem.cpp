@@ -123,10 +123,8 @@ QVariant TreeItem::getData(const std::int32_t& column, const std::int32_t& role)
     return QVariant();
 }
 
-QModelIndexList TreeItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void TreeItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    QModelIndexList affectedIndices{ index };
-
     switch (role)
     {
         case Qt::EditRole: {
@@ -166,8 +164,6 @@ QModelIndexList TreeItem::setData(const QModelIndex& index, const QVariant& valu
         default:
             break;
     }
-
-    return affectedIndices;
 }
 
 QModelIndex TreeItem::getModelIndex() const
