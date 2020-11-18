@@ -240,13 +240,13 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
         
         _datasetNames << datasetName;
 
-        for (auto configuration : _configurations._configurations) {
+        /*for (auto configuration : _configurations._configurations) {
             const auto configurationIndex   = index(configuration->_index, 0);
             const auto channelsIndex        = index(0, 0, configurationIndex);
             const auto firstChannelIndex    = index(0, 0, channelsIndex);
 
             setData(firstChannelIndex.siblingAtColumn(to_ul(Channel::Column::DatasetNames)), _datasetNames);
-        }
+        }*/
 
         if (_configurations.getChildCount() == 1)
             selectRow(0);

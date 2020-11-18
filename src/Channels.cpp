@@ -14,14 +14,14 @@ const QMap<QString, Channels::Row> Channels::rows = {
 };
 
 Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem("Channels", "Channels", parent),
-    _channels()
+    TreeItem(parent, "Channels", "Channels")
 {
-    _channels[Row::Dataset]         = new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName, Profile::ProfileType::Mean, Qt::black, 1.0f);
-    _channels[Row::Subset1]         = new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 1.0f);
-    _channels[Row::Subset2]         = new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 1.0f);
-    _channels[Row::Differential]    = new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "", Profile::ProfileType::Differential, QColor(255, 20, 20), 0.5f);
+    _children << new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName);
+    _children << new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "");
+    _children << new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "");
+    _children << new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "");
 
+    /*
     QObject::connect(_channels[Row::Dataset], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
         if (static_cast<Channel::Column>(modelIndex.column()) == Channel::Column::Enabled) {
             const auto enabledIndex = _channels[Row::Differential]->getSiblingAtColumn(to_ul(Channel::Column::Enabled));
@@ -74,10 +74,10 @@ Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& 
         {
             case Channel::Column::Linked:
             {
-                /*if (modelIndex.data(Qt::EditRole).toBool()) {
+                if (modelIndex.data(Qt::EditRole).toBool()) {
                     getModel()->setData(_channels.value(Row::Subset1)->getProfile(), to_ul(Profile::Column::ProfileTypes), modelIndex.data(Qt::EditRole), Qt::EditRole);
                     getModel()->setData(_channels.value(Row::Subset1)->getProfile(), to_ul(Profile::Column::ProfileType), modelIndex.data(Qt::EditRole), Qt::EditRole);
-                }*/
+                }
                     
                 break;
             }
@@ -86,48 +86,7 @@ Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& 
                 break;
         }
     });
-}
-
-Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
-{
-    return TreeItem::getFlags(index);
-}
-
-QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role) const
-{
-    return TreeItem::getData(column, role);
-}
-
-void Channels::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
-{
-    TreeItem::setData(index, value, role);
-}
-
-TreeItem* Channels::getChild(const int& index) const
-{
-    try
-    {
-        return _channels[static_cast<Row>(index)];
-    }
-    catch (std::exception exception)
-    {
-        return nullptr;
-    }
-}
-
-int Channels::getChildCount() const
-{
-    return _channels.size();
-}
-
-int Channels::getChildIndex(TreeItem* child) const
-{
-    const auto channel = dynamic_cast<Channel*>(child);
-
-    if (channel == nullptr)
-        return 0;
-
-    return _channels.values().indexOf(channel);
+    */
 }
 
 void Channels::accept(Visitor* visitor) const
@@ -139,17 +98,17 @@ QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileType
 {
     QVector<Channel*> channels;
 
-    for (auto channel : _channels) {
+    /*for (auto channel : _channels) {
         const auto profileType = channel->getProfile()->_profileType;
 
         if (!profileTypes.isEmpty() && !profileTypes.contains(profileType))
             continue;
 
-        if (enabled != nullptr && channel->getData(to_ul(TreeItem::Column::Enabled), Qt::EditRole).toBool() != *enabled)
+        if (enabled != nullptr && channel->isEnabled() != *enabled)
             continue;
 
         channels << channel;
-    }
+    }*/
 
     return channels;
 }

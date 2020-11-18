@@ -2,6 +2,9 @@
 #include "Channels.h"
 #include "Configuration.h"
 #include "ConfigurationsModel.h"
+#include "Profile.h"
+#include "Differential.h"
+#include "Styling.h"
 #include "Visitor.h"
 
 #include "Application.h"
@@ -29,23 +32,21 @@ const QMap<QString, Channel::Row> Channel::rows = {
     { "Styling", Channel::Row::Styling }
 };
 
-Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity /*= 1.0f*/) :
-    TreeItem("Channel", name, parent),
+Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName) :
+    TreeItem(parent, "Channel", name),
 	_index(index),
     _linked(linked),
     _datasetNames(),
 	_datasetName(datasetName),
-	_profile(new Profile(this, profileType)),
-    _differential(new Differential(this)),
-	_styling(new Styling(this)),
     _points(nullptr)
 {
     _enabled = enabled;
 
     resolvePoints();
 
-    _styling->_color    = color;
-    _styling->_opacity  = opacity;
+    _children << new Profile(this);
+    _children << new Differential(this);
+    _children << new Styling(this);
 
     QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
         QModelIndexList updateIndices;
@@ -81,6 +82,7 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& na
     });
 }
 
+/*
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags = TreeItem::getFlags(index);
@@ -509,7 +511,7 @@ QVariant Channel::getData(const Column& column, const std::int32_t& role) const
     return getData(static_cast<std::int32_t>(column), role);
 }
 
-void Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role)
 {
     TreeItem::setData(index, value, role);
 
@@ -634,45 +636,7 @@ void Channel::setData(const QModelIndex& index, const QVariant& value, const std
             break;
     }
 }
-
-TreeItem* Channel::getChild(const int& index) const
-{
-    switch (static_cast<Row>(index))
-    {
-        case Row::Profile:
-            return const_cast<Profile*>(_profile);
-
-        case Row::Differential:
-            return const_cast<Differential*>(_differential);
-
-        case Row::Styling:
-            return const_cast<Styling*>(_styling);
-
-        default:
-            break;
-    }
-
-    return nullptr;
-}
-
-int Channel::getChildCount() const
-{
-    return static_cast<int>(Row::_Count);
-}
-
-int Channel::getChildIndex(TreeItem* child) const
-{
-    if (dynamic_cast<Profile*>(child))
-        return static_cast<int>(Row::Profile);
-
-    if (dynamic_cast<Differential*>(child))
-        return static_cast<int>(Row::Differential);
-
-    if (dynamic_cast<Styling*>(child))
-        return static_cast<int>(Row::Styling);
-
-    return 0;
-}
+*/
 
 void Channel::accept(Visitor* visitor) const
 {

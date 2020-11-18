@@ -1,9 +1,6 @@
 #pragma once
 
 #include "TreeItem.h"
-#include "Profile.h"
-#include "Differential.h"
-#include "Styling.h"
 
 #include <QObject>
 #include <QVector>
@@ -109,7 +106,7 @@ protected: // Construction
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 */
-	Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity = 1.0f);
+	Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName);
 
 public: // TreeItem: model API
 
@@ -117,50 +114,34 @@ public: // TreeItem: model API
      * Returns the item flags for the given model index
      * @param index Model index
      * @return Item flags for the index
-     */
+     
     Qt::ItemFlags getFlags(const QModelIndex& index) const override;
-
+    */
     /**
      * Get data
      * @param column Column to fetch data from
      * @param role Data role
      * @return Data in variant form
-     */
+     
     QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
+    */
 
     /**
      * Get data
      * @param column Column to fetch data from
      * @param role Data role
      * @return Data in variant form
-     */
+     
     QVariant getData(const Column& column, const std::int32_t& role) const;
-
+    */
     /**
      * Set data
      * @param index Model index
      * @param value Data value in variant form
      * @param role Data role
-     */
+     
     void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
-
-public: // TreeItem: hierarchy API
-
-    /**
-     * Returns a tree item node by index
-     * @param index Index of the child tree item
-     * @return Tree item at index
-     */
-    TreeItem* getChild(const int& index) const override;
-
-    /** Returns the number of children */
-    int getChildCount() const override;
-
-    /**
-        * Returns the child index
-        * @param child Pointer to child tree item
-        */
-    int getChildIndex(TreeItem* child) const override;
+    */
 
 public: // TreeItem: visitor API
 
@@ -183,31 +164,11 @@ protected: // Miscellaneous
     /** Get parent channels tree item */
     const Channels* getChannels() const;
 
-public: // Getters
-
-    /** Get profile settings */
-    Profile* getProfile() {
-        return _profile;
-    }
-
-    /** Get differential settings */
-    Differential* getDifferential() {
-        return _differential;
-    }
-
-    /** Get styling settings */
-    Styling* getStyling() {
-        return _styling;
-    }
-
 private:
     const std::uint32_t     _index;             /** Index */
     bool                    _linked;            /** Whether settings are linked to the settings of the first channel */
     QStringList             _datasetNames;      /** Dataset names */
     QString                 _datasetName;       /** Dataset name */
-    Profile*                _profile;           /** Profile settings */
-    Differential*           _differential;      /** Differential settings */
-    Styling*                _styling;           /** Style settings */
     Points*                 _points;            /** Pointer to points dataset */
 
 protected:

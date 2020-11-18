@@ -1,6 +1,7 @@
 #include "Profile.h"
 #include "Channels.h"
 #include "Channel.h"
+#include "DataItems.h"
 #include "Visitor.h"
 #include "ConfigurationsModel.h"
 
@@ -25,19 +26,20 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
     { "1 StdDev", Profile::RangeType::StandardDeviation1 },
     { "2 StdDev", Profile::RangeType::StandardDeviation2 },
     { "3 StdDev", Profile::RangeType::StandardDeviation3 },
-    { "MinMax", Profile::RangeType::MinMax },
+    { "Min/Max", Profile::RangeType::MinMax },
     { "5/95 perc.", Profile::RangeType::Percentile5 },
     { "10/90 perc.", Profile::RangeType::Percentile10 }
 };
 
 Profile::Profile(TreeItem* parent /*= nullptr*/, const ProfileType& profileType /*= ProfileType::Mean*/) :
-    TreeItem("Profile", "Profile", parent),
-    _profileTypes(),
-    _profileType(profileType),
-    _rangeType(RangeType::MinMax),
-    _rangeTypes()
+    TreeItem(parent, "Profile", "Profile")
 {
-    switch (_profileType)
+    _children << new StringListItem(this, "Profile types", QStringList(profileTypes.keys()));
+    _children << new StringItem(this, "Profile type", "Mean");
+    _children << new StringListItem(this, "Range types", QStringList(rangeTypes.keys()));
+    _children << new StringItem(this, "Range type", "Min/Max");
+
+    /*switch (_profileType)
     {
         case ProfileType::Mean:
         case ProfileType::Median:
@@ -80,9 +82,10 @@ Profile::Profile(TreeItem* parent /*= nullptr*/, const ProfileType& profileType 
         }
     });
 
-    update();
+    update();*/
 }
 
+/*
 Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
 {
     Qt::ItemFlags flags = TreeItem::getFlags(index);
@@ -137,189 +140,7 @@ Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
 
     return flags;
 }
-
-QVariant Profile::getData(const std::int32_t& column, const std::int32_t& role) const
-{
-    auto data = TreeItem::getData(column, role);
-
-    switch (role)
-    {
-        case Qt::EditRole:
-        {
-            switch (static_cast<Column>(column))
-            {
-                case Column::ProfileTypes:
-                {
-                    QStringList profileTypeNames;
-
-                    for (auto profileType : _profileTypes)
-                        profileTypeNames << getProfileTypeName(profileType);
-
-                    return profileTypeNames;
-                }
-
-                case Column::ProfileType:
-                    return static_cast<std::int32_t>(_profileType);
-
-                case Column::RangeTypes:
-                {
-                    QStringList rangeTypeNames;
-
-                    for (auto rangeType : _rangeTypes)
-                        rangeTypeNames << getRangeTypeName(rangeType);
-
-                    return rangeTypeNames;
-                }
-
-                case Column::RangeType:
-                    return static_cast<std::int32_t>(_rangeType);
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case Qt::DisplayRole:
-        {
-            switch (static_cast<Column>(column))
-            {
-                case Column::ProfileTypes:
-                    return getData(column, Qt::EditRole).toStringList().join(", ");
-
-                case Column::ProfileType:
-                    return Profile::getProfileTypeName(static_cast<Profile::ProfileType>(getData(column, Qt::EditRole).toInt()));
-
-                case Column::RangeTypes:
-                    return getData(column, Qt::EditRole).toStringList().join(", ");
-
-                case Column::RangeType:
-                    return Profile::getRangeTypeName(static_cast<Profile::RangeType>(getData(column, Qt::EditRole).toInt()));
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case Qt::ToolTipRole:
-        {
-            const auto tooltip = [&column](const QString& value) {
-                return QString("%1: %2").arg(getColumnTypeName(static_cast<Column>(column)), value);
-            };
-
-            switch (static_cast<Column>(column))
-            {
-                case Column::ProfileTypes:
-                case Column::ProfileType:
-                case Column::RangeTypes:
-                case Column::RangeType:
-                    return tooltip(getData(column, Qt::DisplayRole).toString());
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    return data;
-}
-
-QVariant Profile::getData(const Column& column, const std::int32_t& role) const
-{
-    return getData(static_cast<std::int32_t>(column), role);
-}
-
-void Profile::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
-{
-    TreeItem::setData(index, value, role);
-
-    const auto column = static_cast<Column>(index.column());
-
-    switch (role)
-    {
-        case Qt::EditRole:
-        {
-            switch (column)
-            {
-                case Column::ProfileTypes:
-                {
-                    _profileTypes.clear();
-
-                    for (auto profileType : value.toStringList())
-                        _profileTypes << getProfileTypeEnum(profileType);
-
-                    break;
-                }
-
-                case Column::ProfileType:
-                {
-                    _profileType = static_cast<Profile::ProfileType>(value.toInt());
-                    break;
-                }
-
-                case Column::RangeTypes:
-                {
-                    _rangeTypes.clear();
-
-                    for (auto rangeType : value.toStringList())
-                        _rangeTypes << getRangeTypeEnum(rangeType);
-
-                    break;
-                }
-
-                case Column::RangeType:
-                {
-                    _rangeType = static_cast<Profile::RangeType>(value.toInt());
-                    break;
-                }
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case Qt::DisplayRole:
-        {
-            switch (column)
-            {
-                case Column::ProfileTypes:
-                    break;
-
-                case Column::ProfileType:
-                {
-                    _profileType = Profile::getProfileTypeEnum(value.toString());
-                    break;
-                }
-
-                case Column::RangeTypes:
-                    break;
-
-                case Column::RangeType:
-                {
-                    _rangeType = Profile::getRangeTypeEnum(value.toString());
-                    break;
-                }
-
-                default:
-                    break;
-            }
-            break;
-        }
-
-        default:
-            break;
-    }
-}
+*/
 
 void Profile::accept(Visitor* visitor) const
 {
@@ -335,12 +156,13 @@ void Profile::setProfile(const Profile* profile)
         Column::RangeType
     };
 
-    for (auto copyColumn : copyColumns)
-        getModel()->setData(getSiblingAtColumn(to_ul(copyColumn)), profile->getData(copyColumn, Qt::EditRole), Qt::EditRole);
+    //for (auto copyColumn : copyColumns)
+    //    getModel()->setData(getSiblingAtColumn(to_ul(copyColumn)), profile->getData(copyColumn, Qt::EditRole), Qt::EditRole);
 }
 
 void Profile::update()
 {
+    /*
     _rangeTypes.clear();
 
     switch (_profileType)
@@ -381,6 +203,7 @@ void Profile::update()
         default:
             break;
     }
+    */
 }
 
 const Channel* Profile::getChannel() const

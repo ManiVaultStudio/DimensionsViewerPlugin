@@ -24,19 +24,23 @@ class TreeItem : public QObject
 {
     Q_OBJECT
 
+public:
+
+    using Children = QVector<TreeItem*>;
+
 public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Type,                           /** Type of tree item */
         Name,                           /** Name of tree item */
+        Value,                          /** Value */
+        Type,                           /** Type of tree item */
         Enabled,                        /** Whether the tree item is enabled or not */
         Modified,                       /** Last modified integer stamp */
         UUID,                           /** Universal unique identifier */
-        Value,                          /** Value */
 
-        _Start  = Type,
-        _End    = Value,
+        _Start  = Name,
+        _End    = UUID,
         _Count  = _End + 1
     };
 
@@ -57,11 +61,11 @@ public: // Construction
 
     /**
      * Constructor
+     * @param parent Parent tree item
      * @param type Type of the tree item
      * @param name Name of the tree item
-     * @param parent Parent tree item
      */
-    TreeItem(const QString& type, const QString& name, TreeItem* parent = nullptr);
+    TreeItem(TreeItem* parent, const QString& type, const QString& name);
 
 public: // Model API
 
@@ -78,7 +82,7 @@ public: // Model API
      * @param role Data role
      * @return Data in variant form
      */
-    QVariant getData(const QModelIndex& index, const int& role) const;
+    virtual QVariant getData(const QModelIndex& index, const int& role) const;
 
     /**
      * Set data
@@ -86,15 +90,15 @@ public: // Model API
      * @param value Data value in variant form
      * @param role Data role
      */
-    virtual void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) = 0;
+    virtual void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
 
     /**
      * Get data
      * @param column Data column
      * @param role Data role
      * @return Data in variant form
-     */
-    virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const;
+     
+    virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const;*/
 
     /** Gets model index */
     QModelIndex getModelIndex() const;
@@ -112,14 +116,12 @@ public: // Model API
 public: // Hierarchy API
 
     /** Gets children */
-    QVector<TreeItem*> getChildren() const;
+    Children getChildren() const;
 
     /**
-     * Get a tree item node by index
-     * @param index Index of the child tree item
-     * @return Model item at index
+     * TODO
      */
-    virtual TreeItem* getChild(const int& index) const;
+    TreeItem* getChild(const int& index) const;
 
     /** Returns the number of children */
     virtual int getChildCount() const;
@@ -148,6 +150,10 @@ public: // Miscellaneous
 
     /** Get the configurations model */
     static ConfigurationsModel* getModel();
+
+    bool isEnabled() const {
+        return _enabled;
+    }
 
     /** Sets the tree item dirty (increase the modified timer with 1) */
     void setModified() {
@@ -184,14 +190,14 @@ signals:
     void dataChanged(const QModelIndex& modelIndex);
 
 protected:
-    QPersistentModelIndex   _modelIndex;    /** Persistent model index */
-    QString                 _type;          /** Type */
-    QString                 _name;          /** Display name */
-    bool                    _enabled;       /** Whether the tree item is enabled or not */
-    std::int32_t            _modified;      /** Modified time */
-    QUuid                   _uuid;          /** Unique identifier */
-    TreeItem*               _parent;        /** Parent tree item */
-
+    QPersistentModelIndex               _modelIndex;    /** Persistent model index */
+    QString                             _type;          /** Type */
+    QString                             _name;          /** Display name */
+    bool                                _enabled;       /** Whether the tree item is enabled or not */
+    std::int32_t                        _modified;      /** Modified time */
+    QUuid                               _uuid;          /** Unique identifier */
+    TreeItem*                           _parent;        /** Parent tree item */
+    Children                _children;      /** Children */
 private:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;
 

@@ -1,5 +1,6 @@
 #include "Configuration.h"
 #include "ConfigurationsModel.h"
+#include "DataItems.h"
 #include "Visitor.h"
 
 #include <QDebug>
@@ -15,148 +16,18 @@ const QMap<QString, Configuration::Column> Configuration::columns = {
 };
 
 Configuration::Configuration(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem("Configuration", datasetName, parent),
-	_index(noConfigurations),
-    _datasetName(datasetName),
-    _dataName(dataName),
-	_channels(this, datasetName, dataName)
+    TreeItem(parent, "Configuration", datasetName)
 {
     noConfigurations++;
-}
 
-Qt::ItemFlags Configuration::getFlags(const QModelIndex& index) const
-{
-    Qt::ItemFlags flags = TreeItem::getFlags(index);
-
-    flags |= Qt::ItemIsEnabled;
-    flags |= Qt::ItemIsSelectable;
-
-    const auto column = static_cast<Column>(index.column());
-
-    switch (column)
-    {
-        case Column::Index:
-        case Column::DatasetName:
-        case Column::DataName:
-        case Column::SelectionStamp:
-            break;
-
-        default:
-            break;
-    }
-
-    return flags;
-}
-
-QVariant Configuration::getData(const std::int32_t& column, const std::int32_t& role) const
-{
-    if (static_cast<TreeItem::Column>(column) <= TreeItem::Column::_End)
-        return TreeItem::getData(column, role);
-
-    switch (role)
-    {
-        case Qt::EditRole: {
-
-            switch (static_cast<Column>(column))
-            {
-                case Configuration::Column::Index:
-                    return _index;
-
-                case Configuration::Column::DatasetName:
-                    return _datasetName;
-
-                case Configuration::Column::DataName:
-                    return _dataName;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case Qt::DisplayRole: {
-
-            switch (static_cast<Column>(column))
-            {
-                case Configuration::Column::Index:
-                    return QString::number(getData(column, Qt::EditRole).toInt());
-
-                case Configuration::Column::DatasetName:
-                    return getData(column, Qt::EditRole);
-
-                case Configuration::Column::DataName:
-                    return getData(column, Qt::EditRole);
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    return QVariant();
-}
-
-void Configuration::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
-{
-    TreeItem::setData(index, value, role);
-
-    switch (role)
-    {
-        case Qt::EditRole: {
-
-            switch (static_cast<Column>(index.column()))
-            {
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-}
-
-TreeItem* Configuration::getChild(const int& index) const
-{
-    switch (static_cast<Row>(index))
-    {
-        case Row::Channels:
-            return const_cast<Channels*>(&_channels);
-
-        default:
-            break;
-    }
-
-    return nullptr;
-}
-
-int Configuration::getChildCount() const
-{
-    return static_cast<int>(Row::_Count);
-}
-
-int Configuration::getChildIndex(TreeItem* child) const
-{
-    if (dynamic_cast<Channels*>(child))
-        return static_cast<int>(Row::Channels);
-
-    return 0;
+    _children << new Channels(this, datasetName, dataName);
+    _children << new IntegralItem(this, "Index", noConfigurations);
+    _children << new StringItem(this, "DatasetName", datasetName);
+    _children << new StringItem(this, "DataName", dataName);
+    _children << new IntegralItem(this, "SelectionStamp");
 }
 
 void Configuration::accept(Visitor* visitor) const
 {
     visitor->visitConfiguration(this);
-}
-
-const Channels* Configuration::getChannels() const
-{
-    return &_channels;
 }

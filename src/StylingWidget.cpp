@@ -1,5 +1,5 @@
 #include "StylingWidget.h"
-#include "Channel.h"
+#include "Styling.h"
 
 #include "ui_StylingWidget.h"
 

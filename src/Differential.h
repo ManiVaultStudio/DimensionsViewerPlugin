@@ -66,39 +66,6 @@ protected: // Construction
      */
 	Differential(TreeItem* parent);
 
-public: // TreeItem: model API
-
-    /**
-     * Returns the item flags for the given model index
-     * @param index Model index
-     * @return Item flags for the index
-     */
-    Qt::ItemFlags getFlags(const QModelIndex& index) const override;
-
-    /**
-     * Get data role
-     * @param column Column to fetch data from
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
-
-    /**
-     * Get data
-     * @param column Column to fetch data from
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const Column& column, const std::int32_t& role) const;
-
-    /**
-     * Set data
-     * @param index Model index
-     * @param value Data value in variant form
-     * @param role Data role
-     */
-    void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
-
 public: // TreeItem: visitor API
 
     /** Accept visitor */

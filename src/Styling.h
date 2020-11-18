@@ -25,12 +25,6 @@ public: // Columns and rows
     enum class Column {
         
         /** Derived tree item columns */
-        Type,                           /** Type of tree item */
-        Name,                           /** Name of tree item */
-        Enabled,                        /** Whether the tree item is enabled or not */
-        Modified,                       /** Last modified integer stamp */
-        UUID,                           /** Universal unique identifier */
-
         /** Styling tree item columns */
         LineTypes,                      /** Line types */
         LineTypeProfile,                /** Line type for drawing data profile */
@@ -176,39 +170,6 @@ public: // Construction
      */
     Styling(TreeItem* parent);
 
-public: // TreeItem: model API
-
-    /**
-     * Returns the item flags for the given model index
-     * @param index Model index
-     * @return Item flags for the index
-     */
-    Qt::ItemFlags getFlags(const QModelIndex& index) const override;
-
-    /**
-     * Get data
-     * @param column Column to fetch data from
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const std::int32_t& column, const std::int32_t& role) const override;
-
-    /**
-     * Get data
-     * @param column Column to fetch data from
-     * @param role Data role
-     * @return Data in variant form
-     */
-    QVariant getData(const Column& column, const std::int32_t& role) const;
-
-    /**
-     * Set data
-     * @param index Model index
-     * @param value Data value in variant form
-     * @param role Data role
-     */
-    void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
-
 public: // TreeItem: visitor API
 
     /** Accept visitor */
@@ -218,13 +179,6 @@ private: // Miscellaneous
 
     /** get channel */
     const Channel* getChannel() const;
-
-protected:
-    LineType    _lineTypeProfile;       /** Line type for drawing data profile */
-    LineType    _lineTypeRange;         /** Line type for drawing data range */
-    bool        _renderPoints;          /** Whether to render points */
-    float       _opacity;               /** Opacity for data range */
-    QColor      _color;                 /** Color */
 
     friend class Channel;
 };

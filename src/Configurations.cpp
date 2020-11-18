@@ -6,47 +6,8 @@
 #include <QMessageBox>
 
 Configurations::Configurations() :
-    TreeItem("Configurations", "Configurations"),
-    _configurations()
+    TreeItem(nullptr, "Configurations", "Configurations")
 {
-}
-
-Qt::ItemFlags Configurations::getFlags(const QModelIndex& index) const
-{
-    return TreeItem::getFlags(index);
-}
-
-QVariant Configurations::getData(const std::int32_t& column, const std::int32_t& role) const
-{
-    return TreeItem::getData(column, role);
-}
-
-void Configurations::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
-{
-    TreeItem::setData(index, value, role);
-}
-
-TreeItem* Configurations::getChild(const int& index) const
-{
-    if (index < 0 || index >= _configurations.size())
-        return nullptr;
-
-    return _configurations.at(index);
-}
-
-int Configurations::getChildCount() const
-{
-    return _configurations.size();
-}
-
-int Configurations::getChildIndex(TreeItem* child) const
-{
-    const auto configuration = dynamic_cast<Configuration*>(child);
-
-    if (configuration)
-        return _configurations.indexOf(configuration);
-
-    return 0;
 }
 
 void Configurations::accept(Visitor* visitor) const
@@ -68,9 +29,9 @@ void Configurations::add(const QString& datasetName, const QString& dataName)
         if (dataName.isEmpty())
             throw std::runtime_error("Data name is not set");
 
-        _configurations << new Configuration(this, datasetName, dataName);
+        _children << new Configuration(this, datasetName, dataName);
 
-        _configurations.last()->setModelIndex(getModel()->index(_configurations.count() - 1, 0));
+        _children.last()->setModelIndex(getModel()->index(getChildCount() - 1, 0));
     }
     catch (std::exception exception)
     {
