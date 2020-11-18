@@ -1,5 +1,6 @@
 #include "Styling.h"
 #include "Channel.h"
+#include "ConfigurationsModel.h"
 #include "Visitor.h"
 
 #include <QDebug>
@@ -24,7 +25,7 @@ const QMap<QString, Styling::LineType> Styling::lineTypes = {
 const QSize Styling::LineTypesModel::iconSize = QSize(24, 12);
 
 Styling::Styling(TreeItem* parent) :
-    TreeItem("Styling", "Styling", parent),
+    TreeItem(getModel()->index(to_ul(Channel::Row::Styling), 0, parent->getModelIndex()), "Styling", "Styling", parent),
     _lineTypeProfile(LineType::Solid),
     _lineTypeRange(LineType::DashDot),
     _renderPoints(true),

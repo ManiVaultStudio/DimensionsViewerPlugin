@@ -1,4 +1,5 @@
 #include "Configuration.h"
+#include "ConfigurationsModel.h"
 #include "Visitor.h"
 
 #include <QDebug>
@@ -14,7 +15,7 @@ const QMap<QString, Configuration::Column> Configuration::columns = {
 };
 
 Configuration::Configuration(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem("Configuration", datasetName, parent),
+    TreeItem(getModel()->index(noConfigurations, 0, parent->getModelIndex()), "Configuration", datasetName, parent),
 	_index(noConfigurations),
     _datasetName(datasetName),
     _dataName(dataName),

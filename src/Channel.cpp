@@ -30,7 +30,7 @@ const QMap<QString, Channel::Row> Channel::rows = {
 };
 
 Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName, const Profile::ProfileType& profileType, const QColor& color, const float& opacity /*= 1.0f*/) :
-    TreeItem("Channel", name, parent),
+    TreeItem(getModel()->index(index, 0, parent->getModelIndex()), "Channel", name, parent),
 	_index(index),
     _linked(linked),
     _datasetNames(),

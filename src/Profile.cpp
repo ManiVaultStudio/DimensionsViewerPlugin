@@ -31,7 +31,7 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
 };
 
 Profile::Profile(TreeItem* parent /*= nullptr*/, const ProfileType& profileType /*= ProfileType::Mean*/) :
-    TreeItem("Profile", "Profile", parent),
+    TreeItem(getModel()->index(to_ul(Channel::Row::Profile), 0, parent->getModelIndex()), "Profile", "Profile", parent),
     _locked(profileType == ProfileType::Differential),
     _profileTypes(),
     _profileType(profileType),

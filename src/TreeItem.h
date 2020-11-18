@@ -54,11 +54,12 @@ public: // Construction
 
     /**
      * Constructor
+     * @param modelIndex Persistent model index
      * @param type Type of the tree item
      * @param name Name of the tree item
      * @param parent Parent tree item
      */
-    TreeItem(const QString& type, const QString& name, TreeItem* parent = nullptr);
+    TreeItem(const QPersistentModelIndex& modelIndex, const QString& type, const QString& name, TreeItem* parent = nullptr);
 
 public: // Model API
 
@@ -115,6 +116,11 @@ public: // Model API
 
     /** Get number of columns */
     virtual std::uint32_t getColumnCount() const = 0;
+
+    /** Gets persistent model index */
+    QPersistentModelIndex getModelIndex() const {
+        return _modelIndex;
+    }
 
 public: // Hierarchy API
 
@@ -183,12 +189,13 @@ protected:
     static hdps::CoreInterface* getCore();
 
 protected:
-    QString         _type;          /** Type */
-    QString         _name;          /** Display name */
-    bool            _enabled;       /** Whether the tree item is enabled or not */
-    std::int32_t    _modified;      /** Modified time */
-    QUuid           _uuid;          /** Unique identifier */
-    TreeItem*       _parent;        /** Parent tree item */
+    const QPersistentModelIndex     _modelIndex;    /** Persistent model index */
+    QString                         _type;          /** Type */
+    QString                         _name;          /** Display name */
+    bool                            _enabled;       /** Whether the tree item is enabled or not */
+    std::int32_t                    _modified;      /** Modified time */
+    QUuid                           _uuid;          /** Unique identifier */
+    TreeItem*                       _parent;        /** Parent tree item */
 
 private:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;

@@ -1,6 +1,7 @@
 #include "Channels.h"
 #include "Channel.h"
 #include "Configuration.h"
+#include "ConfigurationsModel.h"
 #include "Visitor.h"
 
 #include <QDebug>
@@ -13,7 +14,7 @@ const QMap<QString, Channels::Row> Channels::rows = {
 };
 
 Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem("Channels", "Channels", parent),
+    TreeItem(getModel()->index(to_ul(Configuration::Row::Channels), 0, parent->getModelIndex()), "Channels", "Channels", parent),
     _channels()
 {
     setNumColumns(to_ul(Column::_Count));

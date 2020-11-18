@@ -14,8 +14,9 @@ const QMap<QString, TreeItem::Column> TreeItem::columns = {
     { "UUID", TreeItem::Column::UUID }
 };
 
-TreeItem::TreeItem(const QString& type, const QString& name, TreeItem* parent /*= nullptr*/) :
+TreeItem::TreeItem(const QPersistentModelIndex& modelIndex, const QString& type, const QString& name, TreeItem* parent /*= nullptr*/) :
     QObject(parent),
+    _modelIndex(modelIndex),
     _type(type),
     _name(name),
     _enabled(true),

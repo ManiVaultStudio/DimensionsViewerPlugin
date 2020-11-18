@@ -1,11 +1,12 @@
 #include "Configurations.h"
 #include "Configuration.h"
+#include "ConfigurationsModel.h"
 #include "Visitor.h"
 
 #include <QMessageBox>
 
 Configurations::Configurations() :
-    TreeItem("Configurations", "Configurations"),
+    TreeItem(QModelIndex(), "Configurations", "Configurations"),
     _configurations()
 {
 }

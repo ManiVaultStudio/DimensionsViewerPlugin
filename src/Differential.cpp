@@ -2,6 +2,7 @@
 #include "Channels.h"
 #include "Channel.h"
 #include "Profile.h"
+#include "ConfigurationsModel.h"
 #include "Visitor.h"
 
 #include <QDebug>
@@ -14,7 +15,7 @@ const QMap<QString, Differential::Column> Differential::columns = {
 };
 
 Differential::Differential(TreeItem* parent) :
-    TreeItem("Differential", "Differential", parent),
+    TreeItem(getModel()->index(to_ul(Channel::Row::Differential), 0, parent->getModelIndex()), "Differential", "Differential", parent),
     _channel(dynamic_cast<Channel*>(parent)),
     _operandChannelNames(),
     _operandChannelName()
