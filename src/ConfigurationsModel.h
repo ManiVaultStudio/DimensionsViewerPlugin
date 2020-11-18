@@ -157,8 +157,6 @@ private:
     QItemSelectionModel         _selectionModel;				/** Selection model */
     QStringList                 _datasetNames;                  /** Dataset names */
 
-    static std::uint32_t noColumns;
-
     friend class Configurations;
     friend class TreeItem;
 };

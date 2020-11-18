@@ -21,8 +21,6 @@ Configuration::Configuration(TreeItem* parent, const QString& datasetName, const
     _dataName(dataName),
 	_channels(this, datasetName, dataName)
 {
-    setNumColumns(to_ul(Column::_Count));
-
     noConfigurations++;
 }
 

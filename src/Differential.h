@@ -99,11 +99,6 @@ public: // TreeItem: model API
      */
     void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
-    /** Get number of columns */
-    std::uint32_t getColumnCount() const override {
-        return to_ul(Column::_Count);
-    };
-
 public: // TreeItem: visitor API
 
     /** Accept visitor */

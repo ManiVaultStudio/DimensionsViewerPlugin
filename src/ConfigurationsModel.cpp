@@ -10,8 +10,6 @@
 #include <QDebug>
 #include <QMessageBox>
 
-std::uint32_t ConfigurationsModel::noColumns = 0;
-
 ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin) :
     QAbstractItemModel(static_cast<QObject*>(dimensionsViewerPlugin)),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
@@ -137,7 +135,7 @@ int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
 
 int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    return noColumns;
+    return to_ul(TreeItem::Column::_Count);
 }
 
 QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole*/) const

@@ -24,12 +24,6 @@ TreeItem::TreeItem(const QString& type, const QString& name, TreeItem* parent /*
     _uuid(QUuid::createUuid()),
     _parent(parent)
 {
-    setNumColumns(to_ul(Column::_Count));
-}
-
-void TreeItem::setNumColumns(const std::uint32_t& numColumns) const
-{
-    ConfigurationsModel::noColumns = std::max(ConfigurationsModel::noColumns, numColumns);
 }
 
 Qt::ItemFlags TreeItem::getFlags(const QModelIndex& index) const

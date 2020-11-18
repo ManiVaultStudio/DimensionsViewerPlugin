@@ -65,9 +65,6 @@ public: // Construction
 
 public: // Model API
 
-    /** Set number of columns */
-    void setNumColumns(const std::uint32_t& numColumns) const;
-
     /**
      * Returns the item flags for the given model index
      * @param index Model index
@@ -98,9 +95,6 @@ public: // Model API
      * @return Data in variant form
      */
     virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const;
-
-    /** Get number of columns */
-    virtual std::uint32_t getColumnCount() const = 0;
 
     /** Gets model index */
     QModelIndex getModelIndex() const;

@@ -40,8 +40,6 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& na
 	_styling(new Styling(this)),
     _points(nullptr)
 {
-    setNumColumns(to_ul(Column::_Count));
-
     _enabled = enabled;
 
     resolvePoints();

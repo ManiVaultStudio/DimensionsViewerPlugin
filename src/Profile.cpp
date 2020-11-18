@@ -37,8 +37,6 @@ Profile::Profile(TreeItem* parent /*= nullptr*/, const ProfileType& profileType 
     _rangeType(RangeType::MinMax),
     _rangeTypes()
 {
-    setNumColumns(to_ul(Column::_Count));
-
     switch (_profileType)
     {
         case ProfileType::Mean:

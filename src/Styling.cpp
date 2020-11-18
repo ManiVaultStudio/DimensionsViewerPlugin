@@ -32,7 +32,6 @@ Styling::Styling(TreeItem* parent) :
     _opacity(1.0f),
     _color()
 {
-    setNumColumns(to_ul(Column::_Count));
 }
 
 Qt::ItemFlags Styling::getFlags(const QModelIndex& index) const

@@ -20,7 +20,6 @@ Differential::Differential(TreeItem* parent) :
     _operandChannelNames(),
     _operandChannelName()
 {
-    setNumColumns(to_ul(Column::_Count));
 }
 
 Qt::ItemFlags Differential::getFlags(const QModelIndex& index) const

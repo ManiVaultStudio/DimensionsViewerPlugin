@@ -17,8 +17,6 @@ Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& 
     TreeItem("Channels", "Channels", parent),
     _channels()
 {
-    setNumColumns(to_ul(Column::_Count));
-
     _channels[Row::Dataset]         = new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName, Profile::ProfileType::Mean, Qt::black, 1.0f);
     _channels[Row::Subset1]         = new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 1.0f);
     _channels[Row::Subset2]         = new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 1.0f);
