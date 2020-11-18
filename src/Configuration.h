@@ -39,6 +39,9 @@ public: // Columns and rows
         _Count  = _End + 1
     };
 
+    /** Columns set alias */
+    using Columns = QSet<Column>;
+
     /** Maps column name to column enum and vice versa */
     static QMap<QString, Column> const columns;
 
@@ -55,12 +58,14 @@ public: // Columns and rows
     /** Tree item rows */
     enum class Row {
         Channels,
-        Miscellaneous,
 
         _Start  = Channels,
-        _End    = Miscellaneous,
+        _End    = Channels,
         _Count  = _End + 1
     };
+
+    /** Rows set alias */
+    using Rows = QSet<Row>;
 
 public: // Construction
 
@@ -97,13 +102,6 @@ public: // TreeItem: model API
      * @return Model indices that are affected by the operation
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
-
-    /**
-     * Get indices that are affected by a data change of \p index
-     * @param index Model index which changed
-     * @return Affected model indices
-     */
-    QModelIndexList getAffectedIndices(const QModelIndex& index) const override;
 
     /** Get number of columns */
     std::uint32_t getColumnCount() const override {
@@ -152,3 +150,13 @@ protected:
     friend class Configurations;
     friend class Channels;
 };
+
+/** Get scoped enum in columns set to work */
+inline uint qHash(Configuration::Column key, uint seed) {
+    return ::qHash(static_cast<uint>(key), seed);
+}
+
+/** Get scoped enum in rows set to work */
+inline uint qHash(Configuration::Row key, uint seed) {
+    return ::qHash(static_cast<uint>(key), seed);
+}

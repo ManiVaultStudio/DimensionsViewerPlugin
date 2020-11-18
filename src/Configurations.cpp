@@ -6,7 +6,7 @@
 #include <QMessageBox>
 
 Configurations::Configurations() :
-    TreeItem(QModelIndex(), "Configurations", "Configurations"),
+    TreeItem("Configurations", "Configurations"),
     _configurations()
 {
 }
@@ -24,12 +24,6 @@ QVariant Configurations::getData(const std::int32_t& column, const std::int32_t&
 QModelIndexList Configurations::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     return TreeItem::setData(index, value, role);
-}
-
-QModelIndexList Configurations::getAffectedIndices(const QModelIndex& index) const
-{
-    QModelIndexList affectedIndices{ index };
-    return affectedIndices;
 }
 
 TreeItem* Configurations::getChild(const int& index) const
@@ -75,6 +69,8 @@ void Configurations::add(const QString& datasetName, const QString& dataName)
             throw std::runtime_error("Data name is not set");
 
         _configurations << new Configuration(this, datasetName, dataName);
+
+        _configurations.last()->setModelIndex(getModel()->index(_configurations.count() - 1, 0));
     }
     catch (std::exception exception)
     {

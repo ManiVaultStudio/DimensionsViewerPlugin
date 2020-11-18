@@ -25,7 +25,7 @@ const QMap<QString, Styling::LineType> Styling::lineTypes = {
 const QSize Styling::LineTypesModel::iconSize = QSize(24, 12);
 
 Styling::Styling(TreeItem* parent) :
-    TreeItem(getModel()->index(to_ul(Channel::Row::Styling), 0, parent->getModelIndex()), "Styling", "Styling", parent),
+    TreeItem("Styling", "Styling", parent),
     _lineTypeProfile(LineType::Solid),
     _lineTypeRange(LineType::DashDot),
     _renderPoints(true),
@@ -256,12 +256,6 @@ QModelIndexList Styling::setData(const QModelIndex& index, const QVariant& value
             break;
     }
 
-    return affectedIndices;
-}
-
-QModelIndexList Styling::getAffectedIndices(const QModelIndex& index) const
-{
-    QModelIndexList affectedIndices{ index };
     return affectedIndices;
 }
 

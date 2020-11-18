@@ -15,7 +15,7 @@ const QMap<QString, Configuration::Column> Configuration::columns = {
 };
 
 Configuration::Configuration(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem(getModel()->index(noConfigurations, 0, parent->getModelIndex()), "Configuration", datasetName, parent),
+    TreeItem("Configuration", datasetName, parent),
 	_index(noConfigurations),
     _datasetName(datasetName),
     _dataName(dataName),
@@ -131,21 +131,12 @@ QModelIndexList Configuration::setData(const QModelIndex& index, const QVariant&
     return affectedIndices;
 }
 
-QModelIndexList Configuration::getAffectedIndices(const QModelIndex& index) const
-{
-    QModelIndexList affectedIndices{ index };
-    return affectedIndices;
-}
-
 TreeItem* Configuration::getChild(const int& index) const
 {
     switch (static_cast<Row>(index))
     {
         case Row::Channels:
             return const_cast<Channels*>(&_channels);
-
-        case Row::Miscellaneous:
-            return nullptr;
 
         default:
             break;

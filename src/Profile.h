@@ -158,13 +158,6 @@ public: // TreeItem: model API
      */
     QModelIndexList setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
-    /**
-     * Get indices that are affected by a data change of \p index
-     * @param index Model index which changed
-     * @return Affected model indices
-     */
-    QModelIndexList getAffectedIndices(const QModelIndex& index) const override;
-
     /** Get number of columns */
     std::uint32_t getColumnCount() const override {
         return to_ul(Column::_Count);
@@ -175,37 +168,13 @@ public: // TreeItem: visitor API
     /** Accept visitor */
     void accept(Visitor* visitor) const override;
 
-public: // Getters/setters
-
-    /** Gets the profile types */
-    ProfileTypes getProfileTypes() const;
-
-    /** Gets profile type names */
-    QStringList getProfileTypeNames() const;
-
-    /** Gets current profile type */
-    ProfileType getProfileType() const;
+public:
 
     /**
-     * Sets current profile type (if not locked)
-     * @param profileType Profile type
+     * Copies settings from \p profile
+     * @param profile Profile to copy settings from
      */
-    void setProfileType(const ProfileType& profileType);
-
-    /** Gets range types */
-    RangeTypes getRangeTypes() const;
-
-    /** Gets range type names */
-    QStringList getRangeTypeNames() const;
-
-    /** Gets current range type */
-    RangeType getRangeType() const;
-
-    /**
-     * Sets current range type (if not locked)
-     * @param rangeType Range type
-     */
-    void setRangeType(const RangeType& rangeType);
+    void setProfile(const Profile* profile);
 
 private: // Miscellaneous
 
@@ -215,8 +184,7 @@ private: // Miscellaneous
     /** get channel */
     const Channel* getChannel() const;
 
-private:
-    bool            _locked;            /** Whether settings are locked */
+protected:
     ProfileTypes    _profileTypes;      /** Current profile type */
     ProfileType     _profileType;       /** Available profile type(s) */
     RangeTypes      _rangeTypes;        /** Available range types (depends on the current profile type) */

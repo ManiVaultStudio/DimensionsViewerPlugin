@@ -14,9 +14,9 @@ const QMap<QString, TreeItem::Column> TreeItem::columns = {
     { "UUID", TreeItem::Column::UUID }
 };
 
-TreeItem::TreeItem(const QPersistentModelIndex& modelIndex, const QString& type, const QString& name, TreeItem* parent /*= nullptr*/) :
+TreeItem::TreeItem(const QString& type, const QString& name, TreeItem* parent /*= nullptr*/) :
     QObject(parent),
-    _modelIndex(modelIndex),
+    _modelIndex(),
     _type(type),
     _name(name),
     _enabled(true),
@@ -170,9 +170,22 @@ QModelIndexList TreeItem::setData(const QModelIndex& index, const QVariant& valu
     return affectedIndices;
 }
 
-QModelIndex TreeItem::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
+QModelIndex TreeItem::getModelIndex() const
 {
-    return getModel()->index(row, column, parent);
+    return _modelIndex;
+}
+
+QModelIndex TreeItem::getSiblingAtColumn(const std::uint32_t& column) const
+{
+    return getModelIndex().siblingAtColumn(column);
+}
+
+void TreeItem::setModelIndex(const QModelIndex& modelIndex)
+{
+    _modelIndex = modelIndex;
+
+    for (auto child : getChildren())
+        child->setModelIndex(getModel()->index(getChildIndex(child), 0, _modelIndex));
 }
 
 QVector<TreeItem*> TreeItem::getChildren() const

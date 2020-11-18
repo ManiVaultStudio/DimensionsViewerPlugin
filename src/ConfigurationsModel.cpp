@@ -166,6 +166,7 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
 
     for (auto affectedIndex : affectedIndices) {
         emit dataChanged(affectedIndex, affectedIndex);
+        emit item->dataChanged(affectedIndex);
     }
 
     const auto selectedConfiguration = getSelectedConfiguration();
@@ -175,18 +176,6 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
     }
 
     return true;
-}
-
-bool ConfigurationsModel::setData(const std::int32_t& column, const QVariant& value, int role /*= Qt::EditRole*/)
-{
-	const auto selectedRows = _selectionModel.selectedRows();
-
-	if (selectedRows.isEmpty())
-		return false;
-
-	setData(selectedRows.first().siblingAtColumn(column), value, role);
-
-	return true;
 }
 
 Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const

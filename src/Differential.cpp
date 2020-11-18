@@ -15,7 +15,7 @@ const QMap<QString, Differential::Column> Differential::columns = {
 };
 
 Differential::Differential(TreeItem* parent) :
-    TreeItem(getModel()->index(to_ul(Channel::Row::Differential), 0, parent->getModelIndex()), "Differential", "Differential", parent),
+    TreeItem("Differential", "Differential", parent),
     _channel(dynamic_cast<Channel*>(parent)),
     _operandChannelNames(),
     _operandChannelName()
@@ -33,12 +33,12 @@ Qt::ItemFlags Differential::getFlags(const QModelIndex& index) const
     {
         case Differential::Column::Differential:
         {
-            if (_channel->_profile->getProfileType() == Profile::ProfileType::Differential) {
+            /*if (_channel->_profile->getProfileType() == Profile::ProfileType::Differential) {
                 flags |= Qt::ItemIsEditable;
 
                 if (_channel->_enabled)
                     flags |= Qt::ItemIsEnabled;
-            }
+            }*/
 
             break;
         }
@@ -49,12 +49,12 @@ Qt::ItemFlags Differential::getFlags(const QModelIndex& index) const
         case Differential::Column::DifferentialOperandA:
         case Differential::Column::DifferentialOperandB:
         {
-            if (_channel->_profile->getProfileType() == Profile::ProfileType::Differential) {
+            /*if (_channel->_profile->getProfileType() == Profile::ProfileType::Differential) {
                 flags |= Qt::ItemIsEditable;
 
                 if (_channel->_enabled && isPrimed() && getNumCombinations() >= 2)
                     flags |= Qt::ItemIsEnabled;
-            }
+            }*/
 
             break;
         }
@@ -196,12 +196,6 @@ QModelIndexList Differential::setData(const QModelIndex& index, const QVariant& 
             break;
     }
 
-    return affectedIndices;
-}
-
-QModelIndexList Differential::getAffectedIndices(const QModelIndex& index) const
-{
-    QModelIndexList affectedIndices{ index };
     return affectedIndices;
 }
 

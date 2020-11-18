@@ -22,6 +22,8 @@ namespace hdps {
  */
 class TreeItem : public QObject
 {
+    Q_OBJECT
+
 public: // Columns and rows
 
     /** Tree item columns */
@@ -54,12 +56,11 @@ public: // Construction
 
     /**
      * Constructor
-     * @param modelIndex Persistent model index
      * @param type Type of the tree item
      * @param name Name of the tree item
      * @param parent Parent tree item
      */
-    TreeItem(const QPersistentModelIndex& modelIndex, const QString& type, const QString& name, TreeItem* parent = nullptr);
+    TreeItem(const QString& type, const QString& name, TreeItem* parent = nullptr);
 
 public: // Model API
 
@@ -98,29 +99,21 @@ public: // Model API
      */
     virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const;
 
-    /**
-     * Returns the model index belonging to the given model row and column (wraps the model index())
-     * @param row Model row
-     * @param column Model column
-     * @param parent Parent model index
-     * @return Model index for the given model row and column
-     */
-    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
-
-    /**
-     * Get indices that are affected by a data change of \p index
-     * @param index Model index which changed
-     * @return Affected model indices
-     */
-    virtual QModelIndexList getAffectedIndices(const QModelIndex& index) const = 0;
-
     /** Get number of columns */
     virtual std::uint32_t getColumnCount() const = 0;
 
+    /** Gets model index */
+    QModelIndex getModelIndex() const;
+
+    /**
+     * Get sibling at \p column
+     * @param column Column
+     * @return Model index
+     */
+    QModelIndex getSiblingAtColumn(const std::uint32_t& column) const;
+
     /** Gets persistent model index */
-    QPersistentModelIndex getModelIndex() const {
-        return _modelIndex;
-    }
+    void setModelIndex(const QModelIndex& modelIndex);
 
 public: // Hierarchy API
 
@@ -188,14 +181,22 @@ protected:
     /** Get HDPS core pointer */
     static hdps::CoreInterface* getCore();
 
+signals:
+
+    /**
+     * Signals that the tree item data changed
+     * @param modelIndex Model index that changed
+     */
+    void dataChanged(const QModelIndex& modelIndex);
+
 protected:
-    const QPersistentModelIndex     _modelIndex;    /** Persistent model index */
-    QString                         _type;          /** Type */
-    QString                         _name;          /** Display name */
-    bool                            _enabled;       /** Whether the tree item is enabled or not */
-    std::int32_t                    _modified;      /** Modified time */
-    QUuid                           _uuid;          /** Unique identifier */
-    TreeItem*                       _parent;        /** Parent tree item */
+    QPersistentModelIndex   _modelIndex;    /** Persistent model index */
+    QString                 _type;          /** Type */
+    QString                 _name;          /** Display name */
+    bool                    _enabled;       /** Whether the tree item is enabled or not */
+    std::int32_t            _modified;      /** Modified time */
+    QUuid                   _uuid;          /** Unique identifier */
+    TreeItem*               _parent;        /** Parent tree item */
 
 private:
     static DimensionsViewerPlugin* dimensionsViewerPlugin;

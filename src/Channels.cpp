@@ -1,6 +1,6 @@
 #include "Channels.h"
 #include "Channel.h"
-#include "Configuration.h"
+#include "Profile.h"
 #include "ConfigurationsModel.h"
 #include "Visitor.h"
 
@@ -14,7 +14,7 @@ const QMap<QString, Channels::Row> Channels::rows = {
 };
 
 Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem(getModel()->index(to_ul(Configuration::Row::Channels), 0, parent->getModelIndex()), "Channels", "Channels", parent),
+    TreeItem("Channels", "Channels", parent),
     _channels()
 {
     setNumColumns(to_ul(Column::_Count));
@@ -23,6 +23,50 @@ Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& 
     _channels[Row::Subset1]         = new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "", Profile::ProfileType::Mean, QColor(249, 149, 0), 1.0f);
     _channels[Row::Subset2]         = new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "", Profile::ProfileType::Mean, QColor(0, 112, 249), 1.0f);
     _channels[Row::Differential]    = new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "", Profile::ProfileType::Differential, QColor(255, 20, 20), 0.5f);
+
+    QObject::connect(_channels[Row::Dataset]->getProfile(), &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
+        switch (static_cast<Profile::Column>(modelIndex.column()))
+        {
+            case Profile::Column::ProfileTypes:
+            case Profile::Column::ProfileType:
+            case Profile::Column::RangeTypes:
+            case Profile::Column::RangeType:
+            {
+                auto dataset = _channels.value(Row::Dataset);
+                auto subset1 = _channels.value(Row::Subset1);
+                auto subset2 = _channels.value(Row::Subset2);
+
+                if (subset1->getData(Channel::Column::Linked, Qt::EditRole).toBool())
+                    subset1->getProfile()->setProfile(dataset->getProfile());
+
+                if (subset2->getData(Channel::Column::Linked, Qt::EditRole).toBool())
+                    subset2->getProfile()->setProfile(dataset->getProfile());
+
+                break;
+            }
+
+            default:
+                break;
+        }
+    });
+
+    QObject::connect(_channels.value(Row::Subset1), &Channel::dataChanged, [this](const QModelIndex& modelIndex) {
+        switch (static_cast<Channel::Column>(modelIndex.column()))
+        {
+            case Channel::Column::Linked:
+            {
+                /*if (modelIndex.data(Qt::EditRole).toBool()) {
+                    getModel()->setData(_channels.value(Row::Subset1)->getProfile(), to_ul(Profile::Column::ProfileTypes), modelIndex.data(Qt::EditRole), Qt::EditRole);
+                    getModel()->setData(_channels.value(Row::Subset1)->getProfile(), to_ul(Profile::Column::ProfileType), modelIndex.data(Qt::EditRole), Qt::EditRole);
+                }*/
+                    
+                break;
+            }
+
+            default:
+                break;
+        }
+    });
 }
 
 Qt::ItemFlags Channels::getFlags(const QModelIndex& index) const
@@ -38,12 +82,6 @@ QVariant Channels::getData(const std::int32_t& column, const std::int32_t& role)
 QModelIndexList Channels::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     return TreeItem::setData(index, value, role);
-}
-
-QModelIndexList Channels::getAffectedIndices(const QModelIndex& index) const
-{
-    QModelIndexList affectedIndices{ index };
-    return affectedIndices;
 }
 
 TreeItem* Channels::getChild(const int& index) const
@@ -82,7 +120,7 @@ QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileType
 {
     QVector<Channel*> channels;
 
-    for (auto channel : _channels) {
+    /*for (auto channel : _channels) {
         const auto profileType = channel->getProfile()->getProfileType();
 
         if (!profileTypes.isEmpty() && !profileTypes.contains(profileType))
@@ -92,7 +130,7 @@ QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileType
             continue;
 
         channels << channel;
-    }
+    }*/
 
     return channels;
 }
