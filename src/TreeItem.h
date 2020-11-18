@@ -33,9 +33,10 @@ public: // Columns and rows
         Enabled,                        /** Whether the tree item is enabled or not */
         Modified,                       /** Last modified integer stamp */
         UUID,                           /** Universal unique identifier */
+        Value,                          /** Value */
 
         _Start  = Type,
-        _End    = UUID,
+        _End    = Value,
         _Count  = _End + 1
     };
 
