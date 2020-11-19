@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
 #include <QObject>
 #include <QMap>
@@ -13,7 +13,7 @@ class ChannelItem;
  *
  * @author T. Kroes
  */
-class Profile : public TreeItem {
+class Profile : public tree::Item {
 
 public: // Columns and rows
 
@@ -122,12 +122,12 @@ public: // Construction
      * @param parent Parent tree item
      * @param profileType Profile type
      */
-    Profile(TreeItem* parent = nullptr, const ProfileType& profileType = ProfileType::Mean);
+    Profile(Item* parent = nullptr, const ProfileType& profileType = ProfileType::Mean);
 
 public: // TreeItem: visitor API
 
     /** Accept visitor */
-    void accept(Visitor* visitor) const override;
+    void accept(tree::Visitor* visitor) const override;
 
 public:
 

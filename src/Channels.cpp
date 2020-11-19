@@ -13,8 +13,8 @@ const QMap<QString, Channels::Row> Channels::rows = {
     { "Compare", Channels::Row::Differential }
 };
 
-Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& dataName) :
-    TreeItem(parent, "Channels", "Channels")
+Channels::Channels(Item* parent, const QString& datasetName, const QString& dataName) :
+    Item(parent, "Channels", "Channels")
 {
     _children << new ChannelItem(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName);
     _children << new ChannelItem(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "");
@@ -89,9 +89,9 @@ Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& 
     */
 }
 
-void Channels::accept(Visitor* visitor) const
+void Channels::accept(tree::Visitor* visitor) const
 {
-    visitor->visitChannels(this);
+    visitor->visitTreeItem(this);
 }
 
 QVector<ChannelItem*> Channels::getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled /*= nullptr*/) const

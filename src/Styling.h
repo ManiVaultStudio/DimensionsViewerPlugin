@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
 #include <QObject>
 #include <QMap>
@@ -17,7 +17,7 @@ class ChannelItem;
  *
  * @author T. Kroes
  */
-class Styling : public TreeItem {
+class Styling : public tree::Item {
 
 public: // Columns and rows
 
@@ -168,12 +168,12 @@ public: // Construction
      * Constructor
      * @param parent Parent tree item
      */
-    Styling(TreeItem* parent);
+    Styling(Item* parent);
 
 public: // TreeItem: visitor API
 
     /** Accept visitor */
-    void accept(Visitor* visitor) const override;
+    void accept(tree::Visitor* visitor) const override;
 
 private: // Miscellaneous
 

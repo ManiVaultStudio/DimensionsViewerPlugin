@@ -1,9 +1,7 @@
 #include "Profile.h"
-#include "Channels.h"
 #include "Channel.h"
-#include "DataItems.h"
+#include "StandardItems.h"
 #include "Visitor.h"
-#include "ConfigurationsModel.h"
 
 #include <QDebug>
 
@@ -31,13 +29,13 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
     { "10/90 perc.", Profile::RangeType::Percentile10 }
 };
 
-Profile::Profile(TreeItem* parent /*= nullptr*/, const ProfileType& profileType /*= ProfileType::Mean*/) :
-    TreeItem(parent, "Profile", "Profile")
+Profile::Profile(Item* parent /*= nullptr*/, const ProfileType& profileType /*= ProfileType::Mean*/) :
+    Item(parent, "Profile", "Profile")
 {
-    _children << new StringListItem(this, "Profile types", QStringList(profileTypes.keys()));
-    _children << new StringItem(this, "Profile type", "Mean");
-    _children << new StringListItem(this, "Range types", QStringList(rangeTypes.keys()));
-    _children << new StringItem(this, "Range type", "Min/Max");
+    _children << new tree::StringList(this, "Profile types", QStringList(profileTypes.keys()));
+    _children << new tree::String(this, "Profile type", "Mean");
+    _children << new tree::StringList(this, "Range types", QStringList(rangeTypes.keys()));
+    _children << new tree::String(this, "Range type", "Min/Max");
 
     /*switch (_profileType)
     {
@@ -142,9 +140,9 @@ Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
 }
 */
 
-void Profile::accept(Visitor* visitor) const
+void Profile::accept(tree::Visitor* visitor) const
 {
-    visitor->visitProfile(this);
+    visitor->visitTreeItem(this);
 }
 
 void Profile::setProfile(const Profile* profile)

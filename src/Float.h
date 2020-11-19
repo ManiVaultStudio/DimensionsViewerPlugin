@@ -1,12 +1,14 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
-class StringListItem : public TreeItem
+namespace tree {
+
+class Float : public Item
 {
 public:
 
-    StringListItem(TreeItem* parent, const QString& name, const QStringList& value = {});
+    Float(Item* parent, const QString& name, const float& value = 0.0f);
 
 public: // Model API
 
@@ -21,5 +23,7 @@ public: // Visitor API
     void accept(Visitor* visitor) const override;
 
 protected:
-    QStringList     _value;
+    float     _value;
 };
+
+}

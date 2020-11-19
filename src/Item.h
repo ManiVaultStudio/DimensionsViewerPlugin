@@ -6,22 +6,24 @@
 #include <QModelIndex>
 #include <QUuid>
 
-class Visitor;
-
 class QAbstractItemModel;
+
+namespace tree {
+
+class Visitor;
 
 /**
  * Tree item class
  *
  * @author Thomas Kroes
  */
-class TreeItem : public QObject
+class Item : public QObject
 {
     Q_OBJECT
 
 public:
 
-    using Children = QVector<TreeItem*>;
+    using Children = QVector<Item*>;
 
 public: // Columns and rows
 
@@ -60,7 +62,7 @@ public: // Construction
      * @param type Type of the tree item
      * @param name Name of the tree item
      */
-    TreeItem(TreeItem* parent, const QString& type, const QString& name);
+    Item(Item* parent, const QString& type, const QString& name);
 
 public: // Model API
 
@@ -122,7 +124,7 @@ public: // Hierarchy API
     /**
      * TODO
      */
-    TreeItem* getChild(const int& index) const;
+    Item* getChild(const int& index) const;
 
     /** Returns the number of children */
     virtual int getChildCount() const;
@@ -131,13 +133,13 @@ public: // Hierarchy API
      * Returns the child index
      * @param child Pointer to child tree item
      */
-    virtual int getChildIndex(TreeItem* child) const;
+    virtual int getChildIndex(Item* child) const;
 
     /** Returns the child index of this tree item w.r.t. its parent */
     int getChildIndex() const;
 
     /** Returns the parent */
-    TreeItem* getParent();
+    Item* getParent();
 
     /** Returns whether the tree item is a leaf node */
     bool isLeaf() const;
@@ -183,9 +185,11 @@ protected:
     bool                        _enabled;       /** Whether the tree item is enabled or not */
     std::int32_t                _modified;      /** Modified time */
     QUuid                       _uuid;          /** Unique identifier */
-    TreeItem*                   _parent;        /** Parent tree item */
+    Item*                   _parent;        /** Parent tree item */
     Children                    _children;      /** Children */
 
     /** Pointer to abstract item model */
     static QAbstractItemModel* model;
 };
+
+}

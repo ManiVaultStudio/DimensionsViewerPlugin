@@ -5,6 +5,7 @@
 #include "Profile.h"
 #include "Differential.h"
 #include "Styling.h"
+#include "StandardItems.h"
 #include "DimensionsViewerPlugin.h"
 #include "Visitor.h"
 
@@ -13,20 +14,6 @@
 #include <QDebug>
 #include <QVariantList>
 
-const QMap<QString, ChannelItem::Column> ChannelItem::columns = {
-    { "Index", ChannelItem::Column::Index },
-    { "Dataset names", ChannelItem::Column::DatasetNames },
-    { "Dataset name", ChannelItem::Column::DatasetName },
-    { "Dataset name", ChannelItem::Column::DatasetName },
-    { "Differential", ChannelItem::Column::Differential },
-    { "Profile", ChannelItem::Column::Profile },
-    { "Styling", ChannelItem::Column::Styling },
-    { "Linked", ChannelItem::Column::Linked },
-    { "Number of dimensions", ChannelItem::Column::NoDimensions },
-    { "Number of points", ChannelItem::Column::NoPoints },
-    { "Is aggregate", ChannelItem::Column::IsAggregate }
-};
-
 const QMap<QString, ChannelItem::Row> ChannelItem::rows = {
     { "Profile", ChannelItem::Row::Profile },
     { "Styling", ChannelItem::Row::Styling }
@@ -34,8 +21,8 @@ const QMap<QString, ChannelItem::Row> ChannelItem::rows = {
 
 DimensionsViewerPlugin* ChannelItem::dimensionsViewerPlugin = nullptr;
 
-ChannelItem::ChannelItem(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName) :
-    TreeItem(parent, "Channel", name),
+ChannelItem::ChannelItem(Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName) :
+    Item(parent, "Channel", name),
 	_index(index),
     _linked(linked),
     _datasetNames(),
@@ -49,8 +36,13 @@ ChannelItem::ChannelItem(TreeItem* parent, const std::uint32_t& index, const QSt
     _children << new Profile(this);
     _children << new Differential(this);
     _children << new Styling(this);
+    _children << new tree::StringList(this, "Dataset names");
+    _children << new tree::String(this, "Dataset name");
+    _children << new tree::Boolean(this, "Linked");
+    _children << new tree::Integral(this, "No. points");
+    _children << new tree::Integral(this, "No. dimensions");
 
-    QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
+    /*QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
         Q_ASSERT(model != nullptr);
 
         QModelIndexList updateIndices;
@@ -83,7 +75,7 @@ ChannelItem::ChannelItem(TreeItem* parent, const std::uint32_t& index, const QSt
 
         for (auto updateIndex : updateIndices)
             emit model->dataChanged(updateIndex, updateIndex);
-    });
+    });*/
 }
 
 /*
@@ -642,9 +634,9 @@ void Channel::setData(const QModelIndex& index, const QVariant& value, const std
 }
 */
 
-void ChannelItem::accept(Visitor* visitor) const
+void ChannelItem::accept(tree::Visitor* visitor) const
 {
-    visitor->visitChannel(this);
+    visitor->visitTreeItem(this);
 }
 
 void ChannelItem::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
@@ -676,8 +668,13 @@ void ChannelItem::resolvePoints()
 
     auto core = ChannelItem::dimensionsViewerPlugin->getCore();
 
-    if (!_datasetName.isEmpty())
-        _points = &dynamic_cast<Points&>(core->requestData(_datasetName));
+    if (_datasetName.isEmpty())
+        return;
+
+    _points = &dynamic_cast<Points&>(core->requestData(_datasetName));
+
+    model->setData(model->index(to_ul(Row::NoPoints), to_ul(Item::Column::Value), _modelIndex), _points->getNumPoints());
+    model->setData(model->index(to_ul(Row::NoDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());
 }
 
 const Channels* ChannelItem::getChannels() const

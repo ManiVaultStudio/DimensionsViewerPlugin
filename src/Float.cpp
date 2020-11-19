@@ -1,21 +1,23 @@
-#include "FloatItem.h"
+#include "Float.h"
 #include "Visitor.h"
 
-FloatItem::FloatItem(TreeItem* parent, const QString& name, const float& value /*= 0.0f*/) :
-    TreeItem(parent, "Float", name),
+namespace tree {
+
+Float::Float(Item* parent, const QString& name, const float& value /*= 0.0f*/) :
+    Item(parent, "Float", name),
     _value(value)
 {
 }
 
-Qt::ItemFlags FloatItem::getFlags(const QModelIndex& index) const
+Qt::ItemFlags Float::getFlags(const QModelIndex& index) const
 {
     return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
-QVariant FloatItem::getData(const QModelIndex& index, const int& role) const
+QVariant Float::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)
-        return TreeItem::getData(index, role);
+        return Item::getData(index, role);
     
     switch (role)
     {
@@ -35,10 +37,10 @@ QVariant FloatItem::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void FloatItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Float::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     if (static_cast<Column>(index.column()) != Column::Value) {
-        TreeItem::setData(index, value, role);
+        Item::setData(index, value, role);
         return;
     }
 
@@ -56,7 +58,9 @@ void FloatItem::setData(const QModelIndex& index, const QVariant& value, const s
     }
 }
 
-void FloatItem::accept(Visitor* visitor) const
+void Float::accept(Visitor* visitor) const
 {
-    visitor->visitFloatItem(this);
+    visitor->visitTreeItem(this);
+}
+
 }

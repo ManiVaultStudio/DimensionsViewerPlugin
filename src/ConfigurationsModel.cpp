@@ -2,10 +2,6 @@
 #include "DimensionsViewerPlugin.h"
 #include "Configurations.h"
 #include "Configuration.h"
-#include "Channels.h"
-#include "Channel.h"
-
-#include "PointData.h"
 
 #include <QDebug>
 #include <QMessageBox>
@@ -17,110 +13,11 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 	_selectionModel(this),
     _datasetNames()
 {
-    /*
-    const auto updateChannel = [this](const QModelIndex& channel) {
-        if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() >= 1)
-            return;
-
-        const auto channels         = channel.parent();
-        const auto datasetChannel   = index(to_ul(Channels::Row::Dataset), 0, channels);
-        const auto sourceProfile    = index(to_ul(Channel::Row::Profile), 0, datasetChannel);
-        const auto sourceStyling    = index(to_ul(Channel::Row::Styling), 0, datasetChannel);
-
-        for (auto targetChannel : match(channels.siblingAtColumn(to_ul(TreeItem::Column::Type)), Qt::EditRole, "Channel", -1, Qt::MatchRecursive | Qt::MatchExactly)) {
-            const auto targetProfile    = index(to_ul(Channel::Row::Profile), 0, targetChannel);
-            const auto targetStyling    = index(to_ul(Channel::Row::Styling), 0, targetChannel);
-            const auto channelIndex     = targetChannel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt();
-            const auto isLinked         = targetChannel.siblingAtColumn(to_ul(Channel::Column::Linked)).data(Qt::EditRole).toBool();
-            const auto isAggregate      = targetChannel.siblingAtColumn(to_ul(Channel::Column::IsAggregate)).data(Qt::EditRole).toBool();
-
-            if (channelIndex == 0)
-                continue;
-
-            if (!isLinked) {
-                emit dataChanged(targetProfile.siblingAtColumn(to_ul(Profile::Column::_Start)), targetProfile.siblingAtColumn(to_ul(Profile::Column::_End)));
-                emit dataChanged(targetStyling.siblingAtColumn(to_ul(Styling::Column::_Start)), targetStyling.siblingAtColumn(to_ul(Styling::Column::_End)));
-            }
-
-            if (isAggregate)
-                continue;
-
-            const Profile::Columns copyProfileColumns{
-                Profile::Column::ProfileTypes,
-                Profile::Column::ProfileType,
-                Profile::Column::RangeTypes,
-                Profile::Column::RangeType
-            };
-
-            for (auto column : copyProfileColumns)
-                setData(targetProfile.siblingAtColumn(to_ul(column)), sourceProfile.siblingAtColumn(to_ul(column)).data(Qt::EditRole), Qt::EditRole);
-
-            const Styling::Columns copyStylingColumns{
-                Styling::Column::LineTypeProfile,
-                Styling::Column::LineTypeRange,
-                Styling::Column::RenderPoints,
-                Styling::Column::Opacity
-            };
-
-            for (auto column : copyStylingColumns)
-                setData(targetStyling.siblingAtColumn(to_ul(column)), sourceStyling.siblingAtColumn(to_ul(column)).data(Qt::EditRole), Qt::EditRole);
-        }
-    };
-
-    QObject::connect(this, &QAbstractItemModel::dataChanged, [this, updateChannel](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles = QVector<int>()) {
-        const auto type = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).data(Qt::EditRole).toString();
-
-        if (type == "Profile") {
-            const auto column = static_cast<Profile::Column>(topLeft.column());
-            
-            switch (column)
-            {
-                case Profile::Column::ProfileTypes:
-                case Profile::Column::ProfileType:
-                case Profile::Column::RangeTypes:
-                case Profile::Column::RangeType:
-                {
-                    const auto channel = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).parent();
-
-                    if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() == 0)
-                        updateChannel(channel.parent());
-
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-
-        if (type == "Styling") {
-            const auto column = static_cast<Styling::Column>(topLeft.column());
-
-            switch (column)
-            {
-                case Styling::Column::LineTypes:
-                case Styling::Column::LineTypeProfile:
-                case Styling::Column::LineTypeRange:
-                case Styling::Column::RenderPoints:
-                case Styling::Column::Opacity:
-                {
-                    const auto channel = topLeft.siblingAtColumn(to_ul(TreeItem::Column::Type)).parent();
-
-                    if (channel.siblingAtColumn(to_ul(Channel::Column::Index)).data(Qt::EditRole).toInt() == 0)
-                        updateChannel(channel.parent());
-
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-    });
-    */
 }
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    TreeItem *parentItem;
+    tree::Item *parentItem;
 
     if (parent.column() > 0)
         return 0;
@@ -128,14 +25,14 @@ int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
     if (!parent.isValid())
         parentItem = const_cast<Configurations*>(&_configurations);
     else
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
+        parentItem = static_cast<tree::Item*>(parent.internalPointer());
 
     return parentItem->getChildCount();
 }
 
 int ConfigurationsModel::columnCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    return to_ul(TreeItem::Column::_Count);
+    return to_ul(tree::Item::Column::_Count);
 }
 
 QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole*/) const
@@ -185,7 +82,7 @@ Qt::ItemFlags ConfigurationsModel::flags(const QModelIndex& index) const
 QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-        return TreeItem::getColumnTypeName(static_cast<TreeItem::Column>(section));
+        return tree::Item::getColumnTypeName(static_cast<tree::Item::Column>(section));
 
     return QVariant();
 }
@@ -195,12 +92,12 @@ QModelIndex ConfigurationsModel::index(int row, int column, const QModelIndex& p
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
-    TreeItem* parentItem = nullptr;
+    tree::Item* parentItem = nullptr;
 
     if (!parent.isValid())
         parentItem = const_cast<Configurations*>(&_configurations);
     else
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
+        parentItem = static_cast<tree::Item*>(parent.internalPointer());
 
     auto childItem = parentItem->getChild(row);
 
@@ -252,7 +149,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
             selectRow(0);
 
     } else {
-        const auto configurationIndex   = hits.first().siblingAtColumn(0);
+        /*const auto configurationIndex   = hits.first().siblingAtColumn(0);
         const auto channelsIndex        = index(0, 0, configurationIndex);
 
         Channels::Rows channels;
@@ -270,7 +167,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
             datasetNames << datasetName;
 
             setData(datasetNamesIndex, datasetNames);
-        }
+        }*/
     } 
 }
 
@@ -286,13 +183,13 @@ void ConfigurationsModel::selectRow(const std::int32_t& row)
         const auto channelsIndex        = index(0, 0, configurationIndex);
         const auto firstChannelIndex    = index(0, 0, channelsIndex);
 
-        if (firstChannelIndex.siblingAtColumn(to_ul(ChannelItem::Column::NoDimensions)).data(Qt::EditRole).toInt() > Configuration::maxNoDimensions) {
+        /*if (firstChannelIndex.siblingAtColumn(to_ul(ChannelItem::Column::NoDimensions)).data(Qt::EditRole).toInt() > Configuration::maxNoDimensions) {
             const auto datasetName = configurationIndex.siblingAtColumn(to_ul(Configuration::Column::DatasetName)).data(Qt::EditRole).toString();
             throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());
         }
         else {
             _selectionModel.select(configurationIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-        }
+        }*/
     }
     catch (std::exception e)
     {
@@ -332,14 +229,14 @@ const Configurations& ConfigurationsModel::getConfigurations() const
     return _configurations;
 }
 
-TreeItem* ConfigurationsModel::getItem(const QModelIndex& index) const
+tree::Item* ConfigurationsModel::getItem(const QModelIndex& index) const
 {
     if (index.isValid()) {
-        auto treeItem = static_cast<TreeItem*>(index.internalPointer());
+        auto treeItem = static_cast<tree::Item*>(index.internalPointer());
 
         if (treeItem)
             return treeItem;
     }
 
-    return static_cast<TreeItem*>(const_cast<Configurations*>(&_configurations));
+    return static_cast<tree::Item*>(const_cast<Configurations*>(&_configurations));
 }

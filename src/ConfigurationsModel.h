@@ -141,7 +141,7 @@ public: // Miscellaneous
     const Configurations& getConfigurations() const;
 
 private:
-    TreeItem* getItem(const QModelIndex& index) const;
+    tree::Item* getItem(const QModelIndex& index) const;
 
 signals:
 
@@ -158,5 +158,5 @@ private:
     QStringList                 _datasetNames;                  /** Dataset names */
 
     friend class Configurations;
-    friend class TreeItem;
+    friend class Item;
 };

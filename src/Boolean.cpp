@@ -1,21 +1,23 @@
-#include "BooleanItem.h"
+#include "Boolean.h"
 #include "Visitor.h"
 
-BooleanItem::BooleanItem(TreeItem* parent, const QString& name, const bool& value /*= true*/) :
-    TreeItem(parent, "Boolean", name),
+namespace tree {
+
+Boolean::Boolean(Item* parent, const QString& name, const bool& value /*= true*/) :
+    Item(parent, "Boolean", name),
     _value(value)
 {
 }
 
-Qt::ItemFlags BooleanItem::getFlags(const QModelIndex& index) const
+Qt::ItemFlags Boolean::getFlags(const QModelIndex& index) const
 {
     return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
-QVariant BooleanItem::getData(const QModelIndex& index, const int& role) const
+QVariant Boolean::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)
-        return TreeItem::getData(index, role);
+        return Item::getData(index, role);
     
     switch (role)
     {
@@ -35,10 +37,10 @@ QVariant BooleanItem::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void BooleanItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Boolean::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     if (static_cast<Column>(index.column()) != Column::Value) {
-        TreeItem::setData(index, value, role);
+        Item::setData(index, value, role);
         return;
     }
 
@@ -56,7 +58,9 @@ void BooleanItem::setData(const QModelIndex& index, const QVariant& value, const
     }
 }
 
-void BooleanItem::accept(Visitor* visitor) const
+void Boolean::accept(Visitor* visitor) const
 {
-    visitor->visitBooleanItem(this);
+    visitor->visitTreeItem(this);
+}
+
 }

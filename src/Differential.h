@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
 #include <QObject>
 #include <QMap>
@@ -12,7 +12,7 @@ class ChannelItem;
  *
  * @author T. Kroes
  */
-class Differential : public TreeItem {
+class Differential : public tree::Item {
 
 public: // Columns and rows
 
@@ -64,12 +64,12 @@ protected: // Construction
      * Constructor
      * @param parent Parent tree item
      */
-	Differential(TreeItem* parent);
+	Differential(Item* parent);
 
 public: // TreeItem: visitor API
 
     /** Accept visitor */
-    void accept(Visitor* visitor) const override;
+    void accept(tree::Visitor* visitor) const override;
 
 public:
 
@@ -112,7 +112,6 @@ private:
     QStringList getCandidateChannelNames() const;
 
 private:
-    ChannelItem*                    _channel;                   /** Parent channel */
     QMap<Operand, QStringList>  _operandChannelNames;       /** Operand channel names (selectable channel name(s) in dropdown UI) */
     QMap<Operand, QString>      _operandChannelName;        /** Operand channel name (selected channel name in dropdown UI) */
 

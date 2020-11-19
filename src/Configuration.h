@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 #include "Channels.h"
 
 #include <QStringList>
@@ -14,7 +14,7 @@ class DimensionsViewerPlugin;
  *
  * @author T. Kroes
  */
-class Configuration : public TreeItem
+class Configuration : public tree::Item
 {
 public: // Columns and rows
 
@@ -78,12 +78,12 @@ public: // Construction
 	 * @param datasetName Name of the primary dataset
 	 * @param dataName Name of the primary data
 	 */
-	Configuration(TreeItem* parent, const QString& datasetName, const QString& dataName);
+	Configuration(Item* parent, const QString& datasetName, const QString& dataName);
 
 public: // TreeItem: visitor API
 
     /** Accept visitor */
-    void accept(Visitor* visitor) const override;
+    void accept(tree::Visitor* visitor) const override;
 
 protected:
     static std::int32_t maxNoDimensions;

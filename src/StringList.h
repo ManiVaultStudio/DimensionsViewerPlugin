@@ -1,12 +1,14 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
-class IntegralItem : public TreeItem
+namespace tree {
+
+class StringList : public Item
 {
 public:
 
-    IntegralItem(TreeItem* parent, const QString& name, const std::int32_t& value = 0);
+    StringList(Item* parent, const QString& name, const QStringList& value = {});
 
 public: // Model API
 
@@ -21,5 +23,7 @@ public: // Visitor API
     void accept(Visitor* visitor) const override;
 
 protected:
-    std::int32_t     _value;
+    QStringList     _value;
 };
+
+}

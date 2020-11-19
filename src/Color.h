@@ -1,14 +1,16 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
 #include <QColor>
 
-class ColorItem : public TreeItem
+namespace tree {
+
+class Color : public Item
 {
 public:
 
-    ColorItem(TreeItem* parent, const QString& name, const QColor& value = Qt::black);
+    Color(Item* parent, const QString& name, const QColor& value = Qt::black);
 
 public: // Model API
 
@@ -25,3 +27,5 @@ public: // Visitor API
 protected:
     QColor     _value;
 };
+
+}

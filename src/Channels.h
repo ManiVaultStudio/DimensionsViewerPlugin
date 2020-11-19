@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 #include "Profile.h"
 
 class ChannelItem;
@@ -14,7 +14,7 @@ class Configuration;
  *
  * @author T. Kroes
  */
-class Channels : public TreeItem {
+class Channels : public tree::Item {
 
 public: // Columns and rows
 
@@ -54,12 +54,12 @@ protected: // Construction
      * @param datasetName Name of the primary dataset
      * @param dataName Name of the primary data
      */
-	Channels(TreeItem* parent, const QString& datasetName, const QString& dataName);
+	Channels(tree::Item* parent, const QString& datasetName, const QString& dataName);
 
 public: // TreeItem: visitor API
 
     /** Accept visitor */
-    void accept(Visitor* visitor) const override;
+    void accept(tree::Visitor* visitor) const override;
 
 public: // Getters
 

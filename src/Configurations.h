@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
 class Configuration;
 
@@ -9,7 +9,7 @@ class Configuration;
  *
  * @author Thomas Kroes
  */
-class Configurations : public TreeItem
+class Configurations : public tree::Item
 {
 protected: // Construction
 
@@ -19,7 +19,7 @@ protected: // Construction
 public: // TreeItem: visitor API
 
     /** Accept visitor */
-    void accept(Visitor* visitor) const override;
+    void accept(tree::Visitor* visitor) const override;
 
 public: // Miscellaneous
 

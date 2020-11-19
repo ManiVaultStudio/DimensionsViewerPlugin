@@ -1,21 +1,23 @@
-#include "IntegralItem.h"
+#include "Integral.h"
 #include "Visitor.h"
 
-IntegralItem::IntegralItem(TreeItem* parent, const QString& name, const std::int32_t& value /*= 0*/) :
-    TreeItem(parent, "Integral", name),
+namespace tree {
+
+Integral::Integral(Item* parent, const QString& name, const std::int32_t& value /*= 0*/) :
+    Item(parent, "Integral", name),
     _value(value)
 {
 }
 
-Qt::ItemFlags IntegralItem::getFlags(const QModelIndex& index) const
+Qt::ItemFlags Integral::getFlags(const QModelIndex& index) const
 {
     return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
-QVariant IntegralItem::getData(const QModelIndex& index, const int& role) const
+QVariant Integral::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)
-        return TreeItem::getData(index, role);
+        return Item::getData(index, role);
     
     switch (role)
     {
@@ -35,10 +37,10 @@ QVariant IntegralItem::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void IntegralItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Integral::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     if (static_cast<Column>(index.column()) != Column::Value) {
-        TreeItem::setData(index, value, role);
+        Item::setData(index, value, role);
         return;
     }
 
@@ -56,7 +58,9 @@ void IntegralItem::setData(const QModelIndex& index, const QVariant& value, cons
     }
 }
 
-void IntegralItem::accept(Visitor* visitor) const
+void Integral::accept(Visitor* visitor) const
 {
-    visitor->visitIntegralItem(this);
+    visitor->visitTreeItem(this);
+}
+
 }

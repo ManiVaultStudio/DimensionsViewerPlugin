@@ -1,8 +1,5 @@
 #include "SpecVisitor.h"
-#include "Configurations.h"
-#include "Configuration.h"
-#include "Channels.h"
-#include "Channel.h"
+#include "StandardItems.h"
 
 #include <QDebug>
 
@@ -12,17 +9,13 @@ SpecVisitor::SpecVisitor() :
 {
 }
 
-void SpecVisitor::visitConfigurations(const Configurations* configurations)
-{
-}
-
-void SpecVisitor::visitConfiguration(const Configuration* configuration)
+void SpecVisitor::visitTreeItem(const tree::Item* treeItem)
 {
     /*
     const auto channels = configuration->getChild(to_ul(Configuration::Row::Channels));
 
     channels->accept(this);
-    
+
     QVariantMap configurationSpec;
 
     // Common
@@ -34,13 +27,10 @@ void SpecVisitor::visitConfiguration(const Configuration* configuration)
     configurationSpec["channels"]       = _children[channels->getUuid()];
 
     _spec = configurationSpec;
-    
+
     _children.clear();
     */
-}
 
-void SpecVisitor::visitChannels(const Channels* channels)
-{
     /*
     QVariantMap channelsSpec;
 
@@ -59,10 +49,7 @@ void SpecVisitor::visitChannels(const Channels* channels)
 
     _children[channels->getUuid()] = channelsSpec;
     */
-}
 
-void SpecVisitor::visitChannel(const ChannelItem* channel)
-{
     /*
     QVariantMap channelSpec;
 
@@ -76,10 +63,7 @@ void SpecVisitor::visitChannel(const ChannelItem* channel)
 
     _children[channel->getUuid()] = channelSpec;
     */
-}
 
-void SpecVisitor::visitProfile(const Profile* profile)
-{
     /*
     QVariantMap profileSpec;
 
@@ -90,15 +74,7 @@ void SpecVisitor::visitProfile(const Profile* profile)
     profileSpec["profileType"]  = profile->getData(Profile::Column::ProfileType, Qt::DisplayRole).toString();
     profileSpec["rangeType"]    = profile->getData(Profile::Column::RangeType, Qt::DisplayRole).toString();
     */
-}
 
-void SpecVisitor::visitDifferential(const Differential* differential)
-{
-    QVariantMap differentialSpec;
-}
-
-void SpecVisitor::visitStyling(const Styling* styling)
-{
     /*
     QVariantMap stylingSpec;
 
@@ -112,33 +88,4 @@ void SpecVisitor::visitStyling(const Styling* styling)
     stylingSpec["opacity"]         = styling->getData(Styling::Column::Opacity, Qt::EditRole).toFloat();
     stylingSpec["color"]           = styling->getData(Styling::Column::Color, Qt::EditRole).value<QColor>();
     */
-}
-
-void SpecVisitor::visitBooleanItem(const BooleanItem* booleanItem)
-{
-
-}
-
-void SpecVisitor::visitIntegralItem(const IntegralItem* integralItem)
-{
-}
-
-void SpecVisitor::visitFloatItem(const FloatItem* floatItem)
-{
-
-}
-
-void SpecVisitor::visitColorItem(const ColorItem* colorItem)
-{
-
-}
-
-void SpecVisitor::visitStringItem(const StringItem* stringItem)
-{
-
-}
-
-void SpecVisitor::visitStringListItem(const StringListItem* stringListItem)
-{
-
 }

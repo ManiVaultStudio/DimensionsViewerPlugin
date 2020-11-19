@@ -1,23 +1,22 @@
 #include "Configurations.h"
 #include "Configuration.h"
-#include "ConfigurationsModel.h"
 #include "Visitor.h"
 
 #include <QMessageBox>
 
 Configurations::Configurations() :
-    TreeItem(nullptr, "Configurations", "Configurations")
+    Item(nullptr, "Configurations", "Configurations")
 {
 }
 
-void Configurations::accept(Visitor* visitor) const
+void Configurations::accept(tree::Visitor* visitor) const
 {
-    visitor->visitConfigurations(this);
+    visitor->visitTreeItem(this);
 }
 
 void Configurations::add(const QString& datasetName, const QString& dataName)
 {
-    Q_ASSERT(TreeItem::model != nullptr);
+    Q_ASSERT(Item::model != nullptr);
 
     const auto presentError = [](const QString& reason) {
         QMessageBox::critical(nullptr, "Unable to add configuration", reason);
@@ -33,7 +32,7 @@ void Configurations::add(const QString& datasetName, const QString& dataName)
 
         _children << new Configuration(this, datasetName, dataName);
 
-        _children.last()->setModelIndex(TreeItem::model->index(getChildCount() - 1, 0));
+        _children.last()->setModelIndex(Item::model->index(getChildCount() - 1, 0));
     }
     catch (std::exception exception)
     {

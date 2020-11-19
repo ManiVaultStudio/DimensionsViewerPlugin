@@ -26,18 +26,27 @@ file(GLOB PLUGIN
 )
 
 file(GLOB MODEL 
-	src/ChannelItem.*
-	src/ChannelsItem.*
+	src/Channel.*
+	src/Channels.*
 	src/Configuration.*
 	src/Configurations.*
 	src/ConfigurationsModel.*
 	src/Differential.*
-	src/TreeItem.*
 	src/Profile.*
 	src/Styling.*
-	src/Visitor.*
 	src/SpecVisitor.*
-	src/*Item*.*
+)
+
+file(GLOB TREE 
+	src/Item.*
+	src/Boolean*.*
+	src/Integral*.*
+	src/Float*.*
+	src/Color*.*
+	src/String*.*
+	src/StringList*.*
+	src/StandardItems.h
+	src/Visitor.*
 )
 
 file(GLOB WIDGETS
@@ -58,13 +67,14 @@ file(GLOB WEB src/res/web/*.html src/res/web/*.js)
 file(GLOB JSON src/*.json)
 file(GLOB QRC src/*.qrc)
 
-set(SOURCES ${PLUGIN} ${MODEL} ${WIDGETS})
+set(SOURCES ${PLUGIN} ${MODEL} ${TREE} ${WIDGETS})
 
 set(WEB ${WEB})
 set(AUX ${JSON} ${QRC})
 
 source_group(Plugin FILES ${PLUGIN})
 source_group(Model FILES ${MODEL})
+source_group(Tree FILES ${TREE})
 source_group(Widgets FILES ${WIDGETS})
 source_group(UI FILES ${UIS})
 source_group(Web FILES ${WEB})

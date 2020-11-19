@@ -1,21 +1,23 @@
-#include "StringListItem.h"
+#include "StringList.h"
 #include "Visitor.h"
 
-StringListItem::StringListItem(TreeItem* parent, const QString& name, const QStringList& value /*= {}*/) :
-    TreeItem(parent, "StringList", name),
+namespace tree {
+
+StringList::StringList(Item* parent, const QString& name, const QStringList& value /*= {}*/) :
+    Item(parent, "StringList", name),
     _value(value)
 {
 }
 
-Qt::ItemFlags StringListItem::getFlags(const QModelIndex& index) const
+Qt::ItemFlags StringList::getFlags(const QModelIndex& index) const
 {
     return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
-QVariant StringListItem::getData(const QModelIndex& index, const int& role) const
+QVariant StringList::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)
-        return TreeItem::getData(index, role);
+        return Item::getData(index, role);
     
     switch (role)
     {
@@ -35,10 +37,10 @@ QVariant StringListItem::getData(const QModelIndex& index, const int& role) cons
     return QVariant();
 }
 
-void StringListItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void StringList::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     if (static_cast<Column>(index.column()) != Column::Value) {
-        TreeItem::setData(index, value, role);
+        Item::setData(index, value, role);
         return;
     }
 
@@ -56,7 +58,9 @@ void StringListItem::setData(const QModelIndex& index, const QVariant& value, co
     }
 }
 
-void StringListItem::accept(Visitor* visitor) const
+void StringList::accept(Visitor* visitor) const
 {
-    visitor->visitStringListItem(this);
+    visitor->visitTreeItem(this);
+}
+
 }

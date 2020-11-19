@@ -1,8 +1,4 @@
 #include "Differential.h"
-#include "Channels.h"
-#include "Channel.h"
-#include "Profile.h"
-#include "ConfigurationsModel.h"
 #include "Visitor.h"
 
 #include <QDebug>
@@ -14,9 +10,8 @@ const QMap<QString, Differential::Column> Differential::columns = {
     { "Differential operand B name", Differential::Column::DifferentialOperandB }
 };
 
-Differential::Differential(TreeItem* parent) :
-    TreeItem(parent, "Differential", "Differential"),
-    _channel(dynamic_cast<ChannelItem*>(parent)),
+Differential::Differential(Item* parent) :
+    Item(parent, "Differential", "Differential"),
     _operandChannelNames(),
     _operandChannelName()
 {
@@ -40,9 +35,9 @@ Differential::Differential(TreeItem* parent) :
 //        break;
 //}
 
-void Differential::accept(Visitor* visitor) const
+void Differential::accept(tree::Visitor* visitor) const
 {
-    visitor->visitDifferential(this);
+    visitor->visitTreeItem(this);
 }
 
 QStringList Differential::getOperandChannelNames(const Operand& operand) const
@@ -122,7 +117,7 @@ QStringList Differential::getCandidateChannelNames() const
 {
     auto enabled = true;
 
-    const auto candidateChannels = _channel->getChannels()->getFiltered(Profile::ProfileTypes({Profile::ProfileType::Mean, Profile::ProfileType::Median }), &enabled);
+    //const auto candidateChannels = _channel->getChannels()->getFiltered(Profile::ProfileTypes({Profile::ProfileType::Mean, Profile::ProfileType::Median }), &enabled);
 
     QStringList candidateChannelNames;
 

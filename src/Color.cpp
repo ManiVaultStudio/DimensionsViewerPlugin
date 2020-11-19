@@ -1,21 +1,23 @@
-#include "ColorItem.h"
+#include "Color.h"
 #include "Visitor.h"
 
-ColorItem::ColorItem(TreeItem* parent, const QString& name, const QColor& value /*= Qt::black*/) :
-    TreeItem(parent, "Color", name),
+namespace tree {
+
+Color::Color(Item* parent, const QString& name, const QColor& value /*= Qt::black*/) :
+    Item(parent, "Color", name),
     _value(value)
 {
 }
 
-Qt::ItemFlags ColorItem::getFlags(const QModelIndex& index) const
+Qt::ItemFlags Color::getFlags(const QModelIndex& index) const
 {
     return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
-QVariant ColorItem::getData(const QModelIndex& index, const int& role) const
+QVariant Color::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)
-        return TreeItem::getData(index, role);
+        return Item::getData(index, role);
     
     switch (role)
     {
@@ -35,10 +37,10 @@ QVariant ColorItem::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void ColorItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Color::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     if (static_cast<Column>(index.column()) != Column::Value) {
-        TreeItem::setData(index, value, role);
+        Item::setData(index, value, role);
         return;
     }
 
@@ -56,7 +58,9 @@ void ColorItem::setData(const QModelIndex& index, const QVariant& value, const s
     }
 }
 
-void ColorItem::accept(Visitor* visitor) const
+void Color::accept(Visitor* visitor) const
 {
-    visitor->visitColorItem(this);
+    visitor->visitTreeItem(this);
+}
+
 }

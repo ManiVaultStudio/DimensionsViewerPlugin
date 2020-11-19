@@ -17,7 +17,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    TreeItem::setModel(&_model);
+    tree::Item::setModel(&_model);
     ChannelItem::setDimensionsViewerPlugin(this);
     TreeItemWidget::setDimensionsViewerPlugin(this);
 

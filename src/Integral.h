@@ -1,12 +1,14 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
-class BooleanItem : public TreeItem
+namespace tree {
+
+class Integral : public Item
 {
 public:
 
-    BooleanItem(TreeItem* parent, const QString& name, const bool& value = true);
+    Integral(Item* parent, const QString& name, const std::int32_t& value = 0);
 
 public: // Model API
 
@@ -21,5 +23,7 @@ public: // Visitor API
     void accept(Visitor* visitor) const override;
 
 protected:
-    bool     _value;
+    std::int32_t     _value;
 };
+
+}

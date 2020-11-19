@@ -1,12 +1,14 @@
 #pragma once
 
-#include "TreeItem.h"
+#include "Item.h"
 
-class StringItem : public TreeItem
+namespace tree {
+
+class Boolean : public Item
 {
 public:
 
-    StringItem(TreeItem* parent, const QString& name, const QString& value = "");
+    Boolean(Item* parent, const QString& name, const bool& value = true);
 
 public: // Model API
 
@@ -21,5 +23,7 @@ public: // Visitor API
     void accept(Visitor* visitor) const override;
 
 protected:
-    QString     _value;
+    bool     _value;
 };
+
+}

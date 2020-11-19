@@ -1,7 +1,6 @@
 #include "Styling.h"
 #include "Channel.h"
-#include "DataItems.h"
-#include "ConfigurationsModel.h"
+#include "StandardItems.h"
 #include "Visitor.h"
 
 #include <QDebug>
@@ -25,19 +24,19 @@ const QMap<QString, Styling::LineType> Styling::lineTypes = {
 
 const QSize Styling::LineTypesModel::iconSize = QSize(24, 12);
 
-Styling::Styling(TreeItem* parent) :
-    TreeItem(parent, "Styling", "Styling")
+Styling::Styling(Item* parent) :
+    Item(parent, "Styling", "Styling")
 {
-    _children << new StringItem(this, "Line type (profile)", "Solid");
-    _children << new StringItem(this, "Line type (range)", "DashDot");
-    _children << new BooleanItem(this, "Render points");
-    _children << new FloatItem(this, "Opacity");
-    _children << new ColorItem(this, "Color");
+    _children << new tree::String(this, "Line type (profile)", "Solid");
+    _children << new tree::String(this, "Line type (range)", "DashDot");
+    _children << new tree::Boolean(this, "Render points");
+    _children << new tree::Float(this, "Opacity");
+    _children << new tree::Color(this, "Color");
 }
 
-void Styling::accept(Visitor* visitor) const
+void Styling::accept(tree::Visitor* visitor) const
 {
-    visitor->visitStyling(this);
+    visitor->visitTreeItem(this);
 }
 
 const ChannelItem* Styling::getChannel() const

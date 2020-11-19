@@ -1,23 +1,21 @@
-#include "TreeItem.h"
-#include "DimensionsViewerPlugin.h"
-#include "ConfigurationsModel.h"
-
-#include "CoreInterface.h"
+#include "Item.h"
 
 #include <QAbstractItemModel>
 
-QAbstractItemModel* TreeItem::model = nullptr;
+namespace tree {
 
-const QMap<QString, TreeItem::Column> TreeItem::columns = {
-    { "Name", TreeItem::Column::Name },
-    { "Value", TreeItem::Column::Value },
-    { "Type", TreeItem::Column::Type },
-    { "Enabled", TreeItem::Column::Enabled },
-    { "Modified", TreeItem::Column::Modified },
-    { "UUID", TreeItem::Column::UUID }
+QAbstractItemModel* Item::model = nullptr;
+
+const QMap<QString, Item::Column> Item::columns = {
+    { "Name", Item::Column::Name },
+    { "Value", Item::Column::Value },
+    { "Type", Item::Column::Type },
+    { "Enabled", Item::Column::Enabled },
+    { "Modified", Item::Column::Modified },
+    { "UUID", Item::Column::UUID }
 };
 
-TreeItem::TreeItem(TreeItem* parent, const QString& type, const QString& name) :
+Item::Item(Item* parent, const QString& type, const QString& name) :
     QObject(parent),
     _modelIndex(),
     _type(type),
@@ -30,19 +28,19 @@ TreeItem::TreeItem(TreeItem* parent, const QString& type, const QString& name) :
 {
 }
 
-void TreeItem::setModel(QAbstractItemModel* model)
+void Item::setModel(QAbstractItemModel* model)
 {
     Q_ASSERT(model != nullptr);
 
-    TreeItem::model = model;
+    Item::model = model;
 }
 
-Qt::ItemFlags TreeItem::getFlags(const QModelIndex& index) const
+Qt::ItemFlags Item::getFlags(const QModelIndex& index) const
 {
     return Qt::ItemFlag::NoItemFlags;
 }
 
-QVariant TreeItem::getData(const QModelIndex& index, const int& role) const
+QVariant Item::getData(const QModelIndex& index, const int& role) const
 {
     const auto column = static_cast<Column>(index.column());
 
@@ -52,22 +50,22 @@ QVariant TreeItem::getData(const QModelIndex& index, const int& role) const
 
             switch (static_cast<Column>(column))
             {
-                case TreeItem::Column::Type:
+                case Item::Column::Type:
                     return _type;
 
-                case TreeItem::Column::Name:
+                case Item::Column::Name:
                     return _name;
 
-                case TreeItem::Column::Enabled:
+                case Item::Column::Enabled:
                     return _enabled;
 
-                case TreeItem::Column::UUID:
+                case Item::Column::UUID:
                     return _uuid;
 
-                case TreeItem::Column::Modified:
+                case Item::Column::Modified:
                     return _modified;
 
-                case TreeItem::Column::Value:
+                case Item::Column::Value:
                     break;
 
                 default:
@@ -81,22 +79,22 @@ QVariant TreeItem::getData(const QModelIndex& index, const int& role) const
 
             switch (static_cast<Column>(column))
             {
-                case TreeItem::Column::Type:
+                case Item::Column::Type:
                     return getData(index, Qt::EditRole);
 
-                case TreeItem::Column::Name:
+                case Item::Column::Name:
                     return getData(index, Qt::EditRole);
 
-                case TreeItem::Column::Enabled:
+                case Item::Column::Enabled:
                     return getData(index, Qt::EditRole).toBool() ? "on" : "off";
 
-                case TreeItem::Column::UUID:
+                case Item::Column::UUID:
                     return getData(index, Qt::EditRole).toUuid().toString();
 
-                case TreeItem::Column::Modified:
+                case Item::Column::Modified:
                     return QString::number(getData(index, Qt::EditRole).toInt());
 
-                case TreeItem::Column::Value:
+                case Item::Column::Value:
                     break;
 
                 default:
@@ -119,7 +117,7 @@ QVariant TreeItem::getData(const QModelIndex& index, const int& role) const
                     break;
 
                 case Column::Enabled:
-                    return QString("%1: %2").arg(getData(index.siblingAtColumn(to_ul(TreeItem::Column::Name)), Qt::DisplayRole).toString(), getData(index, Qt::DisplayRole).toString());
+                    return QString("%1: %2").arg(getData(index.siblingAtColumn(to_ul(Item::Column::Name)), Qt::DisplayRole).toString(), getData(index, Qt::DisplayRole).toString());
 
                 case Column::Modified:
                 case Column::UUID:
@@ -140,7 +138,7 @@ QVariant TreeItem::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void TreeItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+void Item::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     switch (role)
     {
@@ -150,20 +148,20 @@ void TreeItem::setData(const QModelIndex& index, const QVariant& value, const st
 
             switch (column)
             {
-                case TreeItem::Column::Type:
+                case Item::Column::Type:
                     break;
 
-                case TreeItem::Column::Name:
+                case Item::Column::Name:
                     _name = value.toString();
                     break;
 
-                case TreeItem::Column::Enabled:
+                case Item::Column::Enabled:
                     _enabled = value.toBool();
                     break;
 
-                case TreeItem::Column::UUID:
-                case TreeItem::Column::Modified:
-                case TreeItem::Column::Value:
+                case Item::Column::UUID:
+                case Item::Column::Modified:
+                case Item::Column::Value:
                     break;
 
                 default:
@@ -178,60 +176,62 @@ void TreeItem::setData(const QModelIndex& index, const QVariant& value, const st
     }
 }
 
-QModelIndex TreeItem::getModelIndex() const
+QModelIndex Item::getModelIndex() const
 {
     return _modelIndex;
 }
 
-QModelIndex TreeItem::getSiblingAtColumn(const std::uint32_t& column) const
+QModelIndex Item::getSiblingAtColumn(const std::uint32_t& column) const
 {
     return getModelIndex().siblingAtColumn(column);
 }
 
-void TreeItem::setModelIndex(const QModelIndex& modelIndex)
+void Item::setModelIndex(const QModelIndex& modelIndex)
 {
-    Q_ASSERT(TreeItem::model != nullptr);
+    Q_ASSERT(Item::model != nullptr);
 
     _modelIndex = modelIndex;
 
     for (auto child : getChildren())
-        child->setModelIndex(TreeItem::model->index(getChildIndex(child), 0, _modelIndex));
+        child->setModelIndex(Item::model->index(getChildIndex(child), 0, _modelIndex));
 }
 
-TreeItem::Children TreeItem::getChildren() const
+Item::Children Item::getChildren() const
 {
     return _children;
 }
 
-TreeItem* TreeItem::getChild(const int& index) const
+Item* Item::getChild(const int& index) const
 {
     return _children.at(index);
 }
 
-int TreeItem::getChildCount() const
+int Item::getChildCount() const
 {
     return _children.count();
 }
 
-int TreeItem::getChildIndex() const
+int Item::getChildIndex() const
 {
     if (_parent)
-        return _parent->getChildIndex(const_cast<TreeItem*>(this));
+        return _parent->getChildIndex(const_cast<Item*>(this));
 
     return 0;
 }
 
-int TreeItem::getChildIndex(TreeItem* child) const
+int Item::getChildIndex(Item* child) const
 {
     return _children.indexOf(child);
 }
 
-TreeItem* TreeItem::getParent()
+Item* Item::getParent()
 {
     return _parent;
 }
 
-bool TreeItem::isLeaf() const
+bool Item::isLeaf() const
 {
     return getChildCount() == 0;
+}
+
 }
