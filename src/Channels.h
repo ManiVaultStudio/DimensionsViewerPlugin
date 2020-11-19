@@ -3,7 +3,7 @@
 #include "Item.h"
 #include "Profile.h"
 
-class ChannelItem;
+class Channel;
 class Configuration;
 
 #include <QObject>
@@ -69,7 +69,7 @@ public: // Getters
      * @param enabled Filter enabled/disabled channels
      * @return Filtered channels
      */
-    QVector<ChannelItem*> getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled = nullptr) const;
+    QVector<Channel*> getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled = nullptr) const;
 
 public: // Overloaded operators
 
@@ -77,13 +77,13 @@ public: // Overloaded operators
      * Bracket operator
      * @param row Row enum
      */
-    ChannelItem* operator [](const Row& row) const {
-        return reinterpret_cast<ChannelItem*>(_children[static_cast<std::int32_t>(row)]);
+    Channel* operator [](const Row& row) const {
+        return reinterpret_cast<Channel*>(_children[static_cast<std::int32_t>(row)]);
     }
 
     friend class ConfigurationsModel;
     friend class Configuration;
-    friend class ChannelItem;
+    friend class Channel;
     friend class Differential;
 };
 

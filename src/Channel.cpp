@@ -14,14 +14,14 @@
 #include <QDebug>
 #include <QVariantList>
 
-const QMap<QString, ChannelItem::Row> ChannelItem::rows = {
-    { "Profile", ChannelItem::Row::Profile },
-    { "Styling", ChannelItem::Row::Styling }
+const QMap<QString, Channel::Row> Channel::rows = {
+    { "Profile", Channel::Row::Profile },
+    { "Styling", Channel::Row::Styling }
 };
 
-DimensionsViewerPlugin* ChannelItem::dimensionsViewerPlugin = nullptr;
+DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
-ChannelItem::ChannelItem(Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName) :
+Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName) :
     Item(parent, "Channel", name),
 	_index(index),
     _linked(linked),
@@ -33,14 +33,15 @@ ChannelItem::ChannelItem(Item* parent, const std::uint32_t& index, const QString
 
     resolvePoints();
 
-    _children << new Profile(this);
-    _children << new Differential(this);
-    _children << new Styling(this);
+    _children << new tree::Boolean(this, "Enabled");
     _children << new tree::StringList(this, "Dataset names");
     _children << new tree::String(this, "Dataset name");
     _children << new tree::Boolean(this, "Linked");
     _children << new tree::Integral(this, "No. points");
     _children << new tree::Integral(this, "No. dimensions");
+    _children << new Profile(this);
+    _children << new Differential(this);
+    _children << new Styling(this);
 
     /*QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
         Q_ASSERT(model != nullptr);
@@ -634,19 +635,19 @@ void Channel::setData(const QModelIndex& index, const QVariant& value, const std
 }
 */
 
-void ChannelItem::accept(tree::Visitor* visitor) const
+void Channel::accept(tree::Visitor* visitor) const
 {
     visitor->visitTreeItem(this);
 }
 
-void ChannelItem::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
+void Channel::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
 {
     Q_ASSERT(dimensionsViewerPlugin != nullptr);
 
-    ChannelItem::dimensionsViewerPlugin = dimensionsViewerPlugin;
+    Channel::dimensionsViewerPlugin = dimensionsViewerPlugin;
 }
 
-std::int32_t ChannelItem::getNoDimensions() const
+std::int32_t Channel::getNoDimensions() const
 {
     if (_points == nullptr)
         return 0;
@@ -654,7 +655,7 @@ std::int32_t ChannelItem::getNoDimensions() const
     return _points->getNumDimensions();
 }
 
-std::int32_t ChannelItem::getNoPoints() const
+std::int32_t Channel::getNoPoints() const
 {
     if (_points == nullptr)
         return 0;
@@ -662,11 +663,11 @@ std::int32_t ChannelItem::getNoPoints() const
     return _points->getNumPoints();
 }
 
-void ChannelItem::resolvePoints()
+void Channel::resolvePoints()
 {
-    Q_ASSERT(ChannelItem::dimensionsViewerPlugin != nullptr);
+    Q_ASSERT(Channel::dimensionsViewerPlugin != nullptr);
 
-    auto core = ChannelItem::dimensionsViewerPlugin->getCore();
+    auto core = Channel::dimensionsViewerPlugin->getCore();
 
     if (_datasetName.isEmpty())
         return;
@@ -677,7 +678,7 @@ void ChannelItem::resolvePoints()
     model->setData(model->index(to_ul(Row::NoDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());
 }
 
-const Channels* ChannelItem::getChannels() const
+const Channels* Channel::getChannels() const
 {
     return dynamic_cast<Channels*>(_parent);
 }

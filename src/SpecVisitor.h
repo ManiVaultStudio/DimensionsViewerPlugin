@@ -7,7 +7,7 @@
 class Configurations;
 class Configuration;
 class Channels;
-class ChannelItem;
+class Channel;
 
 // Tree namespace spoofing
 namespace tree {

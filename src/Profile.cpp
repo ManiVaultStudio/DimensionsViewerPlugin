@@ -32,6 +32,10 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
 Profile::Profile(Item* parent /*= nullptr*/, const ProfileType& profileType /*= ProfileType::Mean*/) :
     Item(parent, "Profile", "Profile")
 {
+    _flags.setFlag(Qt::ItemIsEditable);
+    _flags.setFlag(Qt::ItemIsEnabled);
+    _flags.setFlag(Qt::ItemIsSelectable);
+
     _children << new tree::StringList(this, "Profile types", QStringList(profileTypes.keys()));
     _children << new tree::String(this, "Profile type", "Mean");
     _children << new tree::StringList(this, "Range types", QStringList(rangeTypes.keys()));
@@ -204,7 +208,7 @@ void Profile::update()
     */
 }
 
-const ChannelItem* Profile::getChannel() const
+const Channel* Profile::getChannel() const
 {
-    return dynamic_cast<ChannelItem*>(_parent);
+    return dynamic_cast<Channel*>(_parent);
 }

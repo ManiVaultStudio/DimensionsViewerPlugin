@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QMap>
 
-class ChannelItem;
+class Channel;
 
 /**
  * Differential tree item class
@@ -115,5 +115,5 @@ private:
     QMap<Operand, QStringList>  _operandChannelNames;       /** Operand channel names (selectable channel name(s) in dropdown UI) */
     QMap<Operand, QString>      _operandChannelName;        /** Operand channel name (selected channel name in dropdown UI) */
 
-    friend class ChannelItem;
+    friend class Channel;
 };

@@ -39,7 +39,7 @@ void Styling::accept(tree::Visitor* visitor) const
     visitor->visitTreeItem(this);
 }
 
-const ChannelItem* Styling::getChannel() const
+const Channel* Styling::getChannel() const
 {
-    return dynamic_cast<ChannelItem*>(_parent);
+    return dynamic_cast<Channel*>(_parent);
 }

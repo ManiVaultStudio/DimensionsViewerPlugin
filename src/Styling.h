@@ -10,7 +10,7 @@
 #include <QPainter>
 #include <QAbstractListModel>
 
-class ChannelItem;
+class Channel;
 
 /**
  * Styling utility class
@@ -178,9 +178,9 @@ public: // TreeItem: visitor API
 private: // Miscellaneous
 
     /** get channel */
-    const ChannelItem* getChannel() const;
+    const Channel* getChannel() const;
 
-    friend class ChannelItem;
+    friend class Channel;
 };
 
 /** Get scoped enum in columns set to work */

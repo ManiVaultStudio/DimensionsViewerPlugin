@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QSet>
 
-class ChannelItem;
+class Channel;
 
 /**
  * Profile tree item class
@@ -143,10 +143,10 @@ private: // Miscellaneous
     void update();
     
     /** get channel */
-    const ChannelItem* getChannel() const;
+    const Channel* getChannel() const;
 
     friend class Channels;
-    friend class ChannelItem;
+    friend class Channel;
 };
 
 /** Get scoped enum in columns set to work */

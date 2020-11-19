@@ -20,6 +20,10 @@ Configuration::Configuration(Item* parent, const QString& datasetName, const QSt
 {
     noConfigurations++;
 
+    _flags.setFlag(Qt::ItemIsEditable);
+    _flags.setFlag(Qt::ItemIsEnabled);
+    _flags.setFlag(Qt::ItemIsSelectable);
+
     _children << new Channels(this, datasetName, dataName);
     _children << new tree::Integral(this, "Index", noConfigurations);
     _children << new tree::String(this, "DatasetName", datasetName);

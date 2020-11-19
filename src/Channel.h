@@ -17,7 +17,7 @@ class Channels;
  *
  * @author T. Kroes
  */
-class ChannelItem : public tree::Item {
+class Channel : public tree::Item {
 
     Q_OBJECT
 
@@ -25,13 +25,17 @@ public:
 
     /** Tree item rows */
     enum class Row {
+        Enabled,
+        DatasetNames,
+        DatasetName,
+        Linked,
+        NoPoints,
+        NoDimensions,
         Profile,
         Differential,
         Styling,
-        NoPoints,
-        NoDimensions,
 
-        _Start  = Profile,
+        _Start  = Enabled,
         _End    = Styling,
         _Count  = _End + 1
     };
@@ -65,7 +69,7 @@ protected: // Construction
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 */
-	ChannelItem(tree::Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName);
+	Channel(tree::Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName);
 
 public: // TreeItem: visitor API
 
@@ -112,11 +116,11 @@ protected:
 };
 
 /** Get scoped enum in columns set to work */
-inline uint qHash(ChannelItem::Column key, uint seed) {
+inline uint qHash(Channel::Column key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }
 
 /** Get scoped enum in rows set to work */
-inline uint qHash(ChannelItem::Row key, uint seed) {
+inline uint qHash(Channel::Row key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }

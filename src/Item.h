@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QModelIndex>
 #include <QUuid>
+#include <QFlags>
 
 class QAbstractItemModel;
 
@@ -32,7 +33,6 @@ public: // Columns and rows
         Name,                           /** Name of tree item */
         Value,                          /** Value */
         Type,                           /** Type of tree item */
-        Enabled,                        /** Whether the tree item is enabled or not */
         Modified,                       /** Last modified integer stamp */
         UUID,                           /** Universal unique identifier */
 
@@ -185,7 +185,8 @@ protected:
     bool                        _enabled;       /** Whether the tree item is enabled or not */
     std::int32_t                _modified;      /** Modified time */
     QUuid                       _uuid;          /** Unique identifier */
-    Item*                   _parent;        /** Parent tree item */
+    QFlags<Qt::ItemFlag>        _flags;         /** UI flags */
+    Item*                       _parent;        /** Parent tree item */
     Children                    _children;      /** Children */
 
     /** Pointer to abstract item model */

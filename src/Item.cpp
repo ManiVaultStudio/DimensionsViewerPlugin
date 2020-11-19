@@ -10,7 +10,6 @@ const QMap<QString, Item::Column> Item::columns = {
     { "Name", Item::Column::Name },
     { "Value", Item::Column::Value },
     { "Type", Item::Column::Type },
-    { "Enabled", Item::Column::Enabled },
     { "Modified", Item::Column::Modified },
     { "UUID", Item::Column::UUID }
 };
@@ -23,6 +22,7 @@ Item::Item(Item* parent, const QString& type, const QString& name) :
     _enabled(true),
     _modified(-1),
     _uuid(QUuid::createUuid()),
+    _flags(Qt::ItemFlag::NoItemFlags),
     _parent(parent),
     _children()
 {
@@ -37,7 +37,7 @@ void Item::setModel(QAbstractItemModel* model)
 
 Qt::ItemFlags Item::getFlags(const QModelIndex& index) const
 {
-    return Qt::ItemFlag::NoItemFlags;
+    return _flags;
 }
 
 QVariant Item::getData(const QModelIndex& index, const int& role) const
@@ -55,9 +55,6 @@ QVariant Item::getData(const QModelIndex& index, const int& role) const
 
                 case Item::Column::Name:
                     return _name;
-
-                case Item::Column::Enabled:
-                    return _enabled;
 
                 case Item::Column::UUID:
                     return _uuid;
@@ -84,9 +81,6 @@ QVariant Item::getData(const QModelIndex& index, const int& role) const
 
                 case Item::Column::Name:
                     return getData(index, Qt::EditRole);
-
-                case Item::Column::Enabled:
-                    return getData(index, Qt::EditRole).toBool() ? "on" : "off";
 
                 case Item::Column::UUID:
                     return getData(index, Qt::EditRole).toUuid().toString();
@@ -115,9 +109,6 @@ QVariant Item::getData(const QModelIndex& index, const int& role) const
                 case Column::Type:
                 case Column::Name:
                     break;
-
-                case Column::Enabled:
-                    return QString("%1: %2").arg(getData(index.siblingAtColumn(to_ul(Item::Column::Name)), Qt::DisplayRole).toString(), getData(index, Qt::DisplayRole).toString());
 
                 case Column::Modified:
                 case Column::UUID:
@@ -153,10 +144,6 @@ void Item::setData(const QModelIndex& index, const QVariant& value, const std::i
 
                 case Item::Column::Name:
                     _name = value.toString();
-                    break;
-
-                case Item::Column::Enabled:
-                    _enabled = value.toBool();
                     break;
 
                 case Item::Column::UUID:
