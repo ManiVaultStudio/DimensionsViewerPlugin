@@ -17,7 +17,7 @@ class Channels;
  *
  * @author T. Kroes
  */
-class Channel : public TreeItem {
+class ChannelItem : public TreeItem {
 
     Q_OBJECT
 
@@ -106,7 +106,7 @@ protected: // Construction
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 */
-	Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName);
+	ChannelItem(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName);
 
 public: // TreeItem: model API
 
@@ -148,7 +148,13 @@ public: // TreeItem: visitor API
     /** Accept visitor */
     void accept(Visitor* visitor) const override;
 
-public: // Points data functions
+public: // Plugin
+
+    /**
+     * Set dimensions viewer plugin
+     * @param dimensionsViewerPlugin Dimensions viewer plugin
+     */
+    static void setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
     /** Returns the number of dimensions */
     std::int32_t getNoDimensions() const;
@@ -164,12 +170,15 @@ protected: // Miscellaneous
     /** Get parent channels tree item */
     const Channels* getChannels() const;
 
-private:
+protected:
     const std::uint32_t     _index;             /** Index */
     bool                    _linked;            /** Whether settings are linked to the settings of the first channel */
     QStringList             _datasetNames;      /** Dataset names */
     QString                 _datasetName;       /** Dataset name */
     Points*                 _points;            /** Pointer to points dataset */
+
+    /** Pointer to dimensions viewer plugin (used to retrieve point data) */
+    static DimensionsViewerPlugin*  dimensionsViewerPlugin;
 
 protected:
 	friend class ConfigurationsModel;
@@ -179,11 +188,11 @@ protected:
 };
 
 /** Get scoped enum in columns set to work */
-inline uint qHash(Channel::Column key, uint seed) {
+inline uint qHash(ChannelItem::Column key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }
 
 /** Get scoped enum in rows set to work */
-inline uint qHash(Channel::Row key, uint seed) {
+inline uint qHash(ChannelItem::Row key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }

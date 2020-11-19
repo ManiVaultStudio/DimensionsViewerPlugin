@@ -2,6 +2,7 @@
 #include "TreeItemWidget.h"
 #include "ViewerWidget.h"
 #include "ConfigurationWidget.h"
+#include "Channel.h"
 
 #include <QDebug>
 #include <QSplitter>
@@ -10,16 +11,17 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.DimensionsViewerPlugin")
 
 DimensionsViewerPlugin::DimensionsViewerPlugin() : 
 	ViewPlugin("Dimensions Viewer"),
-	_configurationsModel(this),
-	_dimensionsViewerWidget(),
+	_model(this),
+	_viewerWidget(),
 	_configurationWidget()
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    TreeItem::setDimensionsViewerPlugin(this);
+    TreeItem::setModel(&_model);
+    ChannelItem::setDimensionsViewerPlugin(this);
     TreeItemWidget::setDimensionsViewerPlugin(this);
 
-	_dimensionsViewerWidget = new ViewerWidget(this);
+	_viewerWidget = new ViewerWidget(this);
 	_configurationWidget = new ConfigurationWidget(this);
 }
 
@@ -29,7 +31,7 @@ void DimensionsViewerPlugin::init()
 
     auto mainLayout = new QVBoxLayout();
 
-    splitter->addWidget(_dimensionsViewerWidget);
+    splitter->addWidget(_viewerWidget);
     splitter->addWidget(reinterpret_cast<QWidget*>(_configurationWidget));
 
     splitter->setStretchFactor(0, 1);
@@ -43,7 +45,7 @@ void DimensionsViewerPlugin::init()
 
 void DimensionsViewerPlugin::dataAdded(const QString dataset)
 {
-	_configurationsModel.addDataset(dataset);
+	_model.addDataset(dataset);
 }
 
 void DimensionsViewerPlugin::dataChanged(const QString dataset)

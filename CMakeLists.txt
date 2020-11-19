@@ -26,8 +26,8 @@ file(GLOB PLUGIN
 )
 
 file(GLOB MODEL 
-	src/Channel.*
-	src/Channels.*
+	src/ChannelItem.*
+	src/ChannelsItem.*
 	src/Configuration.*
 	src/Configurations.*
 	src/ConfigurationsModel.*

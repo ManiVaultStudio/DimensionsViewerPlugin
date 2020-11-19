@@ -9,12 +9,12 @@ FloatItem::FloatItem(TreeItem* parent, const QString& name, const float& value /
 
 Qt::ItemFlags FloatItem::getFlags(const QModelIndex& index) const
 {
-    return Qt::ItemIsEnabled;
+    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
 QVariant FloatItem::getData(const QModelIndex& index, const int& role) const
 {
-    if (static_cast<Column>(index.column()) < Column::Value)
+    if (static_cast<Column>(index.column()) != Column::Value)
         return TreeItem::getData(index, role);
     
     switch (role)
@@ -37,7 +37,7 @@ QVariant FloatItem::getData(const QModelIndex& index, const int& role) const
 
 void FloatItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) < Column::Value) {
+    if (static_cast<Column>(index.column()) != Column::Value) {
         TreeItem::setData(index, value, role);
         return;
     }

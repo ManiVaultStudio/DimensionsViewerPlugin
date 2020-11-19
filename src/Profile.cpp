@@ -206,7 +206,7 @@ void Profile::update()
     */
 }
 
-const Channel* Profile::getChannel() const
+const ChannelItem* Profile::getChannel() const
 {
-    return dynamic_cast<Channel*>(_parent);
+    return dynamic_cast<ChannelItem*>(_parent);
 }

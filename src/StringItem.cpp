@@ -9,12 +9,12 @@ StringItem::StringItem(TreeItem* parent, const QString& name, const QString& val
 
 Qt::ItemFlags StringItem::getFlags(const QModelIndex& index) const
 {
-    return Qt::ItemIsEnabled;
+    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
 QVariant StringItem::getData(const QModelIndex& index, const int& role) const
 {
-    if (static_cast<Column>(index.column()) < Column::Value)
+    if (static_cast<Column>(index.column()) != Column::Value)
         return TreeItem::getData(index, role);
     
     switch (role)
@@ -35,7 +35,7 @@ QVariant StringItem::getData(const QModelIndex& index, const int& role) const
 
 void StringItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) < Column::Value) {
+    if (static_cast<Column>(index.column()) != Column::Value) {
         TreeItem::setData(index, value, role);
         return;
     }

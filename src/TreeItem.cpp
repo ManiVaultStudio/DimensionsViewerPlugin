@@ -4,7 +4,9 @@
 
 #include "CoreInterface.h"
 
-DimensionsViewerPlugin* TreeItem::dimensionsViewerPlugin = nullptr;
+#include <QAbstractItemModel>
+
+QAbstractItemModel* TreeItem::model = nullptr;
 
 const QMap<QString, TreeItem::Column> TreeItem::columns = {
     { "Name", TreeItem::Column::Name },
@@ -26,6 +28,13 @@ TreeItem::TreeItem(TreeItem* parent, const QString& type, const QString& name) :
     _parent(parent),
     _children()
 {
+}
+
+void TreeItem::setModel(QAbstractItemModel* model)
+{
+    Q_ASSERT(model != nullptr);
+
+    TreeItem::model = model;
 }
 
 Qt::ItemFlags TreeItem::getFlags(const QModelIndex& index) const
@@ -181,10 +190,12 @@ QModelIndex TreeItem::getSiblingAtColumn(const std::uint32_t& column) const
 
 void TreeItem::setModelIndex(const QModelIndex& modelIndex)
 {
+    Q_ASSERT(TreeItem::model != nullptr);
+
     _modelIndex = modelIndex;
 
     for (auto child : getChildren())
-        child->setModelIndex(getModel()->index(getChildIndex(child), 0, _modelIndex));
+        child->setModelIndex(TreeItem::model->index(getChildIndex(child), 0, _modelIndex));
 }
 
 TreeItem::Children TreeItem::getChildren() const
@@ -223,19 +234,4 @@ TreeItem* TreeItem::getParent()
 bool TreeItem::isLeaf() const
 {
     return getChildCount() == 0;
-}
-
-ConfigurationsModel* TreeItem::getModel()
-{
-    return &dimensionsViewerPlugin->getModel();
-}
-
-void TreeItem::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
-{
-    TreeItem::dimensionsViewerPlugin = dimensionsViewerPlugin;
-}
-
-hdps::CoreInterface* TreeItem::getCore()
-{
-    return dimensionsViewerPlugin->getCore();
 }

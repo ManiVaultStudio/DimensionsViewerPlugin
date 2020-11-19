@@ -6,14 +6,9 @@
 #include <QModelIndex>
 #include <QUuid>
 
-class DimensionsViewerPlugin;
-class ConfigurationsModel;
-class CoreInterface;
 class Visitor;
 
-namespace hdps {
-    class CoreInterface;
-}
+class QAbstractItemModel;
 
 /**
  * Tree item class
@@ -68,6 +63,12 @@ public: // Construction
     TreeItem(TreeItem* parent, const QString& type, const QString& name);
 
 public: // Model API
+
+    /**
+     * Set model
+     * @param model Model
+     */
+    static void setModel(QAbstractItemModel* model);
 
     /**
      * Returns the item flags for the given model index
@@ -148,9 +149,6 @@ public: // Visitor API
 
 public: // Miscellaneous
 
-    /** Get the configurations model */
-    static ConfigurationsModel* getModel();
-
     bool isEnabled() const {
         return _enabled;
     }
@@ -170,17 +168,6 @@ public: // Miscellaneous
         return _uuid;
     }
 
-protected:
-
-    /**
-     * Sets the pointer to the dimensions viewer plugin
-     * @param Pointer to the dimensions viewer plugin
-     */
-    static void setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin);
-
-    /** Get HDPS core pointer */
-    static hdps::CoreInterface* getCore();
-
 signals:
 
     /**
@@ -190,16 +177,15 @@ signals:
     void dataChanged(const QModelIndex& modelIndex);
 
 protected:
-    QPersistentModelIndex               _modelIndex;    /** Persistent model index */
-    QString                             _type;          /** Type */
-    QString                             _name;          /** Display name */
-    bool                                _enabled;       /** Whether the tree item is enabled or not */
-    std::int32_t                        _modified;      /** Modified time */
-    QUuid                               _uuid;          /** Unique identifier */
-    TreeItem*                           _parent;        /** Parent tree item */
-    Children                _children;      /** Children */
-private:
-    static DimensionsViewerPlugin* dimensionsViewerPlugin;
+    QPersistentModelIndex       _modelIndex;    /** Persistent model index */
+    QString                     _type;          /** Type */
+    QString                     _name;          /** Display name */
+    bool                        _enabled;       /** Whether the tree item is enabled or not */
+    std::int32_t                _modified;      /** Modified time */
+    QUuid                       _uuid;          /** Unique identifier */
+    TreeItem*                   _parent;        /** Parent tree item */
+    Children                    _children;      /** Children */
 
-    friend class DimensionsViewerPlugin;
+    /** Pointer to abstract item model */
+    static QAbstractItemModel* model;
 };

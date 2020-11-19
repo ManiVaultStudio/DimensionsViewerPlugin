@@ -9,12 +9,12 @@ IntegralItem::IntegralItem(TreeItem* parent, const QString& name, const std::int
 
 Qt::ItemFlags IntegralItem::getFlags(const QModelIndex& index) const
 {
-    return Qt::ItemIsEnabled;
+    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
 QVariant IntegralItem::getData(const QModelIndex& index, const int& role) const
 {
-    if (static_cast<Column>(index.column()) < Column::Value)
+    if (static_cast<Column>(index.column()) != Column::Value)
         return TreeItem::getData(index, role);
     
     switch (role)
@@ -37,7 +37,7 @@ QVariant IntegralItem::getData(const QModelIndex& index, const int& role) const
 
 void IntegralItem::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) < Column::Value) {
+    if (static_cast<Column>(index.column()) != Column::Value) {
         TreeItem::setData(index, value, role);
         return;
     }

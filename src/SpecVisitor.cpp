@@ -61,7 +61,7 @@ void SpecVisitor::visitChannels(const Channels* channels)
     */
 }
 
-void SpecVisitor::visitChannel(const Channel* channel)
+void SpecVisitor::visitChannel(const ChannelItem* channel)
 {
     /*
     QVariantMap channelSpec;

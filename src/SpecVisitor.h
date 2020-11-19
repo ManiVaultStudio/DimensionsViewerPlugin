@@ -7,7 +7,7 @@
 class Configurations;
 class Configuration;
 class Channels;
-class Channel;
+class ChannelItem;
 
 /**
  * Spec visitor class
@@ -42,7 +42,7 @@ public:
      * Visit a \p channel tree item
      * @param channel Channel tree item
      */
-    void visitChannel(const Channel* channel) override;
+    void visitChannel(const ChannelItem* channel) override;
 
     /**
      * Visit a \p profile tree item

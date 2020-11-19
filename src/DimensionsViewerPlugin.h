@@ -36,15 +36,15 @@ public:
 public:
 	
 	/** Returns the configurations model */
-	ConfigurationsModel& getModel() { return _configurationsModel; }
+	ConfigurationsModel& getModel() { return _model; }
 
 	/** Returns a pointer to the core interface */
 	hdps::CoreInterface* getCore() { return _core; }
 
 private:
-	ConfigurationsModel			_configurationsModel;           /** Configurations model */
-	ViewerWidget*		_dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
-    ConfigurationWidget*		_configurationWidget;           /** Configuration widget */
+	ConfigurationsModel     _model;                 /** Configurations model */
+	ViewerWidget*           _viewerWidget;          /** HTML dimensions viewer (Vega) */
+    ConfigurationWidget*    _configurationWidget;   /** Configuration widget */
 };
 
 class DimensionsViewerPluginFactory : public ViewPluginFactory

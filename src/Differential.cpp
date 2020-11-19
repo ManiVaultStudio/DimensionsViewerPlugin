@@ -16,7 +16,7 @@ const QMap<QString, Differential::Column> Differential::columns = {
 
 Differential::Differential(TreeItem* parent) :
     TreeItem(parent, "Differential", "Differential"),
-    _channel(dynamic_cast<Channel*>(parent)),
+    _channel(dynamic_cast<ChannelItem*>(parent)),
     _operandChannelNames(),
     _operandChannelName()
 {

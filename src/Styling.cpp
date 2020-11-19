@@ -40,7 +40,7 @@ void Styling::accept(Visitor* visitor) const
     visitor->visitStyling(this);
 }
 
-const Channel* Styling::getChannel() const
+const ChannelItem* Styling::getChannel() const
 {
-    return dynamic_cast<Channel*>(_parent);
+    return dynamic_cast<ChannelItem*>(_parent);
 }

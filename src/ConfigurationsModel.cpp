@@ -263,7 +263,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 
         for (auto channel : channels) {
             const auto channelIndex         = index(to_ul(channel), 0, channelsIndex);
-            const auto datasetNamesIndex    = channelIndex.siblingAtColumn(to_ul(Channel::Column::DatasetNames));
+            const auto datasetNamesIndex    = channelIndex.siblingAtColumn(to_ul(ChannelItem::Column::DatasetNames));
 
             auto datasetNames = datasetNamesIndex.data(Qt::EditRole).toStringList();
 
@@ -286,7 +286,7 @@ void ConfigurationsModel::selectRow(const std::int32_t& row)
         const auto channelsIndex        = index(0, 0, configurationIndex);
         const auto firstChannelIndex    = index(0, 0, channelsIndex);
 
-        if (firstChannelIndex.siblingAtColumn(to_ul(Channel::Column::NoDimensions)).data(Qt::EditRole).toInt() > Configuration::maxNoDimensions) {
+        if (firstChannelIndex.siblingAtColumn(to_ul(ChannelItem::Column::NoDimensions)).data(Qt::EditRole).toInt() > Configuration::maxNoDimensions) {
             const auto datasetName = configurationIndex.siblingAtColumn(to_ul(Configuration::Column::DatasetName)).data(Qt::EditRole).toString();
             throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());
         }

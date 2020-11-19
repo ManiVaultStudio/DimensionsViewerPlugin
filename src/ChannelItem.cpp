@@ -5,34 +5,36 @@
 #include "Profile.h"
 #include "Differential.h"
 #include "Styling.h"
+#include "DimensionsViewerPlugin.h"
 #include "Visitor.h"
 
-#include "Application.h"
 #include "PointData.h"
 
 #include <QDebug>
 #include <QVariantList>
 
-const QMap<QString, Channel::Column> Channel::columns = {
-    { "Index", Channel::Column::Index },
-    { "Dataset names", Channel::Column::DatasetNames },
-    { "Dataset name", Channel::Column::DatasetName },
-    { "Dataset name", Channel::Column::DatasetName },
-    { "Differential", Channel::Column::Differential },
-    { "Profile", Channel::Column::Profile },
-    { "Styling", Channel::Column::Styling },
-    { "Linked", Channel::Column::Linked },
-    { "Number of dimensions", Channel::Column::NoDimensions },
-    { "Number of points", Channel::Column::NoPoints },
-    { "Is aggregate", Channel::Column::IsAggregate }
+const QMap<QString, ChannelItem::Column> ChannelItem::columns = {
+    { "Index", ChannelItem::Column::Index },
+    { "Dataset names", ChannelItem::Column::DatasetNames },
+    { "Dataset name", ChannelItem::Column::DatasetName },
+    { "Dataset name", ChannelItem::Column::DatasetName },
+    { "Differential", ChannelItem::Column::Differential },
+    { "Profile", ChannelItem::Column::Profile },
+    { "Styling", ChannelItem::Column::Styling },
+    { "Linked", ChannelItem::Column::Linked },
+    { "Number of dimensions", ChannelItem::Column::NoDimensions },
+    { "Number of points", ChannelItem::Column::NoPoints },
+    { "Is aggregate", ChannelItem::Column::IsAggregate }
 };
 
-const QMap<QString, Channel::Row> Channel::rows = {
-    { "Profile", Channel::Row::Profile },
-    { "Styling", Channel::Row::Styling }
+const QMap<QString, ChannelItem::Row> ChannelItem::rows = {
+    { "Profile", ChannelItem::Row::Profile },
+    { "Styling", ChannelItem::Row::Styling }
 };
 
-Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName) :
+DimensionsViewerPlugin* ChannelItem::dimensionsViewerPlugin = nullptr;
+
+ChannelItem::ChannelItem(TreeItem* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName) :
     TreeItem(parent, "Channel", name),
 	_index(index),
     _linked(linked),
@@ -49,6 +51,8 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& na
     _children << new Styling(this);
 
     QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
+        Q_ASSERT(model != nullptr);
+
         QModelIndexList updateIndices;
 
         switch (static_cast<Column>(modelIndex.column()))
@@ -78,7 +82,7 @@ Channel::Channel(TreeItem* parent, const std::uint32_t& index, const QString& na
         }
 
         for (auto updateIndex : updateIndices)
-            emit getModel()->dataChanged(updateIndex, updateIndex);
+            emit model->dataChanged(updateIndex, updateIndex);
     });
 }
 
@@ -638,12 +642,19 @@ void Channel::setData(const QModelIndex& index, const QVariant& value, const std
 }
 */
 
-void Channel::accept(Visitor* visitor) const
+void ChannelItem::accept(Visitor* visitor) const
 {
     visitor->visitChannel(this);
 }
 
-std::int32_t Channel::getNoDimensions() const
+void ChannelItem::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
+{
+    Q_ASSERT(dimensionsViewerPlugin != nullptr);
+
+    ChannelItem::dimensionsViewerPlugin = dimensionsViewerPlugin;
+}
+
+std::int32_t ChannelItem::getNoDimensions() const
 {
     if (_points == nullptr)
         return 0;
@@ -651,7 +662,7 @@ std::int32_t Channel::getNoDimensions() const
     return _points->getNumDimensions();
 }
 
-std::int32_t Channel::getNoPoints() const
+std::int32_t ChannelItem::getNoPoints() const
 {
     if (_points == nullptr)
         return 0;
@@ -659,13 +670,17 @@ std::int32_t Channel::getNoPoints() const
     return _points->getNumPoints();
 }
 
-void Channel::resolvePoints()
+void ChannelItem::resolvePoints()
 {
+    Q_ASSERT(ChannelItem::dimensionsViewerPlugin != nullptr);
+
+    auto core = ChannelItem::dimensionsViewerPlugin->getCore();
+
     if (!_datasetName.isEmpty())
-        _points = &dynamic_cast<Points&>(getCore()->requestData(_datasetName));
+        _points = &dynamic_cast<Points&>(core->requestData(_datasetName));
 }
 
-const Channels* Channel::getChannels() const
+const Channels* ChannelItem::getChannels() const
 {
     return dynamic_cast<Channels*>(_parent);
 }

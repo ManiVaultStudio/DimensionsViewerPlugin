@@ -16,10 +16,10 @@ const QMap<QString, Channels::Row> Channels::rows = {
 Channels::Channels(TreeItem* parent, const QString& datasetName, const QString& dataName) :
     TreeItem(parent, "Channels", "Channels")
 {
-    _children << new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName);
-    _children << new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "");
-    _children << new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "");
-    _children << new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "");
+    _children << new ChannelItem(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName);
+    _children << new ChannelItem(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "");
+    _children << new ChannelItem(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "");
+    _children << new ChannelItem(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "");
 
     /*
     QObject::connect(_channels[Row::Dataset], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
@@ -94,9 +94,9 @@ void Channels::accept(Visitor* visitor) const
     visitor->visitChannels(this);
 }
 
-QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled /*= nullptr*/) const
+QVector<ChannelItem*> Channels::getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled /*= nullptr*/) const
 {
-    QVector<Channel*> channels;
+    QVector<ChannelItem*> channels;
 
     /*for (auto channel : _channels) {
         const auto profileType = channel->getProfile()->_profileType;
