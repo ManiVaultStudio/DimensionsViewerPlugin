@@ -28,7 +28,7 @@ public:
 
 public: // Columns and rows
 
-    /** Tree item columns */
+    /** Child enumeration */
     enum class Column {
         Name,               /** Name of tree item */
         Value,              /** Value */
@@ -38,21 +38,21 @@ public: // Columns and rows
         Flags,              /** Item flags */
 
         _Start  = Name,
-        _End    = UUID,
+        _End    = Flags,
         _Count  = _End + 1
     };
 
     /** Maps column name to column enum and vice versa */
-    static QMap<QString, Column> const columns;
+    static QMap<QString, Column> const children;
 
     /** Get string representation of column enum */
     static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
+        return children.key(column);
     }
 
     /** Get enum representation from column type name */
     static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
+        return children[columnName];
     }
 
 public: // Construction
@@ -104,6 +104,14 @@ public: // Model API
      */
     virtual void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
 
+    /**
+     * Set data for \p column
+     * @param column Data column
+     * @param value Data value in variant form
+     * @param role Data role
+     */
+    void setData(const Column& column, const QVariant& value, const std::int32_t& role = Qt::EditRole);
+
     /** Gets model index */
     QModelIndex getModelIndex() const;
 
@@ -149,6 +157,20 @@ public: // Visitor API
 
     /** Accept visitor */
     virtual void accept(Visitor* visitor) const = 0;
+
+public: // Flags
+
+    /**
+     * Set \p flag
+     * @param flag Flag
+     */
+    void setFlag(const Qt::ItemFlag& flag, const bool& set = true);
+
+    /**
+     * Unset \p flag
+     * @param flag Flag
+     */
+    void unsetFlag(const Qt::ItemFlag& flag);
 
 signals:
 

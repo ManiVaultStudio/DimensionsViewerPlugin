@@ -3,11 +3,11 @@
 
 #include <QDebug>
 
-const QMap<QString, Differential::Column> Differential::columns = {
-    { "Differential operand A names", Differential::Column::DifferentialOperandNamesA },
-    { "Differential operand B names", Differential::Column::DifferentialOperandNamesB },
-    { "Differential operand A name", Differential::Column::DifferentialOperandA },
-    { "Differential operand B name", Differential::Column::DifferentialOperandB }
+const QMap<QString, Differential::Child> Differential::children = {
+    { "Differential operand A names", Differential::Child::DifferentialOperandNamesA },
+    { "Differential operand B names", Differential::Child::DifferentialOperandNamesB },
+    { "Differential operand A name", Differential::Child::DifferentialOperandA },
+    { "Differential operand B name", Differential::Child::DifferentialOperandB }
 };
 
 Differential::Differential(Item* parent) :

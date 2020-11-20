@@ -6,11 +6,11 @@
 
 #include <QDebug>
 
-const QMap<QString, Channels::Row> Channels::rows = {
-    { "Dataset", Channels::Row::Dataset },
-    { "Subset 1", Channels::Row::Subset1 },
-    { "Subset 2", Channels::Row::Subset2 },
-    { "Compare", Channels::Row::Differential }
+const QMap<QString, Channels::Child> Channels::children = {
+    { "Dataset", Channels::Child::Dataset },
+    { "Subset 1", Channels::Child::Subset1 },
+    { "Subset 2", Channels::Child::Subset2 },
+    { "Compare", Channels::Child::Differential }
 };
 
 Channels::Channels(Item* parent, const QString& datasetName, const QString& dataName) :
@@ -19,10 +19,10 @@ Channels::Channels(Item* parent, const QString& datasetName, const QString& data
     _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
 
-    _children << new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName);
-    _children << new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "");
-    _children << new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "");
-    _children << new Channel(this, 3, getRowTypeName(Channels::Row::Differential), false, false, "");
+    _children << new Channel(this, 0, children.key(Channels::Child::Dataset), true, false, datasetName);
+    _children << new Channel(this, 1, children.key(Channels::Child::Subset1), false, true, "");
+    _children << new Channel(this, 2, children.key(Channels::Child::Subset2), false, true, "");
+    _children << new Channel(this, 3, children.key(Channels::Child::Differential), false, false, "");
 
     /*
     QObject::connect(_channels[Row::Dataset], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {

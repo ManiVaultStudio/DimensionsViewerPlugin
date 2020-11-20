@@ -19,40 +19,27 @@ class Channel;
  */
 class Styling : public tree::Item {
 
-public: // Columns and rows
+public: // Enumerations
 
-    /** Tree item columns */
-    enum class Column {
-        
-        /** Derived tree item columns */
-        /** Styling tree item columns */
-        LineTypes,                      /** Line types */
-        LineTypeProfile,                /** Line type for drawing data profile */
-        LineTypeRange,                  /** Line type for drawing data range */
-        RenderPoints,                   /** Render points */
-        Opacity,                        /** Opacity */
-        Color,                          /** Color */
+    /** Child enumeration (each child enum item maps to a child tree item) */
+    enum class Child {
+        LineTypes,              /** Line types */
+        LineTypeProfile,        /** Line type for drawing data profile */
+        LineTypeRange,          /** Line type for drawing data range */
+        RenderPoints,           /** Render points */
+        Opacity,                /** Opacity */
+        Color,                  /** Color */
 
         _Start  = LineTypes,
         _End    = Color,
         _Count  = _End + 1
     };
 
-    /** Columns set alias */
-    using Columns = QSet<Column>;
+    /** Children set alias */
+    using Children = QSet<Child>;
 
-    /** Maps column name to column enum */
-    static QMap<QString, Column> const columns;
-
-    /** Get column name from column enum */
-    static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
-    }
-
-    /** Get column enum from column name */
-    static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
-    }
+    /** Maps child name to child enum */
+    static QMap<QString, Child> const children;
 
 public: // Enumerations
     
@@ -184,6 +171,6 @@ private: // Miscellaneous
 };
 
 /** Get scoped enum in columns set to work */
-inline uint qHash(Styling::Column key, uint seed) {
+inline uint qHash(Styling::Child key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }

@@ -124,7 +124,7 @@ QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
-    const auto hits     = match(index(0, to_ul(Configuration::Column::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
+    const auto hits     = match(index(0, to_ul(Configuration::Child::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
 
     if (hits.isEmpty()) {
         const auto noConfigurations = _configurations.getChildCount();
@@ -203,7 +203,7 @@ void ConfigurationsModel::selectRow(const std::int32_t& row)
 void ConfigurationsModel::selectRow(const QString& datasetName)
 {
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
-    const auto hits     = match(index(0, to_ul(Configuration::Column::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
+    const auto hits     = match(index(0, to_ul(Configuration::Child::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
 
     if (!hits.isEmpty())
         selectRow(hits.first().row());

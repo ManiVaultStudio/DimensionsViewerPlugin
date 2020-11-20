@@ -5,11 +5,11 @@
 
 #include <QDebug>
 
-const QMap<QString, Profile::Column> Profile::columns = {
-    { "Profile types", Profile::Column::ProfileTypes },
-    { "Profile type", Profile::Column::ProfileType },
-    { "Range types", Profile::Column::RangeTypes },
-    { "Range type", Profile::Column::RangeType }
+const QMap<QString, Profile::Child> Profile::children = {
+    { "Profile types", Profile::Child::ProfileTypes },
+    { "Profile type", Profile::Child::ProfileType },
+    { "Range types", Profile::Child::RangeTypes },
+    { "Range type", Profile::Child::RangeType }
 };
 
 const QMap<QString, Profile::ProfileType> Profile::profileTypes = {
@@ -150,13 +150,14 @@ void Profile::accept(tree::Visitor* visitor) const
 
 void Profile::setProfile(const Profile* profile)
 {
+    /*
     Columns copyColumns = {
         Column::ProfileTypes,
         Column::ProfileType,
         Column::RangeTypes,
         Column::RangeType
     };
-
+    */
     //for (auto copyColumn : copyColumns)
     //    getModel()->setData(getSiblingAtColumn(to_ul(copyColumn)), profile->getData(copyColumn, Qt::EditRole), Qt::EditRole);
 }

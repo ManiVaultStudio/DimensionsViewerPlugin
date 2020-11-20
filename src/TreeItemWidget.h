@@ -132,6 +132,9 @@ protected: // Model operations
         return getModel().index(row, 0, _modelIndex);
     }
 
+    /** Gets the model index assigned to the widget */
+    QModelIndex getModelIndex() const;
+
     /**
      * Get sibling at \p column
      * @param column Sibling column
@@ -150,9 +153,6 @@ protected: // Model operations
     QPersistentModelIndex getSiblingAtColumn(const std::int32_t& column) {
         return getSiblingAtColumn(column, _modelIndex);
     }
-
-    /** Gets the model index assigned to the widget */
-    QModelIndex getModelIndex() const;
 
     /**
      * Set model data

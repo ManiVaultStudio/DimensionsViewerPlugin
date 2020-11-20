@@ -6,7 +6,7 @@ namespace tree {
 
 QAbstractItemModel* Item::model = nullptr;
 
-const QMap<QString, Item::Column> Item::columns = {
+const QMap<QString, Item::Column> Item::children = {
     { "Name", Item::Column::Name },
     { "Value", Item::Column::Value },
     { "Type", Item::Column::Type },
@@ -138,12 +138,12 @@ QVariant Item::getData(const Column& column, const int& role) const
 
 void Item::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
+    const auto column = static_cast<Column>(index.column());
+
     switch (role)
     {
-        case Qt::EditRole: {
-
-            const auto column = static_cast<Column>(index.column());
-
+        case Qt::EditRole:
+        {
             switch (column)
             {
                 case Column::Name:
@@ -171,6 +171,11 @@ void Item::setData(const QModelIndex& index, const QVariant& value, const std::i
         default:
             break;
     }
+}
+
+void Item::setData(const Column& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+{
+    model->setData(_modelIndex.sibling(_modelIndex.row(), static_cast<std::int32_t>(column)), value, role);
 }
 
 QModelIndex Item::getModelIndex() const
@@ -229,6 +234,20 @@ Item* Item::getParent()
 bool Item::isLeaf() const
 {
     return getChildCount() == 0;
+}
+
+void Item::setFlag(const Qt::ItemFlag& flag, const bool& set /*= true*/)
+{
+    auto flags = _flags;
+
+    flags.setFlag(flag, set);
+
+    setData(Column::Flags, QVariant::fromValue(flags));
+}
+
+void Item::unsetFlag(const Qt::ItemFlag& flag)
+{
+    setFlag(flag, false);
 }
 
 }

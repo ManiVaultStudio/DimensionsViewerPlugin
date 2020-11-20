@@ -1,5 +1,4 @@
 #include "Configuration.h"
-#include "ConfigurationsModel.h"
 #include "StandardItems.h"
 #include "Visitor.h"
 
@@ -8,11 +7,12 @@
 std::int32_t Configuration::maxNoDimensions = 100;
 std::int32_t Configuration::noConfigurations = 0;
 
-const QMap<QString, Configuration::Column> Configuration::columns = {
-    { "Index", Configuration::Column::Index },
-    { "Dataset name", Configuration::Column::DatasetName },
-    { "Data name", Configuration::Column::DataName },
-    { "Selection stamp", Configuration::Column::SelectionStamp }
+const QMap<QString, Configuration::Child> Configuration::children = {
+    { "Channels", Configuration::Child::Channels },
+    { "Index", Configuration::Child::Index },
+    { "Dataset name", Configuration::Child::DatasetName },
+    { "Data name", Configuration::Child::DataName },
+    { "Selection stamp", Configuration::Child::SelectionStamp }
 };
 
 Configuration::Configuration(Item* parent, const QString& datasetName, const QString& dataName) :

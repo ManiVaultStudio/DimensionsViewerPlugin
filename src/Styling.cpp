@@ -5,13 +5,13 @@
 
 #include <QDebug>
 
-const QMap<QString, Styling::Column> Styling::columns = {
-    { "Line types", Styling::Column::LineTypes },
-    { "Line type profile", Styling::Column::LineTypeProfile },
-    { "Line type range", Styling::Column::LineTypeRange },
-    { "Render points", Styling::Column::RenderPoints },
-    { "Opacity", Styling::Column::Opacity },
-    { "Color", Styling::Column::Color }
+const QMap<QString, Styling::Child> Styling::children = {
+    { "Line types", Styling::Child::LineTypes },
+    { "Line type profile", Styling::Child::LineTypeProfile },
+    { "Line type range", Styling::Child::LineTypeRange },
+    { "Render points", Styling::Child::RenderPoints },
+    { "Opacity", Styling::Child::Opacity },
+    { "Color", Styling::Child::Color }
 };
 
 const QMap<QString, Styling::LineType> Styling::lineTypes = {
@@ -30,6 +30,7 @@ Styling::Styling(Item* parent) :
     _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
 
+    _children << new tree::StringList(this, "Line types", QStringList(lineTypes.keys()));
     _children << new tree::String(this, "Line type (profile)", "Solid");
     _children << new tree::String(this, "Line type (range)", "DashDot");
     _children << new tree::Boolean(this, "Render points");

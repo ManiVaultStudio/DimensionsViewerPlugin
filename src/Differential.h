@@ -12,21 +12,13 @@ class Channel;
  *
  * @author T. Kroes
  */
-class Differential : public tree::Item {
+class Differential : public tree::Item
+{
 
-public: // Columns and rows
+public: // Enumerations
 
-    /** Tree item columns */
-    enum class Column {
-
-        /** Derived tree item columns */
-        Type,                           /** Type of tree item */
-        Name,                           /** Name of tree item */
-        Enabled,                        /** Whether the tree item is enabled or not */
-        Modified,                       /** Last modified integer stamp */
-        UUID,                           /** Universal unique identifier */
-
-        /** Differential tree item columns */
+    /** Child enumeration (each child enum item maps to a child tree item) */
+    enum class Child {
         Differential,                   /** Differential */
         DifferentialOperandNamesA,      /** Candidate channel names for operand A */
         DifferentialOperandNamesB,      /** Candidate channel names for operand B */
@@ -38,21 +30,13 @@ public: // Columns and rows
         _Count  = _End + 1
     };
 
-    /** Maps column name to column enum */
-    static QMap<QString, Column> const columns;
+    /** Children set alias */
+    using Children = QSet<Child>;
 
-    /** Get column name from column enum */
-    static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
-    }
+    /** Maps child name to child enum */
+    static QMap<QString, Child> const children;
 
-    /** Get column enum from column name */
-    static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
-    }
-
-public: // Enumerations
-
+    /** Operands enumeration (input to differential profile) */
     enum class Operand {
         ChannelA,
         ChannelB

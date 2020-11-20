@@ -14,9 +14,16 @@
 #include <QDebug>
 #include <QVariantList>
 
-const QMap<QString, Channel::Row> Channel::rows = {
-    { "Profile", Channel::Row::Profile },
-    { "Styling", Channel::Row::Styling }
+const QMap<QString, Channel::Child> Channel::children = {
+    { "Enabled", Channel::Child::Enabled },
+    { "Dataset names", Channel::Child::DatasetNames },
+    { "Dataset name", Channel::Child::DatasetName },
+    { "Linked", Channel::Child::Linked },
+    { "Number of points", Channel::Child::NoPoints },
+    { "Number of dimensions", Channel::Child::NoDimensions },
+    { "Profile", Channel::Child::Profile },
+    { "Differential", Channel::Child::Differential },
+    { "Styling", Channel::Child::Styling }
 };
 
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
@@ -39,6 +46,12 @@ Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, 
     _children << new Styling(this);
 
     resolvePoints();
+
+    QObject::connect(_children[to_ul(Child::Enabled)], &tree::Boolean::dataChanged, [this](const QModelIndex& modelIndex) {
+        const auto enabled = _children[to_ul(Child::Enabled)]->getData(Column::Value, Qt::EditRole).toBool();
+        qDebug() << enabled;
+        _children[to_ul(Child::DatasetName)]->setFlag(Qt::ItemIsEnabled, enabled);
+    });
 
     /*QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
         Q_ASSERT(model != nullptr);
@@ -666,15 +679,15 @@ void Channel::resolvePoints()
 
     auto core = Channel::dimensionsViewerPlugin->getCore();
 
-    const auto datasetName = _children[to_ul(Channel::Row::DatasetName)]->getData(Column::Value, Qt::EditRole).toString();
+    const auto datasetName = _children[to_ul(Channel::Child::DatasetName)]->getData(Column::Value, Qt::EditRole).toString();
 
     if (datasetName.isEmpty())
         return;
 
     _points = &dynamic_cast<Points&>(core->requestData(datasetName));
 
-    model->setData(model->index(to_ul(Row::NoPoints), to_ul(Item::Column::Value), _modelIndex), _points->getNumPoints());
-    model->setData(model->index(to_ul(Row::NoDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());
+    model->setData(model->index(to_ul(Child::NoPoints), to_ul(Item::Column::Value), _modelIndex), _points->getNumPoints());
+    model->setData(model->index(to_ul(Child::NoDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());
 }
 
 const Channels* Channel::getChannels() const

@@ -17,6 +17,7 @@ StylingWidget::StylingWidget(QWidget* parent) :
 
     _ui->setupUi(this);
 
+    /*
     move(parent->mapToGlobal(parent->rect().bottomRight()) - QPoint(width(), 0));
 
     QObject::connect(_ui->lineTypeProfileComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
@@ -141,12 +142,14 @@ StylingWidget::StylingWidget(QWidget* parent) :
         _ui->colorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
         _ui->colorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
     }));
+    */
 }
 
 void StylingWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     TreeItemWidget::setModelIndex(modelIndex);
     
+    /*
     getWidgetMapper("LineTypesProfile")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::LineTypes)));
     getWidgetMapper("LineTypesRange")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::LineTypes)));
     getWidgetMapper("LineTypeProfileComboBox")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::LineTypeProfile)));
@@ -155,4 +158,5 @@ void StylingWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     getWidgetMapper("OpacitySpinBox")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Opacity)));
     getWidgetMapper("OpacitySlider")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Opacity)));
     getWidgetMapper("ColorPushButton")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Color)));
+    */
 }

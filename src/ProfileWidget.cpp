@@ -12,6 +12,7 @@ ProfileWidget::ProfileWidget(QWidget* parent) :
 {
 	_ui->setupUi(this);
 
+    /*
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         setData(to_ul(Profile::Column::ProfileType), currentText, Qt::DisplayRole);
     });
@@ -61,14 +62,17 @@ ProfileWidget::ProfileWidget(QWidget* parent) :
         _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
         _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
+    */
 }
 
 void ProfileWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     TreeItemWidget::setModelIndex(modelIndex);
 
+    /*
     getWidgetMapper("ProfileTypes")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileTypes)));
     getWidgetMapper("ProfileType")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::ProfileType)));
     getWidgetMapper("RangeTypes")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::RangeTypes)));
     getWidgetMapper("RangeType")->setModelIndex(getSiblingAtColumn(to_ul(Profile::Column::RangeType)));
+    */
 }

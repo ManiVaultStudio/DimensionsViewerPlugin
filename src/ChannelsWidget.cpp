@@ -18,8 +18,8 @@ void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     TreeItemWidget::setModelIndex(modelIndex);
 
-    _ui->channel1Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Dataset)));
-    _ui->channel2Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Subset1)));
-    _ui->channel3Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Subset2)));
-    _ui->channel4Widget->setModelIndex(getChild(static_cast<int>(Channels::Row::Differential)));
+    _ui->channel1Widget->setModelIndex(getChild(static_cast<int>(Channels::Child::Dataset)));
+    _ui->channel2Widget->setModelIndex(getChild(static_cast<int>(Channels::Child::Subset1)));
+    _ui->channel3Widget->setModelIndex(getChild(static_cast<int>(Channels::Child::Subset2)));
+    _ui->channel4Widget->setModelIndex(getChild(static_cast<int>(Channels::Child::Differential)));
 }

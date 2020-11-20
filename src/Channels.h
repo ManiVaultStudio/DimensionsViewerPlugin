@@ -14,37 +14,28 @@ class Configuration;
  *
  * @author T. Kroes
  */
-class Channels : public tree::Item {
+class Channels : public tree::Item
+{
 
-public: // Columns and rows
+public: // Enumerations
 
-    /** Tree item rows */
-    enum class Row {
-        Dataset,                        /** Primary dataset channel */
-        Subset1,                        /** First subset */
-        Subset2,                        /** Second subset */
-        Differential,                   /** Compare channels */
+    /** Child enumeration (each child enum item maps to a child tree item) */
+    enum class Child {
+        Dataset,            /** Primary dataset channel */
+        Subset1,            /** First subset */
+        Subset2,            /** Second subset */
+        Differential,       /** Compare channels */
 
         _Start  = Dataset,
         _End    = Differential,
         _Count  = _End + 1
     };
 
-    /** Rows set alias */
-    using Rows = QSet<Row>;
+    /** Children set alias */
+    using Children = QSet<Child>;
 
-    /** Maps row name to row enum */
-    static QMap<QString, Row> const rows;
-
-    /** Get row name from row enum */
-    static QString getRowTypeName(const Row& row) {
-        return rows.key(row);
-    }
-
-    /** Get row enum from row name */
-    static Row getRowTypeEnum(const QString& rowName) {
-        return rows[rowName];
-    }
+    /** Maps child name to child enum */
+    static QMap<QString, Child> const children;
 
 protected: // Construction
 
@@ -77,7 +68,7 @@ public: // Overloaded operators
      * Bracket operator
      * @param row Row enum
      */
-    Channel* operator [](const Row& row) const {
+    Channel* operator [](const Child& row) const {
         return reinterpret_cast<Channel*>(_children[static_cast<std::int32_t>(row)]);
     }
 
@@ -87,6 +78,6 @@ public: // Overloaded operators
     friend class Differential;
 };
 
-inline uint qHash(Channels::Row key, uint seed) {
+inline uint qHash(Channels::Child key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }

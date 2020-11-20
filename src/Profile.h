@@ -15,44 +15,25 @@ class Channel;
  */
 class Profile : public tree::Item {
 
-public: // Columns and rows
+public: // Enumerations
 
-    /** Tree item columns */
-    enum class Column {
-
-        /** Derived tree item columns */
-        Type,                           /** Type of tree item */
-        Name,                           /** Name of tree item */
-        Enabled,                        /** Whether the tree item is enabled or not */
-        Modified,                       /** Last modified integer stamp */
-        UUID,                           /** Universal unique identifier */
-
-        /** Styling tree item columns */
-        ProfileTypes,                   /** Available profile types */
-        ProfileType,                    /** Current profile type */
-        RangeTypes,                     /** Available range types */
-        RangeType,                      /** Current range type */
+    /** Child enumeration (each child enum item maps to a child tree item) */
+    enum class Child {
+        ProfileTypes,           /** Available profile types */
+        ProfileType,            /** Current profile type */
+        RangeTypes,             /** Available range types */
+        RangeType,              /** Current range type */
 
         _Start  = ProfileTypes,
         _End    = RangeType,
         _Count  = _End + 1
     };
 
-    /** Columns set alias */
-    using Columns = QSet<Column>;
+    /** Children set alias */
+    using Children = QSet<Child>;
 
-    /** Maps column name to column enum */
-    static QMap<QString, Column> const columns;
-
-    /** Get column name from column enum */
-    static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
-    }
-
-    /** Get column enum from column name */
-    static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
-    }
+    /** Maps child name to child enum */
+    static QMap<QString, Child> const children;
 
 public: // Enumerations
 
@@ -150,7 +131,7 @@ private: // Miscellaneous
 };
 
 /** Get scoped enum in columns set to work */
-inline uint qHash(Profile::Column key, uint seed) {
+inline uint qHash(Profile::Child key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }
 

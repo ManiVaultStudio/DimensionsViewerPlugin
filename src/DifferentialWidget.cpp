@@ -70,8 +70,10 @@ void DifferentialWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     TreeItemWidget::setModelIndex(modelIndex);
 
+    /*
     getWidgetMapper("DifferentialOperandNamesA")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandNamesA)));
     getWidgetMapper("DifferentialOperandNamesB")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandNamesB)));
     getWidgetMapper("DifferentialOperandA")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandA)));
     getWidgetMapper("DifferentialOperandB")->setModelIndex(getSiblingAtColumn(to_ul(Differential::Column::DifferentialOperandB)));
+    */
 }

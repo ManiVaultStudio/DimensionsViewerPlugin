@@ -16,11 +16,11 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
 	_ui{ std::make_unique<Ui::ChannelWidget>() }
 {
 	_ui->setupUi(this);
-    /*
-    QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
-        setData(to_ul(tree::Item::Column::Enabled), state);
-    });
     
+    QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
+        getModel().setData(getChild(to_ul(Channel::Child::Enabled)), state);
+    });
+    /*
     QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
         if (_modelIndex.row() == 0)
             getModel().selectRow(currentIndex);
@@ -164,20 +164,23 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 {
     TreeItemWidget::setModelIndex(modelIndex);
 
-    _ui->differentialWidget->setModelIndex(getChild(static_cast<int>(Channel::Row::Differential)));
-    _ui->profileWidget->setModelIndex(getChild(static_cast<int>(Channel::Row::Profile)));
-    _ui->stylingPushButton->setModelIndex(getChild(static_cast<int>(Channel::Row::Styling)));
+    
+    _ui->differentialWidget->setModelIndex(getChild(static_cast<int>(Channel::Child::Differential)));
+    _ui->profileWidget->setModelIndex(getChild(static_cast<int>(Channel::Child::Profile)));
+    _ui->stylingPushButton->setModelIndex(getChild(static_cast<int>(Channel::Child::Styling)));
 
-    getWidgetMapper("Enabled")->setModelIndex(getChild(to_ul(Channel::Row::Enabled)));
+    getWidgetMapper("Enabled")->setModelIndex(getChild(to_ul(Channel::Child::Enabled)));
     getWidgetMapper("Name")->setModelIndex(getSiblingAtColumn(to_ul(tree::Item::Column::Name)));
-    getWidgetMapper("DatasetNames")->setModelIndex(getChild(to_ul(Channel::Row::DatasetNames)));
-    getWidgetMapper("DatasetName")->setModelIndex(getChild(to_ul(Channel::Row::DatasetName)));
-    getWidgetMapper("Differential")->setModelIndex(getChild(to_ul(Channel::Row::Differential)));
-    getWidgetMapper("Profile")->setModelIndex(getChild(to_ul(Channel::Row::Profile)));
-    getWidgetMapper("Styling")->setModelIndex(getChild(to_ul(Channel::Row::Styling)));
-
+    getWidgetMapper("DatasetNames")->setModelIndex(getChild(to_ul(Channel::Child::DatasetNames)));
+    getWidgetMapper("DatasetName")->setModelIndex(getChild(to_ul(Channel::Child::DatasetName)));
+    getWidgetMapper("Differential")->setModelIndex(getChild(to_ul(Channel::Child::Differential)));
+    getWidgetMapper("Profile")->setModelIndex(getChild(to_ul(Channel::Child::Profile)));
+    getWidgetMapper("Styling")->setModelIndex(getChild(to_ul(Channel::Child::Styling)));
+    
+    /*
     const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
 
     getWidgetMapper("Color")->setModelIndex(getSiblingAtColumn(to_ul(Styling::Column::Color), stylingIndex));
     //getWidgetMapper("LinkedPushButton")->setModelIndex(getSiblingAtColumn(to_ul(ChannelItem::Column::Linked)));
+    */
 }

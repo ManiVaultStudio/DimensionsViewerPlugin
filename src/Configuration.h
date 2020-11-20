@@ -10,65 +10,33 @@
 class DimensionsViewerPlugin;
 
 /**
- * Configuration class
+ * Configuration tree item class
  *
  * @author T. Kroes
  */
 class Configuration : public tree::Item
 {
-public: // Columns and rows
 
-    /** Tree item columns */
-    enum class Column {
+public: // Enumerations
 
-        /** Derived tree item columns */
-        Type,                           /** Type of tree item */
-        Name,                           /** Name of tree item */
-        Enabled,                        /** Whether the tree item is enabled or not */
-        Modified,                       /** Last modified integer stamp */
-        UUID,                           /** Universal unique identifier */
-
-        /** Configuration tree item columns */
-        Index,                          /** I-th configuration */
-        DatasetName,                    /** Name of the points dataset */
-        DataName,                       /** Name of the points data */
-        SelectionStamp,                 /** Selection stamp */
-
-        _Start  = Index,
-        _End    = SelectionStamp,
-        _Count  = _End + 1
-    };
-
-    /** Columns set alias */
-    using Columns = QSet<Column>;
-
-    /** Maps column name to column enum and vice versa */
-    static QMap<QString, Column> const columns;
-
-    /** Get string representation of column enum */
-    static QString getColumnTypeName(const Column& column) {
-        return columns.key(column);
-    }
-
-    /** Get enum representation from column type name */
-    static Column getColumnTypeEnum(const QString& columnName) {
-        return columns[columnName];
-    }
-
-    /** Tree item rows */
-    enum class Row {
+    /** Child enumeration (each child enum item maps to a child tree item) */
+    enum class Child {
         Channels,
         Index,
         DatasetName,
         DataName,
+        SelectionStamp,
 
         _Start  = Channels,
         _End    = Channels,
         _Count  = _End + 1
     };
 
-    /** Rows set alias */
-    using Rows = QSet<Row>;
+    /** Children set alias */
+    using Children = QSet<Child>;
+
+    /** Maps child name to child enum */
+    static QMap<QString, Child> const children;
 
 public: // Construction
 
@@ -94,12 +62,7 @@ protected:
     friend class Channels;
 };
 
-/** Get scoped enum in columns set to work */
-inline uint qHash(Configuration::Column key, uint seed) {
-    return ::qHash(static_cast<uint>(key), seed);
-}
-
 /** Get scoped enum in rows set to work */
-inline uint qHash(Configuration::Row key, uint seed) {
+inline uint qHash(Configuration::Child key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }

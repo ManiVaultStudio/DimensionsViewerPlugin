@@ -17,12 +17,13 @@ class Channels;
  *
  * @author T. Kroes
  */
-class Channel : public tree::Item {
+class Channel : public tree::Item
+{
 
-public:
+public: // Enumerations
 
-    /** Tree item rows */
-    enum class Row {
+    /** Child enumeration (each child enum item maps to a child tree item) */
+    enum class Child {
         Enabled,
         DatasetNames,
         DatasetName,
@@ -38,21 +39,11 @@ public:
         _Count  = _End + 1
     };
 
-    /** Rows set alias */
-    using Rows = QSet<Row>;
+    /** Children set alias */
+    using Children = QSet<Child>;
 
-    /** Maps row name to row enum */
-    static QMap<QString, Row> const rows;
-
-    /** Get row name from row enum */
-    static QString getRowTypeName(const Row& row) {
-        return rows.key(row);
-    }
-
-    /** Get row enum from row name */
-    static Row getRowTypeEnum(const QString& rowName) {
-        return rows[rowName];
-    }
+    /** Maps child name to child enum */
+    static QMap<QString, Child> const children;
 
 protected: // Construction
 
@@ -109,12 +100,7 @@ protected:
 	friend class Profile;
 };
 
-/** Get scoped enum in columns set to work */
-inline uint qHash(Channel::Column key, uint seed) {
-    return ::qHash(static_cast<uint>(key), seed);
-}
-
 /** Get scoped enum in rows set to work */
-inline uint qHash(Channel::Row key, uint seed) {
+inline uint qHash(Channel::Child key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }
