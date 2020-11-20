@@ -1,14 +1,11 @@
 #include "Profile.h"
-#include "Channel.h"
 #include "StandardItems.h"
 #include "Visitor.h"
 
 #include <QDebug>
 
 const QMap<QString, Profile::Child> Profile::children = {
-    { "Profile types", Profile::Child::ProfileTypes },
     { "Profile type", Profile::Child::ProfileType },
-    { "Range types", Profile::Child::RangeTypes },
     { "Range type", Profile::Child::RangeType }
 };
 
@@ -36,168 +33,59 @@ Profile::Profile(Item* parent /*= nullptr*/, const ProfileType& profileType /*= 
     _flags.setFlag(Qt::ItemIsEnabled);
 
     _children << new tree::StringList(this, "Profile types", QStringList(profileTypes.keys()));
-    _children << new tree::String(this, "Profile type", "Mean");
-    _children << new tree::StringList(this, "Range types", QStringList(rangeTypes.keys()));
-    _children << new tree::String(this, "Range type", "Min/Max");
+    _children << new tree::String(this, "Profile type", profileTypes.keys().first());
+    _children << new tree::StringList(this, "Range types");
+    _children << new tree::String(this, "Range type");
 
-    /*switch (_profileType)
-    {
-        case ProfileType::Mean:
-        case ProfileType::Median:
-        {
-            _profileTypes << ProfileType::Mean << ProfileType::Median;
-            break;
-        }
-
-        case ProfileType::Differential:
-        {
-            _profileTypes << ProfileType::Differential;
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
-        switch (static_cast<Column>(modelIndex.column()))
-        {
-            case Column::ProfileTypes:
-            case Column::ProfileType:
-            {
-                update();
-
-                Columns updateColumns = {
-                    Column::RangeTypes,
-                    Column::RangeType
-                };
-
-                for (auto updateColumn : updateColumns)
-                    emit getModel()->dataChanged(modelIndex.siblingAtColumn(to_ul(updateColumn)), modelIndex.siblingAtColumn(to_ul(updateColumn)));
-
-                break;
-            }
-
-            default:
-                break;
-        }
+    QObject::connect(_children[to_ul(Child::ProfileType)], &tree::Boolean::dataChanged, [this](const QModelIndex& modelIndex) {
+        const auto profileType = _children[to_ul(Child::ProfileType)]->getData(Column::Value, Qt::DisplayRole).toString();
+        qDebug() << profileType;
+        _children[to_ul(Child::RangeTypes)]->setData(Column::Value, getRangeTypes(getProfileTypeEnum(profileType)), Qt::EditRole);
     });
-
-    update();*/
 }
-
-/*
-Qt::ItemFlags Profile::getFlags(const QModelIndex& index) const
-{
-    Qt::ItemFlags flags = TreeItem::getFlags(index);
-
-    const auto column = static_cast<Column>(index.column());
-    
-    auto channel = dynamic_cast<Channel*>(_parent);
-
-    switch (column)
-    {
-        case Column::ProfileType:
-        case Column::RangeTypes:
-        case Column::RangeType:
-        {
-            flags |= Qt::ItemIsEditable;
-
-            if (channel->_enabled) {
-                switch (static_cast<Channels::Row>(channel->_index))
-                {
-                    case Channels::Row::Dataset:
-                    {
-                        flags |= Qt::ItemIsEnabled;
-
-                        break;
-                    }
-
-                    case Channels::Row::Subset1:
-                    case Channels::Row::Subset2:
-                    {
-                        const auto meanOrMedian = _profileType == Profile::ProfileType::Mean || _profileType == Profile::ProfileType::Median;
-
-                        if (!channel->_linked && meanOrMedian)
-                            flags |= Qt::ItemIsEnabled;
-
-                        break;
-                    }
-
-                    case Channels::Row::Differential:
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    return flags;
-}
-*/
 
 void Profile::accept(tree::Visitor* visitor) const
 {
     visitor->visitTreeItem(this);
 }
 
-void Profile::setProfile(const Profile* profile)
+QStringList Profile::getRangeTypes(const ProfileType& profileType)
 {
-    /*
-    Columns copyColumns = {
-        Column::ProfileTypes,
-        Column::ProfileType,
-        Column::RangeTypes,
-        Column::RangeType
-    };
-    */
-    //for (auto copyColumn : copyColumns)
-    //    getModel()->setData(getSiblingAtColumn(to_ul(copyColumn)), profile->getData(copyColumn, Qt::EditRole), Qt::EditRole);
-}
+    QStringList rangeTypes;
 
-void Profile::update()
-{
-    /*
-    _rangeTypes.clear();
+    rangeTypes.clear();
 
-    switch (_profileType)
+    switch (profileType)
     {
         case ProfileType::None:
         case ProfileType::Differential:
         {
-            _rangeType = RangeType::None;
+            //_rangeType = RangeType::None;
 
             break;
         }
 
         case ProfileType::Mean:
         {
-            _rangeTypes << RangeType::None;
-            _rangeTypes << RangeType::StandardDeviation1;
-            _rangeTypes << RangeType::StandardDeviation2;
-            _rangeTypes << RangeType::StandardDeviation3;
-            _rangeTypes << RangeType::MinMax;
+            rangeTypes << getRangeTypeName(RangeType::None);
+            rangeTypes << getRangeTypeName(RangeType::StandardDeviation1);
+            rangeTypes << getRangeTypeName(RangeType::StandardDeviation2);
+            rangeTypes << getRangeTypeName(RangeType::StandardDeviation3);
+            rangeTypes << getRangeTypeName(RangeType::MinMax);
 
-            if (!_rangeTypes.contains(_rangeType))
-                _rangeType = RangeType::StandardDeviation1;
+            //if (!rangeTypes.contains(_rangeType))
+            //    _rangeType = RangeType::StandardDeviation1;
 
             break;
         }
 
         case ProfileType::Median:
         {
-            _rangeTypes << RangeType::Percentile5;
-            _rangeTypes << RangeType::Percentile10;
+            rangeTypes << getRangeTypeName(RangeType::Percentile5);
+            rangeTypes << getRangeTypeName(RangeType::Percentile10);
 
-            if (!_rangeTypes.contains(_rangeType))
-                _rangeType = RangeType::Percentile5;
+            //if (!rangeTypes.contains(_rangeType))
+            //    _rangeType = RangeType::Percentile5;
 
             break;
         }
@@ -205,10 +93,6 @@ void Profile::update()
         default:
             break;
     }
-    */
-}
 
-const Channel* Profile::getChannel() const
-{
-    return dynamic_cast<Channel*>(_parent);
+    return rangeTypes;
 }

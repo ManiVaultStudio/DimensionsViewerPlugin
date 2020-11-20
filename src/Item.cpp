@@ -15,14 +15,14 @@ const QMap<QString, Item::Column> Item::children = {
     { "Flags", Item::Column::Flags }
 };
 
-Item::Item(Item* parent, const QString& type, const QString& name) :
+Item::Item(Item* parent, const QString& type, const QString& name, const Qt::ItemFlags& flags /*= Qt::ItemIsEditable | Qt::ItemIsEnabled*/) :
     QObject(parent),
     _modelIndex(),
     _name(name),
     _type(type),
     _modified(-1),
     _uuid(QUuid::createUuid()),
-    _flags(Qt::ItemFlag::NoItemFlags),
+    _flags(flags),
     _parent(parent),
     _children()
 {
@@ -42,11 +42,8 @@ Qt::ItemFlags Item::getFlags(const QModelIndex& index) const
 
 QVariant Item::getData(const QModelIndex& index, const int& role) const
 {
-    return getData(static_cast<Column>(index.column()), role);
-}
+    const auto column = static_cast<Column>(index.column());
 
-QVariant Item::getData(const Column& column, const int& role) const
-{
     switch (role)
     {
         case Qt::EditRole: {
@@ -69,7 +66,7 @@ QVariant Item::getData(const Column& column, const int& role) const
                     return _uuid;
 
                 case Column::Flags:
-                    return QVariant::fromValue(_flags);
+                    return static_cast<int>(_flags);
 
                 default:
                     break;
@@ -98,7 +95,7 @@ QVariant Item::getData(const Column& column, const int& role) const
                     return getData(column, Qt::EditRole).toUuid().toString();
 
                 case Column::Flags:
-                    break;
+                    return QString::number(getData(column, Qt::EditRole).toInt());
 
                 default:
                     break;
@@ -120,6 +117,7 @@ QVariant Item::getData(const Column& column, const int& role) const
                 case Column::Value:
                 case Column::UUID:
                 case Column::Modified:
+                case Column::Flags:
                     break;
 
                 default:
@@ -134,6 +132,11 @@ QVariant Item::getData(const Column& column, const int& role) const
     }
 
     return QVariant();
+}
+
+QVariant Item::getData(const Column& column, const int& role) const
+{
+    return model->data(_modelIndex.sibling(_modelIndex.row(), static_cast<std::int32_t>(column)), role);
 }
 
 void Item::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
@@ -158,7 +161,7 @@ void Item::setData(const QModelIndex& index, const QVariant& value, const std::i
                     break;
 
                 case Column::Flags:
-                    _flags = value.value<Qt::ItemFlags>();
+                    _flags = static_cast<Qt::ItemFlags>(value.toInt());
                     break;
 
                 default:
@@ -242,7 +245,7 @@ void Item::setFlag(const Qt::ItemFlag& flag, const bool& set /*= true*/)
 
     flags.setFlag(flag, set);
 
-    setData(Column::Flags, QVariant::fromValue(flags));
+    setData(Column::Flags, static_cast<int>(flags));
 }
 
 void Item::unsetFlag(const Qt::ItemFlag& flag)

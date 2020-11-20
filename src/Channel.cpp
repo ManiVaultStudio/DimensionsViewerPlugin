@@ -16,7 +16,6 @@
 
 const QMap<QString, Channel::Child> Channel::children = {
     { "Enabled", Channel::Child::Enabled },
-    { "Dataset names", Channel::Child::DatasetNames },
     { "Dataset name", Channel::Child::DatasetName },
     { "Linked", Channel::Child::Linked },
     { "Number of points", Channel::Child::NoPoints },
@@ -36,8 +35,7 @@ Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, 
     _flags.setFlag(Qt::ItemIsEnabled);
 
     _children << new tree::Boolean(this, "Enabled");
-    _children << new tree::StringList(this, "Dataset names");
-    _children << new tree::String(this, "Dataset name");
+    _children << new tree::Option(this, "Dataset name");
     _children << new tree::Boolean(this, "Linked");
     _children << new tree::Integral(this, "No. points");
     _children << new tree::Integral(this, "No. dimensions");
@@ -49,8 +47,12 @@ Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, 
 
     QObject::connect(_children[to_ul(Child::Enabled)], &tree::Boolean::dataChanged, [this](const QModelIndex& modelIndex) {
         const auto enabled = _children[to_ul(Child::Enabled)]->getData(Column::Value, Qt::EditRole).toBool();
-        qDebug() << enabled;
+        
         _children[to_ul(Child::DatasetName)]->setFlag(Qt::ItemIsEnabled, enabled);
+        _children[to_ul(Child::Linked)]->setFlag(Qt::ItemIsEnabled, enabled);
+        _children[to_ul(Child::Profile)]->setFlag(Qt::ItemIsEnabled, enabled);
+        _children[to_ul(Child::Differential)]->setFlag(Qt::ItemIsEnabled, enabled);
+        _children[to_ul(Child::Styling)]->setFlag(Qt::ItemIsEnabled, enabled);
     });
 
     /*QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {

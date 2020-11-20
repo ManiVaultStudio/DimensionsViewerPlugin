@@ -24,7 +24,7 @@ public: // Enumerations
         RangeTypes,             /** Available range types */
         RangeType,              /** Current range type */
 
-        _Start  = ProfileTypes,
+        _Start  = ProfileType,
         _End    = RangeType,
         _Count  = _End + 1
     };
@@ -110,22 +110,11 @@ public: // TreeItem: visitor API
     /** Accept visitor */
     void accept(tree::Visitor* visitor) const override;
 
-public:
-
-    /**
-     * Copies settings from \p profile
-     * @param profile Profile to copy settings from
-     */
-    void setProfile(const Profile* profile);
-
 private: // Miscellaneous
 
     /** Updates the internals */
-    void update();
+    QStringList getRangeTypes(const ProfileType& profileType);
     
-    /** get channel */
-    const Channel* getChannel() const;
-
     friend class Channels;
     friend class Channel;
 };

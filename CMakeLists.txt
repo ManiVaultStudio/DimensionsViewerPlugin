@@ -41,6 +41,7 @@ file(GLOB TREE
 	src/Item.*
 	src/Boolean*.*
 	src/Integral*.*
+	src/Option*.*
 	src/Float*.*
 	src/Color*.*
 	src/String*.*

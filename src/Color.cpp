@@ -9,11 +9,6 @@ Color::Color(Item* parent, const QString& name, const QColor& value /*= Qt::blac
 {
 }
 
-Qt::ItemFlags Color::getFlags(const QModelIndex& index) const
-{
-    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
-}
-
 QVariant Color::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)

@@ -4,11 +4,19 @@
 
 namespace tree {
 
-class Boolean : public Item
+class Option : public Item
 {
+
+public: // Columns and rows
+
+    /** Child enumeration */
+    enum class Column {
+        Options = static_cast<std::int32_t>(Item::Column::_Count),
+    };
+
 public:
 
-    Boolean(Item* parent, const QString& name, const bool& value = true);
+    Option(Item* parent, const QString& name, const std::int32_t& value = 0, const QStringList& options = QStringList());
 
 public: // Model API
 
@@ -21,7 +29,8 @@ public: // Visitor API
     void accept(Visitor* visitor) const override;
 
 protected:
-    bool     _value;
+    std::int32_t    _value;
+    QStringList     _options;
 };
 
 }

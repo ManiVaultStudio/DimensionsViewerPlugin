@@ -9,11 +9,6 @@ Float::Float(Item* parent, const QString& name, const float& value /*= 0.0f*/) :
 {
 }
 
-Qt::ItemFlags Float::getFlags(const QModelIndex& index) const
-{
-    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
-}
-
 QVariant Float::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)

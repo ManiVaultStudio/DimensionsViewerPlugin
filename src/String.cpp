@@ -9,11 +9,6 @@ String::String(Item* parent, const QString& name, const QString& value /*= ""*/)
 {
 }
 
-Qt::ItemFlags String::getFlags(const QModelIndex& index) const
-{
-    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
-}
-
 QVariant String::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)
@@ -49,6 +44,7 @@ void String::setData(const QModelIndex& index, const QVariant& value, const std:
             break;
 
         case Qt::DisplayRole:
+            _value = value.toString();
             break;
 
         default:

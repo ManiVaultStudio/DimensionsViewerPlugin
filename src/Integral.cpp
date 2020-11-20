@@ -9,11 +9,6 @@ Integral::Integral(Item* parent, const QString& name, const std::int32_t& value 
 {
 }
 
-Qt::ItemFlags Integral::getFlags(const QModelIndex& index) const
-{
-    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
-}
-
 QVariant Integral::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)

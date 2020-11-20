@@ -22,7 +22,7 @@ public:
 
     public: // Alias(es)
 
-        /** Callback executed when data changes */
+        /** Callback executed when value changes */
         using CallbackFunction = std::function<void(const QPersistentModelIndex& index, const bool& initialize)>;
 
     public: // Construction
@@ -59,11 +59,14 @@ public:
                 
                 const auto column = _index.column();
 
-                if (column >= topLeft.column() && column <= bottomRight.column()) {
-                    QSignalBlocker signalBlocker(_widget);
+                QSignalBlocker signalBlocker(_widget);
 
-                    _callbackFunction(_index, false);
+                if (static_cast<tree::Item::Column>(topLeft.column()) == tree::Item::Column::Flags) {
+                    _widget->setVisible(topLeft.flags() & Qt::ItemIsEditable);
+                    _widget->setEnabled(topLeft.flags() & Qt::ItemIsEnabled);
                 }
+
+                _callbackFunction(_index, false);
             });
 
             setModelIndex(QModelIndex());
@@ -84,6 +87,9 @@ public:
             _index = index;
 
             QSignalBlocker signalBlocker(_widget);
+
+            _widget->setVisible(_index.flags() & Qt::ItemIsEditable);
+            _widget->setEnabled(_index.flags() & Qt::ItemIsEnabled);
 
             _callbackFunction(_index, _index == QModelIndex());
         }
@@ -128,8 +134,8 @@ protected: // Model operations
      * @param row Child row index
      * @return Sibling model index at \p row
      */
-    QPersistentModelIndex getChild(const std::int32_t& row) {
-        return getModel().index(row, 0, _modelIndex);
+    QPersistentModelIndex getChild(const std::int32_t& row, const std::int32_t& column = 0) {
+        return getModel().index(row, column, _modelIndex);
     }
 
     /** Gets the model index assigned to the widget */

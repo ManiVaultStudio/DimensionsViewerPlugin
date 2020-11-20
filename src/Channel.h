@@ -25,7 +25,6 @@ public: // Enumerations
     /** Child enumeration (each child enum item maps to a child tree item) */
     enum class Child {
         Enabled,
-        DatasetNames,
         DatasetName,
         Linked,
         NoPoints,

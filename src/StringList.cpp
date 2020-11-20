@@ -9,11 +9,6 @@ StringList::StringList(Item* parent, const QString& name, const QStringList& val
 {
 }
 
-Qt::ItemFlags StringList::getFlags(const QModelIndex& index) const
-{
-    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
-}
-
 QVariant StringList::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)

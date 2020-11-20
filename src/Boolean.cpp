@@ -9,11 +9,6 @@ Boolean::Boolean(Item* parent, const QString& name, const bool& value /*= true*/
 {
 }
 
-Qt::ItemFlags Boolean::getFlags(const QModelIndex& index) const
-{
-    return Qt::ItemIsEditable | Qt::ItemIsEnabled;
-}
-
 QVariant Boolean::getData(const QModelIndex& index, const int& role) const
 {
     if (static_cast<Column>(index.column()) != Column::Value)
