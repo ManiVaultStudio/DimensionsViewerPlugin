@@ -16,6 +16,9 @@ const QMap<QString, Channels::Row> Channels::rows = {
 Channels::Channels(Item* parent, const QString& datasetName, const QString& dataName) :
     Item(parent, "Channels", "Channels")
 {
+    _flags.setFlag(Qt::ItemIsEditable);
+    _flags.setFlag(Qt::ItemIsEnabled);
+
     _children << new Channel(this, 0, getRowTypeName(Channels::Row::Dataset), true, false, datasetName);
     _children << new Channel(this, 1, getRowTypeName(Channels::Row::Subset1), false, true, "");
     _children << new Channel(this, 2, getRowTypeName(Channels::Row::Subset2), false, true, "");

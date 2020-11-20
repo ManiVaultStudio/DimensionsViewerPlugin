@@ -15,9 +15,9 @@ Differential::Differential(Item* parent) :
     _operandChannelNames(),
     _operandChannelName()
 {
-    //_flags.setFlag(Qt::ItemIsEditable);
-    //_flags.setFlag(Qt::ItemIsEnabled);
-    //_flags.setFlag(Qt::ItemIsSelectable);
+    _flags.setFlag(Qt::ItemIsEditable);
+    _flags.setFlag(Qt::ItemIsEnabled);
+    _flags.setFlag(Qt::ItemIsSelectable);
 }
 
 //switch (static_cast<Column>(column))

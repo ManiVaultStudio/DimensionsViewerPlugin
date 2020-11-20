@@ -34,7 +34,6 @@ Profile::Profile(Item* parent /*= nullptr*/, const ProfileType& profileType /*= 
 {
     _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
-    _flags.setFlag(Qt::ItemIsSelectable);
 
     _children << new tree::StringList(this, "Profile types", QStringList(profileTypes.keys()));
     _children << new tree::String(this, "Profile type", "Mean");

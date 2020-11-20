@@ -11,15 +11,15 @@ const QMap<QString, Item::Column> Item::columns = {
     { "Value", Item::Column::Value },
     { "Type", Item::Column::Type },
     { "Modified", Item::Column::Modified },
-    { "UUID", Item::Column::UUID }
+    { "UUID", Item::Column::UUID },
+    { "Flags", Item::Column::Flags }
 };
 
 Item::Item(Item* parent, const QString& type, const QString& name) :
     QObject(parent),
     _modelIndex(),
-    _type(type),
     _name(name),
-    _enabled(true),
+    _type(type),
     _modified(-1),
     _uuid(QUuid::createUuid()),
     _flags(Qt::ItemFlag::NoItemFlags),
@@ -42,28 +42,34 @@ Qt::ItemFlags Item::getFlags(const QModelIndex& index) const
 
 QVariant Item::getData(const QModelIndex& index, const int& role) const
 {
-    const auto column = static_cast<Column>(index.column());
+    return getData(static_cast<Column>(index.column()), role);
+}
 
+QVariant Item::getData(const Column& column, const int& role) const
+{
     switch (role)
     {
         case Qt::EditRole: {
 
-            switch (static_cast<Column>(column))
+            switch (column)
             {
-                case Item::Column::Type:
-                    return _type;
-
-                case Item::Column::Name:
+                case Column::Name:
                     return _name;
 
-                case Item::Column::UUID:
-                    return _uuid;
+                case Column::Value:
+                    break;
 
-                case Item::Column::Modified:
+                case Column::Type:
+                    return _type;
+
+                case Column::Modified:
                     return _modified;
 
-                case Item::Column::Value:
-                    break;
+                case Column::UUID:
+                    return _uuid;
+
+                case Column::Flags:
+                    return QVariant::fromValue(_flags);
 
                 default:
                     break;
@@ -74,21 +80,24 @@ QVariant Item::getData(const QModelIndex& index, const int& role) const
 
         case Qt::DisplayRole: {
 
-            switch (static_cast<Column>(column))
+            switch (column)
             {
-                case Item::Column::Type:
-                    return getData(index, Qt::EditRole);
+                case Column::Name:
+                    return getData(column, Qt::EditRole);
 
-                case Item::Column::Name:
-                    return getData(index, Qt::EditRole);
+                case Column::Type:
+                    return getData(column, Qt::EditRole);
 
-                case Item::Column::UUID:
-                    return getData(index, Qt::EditRole).toUuid().toString();
+                case Column::Value:
+                    break;
 
-                case Item::Column::Modified:
-                    return QString::number(getData(index, Qt::EditRole).toInt());
+                case Column::Modified:
+                    return QString::number(getData(column, Qt::EditRole).toInt());
 
-                case Item::Column::Value:
+                case Column::UUID:
+                    return getData(column, Qt::EditRole).toUuid().toString();
+
+                case Column::Flags:
                     break;
 
                 default:
@@ -97,7 +106,7 @@ QVariant Item::getData(const QModelIndex& index, const int& role) const
 
             break;
         }
-        
+
         case Qt::ToolTipRole:
         {
             const auto tooltip = [&column](const QString& value) {
@@ -106,13 +115,11 @@ QVariant Item::getData(const QModelIndex& index, const int& role) const
 
             switch (static_cast<Column>(column))
             {
-                case Column::Type:
                 case Column::Name:
-                    break;
-
-                case Column::Modified:
-                case Column::UUID:
+                case Column::Type:
                 case Column::Value:
+                case Column::UUID:
+                case Column::Modified:
                     break;
 
                 default:
@@ -139,16 +146,19 @@ void Item::setData(const QModelIndex& index, const QVariant& value, const std::i
 
             switch (column)
             {
-                case Item::Column::Type:
-                    break;
-
-                case Item::Column::Name:
+                case Column::Name:
                     _name = value.toString();
                     break;
 
-                case Item::Column::UUID:
-                case Item::Column::Modified:
-                case Item::Column::Value:
+                case Column::Type:
+                    break;
+                case Column::Value:
+                case Column::UUID:
+                case Column::Modified:
+                    break;
+
+                case Column::Flags:
+                    _flags = value.value<Qt::ItemFlags>();
                     break;
 
                 default:
@@ -168,11 +178,6 @@ QModelIndex Item::getModelIndex() const
     return _modelIndex;
 }
 
-QModelIndex Item::getSiblingAtColumn(const std::uint32_t& column) const
-{
-    return getModelIndex().siblingAtColumn(column);
-}
-
 void Item::setModelIndex(const QModelIndex& modelIndex)
 {
     Q_ASSERT(Item::model != nullptr);
@@ -181,6 +186,11 @@ void Item::setModelIndex(const QModelIndex& modelIndex)
 
     for (auto child : getChildren())
         child->setModelIndex(Item::model->index(getChildIndex(child), 0, _modelIndex));
+}
+
+QModelIndex Item::getSiblingAtColumn(const std::uint32_t& column) const
+{
+    return getModelIndex().siblingAtColumn(column);
 }
 
 Item::Children Item::getChildren() const

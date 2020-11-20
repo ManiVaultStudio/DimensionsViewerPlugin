@@ -7,6 +7,8 @@
 Configurations::Configurations() :
     Item(nullptr, "Configurations", "Configurations")
 {
+    _flags.setFlag(Qt::ItemIsEditable);
+    _flags.setFlag(Qt::ItemIsEnabled);
 }
 
 void Configurations::accept(tree::Visitor* visitor) const

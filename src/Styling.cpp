@@ -27,6 +27,9 @@ const QSize Styling::LineTypesModel::iconSize = QSize(24, 12);
 Styling::Styling(Item* parent) :
     Item(parent, "Styling", "Styling")
 {
+    _flags.setFlag(Qt::ItemIsEditable);
+    _flags.setFlag(Qt::ItemIsEnabled);
+
     _children << new tree::String(this, "Line type (profile)", "Solid");
     _children << new tree::String(this, "Line type (range)", "DashDot");
     _children << new tree::Boolean(this, "Render points");

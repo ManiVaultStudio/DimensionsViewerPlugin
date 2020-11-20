@@ -23,15 +23,10 @@ DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
 Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName) :
     Item(parent, "Channel", name),
-	_index(index),
-    _linked(linked),
-    _datasetNames(),
-	_datasetName(datasetName),
     _points(nullptr)
 {
-    _enabled = enabled;
-
-    resolvePoints();
+    _flags.setFlag(Qt::ItemIsEditable);
+    _flags.setFlag(Qt::ItemIsEnabled);
 
     _children << new tree::Boolean(this, "Enabled");
     _children << new tree::StringList(this, "Dataset names");
@@ -42,6 +37,8 @@ Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, 
     _children << new Profile(this);
     _children << new Differential(this);
     _children << new Styling(this);
+
+    resolvePoints();
 
     /*QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
         Q_ASSERT(model != nullptr);
@@ -669,10 +666,12 @@ void Channel::resolvePoints()
 
     auto core = Channel::dimensionsViewerPlugin->getCore();
 
-    if (_datasetName.isEmpty())
+    const auto datasetName = _children[to_ul(Channel::Row::DatasetName)]->getData(Column::Value, Qt::EditRole).toString();
+
+    if (datasetName.isEmpty())
         return;
 
-    _points = &dynamic_cast<Points&>(core->requestData(_datasetName));
+    _points = &dynamic_cast<Points&>(core->requestData(datasetName));
 
     model->setData(model->index(to_ul(Row::NoPoints), to_ul(Item::Column::Value), _modelIndex), _points->getNumPoints());
     model->setData(model->index(to_ul(Row::NoDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());

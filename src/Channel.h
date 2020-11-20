@@ -19,8 +19,6 @@ class Channels;
  */
 class Channel : public tree::Item {
 
-    Q_OBJECT
-
 public:
 
     /** Tree item rows */
@@ -99,11 +97,7 @@ protected: // Miscellaneous
     const Channels* getChannels() const;
 
 protected:
-    const std::uint32_t     _index;             /** Index */
-    bool                    _linked;            /** Whether settings are linked to the settings of the first channel */
-    QStringList             _datasetNames;      /** Dataset names */
-    QString                 _datasetName;       /** Dataset name */
-    Points*                 _points;            /** Pointer to points dataset */
+    Points*     _points;        /** Pointer to points dataset */
 
     /** Pointer to dimensions viewer plugin (used to retrieve point data) */
     static DimensionsViewerPlugin*  dimensionsViewerPlugin;

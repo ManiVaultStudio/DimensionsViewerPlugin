@@ -14,7 +14,7 @@ namespace tree {
 class Visitor;
 
 /**
- * Tree item class
+ * Tree item base class
  *
  * @author Thomas Kroes
  */
@@ -30,11 +30,12 @@ public: // Columns and rows
 
     /** Tree item columns */
     enum class Column {
-        Name,                           /** Name of tree item */
-        Value,                          /** Value */
-        Type,                           /** Type of tree item */
-        Modified,                       /** Last modified integer stamp */
-        UUID,                           /** Universal unique identifier */
+        Name,               /** Name of tree item */
+        Value,              /** Value */
+        Type,               /** Type of tree item */
+        Modified,           /** Last modified integer stamp */
+        UUID,               /** Universal unique identifier */
+        Flags,              /** Item flags */
 
         _Start  = Name,
         _End    = UUID,
@@ -88,6 +89,14 @@ public: // Model API
     virtual QVariant getData(const QModelIndex& index, const int& role) const;
 
     /**
+     * Get data for \p column
+     * @param column Data column
+     * @param role Data role
+     * @return Data in variant form
+     */
+    QVariant getData(const Column& column, const int& role) const;
+
+    /**
      * Set data
      * @param index Model index
      * @param value Data value in variant form
@@ -95,16 +104,11 @@ public: // Model API
      */
     virtual void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
 
-    /**
-     * Get data
-     * @param column Data column
-     * @param role Data role
-     * @return Data in variant form
-     
-    virtual QVariant getData(const std::int32_t& column, const std::int32_t& role) const;*/
-
     /** Gets model index */
     QModelIndex getModelIndex() const;
+
+    /** Gets persistent model index */
+    void setModelIndex(const QModelIndex& modelIndex);
 
     /**
      * Get sibling at \p column
@@ -112,9 +116,6 @@ public: // Model API
      * @return Model index
      */
     QModelIndex getSiblingAtColumn(const std::uint32_t& column) const;
-
-    /** Gets persistent model index */
-    void setModelIndex(const QModelIndex& modelIndex);
 
 public: // Hierarchy API
 
@@ -149,27 +150,6 @@ public: // Visitor API
     /** Accept visitor */
     virtual void accept(Visitor* visitor) const = 0;
 
-public: // Miscellaneous
-
-    bool isEnabled() const {
-        return _enabled;
-    }
-
-    /** Sets the tree item dirty (increase the modified timer with 1) */
-    void setModified() {
-        _modified++;
-    }
-
-    /** Gets modified time */
-    std::int32_t getModified() const {
-        return _modified;
-    }
-
-    /** Get unique identifier */
-    QUuid getUuid() const {
-        return _uuid;
-    }
-
 signals:
 
     /**
@@ -180,12 +160,11 @@ signals:
 
 protected:
     QPersistentModelIndex       _modelIndex;    /** Persistent model index */
-    QString                     _type;          /** Type */
     QString                     _name;          /** Display name */
-    bool                        _enabled;       /** Whether the tree item is enabled or not */
+    QString                     _type;          /** Type */
     std::int32_t                _modified;      /** Modified time */
     QUuid                       _uuid;          /** Unique identifier */
-    QFlags<Qt::ItemFlag>        _flags;         /** UI flags */
+    Qt::ItemFlags               _flags;         /** UI flags */
     Item*                       _parent;        /** Parent tree item */
     Children                    _children;      /** Children */
 
