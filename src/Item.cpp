@@ -231,6 +231,11 @@ tree::Item* Item::getChild(const QString& path)
 
     auto segments = path.split("/");
 
+    if (segments.first() == "..") {
+        segments.removeFirst();
+        return _parent->getChild(segments.join("/"));
+    }
+        
     Item* firstChild = nullptr;
 
     for (auto child : _children)

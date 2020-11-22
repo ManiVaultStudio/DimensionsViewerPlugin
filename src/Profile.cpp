@@ -46,22 +46,22 @@ void Profile::initialize()
         if (static_cast<Column>(modelIndex.column()) != Column::Value)
             return;
 
-        if (_parent->getChild(to_ul(Channel::Child::Linked))->getData(Column::Value, Qt::EditRole).toBool())
+        if (getChild("../Linked")->getData(Column::Value, Qt::EditRole).toBool())
             return;
 
-        const auto profileTypeName  = _children[to_ul(Child::ProfileType)]->getData(Column::Value, Qt::DisplayRole).toString();
-        const auto rangeTypeName    = _children[to_ul(Child::RangeType)]->getData(Column::Value, Qt::DisplayRole).toString();
+        const auto profileTypeName  = getChild("ProfileType")->getData(Column::Value, Qt::DisplayRole).toString();
+        const auto rangeTypeName    = getChild("RangeType")->getData(Column::Value, Qt::DisplayRole).toString();
         const auto rangeTypeNames   = Profile::getRangeTypeNames(getProfileTypeEnum(profileTypeName));
 
-        _children[to_ul(Child::RangeTypes)]->setData(Column::Value, rangeTypeNames, Qt::EditRole);
+        getChild("RangeTypes")->setData(Column::Value, rangeTypeNames, Qt::EditRole);
 
         if (rangeTypeNames.isEmpty())
             return;
 
         if (rangeTypeNames.contains(rangeTypeName))
-            _children[to_ul(Child::RangeTypes)]->setData(Column::Value, rangeTypeName, Qt::DisplayPropertyRole);
+            getChild("RangeTypes")->setData(Column::Value, rangeTypeName, Qt::DisplayPropertyRole);
         else
-            _children[to_ul(Child::RangeTypes)]->setData(Column::Value, rangeTypeNames.first(), Qt::DisplayRole);
+            getChild("RangeTypes")->setData(Column::Value, rangeTypeNames.first(), Qt::DisplayRole);
     };
 
     QObject::connect(_children[to_ul(Child::ProfileType)], &tree::String::dataChanged, update);
