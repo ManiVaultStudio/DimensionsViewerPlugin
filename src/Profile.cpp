@@ -1,4 +1,5 @@
 #include "Profile.h"
+#include "Channel.h"
 #include "StandardItems.h"
 #include "Visitor.h"
 
@@ -44,6 +45,10 @@ void Profile::initialize()
         if (static_cast<Column>(modelIndex.column()) != Column::Value)
             return;
 
+        if (_parent->getChild(to_ul(Channel::Child::Linked))->getData(Column::Value, Qt::EditRole).toBool())
+            return;
+
+        
         const auto profileTypeName  = _children[to_ul(Child::ProfileType)]->getData(Column::Value, Qt::DisplayRole).toString();
         const auto rangeTypeName    = _children[to_ul(Child::RangeType)]->getData(Column::Value, Qt::DisplayRole).toString();
         const auto rangeTypeNames   = Profile::getRangeTypeNames(getProfileTypeEnum(profileTypeName));

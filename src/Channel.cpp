@@ -34,9 +34,9 @@ Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, 
     _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
 
-    _children << new tree::Boolean(this, "Enabled");
+    _children << new tree::Boolean(this, "Enabled", enabled);
     _children << new tree::Option(this, "Dataset name");
-    _children << new tree::Boolean(this, "Linked");
+    _children << new tree::Boolean(this, "Linked", linked);
     _children << new tree::Integral(this, "No. points");
     _children << new tree::Integral(this, "No. dimensions");
     _children << new Profile(this);
