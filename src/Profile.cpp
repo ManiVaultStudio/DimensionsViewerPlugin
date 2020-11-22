@@ -25,9 +25,8 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
     { "10/90 perc.", Profile::RangeType::Percentile10 }
 };
 
-Profile::Profile(Item* parent /*= nullptr*/, const ProfileType& profileType /*= ProfileType::Mean*/) :
-    Item(parent, "Profile", "Profile"),
-    _sourceProfile(nullptr)
+Profile::Profile(Item* parent, const QString& name, const ProfileType& profileType /*= ProfileType::Mean*/) :
+    Item(parent, "Profile", name)
 {
     _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
@@ -72,23 +71,4 @@ void Profile::initialize()
 void Profile::accept(tree::Visitor* visitor) const
 {
     visitor->visitTreeItem(this);
-}
-
-void Profile::setSourceProfile(Profile* sourceProfile)
-{
-    _sourceProfile = sourceProfile;
-
-    if (_sourceProfile == nullptr) {
-        //QObject::connect(sourceProfile->getChild(to_ul(Child::ProfileType)), &tree::String::dataChanged, this);
-        return;
-    }
-
-    QObject::connect(sourceProfile->getChild(to_ul(Child::ProfileType)), &tree::String::dataChanged, [this](const QModelIndex& modelIndex) {
-        if (_parent->getChild(to_ul(Channel::Child::Linked))->getData(Column::Value, Qt::EditRole).toBool())
-            return;
-
-        const auto profileTypeName = _sourceProfile->getChild(to_ul(Profile::Child::ProfileType))->getData(Column::Value, Qt::DisplayRole).toString();
-
-        _children[to_ul(Child::ProfileType)]->setData(Column::Value, profileTypeName, Qt::DisplayRole);
-    });
 }

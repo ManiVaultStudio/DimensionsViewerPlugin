@@ -154,8 +154,9 @@ public: // Construction
     /**
      * Constructor
      * @param parent Parent tree item
+     * @param name Name of the item
      */
-    Styling(Item* parent);
+    Styling(Item* parent, const QString& name);
 
 public: // TreeItem: visitor API
 

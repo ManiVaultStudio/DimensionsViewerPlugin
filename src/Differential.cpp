@@ -10,8 +10,8 @@ const QMap<QString, Differential::Child> Differential::children = {
     { "Differential operand B name", Differential::Child::DifferentialOperandB }
 };
 
-Differential::Differential(Item* parent) :
-    Item(parent, "Differential", "Differential"),
+Differential::Differential(Item* parent, const QString& name) :
+    Item(parent, "Differential", name),
     _operandChannelNames(),
     _operandChannelName()
 {

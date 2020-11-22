@@ -46,9 +46,10 @@ protected: // Construction
 
     /**
      * Constructor
+     * @param name Name of the item
      * @param parent Parent tree item
      */
-	Differential(Item* parent);
+	Differential(Item* parent, const QString& name);
 
 public: // TreeItem: visitor API
 

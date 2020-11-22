@@ -11,6 +11,23 @@ class Configuration;
  */
 class Configurations : public tree::Item
 {
+public: // Enumerations
+
+    /** Child enumeration (each child enum item maps to a child tree item) */
+    enum class Child {
+        DatasetNames,
+
+        _Start  = DatasetNames,
+        _End    = DatasetNames,
+        _Count  = _End + 1
+    };
+
+    /** Children set alias */
+    using Children = QSet<Child>;
+
+    /** Maps child name to child enum */
+    static QMap<QString, Child> const children;
+
 protected: // Construction
 
     /** Default constructor */

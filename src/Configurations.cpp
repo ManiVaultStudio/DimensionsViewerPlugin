@@ -1,14 +1,21 @@
 #include "Configurations.h"
 #include "Configuration.h"
+#include "StandardItems.h"
 #include "Visitor.h"
 
 #include <QMessageBox>
+
+const QMap<QString, Configurations::Child> Configurations::children = {
+    { "DatasetNames", Configurations::Child::DatasetNames }
+};
 
 Configurations::Configurations() :
     Item(nullptr, "Configurations", "Configurations")
 {
     _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
+
+    _children << new tree::StringList(this, "DatasetNames");
 }
 
 void Configurations::accept(tree::Visitor* visitor) const

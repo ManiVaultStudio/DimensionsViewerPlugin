@@ -25,6 +25,7 @@ public: // Enumerations
     /** Child enumeration (each child enum item maps to a child tree item) */
     enum class Child {
         Enabled,
+        DatasetNames,
         DatasetName,
         Linked,
         NoPoints,
@@ -58,6 +59,11 @@ protected: // Construction
 	 * @param opacity Render opacity
 	 */
 	Channel(tree::Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName);
+
+public: // TreeItem: model API
+
+    /** Initialization after the model index has been set */
+    void initialize() override;
 
 public: // TreeItem: visitor API
 

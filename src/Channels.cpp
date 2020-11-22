@@ -28,7 +28,7 @@ Channels::Channels(Item* parent, const QString& datasetName, const QString& data
 
 void Channels::initialize()
 {
-    const auto synchronize = [this](const QStringList& channelNames, const QStringList& itemNames) {
+    const auto synchronize = [this](const QStringList& channelNames = { "Subset1", "Subset2" }, const QStringList& itemNames = { "ProfileTypes", "ProfileType", "RangeTypes", "RangeType" }) {
         for (auto channelName : channelNames) {
             if (!getChild(QString("%1/Linked").arg(channelName))->getData(Column::Value, Qt::EditRole).toBool())
                 continue;
@@ -58,7 +58,15 @@ void Channels::initialize()
         synchronize({ "Subset1", "Subset2" }, { "RangeType" });
     });
 
-    synchronize({ "Subset1", "Subset2" }, { "ProfileTypes", "ProfileType", "RangeTypes", "RangeType" });
+    QObject::connect(getChild("Subset1/Linked"), &tree::Boolean::dataChanged, [this, synchronize](const QModelIndex& modelIndex) {
+        synchronize();
+    });
+
+    synchronize();
+    
+    QObject::connect(getChild("../../DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
+        getChild("Dataset/DatasetNames")->copy(getChild("../../DatasetNames"));
+    });
 }
 
 void Channels::accept(tree::Visitor* visitor) const

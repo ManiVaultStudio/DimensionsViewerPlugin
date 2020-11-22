@@ -24,8 +24,8 @@ const QMap<QString, Styling::LineType> Styling::lineTypes = {
 
 const QSize Styling::LineTypesModel::iconSize = QSize(24, 12);
 
-Styling::Styling(Item* parent) :
-    Item(parent, "Styling", "Styling")
+Styling::Styling(Item* parent, const QString& name) :
+    Item(parent, "Styling", name)
 {
     _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);

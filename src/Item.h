@@ -144,26 +144,18 @@ public: // Hierarchy API
     Children getChildren() const;
 
     /**
-     * TODO
+     * Get child by \p index
+     * @param index Child index
+     * @return Item if found, else nullptr
      */
     Item* getChild(const int& index) const;
 
     /**
-     * Get child by path
-     * @param path Path to child (e.g. Dataset/Profile/ProfileType)
+     * Get child by relative \p path
+     * @param path Path to child (relative paths are also valid: ../Dataset/profile)
      * @return Item if found, else nullptr
      */
     Item* getChild(const QString& path);
-
-    /**
-     * Get child by path
-     * @param path Path to child (e.g. Dataset/Profile/ProfileType)
-     * @return Item if found, else nullptr
-     */
-    template<typename ItemType>
-    ItemType* getChild(const QString& path) {
-        return dynamic_cast<ItemType*>(getChild(path));
-    }
 
     /** Returns the number of children */
     virtual int getChildCount() const;

@@ -36,10 +36,12 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         setData(to_ul(Channel::Column::Color), color);
     });
     
-    QObject::connect(_ui->linkedPushButton, &QPushButton::toggled, [this](bool checked) {
-        //setData(to_ul(ChannelItem::Column::Linked), checked);
-    });
     */
+
+    QObject::connect(_ui->linkedPushButton, &QPushButton::toggled, [this](bool checked) {
+        getModel().setData(getChild(to_ul(Channel::Child::Linked), to_ul(Channel::Column::Value)), checked);
+    });
+    
 
     addWidgetMapper("Enabled", QSharedPointer<WidgetMapper>::create(_ui->enabledCheckBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
@@ -67,14 +69,12 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         _ui->enabledCheckBox->setText(index.data(Qt::EditRole).toString());
     }));
 
-    /*
     addWidgetMapper("DatasetNames", QSharedPointer<WidgetMapper>::create(_ui->datasetNameComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize)
             return;
 
         _ui->datasetNameComboBox->setModel(new QStringListModel(index.data(Qt::EditRole).toStringList()));
     }));
-    */
 
     addWidgetMapper("DatasetName", QSharedPointer<WidgetMapper>::create(_ui->datasetNameComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize)
@@ -146,7 +146,7 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 
     getWidgetMapper("Enabled")->setModelIndex(getChild(to_ul(Channel::Child::Enabled), to_ul(Channel::Column::Value)));
     getWidgetMapper("Name")->setModelIndex(getSiblingAtColumn(to_ul(tree::Item::Column::Name)));
-    //getWidgetMapper("DatasetNames")->setModelIndex(getChild(to_ul(Channel::Child::DatasetNames)));
+    getWidgetMapper("DatasetNames")->setModelIndex(getChild(to_ul(Channel::Child::DatasetNames), to_ul(Channel::Column::Value)));
     getWidgetMapper("DatasetName")->setModelIndex(getChild(to_ul(Channel::Child::DatasetName)));
     getWidgetMapper("Differential")->setModelIndex(getChild(to_ul(Channel::Child::Differential)));
     getWidgetMapper("Profile")->setModelIndex(getChild(to_ul(Channel::Child::Profile)));
@@ -155,5 +155,5 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     //const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
 
     getWidgetMapper("Color")->setModelIndex(getChild(to_ul(Styling::Child::Color)));
-    getWidgetMapper("Linked")->setModelIndex(getChild(to_ul(Channel::Child::Linked)));
+    getWidgetMapper("Linked")->setModelIndex(getChild(to_ul(Channel::Child::Linked), to_ul(Channel::Column::Value)));
 }

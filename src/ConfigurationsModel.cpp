@@ -145,6 +145,8 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
             setData(firstChannelIndex.siblingAtColumn(to_ul(Channel::Column::DatasetNames)), _datasetNames);
         }*/
 
+        setData(index(to_ul(Configurations::Child::DatasetNames), to_ul(tree::Item::Column::Value)), _datasetNames, Qt::EditRole);
+
         if (_configurations.getChildCount() == 1)
             selectRow(0);
 

@@ -16,10 +16,11 @@
 
 const QMap<QString, Channel::Child> Channel::children = {
     { "Enabled", Channel::Child::Enabled },
-    { "Dataset name", Channel::Child::DatasetName },
+    { "DatasetNames", Channel::Child::DatasetNames },
+    { "DatasetName", Channel::Child::DatasetName },
     { "Linked", Channel::Child::Linked },
-    { "Number of points", Channel::Child::NoPoints },
-    { "Number of dimensions", Channel::Child::NoDimensions },
+    { "NumberOfPoints", Channel::Child::NoPoints },
+    { "NumberOfDimensions", Channel::Child::NoDimensions },
     { "Profile", Channel::Child::Profile },
     { "Differential", Channel::Child::Differential },
     { "Styling", Channel::Child::Styling }
@@ -35,60 +36,38 @@ Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, 
     _flags.setFlag(Qt::ItemIsEnabled);
 
     _children << new tree::Boolean(this, "Enabled", enabled);
-    _children << new tree::Option(this, "Dataset name");
+    _children << new tree::StringList(this, "DatasetNames");
+    _children << new tree::String(this, "DatasetName");
     _children << new tree::Boolean(this, "Linked", linked);
-    _children << new tree::Integral(this, "No. points");
-    _children << new tree::Integral(this, "No. dimensions");
-    _children << new Profile(this);
-    _children << new Differential(this);
-    _children << new Styling(this);
+    _children << new tree::Integral(this, "NumberOfPoints");
+    _children << new tree::Integral(this, "NumberOfDimensions");
+    _children << new Profile(this, "Profile");
+    _children << new Differential(this, "Differential");
+    _children << new Styling(this, "Styling");
 
     resolvePoints();
+}
 
-    QObject::connect(_children[to_ul(Child::Enabled)], &tree::Boolean::dataChanged, [this](const QModelIndex& modelIndex) {
-        const auto enabled = _children[to_ul(Child::Enabled)]->getData(Column::Value, Qt::EditRole).toBool();
-        
-        _children[to_ul(Child::DatasetName)]->setFlag(Qt::ItemIsEnabled, enabled);
-        _children[to_ul(Child::Linked)]->setFlag(Qt::ItemIsEnabled, enabled);
-        _children[to_ul(Child::Profile)]->setFlag(Qt::ItemIsEnabled, enabled);
-        _children[to_ul(Child::Differential)]->setFlag(Qt::ItemIsEnabled, enabled);
-        _children[to_ul(Child::Styling)]->setFlag(Qt::ItemIsEnabled, enabled);
-    });
+void Channel::initialize()
+{
+    const auto updateFlags = [this](const QModelIndex& modelIndex) {
+        if (static_cast<Column>(modelIndex.column()) != Column::Value)
+            return;
 
-    /*QObject::connect(this, &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
-        Q_ASSERT(model != nullptr);
+        const auto isEnabled    = getChild("Enabled")->getData(Column::Value, Qt::EditRole).toBool();
+        const auto isLinked     = getChild("Linked")->getData(Column::Value, Qt::EditRole).toBool();
 
-        QModelIndexList updateIndices;
+        getChild("DatasetName")->setFlag(Qt::ItemIsEnabled, isEnabled);
+        getChild("Linked")->setFlag(Qt::ItemIsEnabled, isEnabled);
+        getChild("Profile")->setFlag(Qt::ItemIsEnabled, isEnabled && !isLinked);
+        getChild("Differential")->setFlag(Qt::ItemIsEnabled, isEnabled);
+        getChild("Styling")->setFlag(Qt::ItemIsEnabled, isEnabled && !isLinked);
+    };
 
-        switch (static_cast<Column>(modelIndex.column()))
-        {
-            case Column::Enabled:
-            case Column::Linked:
-            {
-                updateIndices << getSiblingAtColumn(to_ul(Column::Profile));
-                updateIndices << getSiblingAtColumn(to_ul(Column::Styling));
-                updateIndices << getSiblingAtColumn(to_ul(Column::Linked));
+    QObject::connect(getChild("Enabled"), &tree::Boolean::dataChanged, updateFlags);
+    QObject::connect(getChild("Linked"), &tree::Boolean::dataChanged, updateFlags);
 
-                break;
-            }
-
-            case Column::DatasetNames:
-            {
-                updateIndices << getSiblingAtColumn(to_ul(Column::Enabled));
-                updateIndices << getSiblingAtColumn(to_ul(Column::Profile));
-                updateIndices << getSiblingAtColumn(to_ul(Column::Styling));
-                updateIndices << getSiblingAtColumn(to_ul(Column::Linked));
-
-                break;
-            }
-
-            default:
-                break;
-        }
-
-        for (auto updateIndex : updateIndices)
-            emit model->dataChanged(updateIndex, updateIndex);
-    });*/
+    updateFlags(_modelIndex);
 }
 
 /*
@@ -331,320 +310,6 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
     return flags;
 }
 
-QVariant Channel::getData(const std::int32_t& column, const std::int32_t& role) const
-{
-    auto data = TreeItem::getData(column, role);
-
-    const auto row = static_cast<Channels::Row>(_index);
-
-    switch (role)
-    {
-        case Qt::EditRole:
-        {
-            switch (static_cast<Column>(column))
-            {
-                case Column::Index:
-                    return _index;
-
-                case Column::DatasetNames:
-                    return _datasetNames;
-
-                case Column::DatasetName:
-                    return _datasetName;
-
-                case Column::Differential:
-                    return QVariant::fromValue(_differential);
-
-                case Column::Profile:
-                    return QVariant::fromValue(_profile);
-
-                case Column::Styling:
-                    return QVariant::fromValue(_styling);
-
-                case Column::Linked:
-                    return _linked;
-
-                case Column::NoDimensions:
-                    return getNoDimensions();
-
-                case Column::NoPoints:
-                    return getNoPoints();
-
-                case Column::IsAggregate:
-                    return _profile->_profileType == Profile::ProfileType::Differential;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case Qt::DisplayRole:
-        {
-            switch (static_cast<Column>(column))
-            {
-                case Column::Index:
-                    return QString::number(getData(column, Qt::EditRole).toInt());
-
-                case Column::DatasetNames:
-                    return getData(column, Qt::EditRole).toStringList().join(", ");
-
-                case Column::DatasetName:
-                    return getData(column, Qt::EditRole);
-                
-                case Column::Differential:
-                    return "Differential";
-
-                case Column::Profile:
-                    return "Profile";
-
-                case Column::Styling:
-                    return "Styling";
-
-                case Column::Linked:
-                    return getData(column, Qt::EditRole).toBool() ? "on" : "off";
-
-                case Column::NoDimensions:
-                case Column::NoPoints:
-                    return QString::number(getData(column, Qt::EditRole).toInt());
-
-                case Column::IsAggregate:
-                    return getData(column, Qt::EditRole).toBool() ? "yes" : "no";
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-        
-        case Qt::ToolTipRole:
-        {
-            const auto tooltip = [&column](const QString& value) {
-                return QString("%1: %2").arg(getColumnTypeName(static_cast<Column>(column)), value);
-            };
-
-            switch (static_cast<Column>(column))
-            {
-                case Column::Index:
-                    return QString("%1: %2").arg(getData(to_ul(TreeItem::Column::Name), Qt::DisplayRole).toString(), getData(column, Qt::DisplayRole).toString());
-
-                case Column::DatasetNames:
-                case Column::DatasetName:
-                    return getData(column, Qt::DisplayRole).toString();
-
-                case Column::Differential:
-                case Column::Profile:
-                case Column::Styling:
-                    return QString("%1 settings").arg(getColumnTypeName(static_cast<Column>(column)));
-
-                case Column::Linked:
-                    return QString("%1: %2").arg("Linked to dataset", getData(column, Qt::DisplayRole).toString());
-
-                case Column::NoDimensions:
-                case Column::NoPoints:
-                case Column::IsAggregate:
-                    return tooltip(getData(column, Qt::DisplayRole).toString());
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case to_ul(ConfigurationsModel::Role::IconFontRole):
-        {
-            switch (static_cast<Column>(column))
-            {
-                case Column::Index:
-                case Column::DatasetNames:
-                case Column::DatasetName:
-                case Column::Differential:
-                case Column::Profile:
-                case Column::Styling:
-                    break;
-
-                case Column::Linked:
-                    return hdps::Application::getIconFont("FontAwesome").getFont(9);
-
-                case Column::NoDimensions:
-                case Column::NoPoints:
-                case Column::IsAggregate:
-                    break;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case to_ul(ConfigurationsModel::Role::IconFontCharacterRole):
-        {
-            switch (static_cast<Column>(column))
-            {
-                case Column::Index:
-                case Column::DatasetNames:
-                case Column::DatasetName:
-                case Column::Differential:
-                case Column::Profile:
-                case Column::Styling:
-                    break;
-
-                case Column::Linked:
-                    return hdps::Application::getIconFont("FontAwesome").getIconCharacter(_linked ? "link" : "unlink");
-
-                case Column::NoDimensions:
-                case Column::NoPoints:
-                case Column::IsAggregate:
-                    break;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-        
-        default:
-            break;
-    }
-
-    return data;
-}
-
-QVariant Channel::getData(const Column& column, const std::int32_t& role) const
-{
-    return getData(static_cast<std::int32_t>(column), role);
-}
-
-void Channel::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role)
-{
-    TreeItem::setData(index, value, role);
-
-    const auto row      = static_cast<Channels::Row>(_index);
-    const auto column   = static_cast<Column>(index.column());
-
-    switch (role)
-    {
-        case Qt::EditRole:
-        {
-            switch (column)
-            {
-                case Column::Enabled:
-                {
-                    break;
-                }
-
-                case Column::DatasetNames:
-                {
-                    _datasetNames = value.toStringList();
-
-                    const auto noDatasets = _datasetNames.count();
-
-                    switch (row)
-                    {
-                        case Channels::Row::Dataset:
-                            break;
-
-                        case Channels::Row::Subset1:
-                        {
-                            if (noDatasets == 1) {
-                                _enabled        = true;
-                                _datasetName    = _datasetNames[0];
-                            }
-
-                            break;
-                        }
-
-                        case Channels::Row::Subset2:
-                        {
-                            if (noDatasets == 2) {
-                                _enabled        = true;
-                                _datasetName    = _datasetNames[1];
-                            }
-                                
-
-                            break;
-                        }
-
-                        case Channels::Row::Differential:
-                        {
-                            if (noDatasets >= 1)
-                                _enabled = true;
-
-                            break;
-                        }
-
-                        default:
-                            break;
-                    }
-
-                    break;
-                }
-                
-                case Column::Differential:
-                case Column::Profile:
-                case Column::Styling:
-                    break;
-
-                case Column::DatasetName:
-                {
-                    _datasetName = value.toString();
-                    
-                    resolvePoints();
-
-                    break;
-                }
-
-                case Column::Linked:
-                {
-                    _linked = value.toBool();
-
-                    break;
-                }
-
-                case Column::NoDimensions:
-                case Column::NoPoints:
-                case Column::IsAggregate:
-                    break;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case Qt::DisplayRole:
-        {
-            switch (column)
-            {
-                case Column::Index:
-                case Column::DatasetNames:
-                case Column::DatasetName:
-                case Column::Differential:
-                case Column::Profile:
-                case Column::Styling:
-                case Column::Linked:
-                case Column::NoDimensions:
-                case Column::NoPoints:
-                case Column::IsAggregate:
-                    break;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        default:
-            break;
-    }
-}
 */
 
 void Channel::accept(tree::Visitor* visitor) const

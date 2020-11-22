@@ -144,9 +144,10 @@ public: // Construction
     /**
      * Constructor
      * @param parent Parent tree item
+     * @param name name of the item
      * @param profileType Profile type
      */
-    Profile(Item* parent = nullptr, const ProfileType& profileType = ProfileType::Mean);
+    Profile(Item* parent, const QString& name, const ProfileType& profileType = ProfileType::Mean);
 
 public: // TreeItem: model API
 
@@ -157,14 +158,6 @@ public: // TreeItem: visitor API
 
     /** Accept visitor */
     void accept(tree::Visitor* visitor) const override;
-
-public: // Miscellaneous
-    
-    /** TODO */
-    void setSourceProfile(Profile* sourceProfile);
-
-private:
-    Profile*    _sourceProfile;     /** Source profile if the channel is linked */
 
     friend class Channels;
     friend class Channel;
