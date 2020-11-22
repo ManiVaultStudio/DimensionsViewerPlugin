@@ -39,14 +39,13 @@ public: // Enumerations
 
 	/** Dimension values profile type (e.g. mean and median) */
 	enum class ProfileType {
-		None,               /** No profile is displayed */
-		Mean,               /** Display statistical mean */
-		Median,             /** Display statistical median */
-		Differential,       /** Display differential profile (difference between two profiles) */
+		Mean,                   /** Display statistical mean */
+		Median,                 /** Display statistical median */
+		Differential,           /** Display differential profile (difference between two profiles) */
 
-        _Start  = None,
-		_End    = Differential,
-		_Count  = _End + 1
+        _Start  = Mean,
+        _End    = Differential,
+        _Count  = _End + 1
 	};
     
     /** Profile types set alias */
@@ -65,19 +64,26 @@ public: // Enumerations
         return profileTypes[profileTypeName];
     }
 
+    /** Get profile type names */
+    static QStringList getProfileTypeNames() {
+        QStringList profileTypeNames;
+
+        QVector<ProfileType> profileTypes({ ProfileType::Mean , ProfileType::Median, ProfileType::Differential });
+
+        for (auto profileType : profileTypes)
+            profileTypeNames << getProfileTypeName(profileType);
+
+        return profileTypeNames;
+    }
+
 	/** Dimension values range type */
 	enum class RangeType {
-		None,                   /** Do not display value range */
 		StandardDeviation1,     /** Plus and minus three standard deviations (mean profile type) */
 		StandardDeviation2,     /** Plus and minus three standard deviations (mean profile type) */
 		StandardDeviation3,     /** Plus and minus three standard deviations (mean profile type) */
 		MinMax,                 /** Minimum and maximum range (mean profile type) */
 		Percentile5,            /** 5% and 95% percentile (median profile type) */
 		Percentile10,           /** 10% and 90% percentile (median profile type) */
-
-        _Start  = None,
-		_End    = Percentile10,
-		_Count  = _End + 1
 	};
 
     /** Range types set alias */
@@ -96,6 +102,43 @@ public: // Enumerations
         return rangeTypes[rangeTypeName];
     }
 
+    /**
+     * Get range type names
+     * @param profileType Profile type
+     */
+    static QStringList getRangeTypeNames(const ProfileType& profileType) {
+        QStringList rangeTypeNames;
+
+        switch (profileType)
+        {
+            case ProfileType::Differential:
+                break;
+
+            case ProfileType::Mean:
+            {
+                rangeTypeNames << getRangeTypeName(RangeType::StandardDeviation1);
+                rangeTypeNames << getRangeTypeName(RangeType::StandardDeviation2);
+                rangeTypeNames << getRangeTypeName(RangeType::StandardDeviation3);
+                rangeTypeNames << getRangeTypeName(RangeType::MinMax);
+
+                break;
+            }
+
+            case ProfileType::Median:
+            {
+                rangeTypeNames << getRangeTypeName(RangeType::Percentile5);
+                rangeTypeNames << getRangeTypeName(RangeType::Percentile10);
+
+                break;
+            }
+
+            default:
+                break;
+        }
+        
+        return rangeTypeNames;
+    }
+
 public: // Construction
 
     /**
@@ -105,16 +148,16 @@ public: // Construction
      */
     Profile(Item* parent = nullptr, const ProfileType& profileType = ProfileType::Mean);
 
+public: // TreeItem: model API
+
+    /** Initialization after the model index has been set */
+    void initialize() override;
+
 public: // TreeItem: visitor API
 
     /** Accept visitor */
     void accept(tree::Visitor* visitor) const override;
 
-private: // Miscellaneous
-
-    /** Updates the internals */
-    QStringList getRangeTypes(const ProfileType& profileType);
-    
     friend class Channels;
     friend class Channel;
 };

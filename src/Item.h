@@ -118,6 +118,9 @@ public: // Model API
     /** Gets persistent model index */
     void setModelIndex(const QModelIndex& modelIndex);
 
+    /** Initialization after the model index has been set */
+    virtual void initialize();
+
     /**
      * Get sibling at \p column
      * @param column Column

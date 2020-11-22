@@ -194,6 +194,12 @@ void Item::setModelIndex(const QModelIndex& modelIndex)
 
     for (auto child : getChildren())
         child->setModelIndex(Item::model->index(getChildIndex(child), 0, _modelIndex));
+
+    initialize();
+}
+
+void Item::initialize()
+{
 }
 
 QModelIndex Item::getSiblingAtColumn(const std::uint32_t& column) const
