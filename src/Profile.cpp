@@ -64,7 +64,7 @@ void Profile::initialize()
             getChild("RangeTypes")->setData(Column::Value, rangeTypeNames.first(), Qt::DisplayRole);
     };
 
-    QObject::connect(_children[to_ul(Child::ProfileType)], &tree::String::dataChanged, update);
+    QObject::connect(getChild("ProfileType"), &tree::String::dataChanged, update);
 
     update(getSiblingAtColumn(to_ul(Column::Value)));
 }

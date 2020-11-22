@@ -42,6 +42,9 @@ public: // Columns and rows
         _Count  = _End + 1
     };
 
+    /** Columns set alias */
+    using Columns = QSet<Column>;
+
     /** Maps column name to column enum and vice versa */
     static QMap<QString, Column> const children;
 
@@ -128,8 +131,12 @@ public: // Model API
      */
     QModelIndex getSiblingAtColumn(const std::uint32_t& column) const;
 
-    /** Copies data from other item */
-    virtual void copyFrom(const Item* other);;
+    /**
+     * Copies data from other item
+     * @param other Item to copy from
+     * @param columns Columns to copy
+     */
+    virtual void copy(const Item* other, const QVector<Column>& columns = QVector<Column>{ Column::Value });
 
 public: // Hierarchy API
 
@@ -216,5 +223,10 @@ protected:
     /** Pointer to abstract item model */
     static QAbstractItemModel* model;
 };
+
+/** Get scoped enum in columns set to work */
+inline uint qHash(Item::Column key, uint seed) {
+    return ::qHash(static_cast<uint>(key), seed);
+}
 
 }

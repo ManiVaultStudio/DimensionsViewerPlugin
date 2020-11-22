@@ -28,7 +28,6 @@ Channels::Channels(Item* parent, const QString& datasetName, const QString& data
 
 void Channels::initialize()
 {
-    /*
     const auto synchronize = [this](const QStringList& channelNames, const QStringList& itemNames) {
         for (auto channelName : channelNames) {
             if (!getChild(QString("%1/Linked").arg(channelName))->getData(Column::Value, Qt::EditRole).toBool())
@@ -38,7 +37,7 @@ void Channels::initialize()
                 const auto sourcePath = QString("Dataset/Profile/%2").arg(itemName);
                 const auto targetPath = QString("%1/Profile/%2").arg(channelName, itemName);
 
-                getChild(targetPath)->copyFrom(getChild(sourcePath));
+                getChild(targetPath)->copy(getChild(sourcePath));
             }
         }
     };
@@ -60,7 +59,6 @@ void Channels::initialize()
     });
 
     synchronize({ "Subset1", "Subset2" }, { "ProfileTypes", "ProfileType", "RangeTypes", "RangeType" });
-    */
 }
 
 void Channels::accept(tree::Visitor* visitor) const

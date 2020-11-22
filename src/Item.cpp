@@ -207,9 +207,10 @@ QModelIndex Item::getSiblingAtColumn(const std::uint32_t& column) const
     return getModelIndex().siblingAtColumn(column);
 }
 
-void Item::copyFrom(const Item* other)
+void Item::copy(const Item* other, const QVector<Column>& columns /*= QVector<Column>{ Column::Value }*/)
 {
-    Item::setData(Column::Value, other->getData(Column::Value, Qt::EditRole).toString(), Qt::EditRole);
+    for (auto column : columns)
+        Item::setData(column, other->getData(column, Qt::EditRole), Qt::EditRole);
 }
 
 Item::Children Item::getChildren() const

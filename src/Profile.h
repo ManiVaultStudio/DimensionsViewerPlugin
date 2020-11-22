@@ -170,7 +170,7 @@ private:
     friend class Channel;
 };
 
-/** Get scoped enum in columns set to work */
+/** Get scoped enum in children set to work */
 inline uint qHash(Profile::Child key, uint seed) {
     return ::qHash(static_cast<uint>(key), seed);
 }
