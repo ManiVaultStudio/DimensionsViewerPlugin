@@ -207,6 +207,11 @@ QModelIndex Item::getSiblingAtColumn(const std::uint32_t& column) const
     return getModelIndex().siblingAtColumn(column);
 }
 
+void Item::copyFrom(const Item* other)
+{
+    Item::setData(Column::Value, other->getData(Column::Value, Qt::EditRole).toString(), Qt::EditRole);
+}
+
 Item::Children Item::getChildren() const
 {
     return _children;
@@ -215,6 +220,32 @@ Item::Children Item::getChildren() const
 Item* Item::getChild(const int& index) const
 {
     return _children.at(index);
+}
+
+tree::Item* Item::getChild(const QString& path)
+{
+    Q_ASSERT(!path.isEmpty());
+
+    if (path.isEmpty())
+        return nullptr;
+
+    auto segments = path.split("/");
+
+    Item* firstChild = nullptr;
+
+    for (auto child : _children)
+        if (child->_name == segments.first())
+            firstChild = child;
+
+    if (segments.count() == 1) {
+        return firstChild;
+    }
+    else {
+        segments.removeFirst();
+        return firstChild->getChild(segments.join("/"));
+    }
+
+    return nullptr;
 }
 
 int Item::getChildCount() const

@@ -2,14 +2,15 @@
 #include "Channel.h"
 #include "Profile.h"
 #include "ConfigurationsModel.h"
+#include "StandardItems.h"
 #include "Visitor.h"
 
 #include <QDebug>
 
 const QMap<QString, Channels::Child> Channels::children = {
     { "Dataset", Channels::Child::Dataset },
-    { "Subset 1", Channels::Child::Subset1 },
-    { "Subset 2", Channels::Child::Subset2 },
+    { "Subset1", Channels::Child::Subset1 },
+    { "Subset2", Channels::Child::Subset2 },
     { "Compare", Channels::Child::Differential }
 };
 
@@ -23,72 +24,42 @@ Channels::Channels(Item* parent, const QString& datasetName, const QString& data
     _children << new Channel(this, 1, children.key(Channels::Child::Subset1), false, true, "");
     _children << new Channel(this, 2, children.key(Channels::Child::Subset2), false, true, "");
     _children << new Channel(this, 3, children.key(Channels::Child::Differential), false, false, "");
+}
 
+void Channels::initialize()
+{
     /*
-    QObject::connect(_channels[Row::Dataset], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
-        if (static_cast<Channel::Column>(modelIndex.column()) == Channel::Column::Enabled) {
-            const auto enabledIndex = _channels[Row::Differential]->getSiblingAtColumn(to_ul(Channel::Column::Enabled));
-            emit getModel()->dataChanged(enabledIndex, enabledIndex);
-        }
-    });
+    const auto synchronize = [this](const QStringList& channelNames, const QStringList& itemNames) {
+        for (auto channelName : channelNames) {
+            if (!getChild(QString("%1/Linked").arg(channelName))->getData(Column::Value, Qt::EditRole).toBool())
+                continue;
 
-    QObject::connect(_channels[Row::Subset1], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
-        if (static_cast<Channel::Column>(modelIndex.column()) == Channel::Column::Enabled) {
-            const auto enabledIndex = _channels[Row::Differential]->getSiblingAtColumn(to_ul(Channel::Column::Enabled));
-            emit getModel()->dataChanged(enabledIndex, enabledIndex);
-        }
-    });
+            for (auto itemName : itemNames) {
+                const auto sourcePath = QString("Dataset/Profile/%2").arg(itemName);
+                const auto targetPath = QString("%1/Profile/%2").arg(channelName, itemName);
 
-    QObject::connect(_channels[Row::Subset2], &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
-        if (static_cast<Channel::Column>(modelIndex.column()) == Channel::Column::Enabled) {
-            const auto enabledIndex = _channels[Row::Differential]->getSiblingAtColumn(to_ul(Channel::Column::Enabled));
-            emit getModel()->dataChanged(enabledIndex, enabledIndex);
-        }
-    });
-
-    QObject::connect(_channels[Row::Dataset]->getProfile(), &Profile::dataChanged, [this](const QModelIndex& modelIndex) {
-        switch (static_cast<Profile::Column>(modelIndex.column()))
-        {
-            case Profile::Column::ProfileTypes:
-            case Profile::Column::ProfileType:
-            case Profile::Column::RangeTypes:
-            case Profile::Column::RangeType:
-            {
-                auto dataset = _channels.value(Row::Dataset);
-                auto subset1 = _channels.value(Row::Subset1);
-                auto subset2 = _channels.value(Row::Subset2);
-
-                if (subset1->getData(Channel::Column::Linked, Qt::EditRole).toBool())
-                    subset1->getProfile()->setProfile(dataset->getProfile());
-
-                if (subset2->getData(Channel::Column::Linked, Qt::EditRole).toBool())
-                    subset2->getProfile()->setProfile(dataset->getProfile());
-
-                break;
+                getChild(targetPath)->copyFrom(getChild(sourcePath));
             }
-
-            default:
-                break;
         }
+    };
+
+    QObject::connect(getChild("Dataset/Profile/ProfileTypes"), &tree::String::dataChanged, [this, synchronize](const QModelIndex& modelIndex) {
+        synchronize({ "Subset1", "Subset2" }, { "ProfileTypes" });
     });
 
-    QObject::connect(_channels.value(Row::Subset1), &Channel::dataChanged, [this](const QModelIndex& modelIndex) {
-        switch (static_cast<Channel::Column>(modelIndex.column()))
-        {
-            case Channel::Column::Linked:
-            {
-                if (modelIndex.data(Qt::EditRole).toBool()) {
-                    getModel()->setData(_channels.value(Row::Subset1)->getProfile(), to_ul(Profile::Column::ProfileTypes), modelIndex.data(Qt::EditRole), Qt::EditRole);
-                    getModel()->setData(_channels.value(Row::Subset1)->getProfile(), to_ul(Profile::Column::ProfileType), modelIndex.data(Qt::EditRole), Qt::EditRole);
-                }
-                    
-                break;
-            }
-
-            default:
-                break;
-        }
+    QObject::connect(getChild("Dataset/Profile/ProfileType"), &tree::String::dataChanged, [this, synchronize](const QModelIndex& modelIndex) {
+        synchronize({ "Subset1", "Subset2" }, { "ProfileType" });
     });
+
+    QObject::connect(getChild("Dataset/Profile/RangeTypes"), &tree::String::dataChanged, [this, synchronize](const QModelIndex& modelIndex) {
+        synchronize({ "Subset1", "Subset2" }, { "RangeTypes" });
+    });
+
+    QObject::connect(getChild("Dataset/Profile/RangeType"), &tree::String::dataChanged, [this, synchronize](const QModelIndex& modelIndex) {
+        synchronize({ "Subset1", "Subset2" }, { "RangeType" });
+    });
+
+    synchronize({ "Subset1", "Subset2" }, { "ProfileTypes", "ProfileType", "RangeTypes", "RangeType" });
     */
 }
 

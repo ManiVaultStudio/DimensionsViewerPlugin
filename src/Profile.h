@@ -158,6 +158,14 @@ public: // TreeItem: visitor API
     /** Accept visitor */
     void accept(tree::Visitor* visitor) const override;
 
+public: // Miscellaneous
+    
+    /** TODO */
+    void setSourceProfile(Profile* sourceProfile);
+
+private:
+    Profile*    _sourceProfile;     /** Source profile if the channel is linked */
+
     friend class Channels;
     friend class Channel;
 };

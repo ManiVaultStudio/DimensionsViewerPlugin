@@ -47,6 +47,11 @@ protected: // Construction
      */
 	Channels(tree::Item* parent, const QString& datasetName, const QString& dataName);
 
+public: // TreeItem: model API
+
+    /** Initialization after the model index has been set */
+    void initialize() override;
+
 public: // TreeItem: visitor API
 
     /** Accept visitor */

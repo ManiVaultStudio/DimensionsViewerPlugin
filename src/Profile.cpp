@@ -26,17 +26,18 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
 };
 
 Profile::Profile(Item* parent /*= nullptr*/, const ProfileType& profileType /*= ProfileType::Mean*/) :
-    Item(parent, "Profile", "Profile")
+    Item(parent, "Profile", "Profile"),
+    _sourceProfile(nullptr)
 {
     _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
 
     const auto profileTypeNames = getProfileTypeNames();
 
-    _children << new tree::StringList(this, "Profile types", profileTypeNames);
-    _children << new tree::String(this, "Profile type", profileTypeNames.first());
-    _children << new tree::StringList(this, "Range types");
-    _children << new tree::String(this, "Range type");
+    _children << new tree::StringList(this, "ProfileTypes", profileTypeNames);
+    _children << new tree::String(this, "ProfileType", profileTypeNames.first());
+    _children << new tree::StringList(this, "RangeTypes");
+    _children << new tree::String(this, "RangeType");
 }
 
 void Profile::initialize()
@@ -48,7 +49,6 @@ void Profile::initialize()
         if (_parent->getChild(to_ul(Channel::Child::Linked))->getData(Column::Value, Qt::EditRole).toBool())
             return;
 
-        
         const auto profileTypeName  = _children[to_ul(Child::ProfileType)]->getData(Column::Value, Qt::DisplayRole).toString();
         const auto rangeTypeName    = _children[to_ul(Child::RangeType)]->getData(Column::Value, Qt::DisplayRole).toString();
         const auto rangeTypeNames   = Profile::getRangeTypeNames(getProfileTypeEnum(profileTypeName));
@@ -64,7 +64,7 @@ void Profile::initialize()
             _children[to_ul(Child::RangeTypes)]->setData(Column::Value, rangeTypeNames.first(), Qt::DisplayRole);
     };
 
-    QObject::connect(_children[to_ul(Child::ProfileType)], &tree::Boolean::dataChanged, update);
+    QObject::connect(_children[to_ul(Child::ProfileType)], &tree::String::dataChanged, update);
 
     update(getSiblingAtColumn(to_ul(Column::Value)));
 }
@@ -72,4 +72,23 @@ void Profile::initialize()
 void Profile::accept(tree::Visitor* visitor) const
 {
     visitor->visitTreeItem(this);
+}
+
+void Profile::setSourceProfile(Profile* sourceProfile)
+{
+    _sourceProfile = sourceProfile;
+
+    if (_sourceProfile == nullptr) {
+        //QObject::connect(sourceProfile->getChild(to_ul(Child::ProfileType)), &tree::String::dataChanged, this);
+        return;
+    }
+
+    QObject::connect(sourceProfile->getChild(to_ul(Child::ProfileType)), &tree::String::dataChanged, [this](const QModelIndex& modelIndex) {
+        if (_parent->getChild(to_ul(Channel::Child::Linked))->getData(Column::Value, Qt::EditRole).toBool())
+            return;
+
+        const auto profileTypeName = _sourceProfile->getChild(to_ul(Profile::Child::ProfileType))->getData(Column::Value, Qt::DisplayRole).toString();
+
+        _children[to_ul(Child::ProfileType)]->setData(Column::Value, profileTypeName, Qt::DisplayRole);
+    });
 }

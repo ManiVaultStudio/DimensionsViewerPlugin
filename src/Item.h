@@ -128,6 +128,9 @@ public: // Model API
      */
     QModelIndex getSiblingAtColumn(const std::uint32_t& column) const;
 
+    /** Copies data from other item */
+    virtual void copyFrom(const Item* other);;
+
 public: // Hierarchy API
 
     /** Gets children */
@@ -137,6 +140,23 @@ public: // Hierarchy API
      * TODO
      */
     Item* getChild(const int& index) const;
+
+    /**
+     * Get child by path
+     * @param path Path to child (e.g. Dataset/Profile/ProfileType)
+     * @return Item if found, else nullptr
+     */
+    Item* getChild(const QString& path);
+
+    /**
+     * Get child by path
+     * @param path Path to child (e.g. Dataset/Profile/ProfileType)
+     * @return Item if found, else nullptr
+     */
+    template<typename ItemType>
+    ItemType* getChild(const QString& path) {
+        return dynamic_cast<ItemType*>(getChild(path));
+    }
 
     /** Returns the number of children */
     virtual int getChildCount() const;
