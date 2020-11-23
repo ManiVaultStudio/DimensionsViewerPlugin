@@ -62,7 +62,7 @@ public:
                 QSignalBlocker signalBlocker(_widget);
 
                 if (static_cast<tree::Item::Column>(topLeft.column()) == tree::Item::Column::Flags) {
-                    _widget->setVisible(topLeft.flags() & Qt::ItemIsEditable);
+                    //_widget->setVisible(topLeft.flags() & Qt::ItemIsEditable);
                     _widget->setEnabled(topLeft.flags() & Qt::ItemIsEnabled);
                 }
 

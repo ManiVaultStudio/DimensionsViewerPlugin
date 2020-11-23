@@ -38,7 +38,7 @@ public: // Enumerations
     /** Maps child name to child enum */
     static QMap<QString, Child> const children;
 
-public: // Construction
+protected: // Construction
 
 	/**
 	 * Constructor

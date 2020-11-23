@@ -53,11 +53,9 @@ ProfileWidget::ProfileWidget(QWidget* parent) :
     }));
 
     addWidgetMapper("RangeType", QSharedPointer<WidgetMapper>::create(_ui->rangeTypeComboBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
-        if (initialize) {
+        if (initialize)
             return;
-        }
 
-        _ui->rangeTypeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
         _ui->rangeTypeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
         _ui->rangeTypeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));

@@ -15,7 +15,6 @@ Differential::Differential(Item* parent, const QString& name) :
     _operandChannelNames(),
     _operandChannelName()
 {
-    _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
     _flags.setFlag(Qt::ItemIsSelectable);
 }
@@ -40,6 +39,8 @@ Differential::Differential(Item* parent, const QString& name) :
 
 void Differential::accept(tree::Visitor* visitor) const
 {
+    Q_ASSERT(visitor != nullptr);
+
     visitor->visitTreeItem(this);
 }
 

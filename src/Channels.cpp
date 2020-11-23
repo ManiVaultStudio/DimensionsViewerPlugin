@@ -17,7 +17,6 @@ const QMap<QString, Channels::Child> Channels::children = {
 Channels::Channels(Item* parent, const QString& datasetName, const QString& dataName) :
     Item(parent, "Channels", "Channels")
 {
-    _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
 
     _children << new Channel(this, 0, children.key(Channels::Child::Dataset), true, false, datasetName);
@@ -63,7 +62,9 @@ void Channels::initialize()
     });
 
     synchronize();
-    
+
+    //getChild("Dataset/Linked")->unsetFlag(...);
+    /*
     QObject::connect(getChild("../../DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
         getChild("Dataset/DatasetNames")->copy(getChild("../../DatasetNames"));
     });
@@ -74,7 +75,7 @@ void Channels::initialize()
         getChild("Dataset/DatasetName")->setFlag(Qt::ItemIsEnabled, datasetNames.count() >= 2);
     });
 
-    getChild("Dataset/Linked")->unsetFlag(Qt::ItemIsEditable);
+    
 
     QObject::connect(getChild("Dataset/DatasetName"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
         const auto datasetName = getChild("Dataset/DatasetName")->getValue().toString();
@@ -89,7 +90,7 @@ void Channels::initialize()
         configurationsModel->selectRow(datasetName);
     });
 
-    /*const auto onChannelEnabled = [this](const QString& channelName) {
+    const auto onChannelEnabled = [this](const QString& channelName) {
         getChild(channelName)->setFlag(Qt::ItemIsEnabled, getChild(QString("%1/Enabled").arg(channelName))->getValue().toBool());
     };
 
@@ -108,6 +109,8 @@ void Channels::initialize()
 
 void Channels::accept(tree::Visitor* visitor) const
 {
+    Q_ASSERT(visitor != nullptr);
+
     visitor->visitTreeItem(this);
 }
 

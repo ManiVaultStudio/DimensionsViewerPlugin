@@ -1,25 +1,18 @@
 #include "Configurations.h"
 #include "Configuration.h"
-#include "StandardItems.h"
 #include "Visitor.h"
 
 #include <QMessageBox>
 
-const QMap<QString, Configurations::Child> Configurations::children = {
-    { "DatasetNames", Configurations::Child::DatasetNames }
-};
-
-Configurations::Configurations() :
-    Item(nullptr, "Configurations", "Configurations")
+Configurations::Configurations(Item* parent) :
+    Item(parent, "Configurations", "Configurations")
 {
-    _flags.setFlag(Qt::ItemIsEditable);
-    _flags.setFlag(Qt::ItemIsEnabled);
-
-    _children << new tree::StringList(this, "DatasetNames");
 }
 
 void Configurations::accept(tree::Visitor* visitor) const
 {
+    Q_ASSERT(visitor != nullptr);
+
     visitor->visitTreeItem(this);
 }
 
@@ -27,21 +20,18 @@ void Configurations::add(const QString& datasetName, const QString& dataName)
 {
     Q_ASSERT(Item::model != nullptr);
 
+    Q_ASSERT(!datasetName.isEmpty());
+    Q_ASSERT(!dataName.isEmpty());
+
     const auto presentError = [](const QString& reason) {
         QMessageBox::critical(nullptr, "Unable to add configuration", reason);
     };
 
     try
     {
-        if (datasetName.isEmpty())
-            throw std::runtime_error("Dataset name is not set");
-
-        if (dataName.isEmpty())
-            throw std::runtime_error("Data name is not set");
-
         _children << new Configuration(this, datasetName, dataName);
 
-        _children.last()->setModelIndex(Item::model->index(getChildCount() - 1, 0));
+        _children.last()->setModelIndex(Item::model->index(getChildCount() - 1, 0, _modelIndex));
     }
     catch (std::exception exception)
     {

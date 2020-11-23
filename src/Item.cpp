@@ -15,7 +15,7 @@ const QMap<QString, Item::Column> Item::children = {
     { "Flags", Item::Column::Flags }
 };
 
-Item::Item(Item* parent, const QString& type, const QString& name, const Qt::ItemFlags& flags /*= Qt::ItemIsEditable | Qt::ItemIsEnabled*/) :
+Item::Item(Item* parent, const QString& type, const QString& name, const Qt::ItemFlags& flags /*= Qt::ItemIsEnabled*/) :
     QObject(parent),
     _modelIndex(),
     _name(name),

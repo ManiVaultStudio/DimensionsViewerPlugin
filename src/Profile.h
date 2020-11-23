@@ -139,7 +139,7 @@ public: // Enumerations
         return rangeTypeNames;
     }
 
-public: // Construction
+protected: // Construction
 
     /**
      * Constructor

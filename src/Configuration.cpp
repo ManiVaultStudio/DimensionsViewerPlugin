@@ -16,11 +16,10 @@ const QMap<QString, Configuration::Child> Configuration::children = {
 };
 
 Configuration::Configuration(Item* parent, const QString& datasetName, const QString& dataName) :
-    Item(parent, "Configuration", datasetName)
+    Item(parent, "Configuration", "Configuration")
 {
     noConfigurations++;
 
-    _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
     _flags.setFlag(Qt::ItemIsSelectable);
 
@@ -33,5 +32,7 @@ Configuration::Configuration(Item* parent, const QString& datasetName, const QSt
 
 void Configuration::accept(tree::Visitor* visitor) const
 {
+    Q_ASSERT(visitor != nullptr);
+
     visitor->visitTreeItem(this);
 }

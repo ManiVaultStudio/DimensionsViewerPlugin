@@ -69,8 +69,6 @@ StylingWidget::StylingWidget(QWidget* parent) :
             return;
         }
 
-        _ui->lineTypeProfileComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->lineTypeProfileComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->lineTypeProfileComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         _ui->lineTypeProfileComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
     }));
@@ -82,8 +80,6 @@ StylingWidget::StylingWidget(QWidget* parent) :
             return;
         }
 
-        _ui->lineTypeRangeComboBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->lineTypeRangeComboBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->lineTypeRangeComboBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         _ui->lineTypeRangeComboBox->setCurrentText(index.data(Qt::DisplayRole).toString());
     }));
@@ -95,8 +91,6 @@ StylingWidget::StylingWidget(QWidget* parent) :
             return;
         }
 
-        _ui->renderPointsCheckBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->renderPointsCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->renderPointsCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         _ui->renderPointsCheckBox->setChecked(index.data(Qt::EditRole).toBool());
     }));
@@ -109,8 +103,6 @@ StylingWidget::StylingWidget(QWidget* parent) :
             return;
         }
 
-        _ui->opacitySpinBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->opacitySpinBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->opacitySpinBox->setToolTip(index.data(Qt::ToolTipRole).toString());
         _ui->opacitySpinBox->setValue(index.data(Qt::EditRole).toFloat());
     }));
@@ -123,8 +115,6 @@ StylingWidget::StylingWidget(QWidget* parent) :
             return;
         }
 
-        _ui->opacitySlider->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->opacitySlider->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->opacitySlider->setToolTip(index.data(Qt::ToolTipRole).toString());
         _ui->opacitySlider->setValue(index.data(Qt::EditRole).toFloat() * 100.0f);
     }));
@@ -137,8 +127,6 @@ StylingWidget::StylingWidget(QWidget* parent) :
             return;
         }
 
-        _ui->colorPushButton->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->colorPushButton->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->colorPushButton->setToolTip(index.data(Qt::ToolTipRole).toString());
         _ui->colorPushButton->setColor(index.data(Qt::EditRole).value<QColor>());
     }));

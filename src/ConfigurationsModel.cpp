@@ -9,12 +9,12 @@
 ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin) :
     QAbstractItemModel(static_cast<QObject*>(dimensionsViewerPlugin)),
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
-	_configurations(),
+	_root(),
 	_selectionModel(this)
 {
     tree::Item::setModel(this);
-
-    _configurations.setModelIndex(QModelIndex());
+    
+    _root.setModelIndex(QModelIndex());
 }
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
@@ -25,7 +25,7 @@ int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/)
         return 0;
 
     if (!parent.isValid())
-        parentItem = const_cast<Configurations*>(&_configurations);
+        parentItem = const_cast<Root*>(&_root);
     else
         parentItem = static_cast<tree::Item*>(parent.internalPointer());
 
@@ -47,7 +47,7 @@ QVariant ConfigurationsModel::data(const QModelIndex& index, int role /*= Qt::Di
         return QVariant();
     */
 
-    const auto item = index.parent().isValid() ? getItem(index) : &_configurations;
+    const auto item = index.parent().isValid() ? getItem(index) : &_root;
 
     return getItem(index)->getData(index, role);
 }
@@ -62,12 +62,6 @@ bool ConfigurationsModel::setData(const QModelIndex& index, const QVariant& valu
     if (item->setData(index, value, role)) {
         emit dataChanged(index, index);
         emit item->dataChanged(index);
-
-        const auto selectedConfiguration = getSelectedConfiguration();
-
-        if (selectedConfiguration != nullptr) {
-            emit configurationChanged(selectedConfiguration);
-        }
 
         return true;
     }
@@ -99,7 +93,7 @@ QModelIndex ConfigurationsModel::index(int row, int column, const QModelIndex& p
     tree::Item* parentItem = nullptr;
 
     if (!parent.isValid())
-        parentItem = const_cast<Configurations*>(&_configurations);
+        parentItem = const_cast<Root*>(&_root);
     else
         parentItem = static_cast<tree::Item*>(parent.internalPointer());
 
@@ -119,7 +113,7 @@ QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
     auto childItem  = getItem(index);
     auto parentItem = childItem->getParent();
 
-    if (parentItem == &_configurations || !parentItem)
+    if (parentItem == &_root || !parentItem)
         return QModelIndex();
 
     return createIndex(parentItem->getChildIndex(), 0, parentItem);
@@ -129,36 +123,38 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 {
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
 
-    auto configuration = _configurations.getConfigurationByDataName(dataName);
+    auto configurations = reinterpret_cast<Configurations*>(_root.getChild("Configurations"));
+    auto configuration = configurations->getConfigurationByDataName(dataName);
 
     if (configuration == nullptr) {
-        const auto noConfigurations = _configurations.getChildCount();
+        const auto noConfigurations = configurations->getChildCount();
 
-        beginInsertRows(QModelIndex(), noConfigurations, noConfigurations);
+        beginInsertRows(configurations->getModelIndex(), noConfigurations, noConfigurations);
         {
-            _configurations.add(datasetName, dataName);
+            configurations->add(datasetName, dataName);
         }
         endInsertRows();
         
-        auto datasetNames = _configurations.getChild("DatasetNames")->getValue().toStringList();
+        /*
+        auto datasetNames = _root.getChild("DatasetNames")->getValue().toStringList();
 
         datasetNames << datasetName;
 
-        _configurations.getChild("DatasetNames")->setValue(datasetNames);
+        _root.getChild("DatasetNames")->setValue(datasetNames);
 
-        if (_configurations.getChildCount() == 1)
+        if (_root.getChildCount() == 1)
             selectRow(0);
-
+        */
     } else {
 
-        auto subset1DatasetNames = configuration->getChild("Channels/Subset1/DatasetNames")->getValue().toStringList();
+        /*auto subset1DatasetNames = configuration->getChild("Channels/Subset1/DatasetNames")->getValue().toStringList();
         auto subset2DatasetNames = configuration->getChild("Channels/Subset2/DatasetNames")->getValue().toStringList();
 
         subset1DatasetNames << datasetName;
         subset2DatasetNames << datasetName;
 
         configuration->getChild("Channels/Subset1/DatasetNames")->setValue(subset1DatasetNames);
-        configuration->getChild("Channels/Subset2/DatasetNames")->setValue(subset2DatasetNames);
+        configuration->getChild("Channels/Subset2/DatasetNames")->setValue(subset2DatasetNames);*/
     } 
 }
 
@@ -202,34 +198,14 @@ void ConfigurationsModel::selectRow(const QString& datasetName)
         selectRow(hits.first().parent().row());
 }
 
-Configuration* ConfigurationsModel::getConfiguration(const QModelIndex& index) const
+tree::Item* ConfigurationsModel::getItem(const QModelIndex& modelIndex) const
 {
-    return reinterpret_cast<Configuration*>(_configurations.getChild(index.row()));
-}
-
-Configuration* ConfigurationsModel::getSelectedConfiguration() const
-{
-	const auto selectedRows = _selectionModel.selectedRows();
-
-	if (selectedRows.isEmpty())
-		return nullptr;
-
-	return getConfiguration(selectedRows.first());
-}
-
-const Configurations& ConfigurationsModel::getConfigurations() const
-{
-    return _configurations;
-}
-
-tree::Item* ConfigurationsModel::getItem(const QModelIndex& index) const
-{
-    if (index.isValid()) {
-        auto treeItem = static_cast<tree::Item*>(index.internalPointer());
+    if (modelIndex.isValid()) {
+        auto treeItem = static_cast<tree::Item*>(modelIndex.internalPointer());
 
         if (treeItem)
             return treeItem;
     }
 
-    return static_cast<tree::Item*>(const_cast<Configurations*>(&_configurations));
+    return static_cast<tree::Item*>(const_cast<Root*>(&_root));
 }

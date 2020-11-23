@@ -28,7 +28,6 @@ const QMap<QString, Profile::RangeType> Profile::rangeTypes = {
 Profile::Profile(Item* parent, const QString& name, const ProfileType& profileType /*= ProfileType::Mean*/) :
     Item(parent, "Profile", name)
 {
-    _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
 
     const auto profileTypeNames = getProfileTypeNames();
@@ -70,5 +69,7 @@ void Profile::initialize()
 
 void Profile::accept(tree::Visitor* visitor) const
 {
+    Q_ASSERT(visitor != nullptr);
+
     visitor->visitTreeItem(this);
 }

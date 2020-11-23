@@ -26,14 +26,15 @@ file(GLOB PLUGIN
 )
 
 file(GLOB MODEL 
-	src/Channel.*
-	src/Channels.*
-	src/Configuration.*
+	src/Root.*
 	src/Configurations.*
-	src/ConfigurationsModel.*
+	src/Configuration.*
+	src/Channels.*
+	src/Channel.*
 	src/Differential.*
 	src/Profile.*
 	src/Styling.*
+	src/ConfigurationsModel.*
 	src/SpecVisitor.*
 )
 

@@ -66,7 +66,7 @@ public: // Construction
      * @param type Type of the tree item
      * @param name Name of the tree item
      */
-    Item(Item* parent, const QString& type, const QString& name, const Qt::ItemFlags& flags = Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    Item(Item* parent, const QString& type, const QString& name, const Qt::ItemFlags& flags = Qt::ItemIsEnabled);
 
 public: // Model API
 

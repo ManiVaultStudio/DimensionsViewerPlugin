@@ -149,7 +149,7 @@ public: // Line types model
         static const QSize iconSize;
     };
 
-public: // Construction
+protected: // Construction
 
     /**
      * Constructor

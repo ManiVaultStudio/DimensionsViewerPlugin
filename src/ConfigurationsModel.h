@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Configurations.h"
+#include "Root.h"
 
 #include <QAbstractItemModel>
 #include <QItemSelectionModel>
@@ -121,32 +121,23 @@ public: // Row selection
 public: // Miscellaneous
 
 	/** Returns the selection model */
-	QItemSelectionModel& getSelectionModel() { return _selectionModel; }
-
-    /** TODO */
-    Configuration* getConfiguration(const QModelIndex& index) const;
-
-        /** TODO */
-	Configuration* getSelectedConfiguration() const;
-
-    /** Get configurations */
-    const Configurations& getConfigurations() const;
+	QItemSelectionModel& getSelectionModel() {
+        return _selectionModel;
+    }
 
 private:
-    tree::Item* getItem(const QModelIndex& index) const;
-
-signals:
 
     /**
-     * Signals that a configuration has changed
-     * @param configuration Configuration that changed
+     * Get tree item by \p modelIndex
+     * @param modelIndex Model index
+     * @return Tree item
      */
-    void configurationChanged(const Configuration* configuration);
+    tree::Item* getItem(const QModelIndex& modelIndex) const;
 
 private:
-    DimensionsViewerPlugin*     _dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
-    Configurations              _configurations;				/** Configurations data source */
-    QItemSelectionModel         _selectionModel;				/** Selection model */
+    DimensionsViewerPlugin*     _dimensionsViewerPlugin;    /** Pointer to dimensions viewer plugin instance */
+    Root                        _root;                      /** Root tree item */
+    QItemSelectionModel         _selectionModel;            /** Selection model */
 
     friend class Configurations;
     friend class Item;

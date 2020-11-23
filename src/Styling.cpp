@@ -27,7 +27,6 @@ const QSize Styling::LineTypesModel::iconSize = QSize(24, 12);
 Styling::Styling(Item* parent, const QString& name) :
     Item(parent, "Styling", name)
 {
-    _flags.setFlag(Qt::ItemIsEditable);
     _flags.setFlag(Qt::ItemIsEnabled);
 
     _children << new tree::StringList(this, "Line types", QStringList(lineTypes.keys()));
@@ -40,6 +39,8 @@ Styling::Styling(Item* parent, const QString& name) :
 
 void Styling::accept(tree::Visitor* visitor) const
 {
+    Q_ASSERT(visitor != nullptr);
+
     visitor->visitTreeItem(this);
 }
 
