@@ -128,9 +128,10 @@ QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
-    const auto hits     = match(index(0, to_ul(Configuration::Child::DataName)), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
 
-    if (hits.isEmpty()) {
+    auto configuration = _configurations.getConfigurationByDataName(dataName);
+
+    if (configuration == nullptr) {
         const auto noConfigurations = _configurations.getChildCount();
 
         beginInsertRows(QModelIndex(), noConfigurations, noConfigurations);
@@ -143,31 +144,21 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 
         datasetNames << datasetName;
 
-        setData(index(to_ul(Configurations::Child::DatasetNames), to_ul(tree::Item::Column::Value)), datasetNames, Qt::EditRole);
+        _configurations.getChild("DatasetNames")->setValue(datasetNames);
 
         if (_configurations.getChildCount() == 1)
             selectRow(0);
 
     } else {
-        /*const auto configurationIndex   = hits.first().siblingAtColumn(0);
-        const auto channelsIndex        = index(0, 0, configurationIndex);
 
-        Channels::Rows channels;
+        auto subset1DatasetNames = configuration->getChild("Channels/Subset1/DatasetNames")->getValue().toStringList();
+        auto subset2DatasetNames = configuration->getChild("Channels/Subset2/DatasetNames")->getValue().toStringList();
 
-        channels << Channels::Row::Subset1;
-        channels << Channels::Row::Subset2;
-        channels << Channels::Row::Differential;
+        subset1DatasetNames << datasetName;
+        subset2DatasetNames << datasetName;
 
-        for (auto channel : channels) {
-            const auto channelIndex         = index(to_ul(channel), 0, channelsIndex);
-            const auto datasetNamesIndex    = channelIndex.siblingAtColumn(to_ul(ChannelItem::Column::DatasetNames));
-
-            auto datasetNames = datasetNamesIndex.data(Qt::EditRole).toStringList();
-
-            datasetNames << datasetName;
-
-            setData(datasetNamesIndex, datasetNames);
-        }*/
+        configuration->getChild("Channels/Subset1/DatasetNames")->setValue(subset1DatasetNames);
+        configuration->getChild("Channels/Subset2/DatasetNames")->setValue(subset2DatasetNames);
     } 
 }
 

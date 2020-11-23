@@ -39,6 +39,10 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         getModel().setData(getChild(to_ul(Channel::Child::Linked), to_ul(Channel::Column::Value)), checked);
     });
     
+    /*addWidgetMapper("DatasetNameFlags", QSharedPointer<WidgetMapper>::create(this, [this](const QPersistentModelIndex& index, const bool& initialize) {
+        if (initialize)
+            return;
+    }));*/
 
     addWidgetMapper("Enabled", QSharedPointer<WidgetMapper>::create(_ui->enabledCheckBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
@@ -133,8 +137,10 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
     _ui->profileWidget->setModelIndex(getChild(static_cast<int>(Channel::Child::Profile)));
     _ui->stylingPushButton->setModelIndex(getChild(static_cast<int>(Channel::Child::Styling)));
 
-    getWidgetMapper("Enabled")->setModelIndex(getChild(to_ul(Channel::Child::Enabled), to_ul(Channel::Column::Value)));
-    getWidgetMapper("Name")->setModelIndex(getSiblingAtColumn(to_ul(tree::Item::Column::Name)));
+    //getWidgetMapper("Flags")->setModelIndex(getSiblingAtColumn(to_ul(tree::Item::Column::Flags)));
+
+    getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Child::Enabled)));
+    getWidgetMapper("Name")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Item::Column::Name)));
     getWidgetMapper("DatasetNames")->setModelIndex(getChild(to_ul(Channel::Child::DatasetNames), to_ul(Channel::Column::Value)));
     getWidgetMapper("DatasetName")->setModelIndex(getChild(to_ul(Channel::Child::DatasetName)));
     getWidgetMapper("Differential")->setModelIndex(getChild(to_ul(Channel::Child::Differential)));

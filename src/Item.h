@@ -184,17 +184,19 @@ public: // Value getter/setter
 
     /**
      * Get value for \p role
+     * @param column Data column
      * @param role Data role
      * @return Value in variant form
      */
-    virtual QVariant getValue(const int& role = Qt::EditRole) const;
+    virtual QVariant getValue(const Column& column = Column::Value, const int& role = Qt::EditRole) const;
 
     /**
      * Set \p value for \p role
      * @param value Value in variant form
+     * @param column Data column
      * @param role Data role
      */
-    virtual void setValue(const QVariant& value, const int& role = Qt::EditRole);
+    virtual void setValue(const QVariant& value, const Column& column = Column::Value, const int& role = Qt::EditRole);
 
 public: // Flags getter/setter
 

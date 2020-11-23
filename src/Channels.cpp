@@ -88,6 +88,22 @@ void Channels::initialize()
 
         configurationsModel->selectRow(datasetName);
     });
+
+    /*const auto onChannelEnabled = [this](const QString& channelName) {
+        getChild(channelName)->setFlag(Qt::ItemIsEnabled, getChild(QString("%1/Enabled").arg(channelName))->getValue().toBool());
+    };
+
+    QObject::connect(getChild("Dataset/Enabled"), &tree::String::dataChanged, [this, onChannelEnabled](const QModelIndex& modelIndex) {
+        onChannelEnabled("Dataset");
+    });*/
+    //QObject::connect(getChild("Subset1/Enabled"), &tree::String::dataChanged, update);
+    //QObject::connect(getChild("Subset1/DatasetNames"), &tree::String::dataChanged, update);
+    //QObject::connect(getChild("Subset2/Enabled"), &tree::String::dataChanged, update);
+    //QObject::connect(getChild("Subset2/DatasetNames"), &tree::String::dataChanged, update);
+
+
+    //QObject::connect(getChild("Differential/Enabled"), &tree::String::dataChanged, update);
+    //QObject::connect(getChild("Differential/DatasetNames"), &tree::String::dataChanged, update);
 }
 
 void Channels::accept(tree::Visitor* visitor) const

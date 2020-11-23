@@ -43,6 +43,8 @@ bool Integral::setData(const QModelIndex& index, const QVariant& value, const st
         {
             if (value.toInt() != _value) {
                 _value = value.toInt();
+                _modified++;
+
                 return true;
             }
             

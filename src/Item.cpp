@@ -299,12 +299,12 @@ bool Item::isLeaf() const
     return getChildCount() == 0;
 }
 
-QVariant Item::getValue(const int& role /*= Qt::EditRole*/) const
+QVariant Item::getValue(const Column& column /*= Column::Value*/, const int& role /*= Qt::EditRole*/) const
 {
-    return getData(Column::Value, role);
+    return getData(column, role);
 }
 
-void Item::setValue(const QVariant& value, const int& role /*= Qt::EditRole*/)
+void Item::setValue(const QVariant& value, const Column& column /*= Column::Value*/, const int& role /*= Qt::EditRole*/)
 {
     setData(Column::Value, value, role);
 }

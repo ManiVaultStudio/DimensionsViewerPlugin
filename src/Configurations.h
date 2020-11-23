@@ -47,5 +47,12 @@ public: // Miscellaneous
      */
     void add(const QString& datasetName, const QString& dataName);
 
+    /**
+     * Get configuration by \p dataName
+     * @param dataName Name of the points data
+     * @return Configuration
+     */
+    Configuration* getConfigurationByDataName(const QString& dataName);
+
     friend class ConfigurationsModel;
 };

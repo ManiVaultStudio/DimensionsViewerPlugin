@@ -52,3 +52,17 @@ void Configurations::add(const QString& datasetName, const QString& dataName)
         presentError("Unhandled exception");
     }
 }
+
+Configuration* Configurations::getConfigurationByDataName(const QString& dataName)
+{
+    Q_ASSERT(!dataName.isEmpty());
+
+    for (auto child : _children) {
+        const auto type = child->getValue(Column::Type).toString();
+
+        if (type == "Configuration" && child->getChild("DataName")->getValue().toString() == dataName)
+            return reinterpret_cast<Configuration*>(child);
+    }
+
+    return nullptr;
+}

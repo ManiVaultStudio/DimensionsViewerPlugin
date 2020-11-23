@@ -43,6 +43,8 @@ bool StringList::setData(const QModelIndex& index, const QVariant& value, const 
         {
             if (value.toStringList() != _value) {
                 _value = value.toStringList();
+                _modified++;
+
                 return true;
             }
             

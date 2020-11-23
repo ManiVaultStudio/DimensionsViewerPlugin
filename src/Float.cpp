@@ -43,6 +43,8 @@ bool Float::setData(const QModelIndex& index, const QVariant& value, const std::
         {
             if (value.toFloat() != _value) {
                 _value = value.toFloat();
+                _modified++;
+
                 return true;
             }
             

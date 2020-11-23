@@ -42,6 +42,8 @@ bool String::setData(const QModelIndex& index, const QVariant& value, const std:
         {
             if (value.toString() != _value) {
                 _value = value.toString();
+                _modified++;
+
                 return true;
             }
             

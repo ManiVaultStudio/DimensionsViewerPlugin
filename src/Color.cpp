@@ -42,6 +42,9 @@ bool Color::setData(const QModelIndex& index, const QVariant& value, const std::
         case Qt::EditRole:
         {
             if (value.value<QColor>() != _value) {
+                _value = value.value<QColor>();
+                _modified++;
+
                 return true;
             }
 

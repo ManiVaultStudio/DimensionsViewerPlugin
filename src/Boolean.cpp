@@ -43,6 +43,8 @@ bool Boolean::setData(const QModelIndex& index, const QVariant& value, const std
         {
             if (value.toBool() != _value) {
                 _value = value.toBool();
+                _modified++;
+
                 return true;
             }
 
