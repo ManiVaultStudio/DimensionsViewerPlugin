@@ -67,6 +67,15 @@ void Channels::initialize()
     QObject::connect(getChild("../../DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
         getChild("Dataset/DatasetNames")->copy(getChild("../../DatasetNames"));
     });
+
+    QObject::connect(getChild("Dataset/DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
+        if (static_cast<Column>(modelIndex.column()) != Column::Value)
+            return;
+
+        const auto datasetNames = getChild("Dataset/DatasetNames")->getData(Column::Value, Qt::EditRole).toStringList();
+
+        getChild("Dataset/DatasetName")->setFlag(Qt::ItemIsEnabled, datasetNames.count() >= 2);
+    });
 }
 
 void Channels::accept(tree::Visitor* visitor) const

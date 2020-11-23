@@ -21,14 +21,14 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
         getModel().setData(getChild(to_ul(Channel::Child::Enabled), to_ul(Channel::Column::Value)), static_cast<bool>(state));
     });
     
-    /*
     QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
         if (_modelIndex.row() == 0)
             getModel().selectRow(currentIndex);
         else
-            setData(to_ul(ChannelItem::Column::DatasetName), _ui->datasetNameComboBox->currentText());
+            setData(to_ul(Channel::Child::DatasetName), _ui->datasetNameComboBox->currentText());
     });
 
+    /*
     QObject::connect(_ui->colorPushButton, &ColorPickerPushButton::colorChanged, [this](const QColor& color) {
         const auto stylingIndex = getChild(to_ul(Channel::Row::Styling));
 

@@ -17,12 +17,11 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    tree::Item::setModel(&_model);
     Channel::setDimensionsViewerPlugin(this);
     TreeItemWidget::setDimensionsViewerPlugin(this);
 
-	_viewerWidget = new ViewerWidget(this);
-	_configurationWidget = new ConfigurationWidget(this);
+	_viewerWidget           = new ViewerWidget(this);
+	_configurationWidget    = new ConfigurationWidget(this);
 }
 
 void DimensionsViewerPlugin::init()

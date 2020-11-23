@@ -70,6 +70,56 @@ void Channel::initialize()
     updateFlags(_modelIndex);
 }
 
+void Channel::accept(tree::Visitor* visitor) const
+{
+    visitor->visitTreeItem(this);
+}
+
+void Channel::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
+{
+    Q_ASSERT(dimensionsViewerPlugin != nullptr);
+
+    Channel::dimensionsViewerPlugin = dimensionsViewerPlugin;
+}
+
+std::int32_t Channel::getNoDimensions() const
+{
+    if (_points == nullptr)
+        return 0;
+
+    return _points->getNumDimensions();
+}
+
+std::int32_t Channel::getNoPoints() const
+{
+    if (_points == nullptr)
+        return 0;
+
+    return _points->getNumPoints();
+}
+
+void Channel::resolvePoints()
+{
+    Q_ASSERT(Channel::dimensionsViewerPlugin != nullptr);
+
+    auto core = Channel::dimensionsViewerPlugin->getCore();
+
+    const auto datasetName = _children[to_ul(Channel::Child::DatasetName)]->getData(Column::Value, Qt::EditRole).toString();
+
+    if (datasetName.isEmpty())
+        return;
+
+    _points = &dynamic_cast<Points&>(core->requestData(datasetName));
+
+    model->setData(model->index(to_ul(Child::NoPoints), to_ul(Item::Column::Value), _modelIndex), _points->getNumPoints());
+    model->setData(model->index(to_ul(Child::NoDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());
+}
+
+const Channels* Channel::getChannels() const
+{
+    return dynamic_cast<Channels*>(_parent);
+}
+
 /*
 Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 {
@@ -132,7 +182,7 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 
             break;
         }
-        
+
         case Column::DatasetNames:
         case Column::DatasetName:
         {
@@ -311,56 +361,6 @@ Qt::ItemFlags Channel::getFlags(const QModelIndex& index) const
 }
 
 */
-
-void Channel::accept(tree::Visitor* visitor) const
-{
-    visitor->visitTreeItem(this);
-}
-
-void Channel::setDimensionsViewerPlugin(DimensionsViewerPlugin* dimensionsViewerPlugin)
-{
-    Q_ASSERT(dimensionsViewerPlugin != nullptr);
-
-    Channel::dimensionsViewerPlugin = dimensionsViewerPlugin;
-}
-
-std::int32_t Channel::getNoDimensions() const
-{
-    if (_points == nullptr)
-        return 0;
-
-    return _points->getNumDimensions();
-}
-
-std::int32_t Channel::getNoPoints() const
-{
-    if (_points == nullptr)
-        return 0;
-
-    return _points->getNumPoints();
-}
-
-void Channel::resolvePoints()
-{
-    Q_ASSERT(Channel::dimensionsViewerPlugin != nullptr);
-
-    auto core = Channel::dimensionsViewerPlugin->getCore();
-
-    const auto datasetName = _children[to_ul(Channel::Child::DatasetName)]->getData(Column::Value, Qt::EditRole).toString();
-
-    if (datasetName.isEmpty())
-        return;
-
-    _points = &dynamic_cast<Points&>(core->requestData(datasetName));
-
-    model->setData(model->index(to_ul(Child::NoPoints), to_ul(Item::Column::Value), _modelIndex), _points->getNumPoints());
-    model->setData(model->index(to_ul(Child::NoDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());
-}
-
-const Channels* Channel::getChannels() const
-{
-    return dynamic_cast<Channels*>(_parent);
-}
 
 //void Channel::updateSpec()
 //{

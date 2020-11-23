@@ -13,6 +13,9 @@ ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewe
 	_selectionModel(this),
     _datasetNames()
 {
+    tree::Item::setModel(this);
+
+    _configurations.setModelIndex(QModelIndex());
 }
 
 int ConfigurationsModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
