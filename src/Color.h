@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Item.h"
+#include "StandardItem.h"
 
 #include <QColor>
 
 namespace tree {
 
-class Color : public Item
+class Color : public StandardItem
 {
 public:
 
@@ -16,7 +16,7 @@ public: // Model API
 
     QVariant getData(const QModelIndex& index, const int& role) const override;
 
-    void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
+    bool setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole) override;
 
 public: // Visitor API
 

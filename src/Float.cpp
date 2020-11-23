@@ -4,7 +4,7 @@
 namespace tree {
 
 Float::Float(Item* parent, const QString& name, const float& value /*= 0.0f*/) :
-    Item(parent, "Float", name),
+    StandardItem(parent, "Float", name),
     _value(value)
 {
 }
@@ -32,18 +32,22 @@ QVariant Float::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void Float::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool Float::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) != Column::Value) {
-        Item::setData(index, value, role);
-        return;
-    }
+    if (static_cast<Column>(index.column()) != Column::Value)
+        return Item::setData(index, value, role);
 
     switch (role)
     {
         case Qt::EditRole:
-            _value = value.toFloat();
+        {
+            if (value.toFloat() != _value) {
+                _value = value.toFloat();
+                return true;
+            }
+            
             break;
+        }
 
         case Qt::DisplayRole:
             break;
@@ -51,6 +55,8 @@ void Float::setData(const QModelIndex& index, const QVariant& value, const std::
         default:
             break;
     }
+
+    return false;
 }
 
 void Float::accept(Visitor* visitor) const

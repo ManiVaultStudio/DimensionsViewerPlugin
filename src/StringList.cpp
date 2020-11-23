@@ -4,7 +4,7 @@
 namespace tree {
 
 StringList::StringList(Item* parent, const QString& name, const QStringList& value /*= {}*/) :
-    Item(parent, "StringList", name),
+    StandardItem(parent, "StringList", name),
     _value(value)
 {
 }
@@ -32,18 +32,22 @@ QVariant StringList::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void StringList::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool StringList::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) != Column::Value) {
-        Item::setData(index, value, role);
-        return;
-    }
+    if (static_cast<Column>(index.column()) != Column::Value)
+        return Item::setData(index, value, role);
 
     switch (role)
     {
         case Qt::EditRole:
-            _value = value.toStringList();
+        {
+            if (value.toStringList() != _value) {
+                _value = value.toStringList();
+                return true;
+            }
+            
             break;
+        }
 
         case Qt::DisplayRole:
             break;
@@ -51,6 +55,8 @@ void StringList::setData(const QModelIndex& index, const QVariant& value, const 
         default:
             break;
     }
+
+    return false;
 }
 
 void StringList::accept(Visitor* visitor) const

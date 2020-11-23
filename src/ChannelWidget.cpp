@@ -22,10 +22,7 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     });
     
     QObject::connect(_ui->datasetNameComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int currentIndex) {
-        if (_modelIndex.row() == 0)
-            getModel().selectRow(currentIndex);
-        else
-            setData(to_ul(Channel::Child::DatasetName), _ui->datasetNameComboBox->currentText());
+        getModel().setData(getChild(to_ul(Channel::Child::DatasetName), to_ul(Channel::Column::Value)), _ui->datasetNameComboBox->currentText());
     });
 
     /*
@@ -45,24 +42,16 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
 
     addWidgetMapper("Enabled", QSharedPointer<WidgetMapper>::create(_ui->enabledCheckBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->enabledCheckBox->setEnabled(false);
-            _ui->enabledCheckBox->setChecked(false);
             _ui->enabledCheckBox->setText("Channel");
-
             return;
         }
 
-        _ui->enabledCheckBox->setVisible(index.flags() & Qt::ItemIsEditable);
-        _ui->enabledCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
         _ui->enabledCheckBox->setChecked(index.data(Qt::EditRole).toBool());
         _ui->enabledCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
     }));
 
     addWidgetMapper("Name", QSharedPointer<WidgetMapper>::create(_ui->enabledCheckBox, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
-            _ui->enabledCheckBox->setEnabled(false);
-            _ui->enabledCheckBox->setChecked(false);
-
             return;
         }
 

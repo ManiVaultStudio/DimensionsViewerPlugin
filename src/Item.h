@@ -105,7 +105,7 @@ public: // Model API
      * @param value Data value in variant form
      * @param role Data role
      */
-    virtual void setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
+    virtual bool setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
 
     /**
      * Set data for \p column
@@ -113,7 +113,7 @@ public: // Model API
      * @param value Data value in variant form
      * @param role Data role
      */
-    void setData(const Column& column, const QVariant& value, const std::int32_t& role = Qt::EditRole);
+    bool setData(const Column& column, const QVariant& value, const std::int32_t& role = Qt::EditRole);
 
     /** Gets model index */
     QModelIndex getModelIndex() const;
@@ -180,7 +180,23 @@ public: // Visitor API
     /** Accept visitor */
     virtual void accept(Visitor* visitor) const = 0;
 
-public: // Flags
+public: // Value getter/setter
+
+    /**
+     * Get value for \p role
+     * @param role Data role
+     * @return Value in variant form
+     */
+    virtual QVariant getValue(const int& role = Qt::EditRole) const;
+
+    /**
+     * Set \p value for \p role
+     * @param value Value in variant form
+     * @param role Data role
+     */
+    virtual void setValue(const QVariant& value, const int& role = Qt::EditRole);
+
+public: // Flags getter/setter
 
     /**
      * Set \p flag

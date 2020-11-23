@@ -26,11 +26,6 @@ public: // Extend roles
         IconFontCharacterRole
     };
 
-public: // Alias(es)
-
-    /** Rule function executed when data changes */
-    using RuleFunction = std::function<void(const QPersistentModelIndex& index)>;
-
 public: // Construction
 
     /**
@@ -128,9 +123,6 @@ public: // Miscellaneous
 	/** Returns the selection model */
 	QItemSelectionModel& getSelectionModel() { return _selectionModel; }
 
-    /** Returns the dataset names */
-    QStringList getDatasetNames() const { return _datasetNames; }
-
     /** TODO */
     Configuration* getConfiguration(const QModelIndex& index) const;
 
@@ -155,7 +147,6 @@ private:
     DimensionsViewerPlugin*     _dimensionsViewerPlugin;		/** Pointer to dimensions viewer plugin instance */
     Configurations              _configurations;				/** Configurations data source */
     QItemSelectionModel         _selectionModel;				/** Selection model */
-    QStringList                 _datasetNames;                  /** Dataset names */
 
     friend class Configurations;
     friend class Item;

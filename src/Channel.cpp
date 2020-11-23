@@ -51,12 +51,11 @@ Channel::Channel(Item* parent, const std::uint32_t& index, const QString& name, 
 void Channel::initialize()
 {
     const auto updateFlags = [this](const QModelIndex& modelIndex) {
-        if (static_cast<Column>(modelIndex.column()) != Column::Value)
-            return;
-
         const auto isEnabled    = getChild("Enabled")->getData(Column::Value, Qt::EditRole).toBool();
+        const auto datasetNames = getChild("DatasetNames")->getData(Column::Value, Qt::EditRole).toStringList();
         const auto isLinked     = getChild("Linked")->getData(Column::Value, Qt::EditRole).toBool();
 
+        getChild("Enabled")->setFlag(Qt::ItemIsEnabled, false);// datasetNames.count() >= 1);
         getChild("DatasetName")->setFlag(Qt::ItemIsEnabled, isEnabled);
         getChild("Linked")->setFlag(Qt::ItemIsEnabled, isEnabled);
         getChild("Profile")->setFlag(Qt::ItemIsEnabled, isEnabled && !isLinked);

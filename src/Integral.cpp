@@ -4,7 +4,7 @@
 namespace tree {
 
 Integral::Integral(Item* parent, const QString& name, const std::int32_t& value /*= 0*/) :
-    Item(parent, "Integral", name),
+    StandardItem(parent, "Integral", name),
     _value(value)
 {
 }
@@ -32,18 +32,22 @@ QVariant Integral::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void Integral::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool Integral::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) != Column::Value) {
-        Item::setData(index, value, role);
-        return;
-    }
+    if (static_cast<Column>(index.column()) != Column::Value)
+        return Item::setData(index, value, role);
 
     switch (role)
     {
         case Qt::EditRole:
-            _value = value.toInt();
+        {
+            if (value.toInt() != _value) {
+                _value = value.toInt();
+                return true;
+            }
+            
             break;
+        }
 
         case Qt::DisplayRole:
             break;
@@ -51,6 +55,8 @@ void Integral::setData(const QModelIndex& index, const QVariant& value, const st
         default:
             break;
     }
+
+    return false;
 }
 
 void Integral::accept(Visitor* visitor) const

@@ -4,7 +4,7 @@
 namespace tree {
 
 String::String(Item* parent, const QString& name, const QString& value /*= ""*/) :
-    Item(parent, "String", name),
+    StandardItem(parent, "String", name),
     _value(value)
 {
 }
@@ -30,26 +30,30 @@ QVariant String::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void String::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool String::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) != Column::Value) {
-        Item::setData(index, value, role);
-        return;
-    }
+    if (static_cast<Column>(index.column()) != Column::Value)
+        return Item::setData(index, value, role);
 
     switch (role)
     {
         case Qt::EditRole:
-            _value = value.toString();
-            break;
-
         case Qt::DisplayRole:
-            _value = value.toString();
+        {
+            if (value.toString() != _value) {
+                _value = value.toString();
+                return true;
+            }
+            
             break;
+        }
+
 
         default:
             break;
     }
+
+    return false;
 }
 
 void String::accept(Visitor* visitor) const

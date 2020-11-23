@@ -4,7 +4,7 @@
 namespace tree {
 
 Boolean::Boolean(Item* parent, const QString& name, const bool& value /*= true*/) :
-    Item(parent, "Boolean", name),
+    StandardItem(parent, "Boolean", name),
     _value(value)
 {
 }
@@ -32,18 +32,22 @@ QVariant Boolean::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void Boolean::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool Boolean::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) != Column::Value) {
-        Item::setData(index, value, role);
-        return;
-    }
+    if (static_cast<Column>(index.column()) != Column::Value)
+        return Item::setData(index, value, role);
 
     switch (role)
     {
         case Qt::EditRole:
-            _value = value.toBool();
+        {
+            if (value.toBool() != _value) {
+                _value = value.toBool();
+                return true;
+            }
+
             break;
+        }
 
         case Qt::DisplayRole:
             break;
@@ -51,6 +55,8 @@ void Boolean::setData(const QModelIndex& index, const QVariant& value, const std
         default:
             break;
     }
+
+    return false;
 }
 
 void Boolean::accept(Visitor* visitor) const

@@ -139,7 +139,7 @@ QVariant Item::getData(const Column& column, const int& role) const
     return model->data(_modelIndex.sibling(_modelIndex.row(), static_cast<std::int32_t>(column)), role);
 }
 
-void Item::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool Item::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
     const auto column = static_cast<Column>(index.column());
 
@@ -150,19 +150,34 @@ void Item::setData(const QModelIndex& index, const QVariant& value, const std::i
             switch (column)
             {
                 case Column::Name:
-                    _name = value.toString();
+                {
+                    const auto name = value.toString();
+
+                    if (name != _name) {
+                        _name = name;
+                        return true;
+                    }
+                        
                     break;
+                }
 
                 case Column::Type:
-                    break;
                 case Column::Value:
                 case Column::UUID:
                 case Column::Modified:
                     break;
 
                 case Column::Flags:
-                    _flags = static_cast<Qt::ItemFlags>(value.toInt());
+                {
+                    const auto flags = static_cast<Qt::ItemFlags>(value.toInt());
+
+                    if (flags != _flags) {
+                        _flags = flags;
+                        return true;
+                    }
+
                     break;
+                }
 
                 default:
                     break;
@@ -174,11 +189,13 @@ void Item::setData(const QModelIndex& index, const QVariant& value, const std::i
         default:
             break;
     }
+
+    return false;
 }
 
-void Item::setData(const Column& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool Item::setData(const Column& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    model->setData(_modelIndex.sibling(_modelIndex.row(), static_cast<std::int32_t>(column)), value, role);
+    return model->setData(_modelIndex.sibling(_modelIndex.row(), static_cast<std::int32_t>(column)), value, role);
 }
 
 QModelIndex Item::getModelIndex() const
@@ -280,6 +297,16 @@ Item* Item::getParent()
 bool Item::isLeaf() const
 {
     return getChildCount() == 0;
+}
+
+QVariant Item::getValue(const int& role /*= Qt::EditRole*/) const
+{
+    return getData(Column::Value, role);
+}
+
+void Item::setValue(const QVariant& value, const int& role /*= Qt::EditRole*/)
+{
+    setData(Column::Value, value, role);
 }
 
 void Item::setFlag(const Qt::ItemFlag& flag, const bool& set /*= true*/)

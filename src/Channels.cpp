@@ -30,7 +30,7 @@ void Channels::initialize()
 {
     const auto synchronize = [this](const QStringList& channelNames = { "Subset1", "Subset2" }, const QStringList& itemNames = { "ProfileTypes", "ProfileType", "RangeTypes", "RangeType" }) {
         for (auto channelName : channelNames) {
-            if (!getChild(QString("%1/Linked").arg(channelName))->getData(Column::Value, Qt::EditRole).toBool())
+            if (!getChild(QString("%1/Linked").arg(channelName))->getValue().toBool())
                 continue;
 
             for (auto itemName : itemNames) {
@@ -69,12 +69,24 @@ void Channels::initialize()
     });
 
     QObject::connect(getChild("Dataset/DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
-        if (static_cast<Column>(modelIndex.column()) != Column::Value)
-            return;
-
-        const auto datasetNames = getChild("Dataset/DatasetNames")->getData(Column::Value, Qt::EditRole).toStringList();
+        const auto datasetNames = getChild("Dataset/DatasetNames")->getValue().toStringList();
 
         getChild("Dataset/DatasetName")->setFlag(Qt::ItemIsEnabled, datasetNames.count() >= 2);
+    });
+
+    getChild("Dataset/Linked")->unsetFlag(Qt::ItemIsEditable);
+
+    QObject::connect(getChild("Dataset/DatasetName"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
+        const auto datasetName = getChild("Dataset/DatasetName")->getValue().toString();
+
+        if (datasetName.isEmpty())
+            return;
+
+        auto configurationsModel = dynamic_cast<ConfigurationsModel*>(model);
+
+        Q_ASSERT(configurationsModel != nullptr);
+
+        configurationsModel->selectRow(datasetName);
     });
 }
 

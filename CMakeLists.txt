@@ -39,9 +39,9 @@ file(GLOB MODEL
 
 file(GLOB TREE 
 	src/Item.*
+	src/StandardItem.*
 	src/Boolean*.*
 	src/Integral*.*
-	src/Option*.*
 	src/Float*.*
 	src/Color*.*
 	src/String*.*

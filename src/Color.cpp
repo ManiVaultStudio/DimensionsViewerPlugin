@@ -4,7 +4,7 @@
 namespace tree {
 
 Color::Color(Item* parent, const QString& name, const QColor& value /*= Qt::black*/) :
-    Item(parent, "Color", name),
+    StandardItem(parent, "Color", name),
     _value(value)
 {
 }
@@ -32,18 +32,21 @@ QVariant Color::getData(const QModelIndex& index, const int& role) const
     return QVariant();
 }
 
-void Color::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool Color::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
 {
-    if (static_cast<Column>(index.column()) != Column::Value) {
-        Item::setData(index, value, role);
-        return;
-    }
+    if (static_cast<Column>(index.column()) != Column::Value)
+        return Item::setData(index, value, role);
 
     switch (role)
     {
         case Qt::EditRole:
-            _value = value.value<QColor>();
+        {
+            if (value.value<QColor>() != _value) {
+                return true;
+            }
+
             break;
+        }
 
         case Qt::DisplayRole:
             break;
@@ -51,6 +54,8 @@ void Color::setData(const QModelIndex& index, const QVariant& value, const std::
         default:
             break;
     }
+
+    return false;
 }
 
 void Color::accept(Visitor* visitor) const
