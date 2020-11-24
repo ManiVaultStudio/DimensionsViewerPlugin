@@ -57,16 +57,6 @@ public: // TreeItem: visitor API
     /** Accept visitor */
     void accept(tree::Visitor* visitor) const override;
 
-public: // Getters
-
-    /**
-     * Get (filtered) channels
-     * @param profileTypes Filter profile types
-     * @param enabled Filter enabled/disabled channels
-     * @return Filtered channels
-     */
-    QVector<Channel*> getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled = nullptr) const;
-
 public: // Overloaded operators
 
     /**

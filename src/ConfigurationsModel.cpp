@@ -155,6 +155,10 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 
         subsetsItem->setValue(subsets);
     } 
+    
+    
+    //qDebug() << _root.find(tree::Item::Column::Type, "Configurations", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
+    //qDebug() << _root.find(tree::Item::Column::Type, "nel", Qt::MatchFlags(Qt::MatchEndsWith | Qt::MatchRecursive));
 }
 
 void ConfigurationsModel::select(Configuration* configuration)

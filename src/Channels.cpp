@@ -119,22 +119,3 @@ void Channels::accept(tree::Visitor* visitor) const
 
     visitor->visitTreeItem(this);
 }
-
-QVector<Channel*> Channels::getFiltered(const Profile::ProfileTypes& profileTypes, bool* enabled /*= nullptr*/) const
-{
-    QVector<Channel*> channels;
-
-    /*for (auto channel : _channels) {
-        const auto profileType = channel->getProfile()->_profileType;
-
-        if (!profileTypes.isEmpty() && !profileTypes.contains(profileType))
-            continue;
-
-        if (enabled != nullptr && channel->isEnabled() != *enabled)
-            continue;
-
-        channels << channel;
-    }*/
-
-    return channels;
-}

@@ -161,11 +161,12 @@ public: // Hierarchy API
     /**
      * Find child(ren) by relative \p path
      * @param column Search column
-     * @param search Search string (relative paths and wild cards are also valid)
+     * @param path Search string (relative paths and wild cards are also valid)
+     * @param value Item value to search (does not compare value if empty)
      * @param match Match flags (Qt::MatchExactly, Qt::MatchContains, Qt::MatchStartsWith, Qt::MatchEndsWith, Qt::MatchCaseSensitive)
      * @return Item if found, else nullptr
      */
-    Items find(const Column& column, const QString& query, const Qt::MatchFlags& match = Qt::MatchExactly);
+    Items find(const Column& column, const QString& path, const QString& value, const Qt::MatchFlags& match = Qt::MatchExactly);
 
     /** Returns the number of children */
     virtual int getChildCount() const;

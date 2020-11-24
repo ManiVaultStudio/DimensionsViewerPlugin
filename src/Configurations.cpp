@@ -47,12 +47,10 @@ Configuration* Configurations::getConfigurationByDataName(const QString& dataNam
 {
     Q_ASSERT(!dataName.isEmpty());
 
-    for (auto child : _children) {
-        const auto type = child->getData(Column::Type, Qt::EditRole).toString();
+    const auto items = find(tree::Item::Column::Name, "*/DataName", dataName, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
 
-        if (type == "Configuration" && child->getChild("DataName")->getValue().toString() == dataName)
-            return reinterpret_cast<Configuration*>(child);
-    }
+    if (items.isEmpty())
+        return nullptr;
 
-    return nullptr;
+    return reinterpret_cast<Configuration*>(items.first()->getParent());
 }

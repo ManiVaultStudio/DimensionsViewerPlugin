@@ -271,35 +271,38 @@ tree::Item* Item::getChild(const QString& path)
     return nullptr;
 }
 
-tree::Item::Items Item::find(const Column& column, const QString& query, const Qt::MatchFlags& match /*= Qt::MatchExactly*/)
+tree::Item::Items Item::find(const Column& column, const QString& path, const QString& value, const Qt::MatchFlags& match /*= Qt::MatchExactly*/)
 {
-    Q_ASSERT(!query.isEmpty());
+    Q_ASSERT(!path.isEmpty());
 
     Items items;
 
-    if (query.isEmpty())
+    if (path.isEmpty())
         return items;
 
-    auto segments = query.split("/");
+    auto segments = path.split("/");
 
     const auto searchFor        = segments.first();
     const auto goUpOneLevel     = searchFor == "..";
     const auto isWildCard       = searchFor.contains("*");
 
-    const auto matchChild = [column, match](const Item* child, const QString& searchString) -> bool {
-        const auto childName        = child->getData(column, Qt::EditRole).toString();
+    const auto matchChild = [column, value, match](const Item* child, const QString& searchString) -> bool {
+        const auto data             = child->getData(column, Qt::EditRole).toString();
         const auto caseSensitivity  = match.testFlag(Qt::MatchCaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
-        if (match.testFlag(Qt::MatchFixedString)  && childName.compare(searchString, caseSensitivity) == 0)
+        if (!value.isEmpty() && value != child->getValue(Qt::DisplayRole).toString())
+            return false;
+
+        if (match.testFlag(Qt::MatchFixedString)  && data.compare(searchString, caseSensitivity) == 0)
             return true;
 
-        if (match.testFlag(Qt::MatchContains) && childName.contains(searchString, caseSensitivity))
+        if (match.testFlag(Qt::MatchContains) && data.contains(searchString, caseSensitivity))
             return true;
 
-        if (match.testFlag(Qt::MatchStartsWith) && childName.startsWith(searchString, caseSensitivity))
+        if (match.testFlag(Qt::MatchStartsWith) && data.startsWith(searchString, caseSensitivity))
             return true;
 
-        if (match.testFlag(Qt::MatchEndsWith) && childName.endsWith(searchString, caseSensitivity))
+        if (match.testFlag(Qt::MatchEndsWith) && data.endsWith(searchString, caseSensitivity))
             return true;
 
         return false;
@@ -310,8 +313,8 @@ tree::Item::Items Item::find(const Column& column, const QString& query, const Q
             for (auto child : _children) {
                 items << child;
 
-                if (match & Qt::MatchRecursive)
-                    items << child->find(column, searchFor, match);
+                if (match.testFlag(Qt::MatchRecursive))
+                    items << child->find(column, searchFor, value, match);
             }
         }
         else {
@@ -319,8 +322,8 @@ tree::Item::Items Item::find(const Column& column, const QString& query, const Q
                 if (matchChild(child, searchFor))
                     items << child;
 
-                if (match & Qt::MatchRecursive && !child->isLeaf())
-                    items << child->find(column, searchFor, match);
+                if (match.testFlag(Qt::MatchRecursive) && !child->isLeaf())
+                    items << child->find(column, searchFor, value, match);
             }
 
             return items;
@@ -333,18 +336,18 @@ tree::Item::Items Item::find(const Column& column, const QString& query, const Q
             if (goUpOneLevel) {
                 Q_ASSERT(_parent != nullptr);
 
-                return _parent->find(column, segments.join("/"), match);
+                return _parent->find(column, segments.join("/"), value, match);
             }
 
             if (isWildCard) {
                 for (auto child : _children)
-                    items << child->find(column, segments.join("/"), match);
+                    items << child->find(column, segments.join("/"), value, match);
             }
         }
         else {
             for (auto child : _children)
                 if (matchChild(child, searchFor))
-                    items << child->find(column, segments.join("/"), match);
+                    items << child->find(column, segments.join("/"), value, match);
         }
     }
 
