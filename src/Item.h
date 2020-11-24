@@ -257,8 +257,12 @@ protected:
 QDebug inline operator<<(QDebug debug, const Item* item) {
     auto noQuoteDebug = qDebug().noquote();
 
-    noQuoteDebug << item->getData(Item::Column::Type, Qt::EditRole).toString();
-    noQuoteDebug << item->getData(Item::Column::Name, Qt::EditRole).toString();
+    noQuoteDebug << item->getData(Item::Column::Name, Qt::DisplayRole).toString();
+    noQuoteDebug << item->getData(Item::Column::Value, Qt::DisplayRole).toString();
+    noQuoteDebug << item->getData(Item::Column::Type, Qt::DisplayRole).toString();
+    //noQuoteDebug << item->getData(Item::Column::Modified, Qt::DisplayRole).toString();
+    //noQuoteDebug << item->getData(Item::Column::UUID, Qt::DisplayRole).toString();
+    //noQuoteDebug << item->getData(Item::Column::Flags, Qt::DisplayRole).toString();
     
     return debug;
 }
