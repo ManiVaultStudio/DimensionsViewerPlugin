@@ -157,9 +157,9 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
     } 
 
     //qDebug() << _root.find(tree::Item::Column::Type, "Channel", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
-    //qDebug() << _root.find(tree::Item::Column::Type, "*", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
-    qDebug() << _root.find(tree::Item::Column::Type, "Configurations", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
-    qDebug() << "asdasd";
+    qDebug() << _root.find(tree::Item::Column::Type, "*", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
+    //qDebug() << _root.find(tree::Item::Column::Type, "Configurations", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
+    //qDebug() << _root.find(tree::Item::Column::Type, "nel", Qt::MatchFlags(Qt::MatchEndsWith | Qt::MatchRecursive));
 }
 
 void ConfigurationsModel::select(Configuration* configuration)

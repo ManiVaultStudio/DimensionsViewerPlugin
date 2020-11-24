@@ -271,16 +271,16 @@ tree::Item* Item::getChild(const QString& path)
     return nullptr;
 }
 
-tree::Item::Items Item::find(const Column& column, const QString& path, const Qt::MatchFlags& match /*= Qt::MatchExactly*/)
+tree::Item::Items Item::find(const Column& column, const QString& query, const Qt::MatchFlags& match /*= Qt::MatchExactly*/)
 {
-    Q_ASSERT(!path.isEmpty());
+    Q_ASSERT(!query.isEmpty());
 
     Items items;
 
-    if (path.isEmpty())
+    if (query.isEmpty())
         return items;
 
-    auto segments = path.split("/");
+    auto segments = query.split("/");
 
     const auto searchFor        = segments.first();
     const auto goUpOneLevel     = searchFor == "..";
@@ -288,7 +288,7 @@ tree::Item::Items Item::find(const Column& column, const QString& path, const Qt
 
     const auto matchChild = [column, match](const Item* child, const QString& searchString) -> bool {
         const auto childName        = child->getData(column, Qt::EditRole).toString();
-        const auto caseSensitivity  = match & Qt::MatchCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        const auto caseSensitivity  = match.testFlag(Qt::MatchCaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
         if (match.testFlag(Qt::MatchFixedString)  && childName.compare(searchString, caseSensitivity) == 0)
             return true;
