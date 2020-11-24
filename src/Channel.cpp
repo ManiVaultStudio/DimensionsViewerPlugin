@@ -19,8 +19,8 @@ const QMap<QString, Channel::Child> Channel::children = {
     { "DatasetNames", Channel::Child::DatasetNames },
     { "DatasetName", Channel::Child::DatasetName },
     { "Linked", Channel::Child::Linked },
-    { "NumberOfPoints", Channel::Child::NoPoints },
-    { "NumberOfDimensions", Channel::Child::NoDimensions },
+    { "NumberOfPoints", Channel::Child::NumberOfPoints },
+    { "NumberOfDimensions", Channel::Child::NumberOfDimensions },
     { "Profile", Channel::Child::Profile },
     { "Differential", Channel::Child::Differential },
     { "Styling", Channel::Child::Styling }
@@ -111,8 +111,8 @@ void Channel::resolvePoints()
 
     _points = &dynamic_cast<Points&>(core->requestData(datasetName));
 
-    model->setData(model->index(to_ul(Child::NoPoints), to_ul(Item::Column::Value), _modelIndex), _points->getNumPoints());
-    model->setData(model->index(to_ul(Child::NoDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());
+    model->setData(model->index(to_ul(Child::NumberOfPoints), to_ul(Item::Column::Value), _modelIndex), _points->getNumPoints());
+    model->setData(model->index(to_ul(Child::NumberOfDimensions), to_ul(Item::Column::Value), _modelIndex), _points->getNumDimensions());
 }
 
 const Channels* Channel::getChannels() const

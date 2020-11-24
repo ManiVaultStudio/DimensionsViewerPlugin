@@ -141,7 +141,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 
         _root.getChild("DatasetNames")->setValue(datasetNames);
 
-        if (_root.getChildCount() == 1)
+        if (configurations->getChildCount() == 1)
             select(reinterpret_cast<Configuration*>(_root.getChild(QString("Configurations/%1").arg(datasetName))));
 
     } else {
@@ -171,7 +171,7 @@ void ConfigurationsModel::select(Configuration* configuration)
 
     try
     {
-        if (configuration->getChild("Channels/Dataset/NoDimensions")->getValue().toUInt() > Configuration::maxNoDimensions) {
+        if (configuration->getChild("Channels/Dataset/NumberOfDimensions")->getValue().toInt() > Configuration::maxNoDimensions) {
             const auto datasetName = configuration->getChild("Channels/Dataset/DatasetName")->getValue().toString();
             throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());
         }

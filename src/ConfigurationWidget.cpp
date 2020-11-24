@@ -16,8 +16,10 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
     _ui->treeView->setSelectionModel(&getSelectionModel());
 
     //_ui->treeView->header()->hideSection(0);
+    _ui->treeView->header()->hideSection(2);
     _ui->treeView->header()->hideSection(3);
     _ui->treeView->header()->hideSection(4);
+    _ui->treeView->header()->hideSection(5);
 
     QObject::connect(&getSelectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto selectedRows = getSelectionModel().selectedRows();
@@ -25,7 +27,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
         if (!selectedRows.isEmpty()) {
             const auto firstRowIndex = selectedRows.first();
 
-            if (firstRowIndex.parent() == QModelIndex())
+            if (firstRowIndex.siblingAtColumn(to_ul(tree::Item::Column::Type)).data(Qt::EditRole).toString() == "Configuration")
                 setModelIndex(firstRowIndex);
         }
             
