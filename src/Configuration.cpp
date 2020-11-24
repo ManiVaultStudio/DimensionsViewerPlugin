@@ -12,11 +12,12 @@ const QMap<QString, Configuration::Child> Configuration::children = {
     { "Index", Configuration::Child::Index },
     { "Dataset name", Configuration::Child::DatasetName },
     { "Data name", Configuration::Child::DataName },
+    { "Subsets", Configuration::Child::Subsets },
     { "Selection stamp", Configuration::Child::SelectionStamp }
 };
 
 Configuration::Configuration(Item* parent, const QString& datasetName, const QString& dataName) :
-    Item(parent, "Configuration", "Configuration")
+    Item(parent, "Configuration", datasetName)
 {
     noConfigurations++;
 
@@ -27,6 +28,7 @@ Configuration::Configuration(Item* parent, const QString& datasetName, const QSt
     _children << new tree::Integral(this, "Index", noConfigurations);
     _children << new tree::String(this, "DatasetName", datasetName);
     _children << new tree::String(this, "DataName", dataName);
+    _children << new tree::StringList(this, "Subsets");
     _children << new tree::Integral(this, "SelectionStamp");
 }
 

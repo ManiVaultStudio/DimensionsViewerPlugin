@@ -41,5 +41,5 @@ void ViewerWidget::dropEvent(QDropEvent* dropEvent)
 	const auto items        = dropEvent->mimeData()->text().split("\n");
 	const auto datasetName  = items.at(0);
 
-    _dimensionsViewerPlugin->getModel().selectRow(datasetName);
+    _dimensionsViewerPlugin->getModel().select(datasetName);
 }

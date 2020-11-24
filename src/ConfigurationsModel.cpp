@@ -135,7 +135,6 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
         }
         endInsertRows();
         
-        /*
         auto datasetNames = _root.getChild("DatasetNames")->getValue().toStringList();
 
         datasetNames << datasetName;
@@ -143,40 +142,43 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
         _root.getChild("DatasetNames")->setValue(datasetNames);
 
         if (_root.getChildCount() == 1)
-            selectRow(0);
-        */
+            select(reinterpret_cast<Configuration*>(_root.getChild(QString("Configurations/%1").arg(datasetName))));
+
     } else {
 
-        /*auto subset1DatasetNames = configuration->getChild("Channels/Subset1/DatasetNames")->getValue().toStringList();
-        auto subset2DatasetNames = configuration->getChild("Channels/Subset2/DatasetNames")->getValue().toStringList();
+        const auto configurationName    = configuration->getData(tree::Item::Column::Name, Qt::EditRole).toString();
+        const auto subsetsItem          = _root.getChild(QString("Configurations/%1/Subsets").arg(configurationName));
+        
+        auto subsets = subsetsItem->getValue().toStringList();
 
-        subset1DatasetNames << datasetName;
-        subset2DatasetNames << datasetName;
+        subsets << datasetName;
 
-        configuration->getChild("Channels/Subset1/DatasetNames")->setValue(subset1DatasetNames);
-        configuration->getChild("Channels/Subset2/DatasetNames")->setValue(subset2DatasetNames);*/
+        subsetsItem->setValue(subsets);
     } 
+
+    //qDebug() << _root.find(tree::Item::Column::Type, "Channel", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
+    //qDebug() << _root.find(tree::Item::Column::Type, "*", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
+    qDebug() << _root.find(tree::Item::Column::Type, "Configurations", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
+    qDebug() << "asdasd";
 }
 
-void ConfigurationsModel::selectRow(const std::int32_t& row)
+void ConfigurationsModel::select(Configuration* configuration)
 {
+    Q_ASSERT(configuration != nullptr);
+
     const auto presentWarning = [](const QString& reason) {
         QMessageBox::warning(nullptr, "Unable to visualize dataset dimensions", reason);
     };
 
     try
     {
-        const auto configurationIndex   = index(row, 0);
-        const auto channelsIndex        = index(0, 0, configurationIndex);
-        const auto firstChannelIndex    = index(0, 0, channelsIndex);
-
-        /*if (firstChannelIndex.siblingAtColumn(to_ul(ChannelItem::Column::NoDimensions)).data(Qt::EditRole).toInt() > Configuration::maxNoDimensions) {
-            const auto datasetName = configurationIndex.siblingAtColumn(to_ul(Configuration::Column::DatasetName)).data(Qt::EditRole).toString();
+        if (configuration->getChild("Channels/Dataset/NoDimensions")->getValue().toUInt() > Configuration::maxNoDimensions) {
+            const auto datasetName = configuration->getChild("Channels/Dataset/DatasetName")->getValue().toString();
             throw std::runtime_error(QString("%1 has more than %2 dimensions").arg(datasetName, QString::number(Configuration::maxNoDimensions)).toLatin1());
         }
         else {
-            _selectionModel.select(configurationIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-        }*/
+            _selectionModel.select(configuration->getModelIndex(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        }
     }
     catch (std::exception e)
     {
@@ -187,15 +189,20 @@ void ConfigurationsModel::selectRow(const std::int32_t& row)
     }
 }
 
-void ConfigurationsModel::selectRow(const QString& datasetName)
+void ConfigurationsModel::select(const QString& datasetName)
 {
     Q_ASSERT(!datasetName.isEmpty());
 
+    /*const auto configurationName    = QString("Configurations/%1").arg(datasetName);
+    
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
-    const auto hits     = match(QModelIndex(), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
+
+    auto configuration = _root.getChild()
+
+    const auto hits = match(QModelIndex(), Qt::DisplayRole, dataName, -1, Qt::MatchExactly | Qt::MatchRecursive);
 
     if (!hits.isEmpty())
-        selectRow(hits.first().parent().row());
+        select(_root.getChild());*/
 }
 
 tree::Item* ConfigurationsModel::getItem(const QModelIndex& modelIndex) const

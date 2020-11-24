@@ -139,7 +139,7 @@ QVariant Item::getData(const Column& column, const int& role) const
     return model->data(_modelIndex.sibling(_modelIndex.row(), static_cast<std::int32_t>(column)), role);
 }
 
-bool Item::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool Item::setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role)
 {
     const auto column = static_cast<Column>(index.column());
 
@@ -193,7 +193,7 @@ bool Item::setData(const QModelIndex& index, const QVariant& value, const std::i
     return false;
 }
 
-bool Item::setData(const Column& column, const QVariant& value, const std::int32_t& role /*= Qt::EditRole*/)
+bool Item::setData(const Column& column, const QVariant& value, const std::int32_t& role)
 {
     return model->setData(_modelIndex.sibling(_modelIndex.row(), static_cast<std::int32_t>(column)), value, role);
 }
@@ -230,7 +230,7 @@ void Item::copy(const Item* other, const QVector<Column>& columns /*= QVector<Co
         Item::setData(column, other->getData(column, Qt::EditRole), Qt::EditRole);
 }
 
-Item::Children Item::getChildren() const
+Item::Items Item::getChildren() const
 {
     return _children;
 }
@@ -271,6 +271,86 @@ tree::Item* Item::getChild(const QString& path)
     return nullptr;
 }
 
+tree::Item::Items Item::find(const Column& column, const QString& path, const Qt::MatchFlags& match /*= Qt::MatchExactly*/)
+{
+    Q_ASSERT(!path.isEmpty());
+
+    Items items;
+
+    if (path.isEmpty())
+        return items;
+
+    auto segments = path.split("/");
+
+    const auto searchFor        = segments.first();
+    const auto goUpOneLevel     = searchFor == "..";
+    const auto isWildCard       = searchFor.contains("*");
+
+    const auto matchChild = [column, match](const Item* child, const QString& searchString) -> bool {
+        const auto childName        = child->getData(column, Qt::EditRole).toString();
+        const auto caseSensitivity  = match & Qt::MatchCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
+
+        if (match.testFlag(Qt::MatchFixedString)  && childName.compare(searchString, caseSensitivity) == 0)
+            return true;
+
+        if (match.testFlag(Qt::MatchContains) && childName.contains(searchString, caseSensitivity))
+            return true;
+
+        if (match.testFlag(Qt::MatchStartsWith) && childName.startsWith(searchString, caseSensitivity))
+            return true;
+
+        if (match.testFlag(Qt::MatchEndsWith) && childName.endsWith(searchString, caseSensitivity))
+            return true;
+
+        return false;
+    };
+
+    if (segments.count() <= 1) {
+        if (segments.first() == "*") {
+            for (auto child : _children) {
+                items << child;
+
+                if (match & Qt::MatchRecursive)
+                    items << child->find(column, searchFor, match);
+            }
+        }
+        else {
+            for (auto child : _children) {
+                if (matchChild(child, searchFor))
+                    items << child;
+
+                if (match & Qt::MatchRecursive && !child->isLeaf())
+                    items << child->find(column, searchFor, match);
+            }
+
+            return items;
+        }
+    }
+    else {
+        segments.removeFirst();
+
+        if (goUpOneLevel || isWildCard) {
+            if (goUpOneLevel) {
+                Q_ASSERT(_parent != nullptr);
+
+                return _parent->find(column, segments.join("/"), match);
+            }
+
+            if (isWildCard) {
+                for (auto child : _children)
+                    items << child->find(column, segments.join("/"), match);
+            }
+        }
+        else {
+            for (auto child : _children)
+                if (matchChild(child, searchFor))
+                    items << child->find(column, segments.join("/"), match);
+        }
+    }
+
+    return items;
+}
+
 int Item::getChildCount() const
 {
     return _children.count();
@@ -299,23 +379,13 @@ bool Item::isLeaf() const
     return getChildCount() == 0;
 }
 
-QVariant Item::getValue(const Column& column /*= Column::Value*/, const int& role /*= Qt::EditRole*/) const
-{
-    return getData(column, role);
-}
-
-void Item::setValue(const QVariant& value, const Column& column /*= Column::Value*/, const int& role /*= Qt::EditRole*/)
-{
-    setData(Column::Value, value, role);
-}
-
 void Item::setFlag(const Qt::ItemFlag& flag, const bool& set /*= true*/)
 {
     auto flags = _flags;
 
     flags.setFlag(flag, set);
 
-    setData(Column::Flags, static_cast<int>(flags));
+    setData(Column::Flags, static_cast<int>(flags), Qt::EditRole);
 }
 
 void Item::unsetFlag(const Qt::ItemFlag& flag)

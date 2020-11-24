@@ -48,7 +48,7 @@ Configuration* Configurations::getConfigurationByDataName(const QString& dataNam
     Q_ASSERT(!dataName.isEmpty());
 
     for (auto child : _children) {
-        const auto type = child->getValue(Column::Type).toString();
+        const auto type = child->getData(Column::Type, Qt::EditRole).toString();
 
         if (type == "Configuration" && child->getChild("DataName")->getValue().toString() == dataName)
             return reinterpret_cast<Configuration*>(child);

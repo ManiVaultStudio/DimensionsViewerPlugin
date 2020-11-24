@@ -6,6 +6,7 @@
 #include <QModelIndex>
 #include <QUuid>
 #include <QFlags>
+#include <QDebug>
 
 class QAbstractItemModel;
 
@@ -24,7 +25,7 @@ class Item : public QObject
 
 public:
 
-    using Children = QVector<Item*>;
+    using Items = QVector<Item*>;
 
 public: // Columns and rows
 
@@ -105,7 +106,7 @@ public: // Model API
      * @param value Data value in variant form
      * @param role Data role
      */
-    virtual bool setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role = Qt::EditRole);
+    virtual bool setData(const QModelIndex& index, const QVariant& value, const std::int32_t& role);
 
     /**
      * Set data for \p column
@@ -113,7 +114,7 @@ public: // Model API
      * @param value Data value in variant form
      * @param role Data role
      */
-    bool setData(const Column& column, const QVariant& value, const std::int32_t& role = Qt::EditRole);
+    bool setData(const Column& column, const QVariant& value, const std::int32_t& role);
 
     /** Gets model index */
     QModelIndex getModelIndex() const;
@@ -141,7 +142,7 @@ public: // Model API
 public: // Hierarchy API
 
     /** Gets children */
-    Children getChildren() const;
+    Items getChildren() const;
 
     /**
      * Get child by \p index
@@ -156,6 +157,15 @@ public: // Hierarchy API
      * @return Item if found, else nullptr
      */
     Item* getChild(const QString& path);
+
+    /**
+     * Find child(ren) by relative \p path
+     * @param column Search column
+     * @param path Search string (relative paths and wild cards are also valid)
+     * @param match Match flags (Qt::MatchExactly, Qt::MatchContains, Qt::MatchStartsWith, Qt::MatchEndsWith, Qt::MatchCaseSensitive)
+     * @return Item if found, else nullptr
+     */
+    Items find(const Column& column, const QString& path, const Qt::MatchFlags& match = Qt::MatchExactly);
 
     /** Returns the number of children */
     virtual int getChildCount() const;
@@ -180,7 +190,7 @@ public: // Visitor API
     /** Accept visitor */
     virtual void accept(Visitor* visitor) const = 0;
 
-public: // Value getter/setter
+public: // Column getter/setter
 
     /**
      * Get value for \p role
@@ -188,7 +198,9 @@ public: // Value getter/setter
      * @param role Data role
      * @return Value in variant form
      */
-    virtual QVariant getValue(const Column& column = Column::Value, const int& role = Qt::EditRole) const;
+    QVariant getValue(const int& role = Qt::EditRole) const {
+        return getData(Column::Value, role);
+    }
 
     /**
      * Set \p value for \p role
@@ -196,7 +208,9 @@ public: // Value getter/setter
      * @param column Data column
      * @param role Data role
      */
-    virtual void setValue(const QVariant& value, const Column& column = Column::Value, const int& role = Qt::EditRole);
+    void setValue(const QVariant& value, const int& role = Qt::EditRole) {
+        setData(Column::Value, value, role);
+    }
 
 public: // Flags getter/setter
 
@@ -228,11 +242,42 @@ protected:
     QUuid                       _uuid;          /** Unique identifier */
     Qt::ItemFlags               _flags;         /** UI flags */
     Item*                       _parent;        /** Parent tree item */
-    Children                    _children;      /** Children */
+    Items                       _children;      /** Children */
 
     /** Pointer to abstract item model */
     static QAbstractItemModel* model;
 };
+
+/**
+ * Print item
+ * @param debug Qt debug stream
+ * @param item Item to print
+ * @return Qt debug stream
+ */
+QDebug inline operator<<(QDebug debug, const Item* item) {
+    auto noQuoteDebug = qDebug().noquote();
+
+    noQuoteDebug << item->getData(Item::Column::Type, Qt::EditRole).toString();
+    noQuoteDebug << item->getData(Item::Column::Name, Qt::EditRole).toString();
+    
+    return debug;
+}
+
+/**
+ * Print items
+ * @param debug Qt debug stream
+ * @param items Items to print
+ * @return Qt debug stream
+ */
+QDebug inline operator<<(QDebug debug, const Item::Items& items) {
+
+    auto noQuoteDebug = qDebug().noquote();
+
+    for (auto item : items)
+        debug << item << "\n";
+
+    return debug;
+}
 
 /** Get scoped enum in columns set to work */
 inline uint qHash(Item::Column key, uint seed) {

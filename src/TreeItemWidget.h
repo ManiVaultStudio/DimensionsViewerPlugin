@@ -88,7 +88,7 @@ public:
 
             QSignalBlocker signalBlocker(_widget);
 
-            _widget->setVisible(_index.flags() & Qt::ItemIsEditable);
+            //_widget->setVisible(_index.flags() & Qt::ItemIsEditable);
             _widget->setEnabled(_index.flags() & Qt::ItemIsEnabled);
 
             _callbackFunction(_index, _index == QModelIndex());

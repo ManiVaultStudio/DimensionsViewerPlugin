@@ -63,12 +63,18 @@ void Channels::initialize()
 
     synchronize();
 
-    //getChild("Dataset/Linked")->unsetFlag(...);
-    /*
-    QObject::connect(getChild("../../DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
-        getChild("Dataset/DatasetNames")->copy(getChild("../../DatasetNames"));
+    QObject::connect(getChild("../Subsets"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
+        getChild("Subset1/DatasetNames")->copy(getChild("../Subsets"));
+        getChild("Subset2/DatasetNames")->copy(getChild("../Subsets"));
     });
+    
+    QObject::connect(getChild("../../../DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
+        getChild("Dataset/DatasetNames")->copy(getChild("../../../DatasetNames"));
+    });
+    
+    //getChild("Dataset/Linked")->unsetFlag(...);
 
+    /*
     QObject::connect(getChild("Dataset/DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
         const auto datasetNames = getChild("Dataset/DatasetNames")->getValue().toStringList();
 

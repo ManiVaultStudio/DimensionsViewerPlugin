@@ -25,6 +25,7 @@ public: // Enumerations
         Index,
         DatasetName,
         DataName,
+        Subsets,
         SelectionStamp,
 
         _Start  = Channels,
@@ -33,7 +34,7 @@ public: // Enumerations
     };
 
     /** Children set alias */
-    using Children = QSet<Child>;
+    using Items = QSet<Child>;
 
     /** Maps child name to child enum */
     static QMap<QString, Child> const children;

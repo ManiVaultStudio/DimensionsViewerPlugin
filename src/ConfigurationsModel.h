@@ -6,6 +6,7 @@
 #include <QItemSelectionModel>
 
 class DimensionsViewerPlugin;
+class Configuration;
 
 /**
  * Configurations model
@@ -107,16 +108,16 @@ public: // Dataset management
 public: // Row selection
 
     /**
-     * Select configuration by index
-     * @param row Row index
+     * Select by \p configuration
+     * @param configuration Configuration to select
      */
-    void selectRow(const std::int32_t& row);
+    void select(Configuration* configuration);
 
     /**
      * Select configuration by datasetName
      * @param datasetName Dataset name
      */
-    void selectRow(const QString& datasetName);
+    void select(const QString& datasetName);
 
 public: // Miscellaneous
 
