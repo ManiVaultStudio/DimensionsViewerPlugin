@@ -139,7 +139,8 @@ void ChannelWidget::setModelIndex(const QPersistentModelIndex& modelIndex)
 
     //getWidgetMapper("Flags")->setModelIndex(getSiblingAtColumn(to_ul(tree::Item::Column::Flags)));
 
-    getWidgetMapper("Enabled")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Child::Enabled)));
+    getWidgetMapper("Enabled")->setModelIndex(getChild(to_ul(Channel::Child::Enabled), to_ul(Channel::Column::Value)));
+    getWidgetMapper("EnabledFlags")->setModelIndex(getChild(to_ul(Channel::Child::Enabled), to_ul(Channel::Column::Value)));
     getWidgetMapper("Name")->setModelIndex(getSiblingAtColumn(to_ul(Channel::Item::Column::Name)));
     getWidgetMapper("DatasetNames")->setModelIndex(getChild(to_ul(Channel::Child::DatasetNames), to_ul(Channel::Column::Value)));
     getWidgetMapper("DatasetName")->setModelIndex(getChild(to_ul(Channel::Child::DatasetName)));

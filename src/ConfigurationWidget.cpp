@@ -30,7 +30,6 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
             if (firstRowIndex.siblingAtColumn(to_ul(tree::Item::Column::Type)).data(Qt::EditRole).toString() == "Configuration")
                 setModelIndex(firstRowIndex);
         }
-            
     });
 }
 

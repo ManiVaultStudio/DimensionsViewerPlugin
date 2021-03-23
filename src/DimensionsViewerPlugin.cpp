@@ -22,10 +22,13 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 
 	_viewerWidget           = new ViewerWidget(this);
 	_configurationWidget    = new ConfigurationWidget(this);
+
+    setDockingLocation(hdps::gui::DockableWidget::DockingLocation::Bottom);
 }
 
 void DimensionsViewerPlugin::init()
 {
+/*
     auto splitter = new QSplitter();
 
     auto mainLayout = new QVBoxLayout();
@@ -39,7 +42,8 @@ void DimensionsViewerPlugin::init()
     splitter->setOrientation(Qt::Vertical);
     splitter->setCollapsible(1, true);
 
-    addWidget(splitter);
+    layout()->addWidget(splitter);
+    */
 }
 
 void DimensionsViewerPlugin::dataAdded(const QString dataset)

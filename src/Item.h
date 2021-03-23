@@ -227,6 +227,12 @@ public: // Flags getter/setter
      */
     void unsetFlag(const Qt::ItemFlag& flag);
 
+public: // Miscellaneous
+
+    void setDataChanged() {
+        emit dataChanged(_modelIndex);
+    }
+
 signals:
 
     /**

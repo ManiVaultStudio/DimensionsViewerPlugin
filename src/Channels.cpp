@@ -27,6 +27,7 @@ Channels::Channels(Item* parent, const QString& datasetName, const QString& data
 
 void Channels::initialize()
 {
+    /*
     const auto synchronize = [this](const QStringList& channelNames = { "Subset1", "Subset2" }, const QStringList& itemNames = { "ProfileTypes", "ProfileType", "RangeTypes", "RangeType" }) {
         for (auto channelName : channelNames) {
             if (!getChild(QString("%1/Linked").arg(channelName))->getValue().toBool())
@@ -60,8 +61,9 @@ void Channels::initialize()
     QObject::connect(getChild("Subset1/Linked"), &tree::Boolean::dataChanged, [this, synchronize](const QModelIndex& modelIndex) {
         synchronize();
     });
-
+    
     synchronize();
+    */
 
     QObject::connect(getChild("../Subsets"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
         getChild("Subset1/DatasetNames")->copy(getChild("../Subsets"));
@@ -71,7 +73,18 @@ void Channels::initialize()
     QObject::connect(getChild("../../../DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
         getChild("Dataset/DatasetNames")->copy(getChild("../../../DatasetNames"));
     });
+
+    QObject::connect(getChild("Subset1/DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
+        getChild("Subset1/Enabled")->setFlag(Qt::ItemIsEnabled, getChild("Subset1/DatasetNames")->getValue().toStringList().count() >= 1);
+    });
+
+    QObject::connect(getChild("Subset2/DatasetNames"), &tree::StringList::dataChanged, [this](const QModelIndex& modelIndex) {
+        getChild("Subset2/Enabled")->setFlag(Qt::ItemIsEnabled, getChild("Subset2/DatasetNames")->getValue().toStringList().count() >= 2);
+    });
     
+    getChild("Subset1/DatasetNames")->setDataChanged();
+    getChild("Subset2/DatasetNames")->setDataChanged();
+
     //getChild("Dataset/Linked")->unsetFlag(...);
 
     /*
