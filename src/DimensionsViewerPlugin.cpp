@@ -8,7 +8,9 @@
 
 #include <QDebug>
 #include <QSplitter>
+#include <QMimeData>
 
+using namespace hdps;
 using namespace hdps::gui;
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.DimensionsViewerPlugin")
@@ -31,7 +33,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 
     setDockingLocation(hdps::gui::DockableWidget::DockingLocation::Bottom);
 
-    _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(this, "No data loaded", "Drag an item from the data hierarchy and drop it on this view to visualize data..."));
+    _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(this, "No data loaded", "Drag an item from the data hierarchy and drop it here to visualize data..."));
 
     _dropWidget->initialize([this](const QMimeData* mimeData) -> DropWidget::DropRegions {
         DropWidget::DropRegions dropRegions;
@@ -41,32 +43,16 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
         const auto datasetName          = tokens[0];
         const auto dataType             = DataType(tokens[1]);
         const auto dataTypes            = DataTypes({ PointType });
-        const auto candidateDataset     = parentPlugin->getCore()->requestData<Points>(datasetName);
+        const auto candidateDataset     = _core->requestData<Points>(datasetName);
         const auto candidateDatasetName = candidateDataset.getName();
 
         if (!dataTypes.contains(dataType))
             dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", false);
 
         if (dataType == PointType) {
-            const auto currentDatasetName = parentPlugin->getCurrentDataSetName();
-
-            if (currentDatasetName.isEmpty()) {
-                dropRegions << new DropWidget::DropRegion(this, "Points", "Visualize points as parallel coordinates", true, [this, parentPlugin, candidateDatasetName]() {
-                    parentPlugin->onDataInput(candidateDatasetName);
-                    _dropWidget->setShowDropIndicator(false);
-                });
-            }
-            else {
-                if (candidateDatasetName == currentDatasetName) {
-                    dropRegions << new DropWidget::DropRegion(this, "Warning", "Data already loaded", false);
-                }
-                else {
-                    dropRegions << new DropWidget::DropRegion(this, "Points", "Visualize points as parallel coordinates", true, [this, parentPlugin, candidateDatasetName]() {
-                        parentPlugin->onDataInput(candidateDatasetName);
-                        _dropWidget->setShowDropIndicator(false);
-                    });
-                }
-            }
+            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize dimensions for %1").arg(candidateDatasetName), true, [this, candidateDatasetName]() {
+                _dropWidget->setShowDropIndicator(false);
+            });
         }
 
         return dropRegions;
@@ -78,6 +64,9 @@ void DimensionsViewerPlugin::init()
     auto splitter = new QSplitter();
 
     auto mainLayout = new QVBoxLayout();
+
+    mainLayout->setMargin(0);
+    mainLayout->setSpacing(0);
 
     setLayout(mainLayout);
 
