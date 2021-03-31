@@ -18,7 +18,7 @@ class QDropEvent;
  */
 class ViewerWidget : public QWebEngineView
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public: // Construction
 
@@ -43,7 +43,7 @@ private: // Drag and drop
     void dropEvent(QDropEvent* dropEvent) override;
 
 private:
-	DimensionsViewerPlugin*		_dimensionsViewerPlugin;    /** Pointer to an instance of the dimensions viewer plugin */
+    DimensionsViewerPlugin*     _dimensionsViewerPlugin;    /** Pointer to an instance of the dimensions viewer plugin */
     QWebChannel*                _webChannel;                /** Web channel (bridge between Qt and the Vega visualization JS client) */
     SpecSynchronizer            _specSynchronizer;          /** Spec synchronizer */
 };

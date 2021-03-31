@@ -5,7 +5,7 @@
 #include <memory>
 
 namespace Ui {
-	class DifferentialWidget;
+    class DifferentialWidget;
 }
 
 /**
@@ -32,5 +32,5 @@ public: // Inherited
     void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-	std::unique_ptr<Ui::DifferentialWidget>		_ui;        /** UI from creator */
+    std::unique_ptr<Ui::DifferentialWidget>     _ui;        /** UI from creator */
 };

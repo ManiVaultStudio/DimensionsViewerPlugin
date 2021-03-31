@@ -9,13 +9,13 @@
 #include <QMimeData>
 
 ViewerWidget::ViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
-	QWebEngineView(),
-	_dimensionsViewerPlugin(dimensionsViewerPlugin),
+    QWebEngineView(),
+    _dimensionsViewerPlugin(dimensionsViewerPlugin),
     _webChannel(new QWebChannel(this)),
     _specSynchronizer(dimensionsViewerPlugin)
 {
-	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-	setAcceptDrops(true);
+    setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    setAcceptDrops(true);
 
     auto& configurationsModel = _dimensionsViewerPlugin->getModel();
 
@@ -28,18 +28,18 @@ ViewerWidget::ViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 
 void ViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
 {
-	const auto items        = dragEnterEvent->mimeData()->text().split("\n");
-	const auto datasetName  = items.at(0);
-	const auto datasetType  = items.at(1);
+    const auto items        = dragEnterEvent->mimeData()->text().split("\n");
+    const auto datasetName  = items.at(0);
+    const auto datasetType  = items.at(1);
 
-	if (datasetType == "Points")
-		dragEnterEvent->acceptProposedAction();
+    if (datasetType == "Points")
+        dragEnterEvent->acceptProposedAction();
 }
 
 void ViewerWidget::dropEvent(QDropEvent* dropEvent)
 {
-	const auto items        = dropEvent->mimeData()->text().split("\n");
-	const auto datasetName  = items.at(0);
+    const auto items        = dropEvent->mimeData()->text().split("\n");
+    const auto datasetName  = items.at(0);
 
     _dimensionsViewerPlugin->getModel().select(datasetName);
 }

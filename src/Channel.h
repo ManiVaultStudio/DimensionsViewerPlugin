@@ -47,18 +47,18 @@ public: // Enumerations
 
 protected: // Construction
 
-	/**
-	 * Constructor
-	 * @param parent Parent tree item
-	 * @param index Channel index
-	 * @param displayName Channel name in the user interface
-	 * @param enabled Whether the channel is enabled
-	 * @param datasetName The name of the channel dataset
-	 * @param dataName The data name of the channel
-	 * @param color The color of the channel
-	 * @param opacity Render opacity
-	 */
-	Channel(tree::Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName);
+    /**
+     * Constructor
+     * @param parent Parent tree item
+     * @param index Channel index
+     * @param displayName Channel name in the user interface
+     * @param enabled Whether the channel is enabled
+     * @param datasetName The name of the channel dataset
+     * @param dataName The data name of the channel
+     * @param color The color of the channel
+     * @param opacity Render opacity
+     */
+    Channel(tree::Item* parent, const std::uint32_t& index, const QString& name, const bool& enabled, const bool& linked, const QString& datasetName);
 
 public: // TreeItem: model API
 
@@ -88,7 +88,7 @@ public: // Plugin
     void resolvePoints();
 
 protected: // Miscellaneous
-	
+    
     /** Get parent channels tree item */
     const Channels* getChannels() const;
 
@@ -99,10 +99,10 @@ protected:
     static DimensionsViewerPlugin*  dimensionsViewerPlugin;
 
 protected:
-	friend class ConfigurationsModel;
-	friend class Channels;
-	friend class Differential;
-	friend class Profile;
+    friend class ConfigurationsModel;
+    friend class Channels;
+    friend class Differential;
+    friend class Profile;
 };
 
 /** Get scoped enum in rows set to work */

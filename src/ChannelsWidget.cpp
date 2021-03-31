@@ -9,9 +9,9 @@
 
 ChannelsWidget::ChannelsWidget(QWidget* parent) :
     TreeItemWidget(parent),
-	_ui{ std::make_unique<Ui::ChannelsWidget>() }
+    _ui{ std::make_unique<Ui::ChannelsWidget>() }
 {
-	_ui->setupUi(this);
+    _ui->setupUi(this);
 }
 
 void ChannelsWidget::setModelIndex(const QPersistentModelIndex& modelIndex)

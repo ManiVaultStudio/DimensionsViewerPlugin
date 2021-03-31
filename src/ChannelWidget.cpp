@@ -13,9 +13,9 @@
 
 ChannelWidget::ChannelWidget(QWidget* parent) :
     TreeItemWidget(parent),
-	_ui{ std::make_unique<Ui::ChannelWidget>() }
+    _ui{ std::make_unique<Ui::ChannelWidget>() }
 {
-	_ui->setupUi(this);
+    _ui->setupUi(this);
     
     QObject::connect(_ui->enabledCheckBox, &QCheckBox::stateChanged, [this](int state) {
         getModel().setData(getChild(to_ul(Channel::Child::Enabled), to_ul(Channel::Column::Value)), static_cast<bool>(state));
@@ -102,8 +102,6 @@ ChannelWidget::ChannelWidget(QWidget* parent) :
     addWidgetMapper("Color", QSharedPointer<WidgetMapper>::create(_ui->colorPushButton, [this](const QPersistentModelIndex& index, const bool& initialize) {
         if (initialize) {
             _ui->colorPushButton->setColor(Qt::gray);
-            _ui->colorPushButton->setShowText(false);
-
             return;
         }
 

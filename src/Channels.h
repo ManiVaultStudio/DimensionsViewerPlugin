@@ -45,7 +45,7 @@ protected: // Construction
      * @param datasetName Name of the primary dataset
      * @param dataName Name of the primary data
      */
-	Channels(tree::Item* parent, const QString& datasetName, const QString& dataName);
+    Channels(tree::Item* parent, const QString& datasetName, const QString& dataName);
 
 public: // TreeItem: model API
 

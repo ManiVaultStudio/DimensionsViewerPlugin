@@ -16,7 +16,7 @@ class DimensionsViewerPlugin;
  */
 class SpecSynchronizer : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public: // Construction
 
@@ -40,7 +40,7 @@ signals:
     void selectionChanged();
 
 private:
-	DimensionsViewerPlugin*     _dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
+    DimensionsViewerPlugin*     _dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
     QTimer                      _timer;                         /** Timer */
     SpecVisitor                 _specVisitor;                   /** Spec visitor */
     const std::int32_t          _updateInterval;                /** Update interval */

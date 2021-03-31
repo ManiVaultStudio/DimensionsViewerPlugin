@@ -5,7 +5,7 @@
 #include <memory>
 
 namespace Ui {
-	class ProfileWidget;
+    class ProfileWidget;
 }
 
 /**
@@ -32,5 +32,5 @@ public: // Inherited
     void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-	std::unique_ptr<Ui::ProfileWidget>		_ui;        /** UI from creator */
+    std::unique_ptr<Ui::ProfileWidget>      _ui;        /** UI from creator */
 };

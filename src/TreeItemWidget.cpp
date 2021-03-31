@@ -8,7 +8,7 @@ QAbstractItemModel* TreeItemWidget::WidgetMapper::model = nullptr;
 DimensionsViewerPlugin* TreeItemWidget::dimensionsViewerPlugin = nullptr;
 
 TreeItemWidget::TreeItemWidget(QWidget* parent) :
-	QWidget(parent),
+    QWidget(parent),
     _modelIndex(),
     _widgetMappers()
 {

@@ -5,7 +5,7 @@
 #include <QDebug>
 
 StylingPushButton::StylingPushButton(QWidget* parent /*= nullptr*/) :
-	QPushButton(parent),
+    QPushButton(parent),
     _modelIndex()
 {
     const auto& fontAwesome = hdps::Application::getIconFont("FontAwesome");

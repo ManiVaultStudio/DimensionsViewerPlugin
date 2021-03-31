@@ -5,7 +5,7 @@
 #include <memory>
 
 namespace Ui {
-	class ConfigurationWidget;
+    class ConfigurationWidget;
 }
 
 /**
@@ -21,7 +21,7 @@ public: // Construction
      * Constructor
      * @param parent Parent widget
      */
-	ConfigurationWidget(QWidget* parent);
+    ConfigurationWidget(QWidget* parent);
 
 public: // Inherited
 
@@ -32,5 +32,5 @@ public: // Inherited
     void setModelIndex(const QPersistentModelIndex& modelIndex) override;
 
 private:
-	std::unique_ptr<Ui::ConfigurationWidget>    _ui;        /** UI from creator */
+    std::unique_ptr<Ui::ConfigurationWidget>    _ui;        /** UI from creator */
 };

@@ -6,7 +6,7 @@
 
 MiscellaneousWidget::MiscellaneousWidget(QWidget* parent) :
     TreeItemWidget(parent),
-	_ui{ std::make_unique<Ui::MiscellaneousWidget>() }
+    _ui{ std::make_unique<Ui::MiscellaneousWidget>() }
 {
     _ui->setupUi(this);
 

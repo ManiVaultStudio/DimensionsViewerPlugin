@@ -41,13 +41,13 @@ public: // Enumerations
 
 protected: // Construction
 
-	/**
-	 * Constructor
-	 * @param parent Parent tree item
-	 * @param datasetName Name of the primary dataset
-	 * @param dataName Name of the primary data
-	 */
-	Configuration(Item* parent, const QString& datasetName, const QString& dataName);
+    /**
+     * Constructor
+     * @param parent Parent tree item
+     * @param datasetName Name of the primary dataset
+     * @param dataName Name of the primary data
+     */
+    Configuration(Item* parent, const QString& datasetName, const QString& dataName);
 
 public: // TreeItem: visitor API
 

@@ -8,9 +8,9 @@
 
 DifferentialWidget::DifferentialWidget(QWidget* parent) :
     TreeItemWidget(parent),
-	_ui{ std::make_unique<Ui::DifferentialWidget>() }
+    _ui{ std::make_unique<Ui::DifferentialWidget>() }
 {
-	_ui->setupUi(this);
+    _ui->setupUi(this);
 
     QObject::connect(_ui->differentialOperandAComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         //const auto differentialIndex = getChild(to_ul(Channel::Row::Differential));

@@ -9,9 +9,9 @@
 
 ProfileWidget::ProfileWidget(QWidget* parent) :
     TreeItemWidget(parent),
-	_ui{ std::make_unique<Ui::ProfileWidget>() }
+    _ui{ std::make_unique<Ui::ProfileWidget>() }
 {
-	_ui->setupUi(this);
+    _ui->setupUi(this);
 
     QObject::connect(_ui->profileTypeComboBox, &QComboBox::currentTextChanged, [this](QString currentText) {
         getModel().setData(getChild(to_ul(Profile::Child::ProfileType), to_ul(Profile::Column::Value)), currentText, Qt::DisplayRole);

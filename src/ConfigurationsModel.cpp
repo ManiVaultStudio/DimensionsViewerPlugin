@@ -8,9 +8,9 @@
 
 ConfigurationsModel::ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin) :
     QAbstractItemModel(static_cast<QObject*>(dimensionsViewerPlugin)),
-	_dimensionsViewerPlugin(dimensionsViewerPlugin),
-	_root(),
-	_selectionModel(this)
+    _dimensionsViewerPlugin(dimensionsViewerPlugin),
+    _root(),
+    _selectionModel(this)
 {
     tree::Item::setModel(this);
     
@@ -121,6 +121,7 @@ QModelIndex ConfigurationsModel::parent(const QModelIndex& index) const
 
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
+    /*
     const auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
 
     auto configurations = reinterpret_cast<Configurations*>(_root.getChild("Configurations"));
@@ -155,7 +156,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 
         subsetsItem->setValue(subsets);
     } 
-    
+    */
     
     //qDebug() << _root.find(tree::Item::Column::Type, "Configurations", Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchRecursive | Qt::CaseInsensitive));
     //qDebug() << _root.find(tree::Item::Column::Type, "nel", Qt::MatchFlags(Qt::MatchEndsWith | Qt::MatchRecursive));

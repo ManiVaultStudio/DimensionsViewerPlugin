@@ -5,7 +5,7 @@
 #include <QDebug>
 
 SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugin) :
-	_dimensionsViewerPlugin(dimensionsViewerPlugin),
+    _dimensionsViewerPlugin(dimensionsViewerPlugin),
     _timer(),
     _specVisitor(),
     _updateInterval(20)

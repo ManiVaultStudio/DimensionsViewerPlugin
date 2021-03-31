@@ -17,7 +17,7 @@ class Configuration;
  */
 class ConfigurationsModel : public QAbstractItemModel
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public: // Extend roles
 
@@ -33,53 +33,53 @@ public: // Construction
      * Constructor
      * @param dimensionsViewerPlugin Pointer to an instance of the dimensions viewer plugin
      */
-	ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin);
+    ConfigurationsModel(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
 public: // Obligatory overrides
 
-	/**
-	 * Returns the number of rows in the model
-	 * @param parent Parent index
-	 */
-	int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    /**
+     * Returns the number of rows in the model
+     * @param parent Parent index
+     */
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
-	/**
-	 * Returns the number of columns in the model
-	 * @param parent Parent index
-	 */
-	int	columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    /**
+     * Returns the number of columns in the model
+     * @param parent Parent index
+     */
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-	/**
-	 * Returns model data for the given index
-	 * @param index Index
-	 * @param role The data role
-	 */
-	QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    /**
+     * Returns model data for the given index
+     * @param index Index
+     * @param role The data role
+     */
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
-	/**
-	 * Sets the data value for the given model index and data role
-	 * @param index Model index
-	 * @param value Data value in variant form
-	 * @param role Data role
-	 * @return Whether the data was properly set or not
-	 */
-	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
+    /**
+     * Sets the data value for the given model index and data role
+     * @param index Model index
+     * @param value Data value in variant form
+     * @param role Data role
+     * @return Whether the data was properly set or not
+     */
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
-	/**
-	 * Returns the item flags for the given model index
-	 * @param index Model index
-	 * @return Item flags for the index
-	 */
-	Qt::ItemFlags flags(const QModelIndex &index) const override;
+    /**
+     * Returns the item flags for the given model index
+     * @param index Model index
+     * @return Item flags for the index
+     */
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-	/**
-	 * Returns the header data for the given section, orientation and data role
-	 * @param section Model section
-	 * @param orientation Orientation (e.g. horizontal or vertical)
-	 * @param role Data role
-	 * @return Header data in variant form
-	 */
-	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    /**
+     * Returns the header data for the given section, orientation and data role
+     * @param section Model section
+     * @param orientation Orientation (e.g. horizontal or vertical)
+     * @param role Data role
+     * @return Header data in variant form
+     */
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     /**
      * Returns the model index belonging to the given model row and column
@@ -99,11 +99,11 @@ public: // Obligatory overrides
 
 public: // Dataset management
 
-	/**
-	 * Add a dataset to the model
-	 * @param datasetName Name of the dataset
-	 */
-	void addDataset(const QString& datasetName);
+    /**
+     * Add a dataset to the model
+     * @param datasetName Name of the dataset
+     */
+    void addDataset(const QString& datasetName);
 
 public: // Row selection
 
@@ -121,8 +121,8 @@ public: // Row selection
 
 public: // Miscellaneous
 
-	/** Returns the selection model */
-	QItemSelectionModel& getSelectionModel() {
+    /** Returns the selection model */
+    QItemSelectionModel& getSelectionModel() {
         return _selectionModel;
     }
 

@@ -8,9 +8,9 @@
 
 ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
     TreeItemWidget(parent),
-	_ui{ std::make_unique<Ui::ConfigurationWidget>() }
+    _ui{ std::make_unique<Ui::ConfigurationWidget>() }
 {
-	_ui->setupUi(this);
+    _ui->setupUi(this);
 
     _ui->treeView->setModel(&getModel());
     _ui->treeView->setSelectionModel(&getSelectionModel());
