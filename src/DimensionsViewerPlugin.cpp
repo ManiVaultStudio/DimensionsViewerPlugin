@@ -50,7 +50,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
             dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", false);
 
         if (dataType == PointType) {
-            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize dimensions for %1").arg(candidateDatasetName), true, [this, candidateDatasetName]() {
+            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDatasetName), true, [this, candidateDatasetName]() {
                 _dropWidget->setShowDropIndicator(false);
             });
         }
