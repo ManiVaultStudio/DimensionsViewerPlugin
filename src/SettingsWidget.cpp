@@ -24,6 +24,8 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 {
 	_ui->setupUi(this);
 
+    _ui->differentialProfileGroupBox->setVisible(false);
+
 	_enabledCheckBoxes << _ui->channel1EnabledCheckBox<< _ui->channel2EnabledCheckBox << _ui->channel3EnabledCheckBox;
 	_datasetNameComboBoxes << _ui->channel1DatasetNameComboBox<< _ui->channel2DatasetNameComboBox << _ui->channel3DatasetNameComboBox;
 	_colorPushButtons << _ui->channel1ColorPushButton<< _ui->channel2ColorPushButton << _ui->channel3ColorPushButton;
