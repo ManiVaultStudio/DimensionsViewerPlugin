@@ -83,18 +83,21 @@ QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientatio
 
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
-	auto dataName = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName).getDataName();
-
 	Configuration* parentConfiguration = false;
 
 	for (auto configuration : _configurations) {
-		if (dataName == configuration->getChannelDataName(0, Qt::EditRole).toString()) {
+        auto& addedDataset          = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName);
+        auto& configurationDataset  = _dimensionsViewerPlugin->getCore()->requestData<Points>(configuration->getChannelDatasetName(0, Qt::EditRole).toString());
+        
+		if (addedDataset.getNumDimensions() == configurationDataset.getNumDimensions()) {
 			parentConfiguration = configuration;
 			break;
 		}
 	}
 
 	if (parentConfiguration) {
+        qDebug() << "parentConfiguration";
+
 		const auto configurationIndex	= _configurations.indexOf(parentConfiguration);
 		const auto subsetsIndex			= index(configurationIndex, static_cast<int>(Configuration::Column::Subsets));
 
@@ -103,7 +106,7 @@ void ConfigurationsModel::addDataset(const QString& datasetName)
 	else {
 		beginInsertRows(QModelIndex(), _configurations.size(), _configurations.size());
 		{
-			_configurations << new Configuration(_dimensionsViewerPlugin, datasetName, dataName);
+			_configurations << new Configuration(_dimensionsViewerPlugin, datasetName);
 		}
 		endInsertRows();
 

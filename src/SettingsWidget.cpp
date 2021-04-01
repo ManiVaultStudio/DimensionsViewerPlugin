@@ -22,6 +22,8 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_showRangeCheckBoxes(),
 	_lockedPushButtons()
 {
+    setAutoFillBackground(true);
+
 	_ui->setupUi(this);
 
     _ui->differentialProfileGroupBox->setVisible(false);
@@ -89,7 +91,6 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	}
 
 	for (auto colorPushButton : _colorPushButtons) {
-		colorPushButton->setShowText(false);
 		colorPushButton->setColor(Qt::gray);
 
 		QObject::connect(colorPushButton, &ColorPickerPushButton::colorChanged, [this, &configurationsModel, colorPushButton](const QColor& color) {

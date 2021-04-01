@@ -33,8 +33,6 @@ public: // Columns
 		ChannelEnabledEnd = ChannelEnabledStart + noChannels,               /** Channel enabled parameter of the last channel */
 		ChannelDatasetNameStart,			                                /** Channel dataset name parameter of the first channel */
 		ChannelDatasetNameEnd = ChannelDatasetNameStart + noChannels,       /** Channel dataset name parameter of the last channel */
-		ChannelDataNameStart,				                                /** Channel data name parameter of the first channel */
-		ChannelDataNameEnd = ChannelDataNameStart + noChannels,             /** Channel data name parameter of the last channel */
 		ChannelColorStart,					                                /** Channel color parameter of the first channel */
 		ChannelColorEnd = ChannelColorStart + noChannels,                   /** Channel color parameter of the last channel */
 		ChannelOpacityStart,				                                /** Channel opacity parameter of the first channel */
@@ -74,9 +72,6 @@ public: // Columns
 		if (column >= Column::ChannelBandTypeStart && column < Column::ChannelBandTypeEnd)
 			return QString("Channel %1: Band type").arg(QString::number(column));
 
-		if (column >= Column::ChannelDataNameStart && column < Column::ChannelDataNameEnd)
-			return QString("Channel %1: Data name").arg(QString::number(column));
-
 		if (column >= Column::ChannelDatasetNameStart && column < Column::ChannelDatasetNameEnd)
 			return QString("Channel %1: Dataset name").arg(QString::number(column));
 
@@ -113,9 +108,8 @@ public: // Construction
 	 * Constructor
 	 * @param parent Parent object
 	 * @param datasetName Name of the primary dataset
-	 * @param dataName Name of the primary data
 	 */
-	Configuration(QObject* parent, const QString& datasetName, const QString& dataName);
+	Configuration(QObject* parent, const QString& datasetName);
 
 public: // MVC
 
@@ -190,14 +184,6 @@ public: // Getters/setters
 	 * @param datasetName The dataset name of channel with \p channelIndex
 	 */
 	void setChannelDatasetName(const std::int32_t& channelIndex, const QString& datasetName);
-
-	/**
-	 * Returns the data name of channel with \p channelIndex
-	 * @param channelIndex Index of the channel
-	 * @param role Data role
-	 * @return Channel data name in variant form
-	 */
-	QVariant getChannelDataName(const std::int32_t& channelIndex, const std::int32_t& role) const;
 
 	/**
 	 * Returns the color of channel with \p channelIndex

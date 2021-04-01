@@ -6,12 +6,12 @@
 DimensionsViewerPlugin* Configuration::dimensionsViewerPlugin = nullptr;
 std::int32_t Configuration::maxNoDimensions = 100;
 
-Configuration::Configuration(QObject* parent, const QString& datasetName, const QString& dataName) :
+Configuration::Configuration(QObject* parent, const QString& datasetName) :
 	QObject(parent),
 	_channels({ 
-		new Channel(parent, 0, "Dataset", true, datasetName, dataName, Qt::black, 0.25f, false),
-		new Channel(parent, 1, "Subset 1", false, "", dataName, QColor(249, 149, 0), 0.25f, true),
-		new Channel(parent, 2, "Subset 2", false, "", dataName, QColor(0, 112, 249), 0.25f, true)
+		new Channel(parent, 0, "Dataset", true, datasetName, Qt::black, 0.25f, false),
+		new Channel(parent, 1, "Subset 1", false, "", QColor(249, 149, 0), 0.25f, true),
+		new Channel(parent, 2, "Subset 2", false, "", QColor(0, 112, 249), 0.25f, true)
 	}),
 	_subsets(),
     _spec()
@@ -167,9 +167,6 @@ QVariant Configuration::getData(const QModelIndex& index, const int& role) const
 
 	if (index.column() >= Column::ChannelDatasetNameStart && index.column() < Column::ChannelDatasetNameEnd)
 		return getChannelDatasetName(index.column() - Column::ChannelDatasetNameStart, role);
-
-	if (index.column() >= Column::ChannelDataNameStart && index.column() < Column::ChannelDataNameEnd)
-		return getChannelDataName(index.column() - Column::ChannelDataNameStart, role);
 
 	if (index.column() >= Column::ChannelColorStart && index.column() < Column::ChannelColorEnd)
 		return getChannelColor(index.column() - Column::ChannelColorStart, role);
@@ -493,35 +490,6 @@ void Configuration::setChannelDatasetName(const std::int32_t& channelIndex, cons
 	{
 		qDebug() << exception.what();
 	}
-}
-
-QVariant Configuration::getChannelDataName(const std::int32_t& channelIndex, const std::int32_t& role) const
-{
-	try
-	{
-		const auto dataName = _channels[channelIndex]->getDataName();
-
-		switch (role)
-		{
-			case Qt::DisplayRole:
-				return dataName;
-
-			case Qt::EditRole:
-				return dataName;
-
-			case Qt::ToolTipRole:
-				return QString("Channel %1 data name: %2").arg(QString::number(channelIndex + 1), dataName);
-
-			default:
-				return QVariant();
-		}
-	}
-	catch (std::exception exception)
-	{
-		qDebug() << exception.what();
-	}
-
-	return QVariant();
 }
 
 QVariant Configuration::getChannelColor(const std::int32_t& channelIndex, const std::int32_t& role) const

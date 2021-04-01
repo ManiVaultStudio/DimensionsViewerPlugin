@@ -106,7 +106,7 @@ protected: // Construction
 	 * @param opacity Render opacity
 	 * @param lock Whether settings are locked
 	 */
-	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
+	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
 
 public: // Getters/setters
 
@@ -146,11 +146,6 @@ public: // Getters/setters
 	 * @param datasetName Name of the dataset
 	 */
 	void setDatasetName(const QString& datasetName);
-
-	/** Returns the data name */
-	QString getDataName() const {
-		return _dataName;
-	};
 
 	/** Returns the color */
 	QColor getColor() const {
@@ -253,7 +248,6 @@ private:
 	const QString			    _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
 	bool					    _enabled;			            /** Whether the channel is enabled or not */
 	QString					    _datasetName;		            /** Channel dataset name */
-	QString					    _dataName;			            /** Channel data name */
 	QColor					    _color;				            /** Channel color */
 	float					    _opacity;			            /** Channel opacity */
 	ProfileType				    _profileType;		            /** The type of profile to visualize */

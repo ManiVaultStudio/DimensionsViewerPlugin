@@ -3,15 +3,22 @@
 #include "SettingsWidget.h"
 #include "Channel.h"
 
+#include <widgets/DropWidget.h>
+
 #include <QDebug>
+#include <QMimeData>
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.DimensionsViewerPlugin")
+
+using namespace hdps;
+using namespace hdps::gui;
 
 DimensionsViewerPlugin::DimensionsViewerPlugin() : 
 	ViewPlugin("Dimensions Viewer"),
 	_configurationsModel(this),
 	_dimensionsViewerWidget(),
-	_settingsWidget()
+	_settingsWidget(),
+    _dropWidget(nullptr)
 {
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
@@ -20,48 +27,62 @@ DimensionsViewerPlugin::DimensionsViewerPlugin() :
 
 	_dimensionsViewerWidget = new DimensionsViewerWidget(this);
 	_settingsWidget = new SettingsWidget(this);
+    _dropWidget = new DropWidget(_dimensionsViewerWidget);
+
+    _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(this, "No data loaded", "Drag an item from the data hierarchy and drop it here to visualize data..."));
+
+    _dropWidget->initialize([this](const QMimeData* mimeData) -> DropWidget::DropRegions {
+        DropWidget::DropRegions dropRegions;
+
+        const auto mimeText = mimeData->text();
+        const auto tokens = mimeText.split("\n");
+        const auto datasetName = tokens[0];
+        const auto dataType = DataType(tokens[1]);
+        const auto dataTypes = DataTypes({ PointType });
+        const auto candidateDataset = _core->requestData<Points>(datasetName);
+        const auto candidateDatasetName = candidateDataset.getName();
+
+        if (!dataTypes.contains(dataType))
+            dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", false);
+
+        if (dataType == PointType) {
+            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDatasetName), true, [this, candidateDatasetName]() {
+                _dropWidget->setShowDropIndicator(false);
+                _configurationsModel.addDataset(candidateDatasetName);
+            });
+        }
+
+        return dropRegions;
+    });
 }
 
 void DimensionsViewerPlugin::init()
 {
     auto mainLayout = new QVBoxLayout();
 
+    mainLayout->setMargin(0);
+    mainLayout->setSpacing(0);
+
     mainLayout->addWidget(_dimensionsViewerWidget, 1);
     mainLayout->addWidget(_settingsWidget);
 
-    setMainLayout(mainLayout);
-}
+    setLayout(mainLayout);
 
-void DimensionsViewerPlugin::dataAdded(const QString dataset)
-{
-	_configurationsModel.addDataset(dataset);
-}
+    registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
+        if (dataEvent->getType() == EventType::DataAdded) {
+            _dropWidget->setShowDropIndicator(false);
+            _configurationsModel.addDataset(dataEvent->dataSetName);
+        }
 
-void DimensionsViewerPlugin::dataChanged(const QString dataset)
-{
-}
+        if (dataEvent->getType() == EventType::SelectionChanged)
+        {
+            const auto hits = _configurationsModel.match(_configurationsModel.index(0, Configuration::Column::ChannelDatasetNameStart), Qt::DisplayRole, dataEvent->dataSetName, -1, Qt::MatchExactly);
 
-void DimensionsViewerPlugin::dataRemoved(const QString dataset)
-{
-}
-
-void DimensionsViewerPlugin::selectionChanged(const QString dataName)
-{
-    const auto hits = _configurationsModel.match(_configurationsModel.index(0, Configuration::Column::ChannelDataNameStart), Qt::DisplayRole, dataName, -1, Qt::MatchExactly);
-
-    if (!hits.isEmpty()) {
-        //const auto selectionStamp = _configurationsModel.data(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp)).toInt();
-        _configurationsModel.setData(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp), 0);
-    }
-}
-
-hdps::DataTypes DimensionsViewerPlugin::supportedDataTypes() const
-{
-	hdps::DataTypes supportedTypes;
-
-	supportedTypes.append(PointType);
-
-	return supportedTypes;
+            if (!hits.isEmpty()) {
+                _configurationsModel.setData(_configurationsModel.index(hits.first().row(), Configuration::Column::SelectionStamp), 0);
+            }
+        }
+    });
 }
 
 DimensionsViewerPlugin* DimensionsViewerPluginFactory::produce()

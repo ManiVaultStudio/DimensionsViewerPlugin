@@ -16,6 +16,12 @@ using hdps::plugin::ViewPlugin;
 class DimensionsViewerWidget;
 class SettingsWidget;
 
+namespace hdps {
+    namespace gui {
+        class DropWidget;
+    }
+}
+
 class DimensionsViewerPlugin : public ViewPlugin
 {
 	Q_OBJECT
@@ -29,14 +35,6 @@ public:
 
 	void init() override;
 
-	void dataAdded(const QString name) Q_DECL_OVERRIDE;
-	void dataChanged(const QString name) Q_DECL_OVERRIDE;
-	void dataRemoved(const QString name) Q_DECL_OVERRIDE;
-	void selectionChanged(const QString dataName) Q_DECL_OVERRIDE;
-
-	/** Determines which data types this viewer is compatible with */
-	hdps::DataTypes supportedDataTypes() const Q_DECL_OVERRIDE;
-
 public:
 	
 	/** Returns the configurations model */
@@ -49,6 +47,7 @@ private:
 	ConfigurationsModel			_configurationsModel;           /** Configurations model */
 	DimensionsViewerWidget*		_dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
 	SettingsWidget*				_settingsWidget;                /** Settings widget */
+    hdps::gui::DropWidget*      _dropWidget;
 };
 
 class DimensionsViewerPluginFactory : public ViewPluginFactory

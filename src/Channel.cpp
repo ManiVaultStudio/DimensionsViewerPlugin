@@ -10,14 +10,13 @@
 
 DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
 
-Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QString& dataName, const QColor& color, const float& opacity /*= 1.0f*/, const bool& lock /*= false*/) :
+Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity /*= 1.0f*/, const bool& lock /*= false*/) :
 	QObject(parent),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),
 	_enabled(enabled),
 	_datasetName(),
-	_dataName(dataName),
 	_color(color),
 	_opacity(opacity),
 	_profileType(ProfileType::Mean),
@@ -152,7 +151,8 @@ void Channel::updateSpec()
 
 	//qDebug() << "Updating dimensions for" << _points->getName();
 
-	const auto& selection = dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestSelection(_points->getDataName()));
+	//const auto& selection = dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestSelection(_points->getDataName()));
+	const auto& selection = dynamic_cast<Points&>(_points->getSelection());
 	
 	std::vector<std::uint32_t> pointIndices;
 	
