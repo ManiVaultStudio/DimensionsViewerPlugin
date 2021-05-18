@@ -1,6 +1,8 @@
 #pragma once
 
-#include <QObject>
+#include "PluginAction.h"
+
+#include <QStandardItem>
 #include <QVector>
 #include <QColor>
 #include <QVariantMap>
@@ -15,9 +17,7 @@ class DimensionsViewerPlugin;
  * 
  * @author T. Kroes
  */
-class Channel : public QObject {
-
-	Q_OBJECT
+class ChannelAction : public PluginAction {
 
 public: // Enumerations
 
@@ -96,7 +96,7 @@ protected: // Construction
 
 	/**
 	 * Constructor
-	 * @param parent Parent object
+	 * @param dimensionsViewerPlugin Dimensions viewer plugin
 	 * @param index Channel index
 	 * @param displayName Channel name in the user interface
 	 * @param enabled Whether the channel is enabled
@@ -106,7 +106,7 @@ protected: // Construction
 	 * @param opacity Render opacity
 	 * @param lock Whether settings are locked
 	 */
-	Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
+	ChannelAction(DimensionsViewerPlugin* dimensionsViewerPlugin, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
 
 public: // Getters/setters
 
@@ -240,7 +240,7 @@ private: // Miscellaneous
 signals:
 
     /** Signals that the channel spec has changed */
-    void specChanged(Channel* channel);
+    //void specChanged(Channel* channel);
 
 private:
 	const std::uint32_t		    _index;				            /** Channel index */

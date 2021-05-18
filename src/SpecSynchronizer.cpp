@@ -6,9 +6,10 @@
 SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_dimensionsViewerPlugin(dimensionsViewerPlugin)
 {
-    auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
+    //auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, [this, &configurationsModel](const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles /*= QVector<int>()*/) {
+    /*
+    QObject::connect(&configurationsModel, &ConfigurationsModel::dataChanged, [this, &configurationsModel](const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles) {
         const auto selectedRows = configurationsModel.getSelectionModel().selectedRows();
 
         if (selectedRows.isEmpty())
@@ -30,16 +31,19 @@ SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugi
 
         emit selectionChanged();
     });
+    */
 }
 
 QVariantMap SpecSynchronizer::getSpec(const int& modified)
 {
+    /*
     auto selectedConfiguration = _dimensionsViewerPlugin->getConfigurationsModel().getSelectedConfiguration();
 
     if (selectedConfiguration != nullptr && selectedConfiguration->getModified() > modified) {
         selectedConfiguration->updateSpec();
         return selectedConfiguration->getSpec();
     }
+    */
 
     return QVariantMap();
 }

@@ -16,6 +16,7 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 	setAcceptDrops(true);
 
+    /*
     auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
     page()->setWebChannel(_webChannel);
@@ -23,6 +24,7 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
     _webChannel->registerObject("specSynchronizer", &_specSynchronizer);
 
     load(QUrl("qrc:DimensionsViewer.html"));
+    */
 }
 
 void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
@@ -37,11 +39,12 @@ void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
 
 void DimensionsViewerWidget::dropEvent(QDropEvent* dropEvent)
 {
+    /*
 	const auto items        = dropEvent->mimeData()->text().split("\n");
 	const auto datasetName  = items.at(0);
 
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
-
+    
 	for (int channelIndex = 0; channelIndex < Configuration::noChannels; channelIndex++) {
 		const auto hits = configurationsModel.match(configurationsModel.index(0, Configuration::Column::ChannelDatasetNameStart + channelIndex), Qt::DisplayRole, datasetName, -1, Qt::MatchExactly);
 
@@ -50,4 +53,5 @@ void DimensionsViewerWidget::dropEvent(QDropEvent* dropEvent)
 			break;
 		}
 	}
+    */
 }

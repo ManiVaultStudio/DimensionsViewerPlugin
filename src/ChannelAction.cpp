@@ -1,4 +1,4 @@
-#include "Channel.h"
+#include "ChannelAction.h"
 #include "DimensionsViewerPlugin.h"
 
 #include "PointData.h"
@@ -8,10 +8,10 @@
 #include <QDebug>
 #include <QVariantList>
 
-DimensionsViewerPlugin* Channel::dimensionsViewerPlugin = nullptr;
+DimensionsViewerPlugin* ChannelAction::dimensionsViewerPlugin = nullptr;
 
-Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity /*= 1.0f*/, const bool& lock /*= false*/) :
-	QObject(parent),
+ChannelAction::ChannelAction(DimensionsViewerPlugin* dimensionsViewerPlugin, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity /*= 1.0f*/, const bool& lock /*= false*/) :
+    PluginAction(dimensionsViewerPlugin, displayName),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
 	_displayName(displayName),
@@ -29,7 +29,7 @@ Channel::Channel(QObject* parent, const std::uint32_t& index, const QString& dis
 	setDatasetName(datasetName);
 }
 
-void Channel::setEnabled(const bool& enabled)
+void ChannelAction::setEnabled(const bool& enabled)
 {
 	if (enabled == _enabled)
 		return;
@@ -39,7 +39,7 @@ void Channel::setEnabled(const bool& enabled)
 	updateSpec();
 }
 
-void Channel::setDatasetName(const QString& datasetName)
+void ChannelAction::setDatasetName(const QString& datasetName)
 {
 	if (datasetName == _datasetName)
 		return;
@@ -51,7 +51,7 @@ void Channel::setDatasetName(const QString& datasetName)
 	updateSpec();
 }
 
-void Channel::setColor(const QColor& color)
+void ChannelAction::setColor(const QColor& color)
 {
 	if (color == _color)
 		return;
@@ -61,7 +61,7 @@ void Channel::setColor(const QColor& color)
 	updateSpec();
 }
 
-void Channel::setOpacity(const float& opacity)
+void ChannelAction::setOpacity(const float& opacity)
 {
 	if (opacity == _opacity)
 		return;
@@ -71,7 +71,7 @@ void Channel::setOpacity(const float& opacity)
 	updateSpec();
 }
 
-void Channel::setProfileType(const ProfileType& profileType)
+void ChannelAction::setProfileType(const ProfileType& profileType)
 {
 	if (profileType == _profileType)
 		return;
@@ -81,7 +81,7 @@ void Channel::setProfileType(const ProfileType& profileType)
 	updateSpec();
 }
 
-void Channel::setBandType(const BandType& bandType)
+void ChannelAction::setBandType(const BandType& bandType)
 {
 	if (bandType == _bandType)
 		return;
@@ -91,7 +91,7 @@ void Channel::setBandType(const BandType& bandType)
 	updateSpec();
 }
 
-void Channel::setShowRange(const bool& showRange)
+void ChannelAction::setShowRange(const bool& showRange)
 {
 	if (showRange == _showRange)
 		return;
@@ -101,7 +101,7 @@ void Channel::setShowRange(const bool& showRange)
 	updateSpec();
 }
 
-void Channel::setLocked(const bool& locked)
+void ChannelAction::setLocked(const bool& locked)
 {
 	if (locked == _locked)
 		return;
@@ -109,7 +109,7 @@ void Channel::setLocked(const bool& locked)
 	_locked = locked;
 }
 
-bool Channel::canDisplay() const
+bool ChannelAction::canDisplay() const
 {
     if (!_enabled)
         return false;
@@ -126,17 +126,17 @@ bool Channel::canDisplay() const
     return false;
 }
 
-std::int32_t Channel::getNoDimensions() const
+std::int32_t ChannelAction::getNoDimensions() const
 {
     return _points->getNumDimensions();
 }
 
-std::int32_t Channel::getNoPoints() const
+std::int32_t ChannelAction::getNoPoints() const
 {
     return _points->getNumPoints();
 }
 
-bool Channel::isSubset() const
+bool ChannelAction::isSubset() const
 {
 	if (_points == nullptr)
 		return false;
@@ -144,7 +144,7 @@ bool Channel::isSubset() const
 	return !_points->indices.empty();
 }
 
-void Channel::updateSpec()
+void ChannelAction::updateSpec()
 {
 	if (_points == nullptr)
 		return;
@@ -269,5 +269,5 @@ void Channel::updateSpec()
 	_spec["showRange"]		= _showRange && pointIndices.size() > 1;
 	_spec["canDisplay"]		= canDisplay();
 
-    emit specChanged(this);
+    //emit specChanged(this);
 }

@@ -2,19 +2,18 @@
 
 #include <ViewPlugin.h>
 
-#include "ConfigurationsModel.h"
-#include "Channel.h"
-
 #include "PointData.h"
 
 #include <QMap>
 #include <QStringList>
+#include <QStandardItemModel>
 
 using hdps::plugin::ViewPluginFactory;
 using hdps::plugin::ViewPlugin;
 
 class DimensionsViewerWidget;
 class SettingsWidget;
+class SettingsAction;
 
 namespace hdps {
     namespace gui {
@@ -26,27 +25,18 @@ class DimensionsViewerPlugin : public ViewPlugin
 {
 	Q_OBJECT
 
-public: // Aliases 
-
-	using Channels = QVector<Channel*>;
-
 public:
 	DimensionsViewerPlugin();
 
 	void init() override;
 
 public:
-	
-	/** Returns the configurations model */
-	ConfigurationsModel& getConfigurationsModel() { return _configurationsModel; }
-
 	/** Returns a pointer to the core interface */
 	hdps::CoreInterface* getCore() { return _core; }
 
 private:
-	ConfigurationsModel			_configurationsModel;           /** Configurations model */
 	DimensionsViewerWidget*		_dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
-	SettingsWidget*				_settingsWidget;                /** Settings widget */
+    SettingsAction*             _settingsAction;
     hdps::gui::DropWidget*      _dropWidget;
 };
 
