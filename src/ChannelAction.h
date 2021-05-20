@@ -8,7 +8,7 @@
 #include <QVariantMap>
 
 class Points;
-class DimensionsViewerPlugin;
+class ConfigurationAction;
 
 /**
  * Channel class
@@ -92,13 +92,25 @@ public: // Enumerations
 		return bandTypeNames;
 	}
 
+public:
+    class Widget : public PluginAction::Widget {
+    public:
+        Widget(QWidget* parent, ChannelAction* channelAction);
+
+    protected:
+        QHBoxLayout     _mainLayout;
+    };
+
+    QWidget* createWidget(QWidget* parent) override {
+        return new Widget(parent, this);
+    }
+
 protected: // Construction
 
 	/**
 	 * Constructor
-	 * @param dimensionsViewerPlugin Dimensions viewer plugin
+	 * @param configurationAction Parent configuration action
 	 * @param index Channel index
-	 * @param displayName Channel name in the user interface
 	 * @param enabled Whether the channel is enabled
 	 * @param datasetName The name of the channel dataset
 	 * @param dataName The data name of the channel
@@ -106,112 +118,10 @@ protected: // Construction
 	 * @param opacity Render opacity
 	 * @param lock Whether settings are locked
 	 */
-	ChannelAction(DimensionsViewerPlugin* dimensionsViewerPlugin, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
+	ChannelAction(ConfigurationAction* configurationAction, const std::uint32_t& index, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
 
 public: // Getters/setters
 
-	/** Returns the channel index */
-	std::uint32_t getIndex() const {
-		return _index;
-	};
-
-	/** Returns the channel internal name */
-	QString getInternalName() const {
-		return _internalName;
-	};
-
-	/** Returns the channel display name */
-	QString getDisplayName() const {
-		return _displayName;
-	};
-
-	/** Returns whether the channel is enabled */
-	bool isEnabled() const {
-		return _enabled;
-	};
-
-	/**
-	 * Sets whether the channel is enabled
-	 * @param enabled Whether the channel is enabled
-	 */
-	void setEnabled(const bool& enabled);
-
-	/** Returns the dataset name */
-	QString getDatasetName() const {
-		return _datasetName;
-	};
-
-	/**
-	 * Sets the dataset name
-	 * @param datasetName Name of the dataset
-	 */
-	void setDatasetName(const QString& datasetName);
-
-	/** Returns the color */
-	QColor getColor() const {
-		return _color;
-	};
-
-	/**
-	 * Sets the color
-	 * @param color Color
-	 */
-	void setColor(const QColor& color);
-
-	/** Returns the render opacity */
-	float getOpacity() const {
-		return _opacity;
-	};
-
-	/**
-	 * Sets the render opacity
-	 * @param opacity Render opacity
-	 */
-	void setOpacity(const float& opacity);
-
-	/** Returns the profile type */
-	ProfileType getProfileType() const {
-		return _profileType;
-	};
-
-	/**
-	 * Sets the profile type
-	 * @param profileType Profile type
-	 */
-	void setProfileType(const ProfileType& profileType);
-
-	/** Returns the band type */
-	BandType getBandType() const {
-		return _bandType;
-	};
-
-	/**
-	 * Sets the band type
-	 * @param bandType Band type
-	 */
-	void setBandType(const BandType& bandType);
-
-	/** Returns whether to show the dimension range */
-	bool getShowRange() const {
-		return _showRange;
-	};
-
-	/**
-	 * Sets whether to show the dimension range
-	 * @param showRange Whether to show the dimension range
-	 */
-	void setShowRange(const bool& showRange);
-
-	/** Returns whether settings are locked */
-	bool isLocked() const {
-		return _locked;
-	};
-
-	/**
-	 * Sets whether settings are locked
-	 * @param locked Whether settings are locked
-	 */
-	void setLocked(const bool& locked);
 
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
@@ -242,25 +152,24 @@ signals:
     /** Signals that the channel spec has changed */
     //void specChanged(Channel* channel);
 
-private:
+    ConfigurationAction* getConfiguration() { return _configuration; }
+
+protected:
 	const std::uint32_t		    _index;				            /** Channel index */
 	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
 	const QString			    _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
-	bool					    _enabled;			            /** Whether the channel is enabled or not */
-	QString					    _datasetName;		            /** Channel dataset name */
-	QColor					    _color;				            /** Channel color */
-	float					    _opacity;			            /** Channel opacity */
-	ProfileType				    _profileType;		            /** The type of profile to visualize */
-	BandType				    _bandType;			            /** The type of band to visualize */
-	bool					    _showRange;			            /** Show the dimensions ranges */
-	bool					    _locked;			            /** Whether settings are locked (settings are linked to another channel) */
+    ConfigurationAction*        _configuration;
+    hdps::gui::StandardAction   _enabledAction;
+    hdps::gui::OptionAction     _datasetNameAction;
+    hdps::gui::ColorAction      _colorAction;
+    hdps::gui::DecimalAction    _opacityAction;
+    hdps::gui::OptionAction     _profileTypeAction;
+    hdps::gui::OptionAction     _bandTypeAction;
+    hdps::gui::StandardAction   _showRangeAction;
+    hdps::gui::StandardAction   _lockedAction;
     QPair<QString, QString>     _differentialDatasetNames;      /** Names of the datasets to compare */
-	QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
-	Points*					    _points;			            /** Pointer to points dataset */
+    QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
+    Points*					    _points;			            /** Pointer to points dataset */
 
-protected:
-	static DimensionsViewerPlugin* dimensionsViewerPlugin;
-
-	friend class DimensionsViewerPlugin;
-	friend class Configuration;
+    friend class ConfigurationAction;
 };

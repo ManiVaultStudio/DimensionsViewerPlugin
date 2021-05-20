@@ -1,4 +1,5 @@
 #include "ChannelAction.h"
+#include "ConfigurationAction.h"
 #include "DimensionsViewerPlugin.h"
 
 #include "PointData.h"
@@ -8,122 +9,37 @@
 #include <QDebug>
 #include <QVariantList>
 
-DimensionsViewerPlugin* ChannelAction::dimensionsViewerPlugin = nullptr;
+using namespace hdps::gui;
 
-ChannelAction::ChannelAction(DimensionsViewerPlugin* dimensionsViewerPlugin, const std::uint32_t& index, const QString& displayName, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity /*= 1.0f*/, const bool& lock /*= false*/) :
-    PluginAction(dimensionsViewerPlugin, displayName),
+ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const std::uint32_t& index, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity /*= 1.0f*/, const bool& lock /*= false*/) :
+    PluginAction(configurationAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(index)),
 	_index(index),
 	_internalName(QString("channel%1").arg(QString::number(index))),
-	_displayName(displayName),
-	_enabled(enabled),
-	_datasetName(),
-	_color(color),
-	_opacity(opacity),
-	_profileType(ProfileType::Mean),
-	_bandType(BandType::None),
-	_showRange(false),
-	_locked(lock),
+	_displayName(QString("Channel %1").arg(index)),
 	_spec(),
-    _points(nullptr)
+    _points(nullptr),
+    _configuration(configurationAction),
+    _enabledAction(this, QString("Channel %1").arg(index)),
+    _datasetNameAction(this, ""),
+    _colorAction(this, "Color"),
+    _opacityAction(this, "Opacity"),
+    _profileTypeAction(this, "Profile type"),
+    _bandTypeAction(this, "Band type"),
+    _showRangeAction(this, "Show range"),
+    _lockedAction(this, "Locked")
 {
-	setDatasetName(datasetName);
-}
+    _enabledAction.setEnabled(enabled);
+    _datasetNameAction.setEnabled(enabled);
+    _datasetNameAction.setEnabled(enabled);
+    _colorAction.setEnabled(enabled);
+    _opacityAction.setEnabled(enabled);
+    _profileTypeAction.setEnabled(enabled);
+    _bandTypeAction.setEnabled(enabled);
+    _showRangeAction.setEnabled(enabled);
+    _lockedAction.setEnabled(enabled);
 
-void ChannelAction::setEnabled(const bool& enabled)
-{
-	if (enabled == _enabled)
-		return;
-
-	_enabled = enabled;
-
-	updateSpec();
-}
-
-void ChannelAction::setDatasetName(const QString& datasetName)
-{
-	if (datasetName == _datasetName)
-		return;
-
-	_datasetName = datasetName;
-
-	_points = &dynamic_cast<Points&>(dimensionsViewerPlugin->getCore()->requestData(_datasetName));
-
-	updateSpec();
-}
-
-void ChannelAction::setColor(const QColor& color)
-{
-	if (color == _color)
-		return;
-
-	_color = color;
-
-	updateSpec();
-}
-
-void ChannelAction::setOpacity(const float& opacity)
-{
-	if (opacity == _opacity)
-		return;
-
-	_opacity = opacity;
-
-	updateSpec();
-}
-
-void ChannelAction::setProfileType(const ProfileType& profileType)
-{
-	if (profileType == _profileType)
-		return;
-
-	_profileType = profileType;
-	
-	updateSpec();
-}
-
-void ChannelAction::setBandType(const BandType& bandType)
-{
-	if (bandType == _bandType)
-		return;
-
-	_bandType = bandType;
-
-	updateSpec();
-}
-
-void ChannelAction::setShowRange(const bool& showRange)
-{
-	if (showRange == _showRange)
-		return;
-
-	_showRange = showRange;
-
-	updateSpec();
-}
-
-void ChannelAction::setLocked(const bool& locked)
-{
-	if (locked == _locked)
-		return;
-
-	_locked = locked;
-}
-
-bool ChannelAction::canDisplay() const
-{
-    if (!_enabled)
-        return false;
-
-    if (_profileType != ProfileType::None)
-        return true;
-
-    if (_bandType != BandType::None)
-        return true;
-
-    if (_showRange)
-        return true;
-
-    return false;
+    _profileTypeAction.setOptions(getProfileTypeNames());
+    _profileTypeAction.setOptions(getBandTypeNames());
 }
 
 std::int32_t ChannelAction::getNoDimensions() const
@@ -146,6 +62,7 @@ bool ChannelAction::isSubset() const
 
 void ChannelAction::updateSpec()
 {
+    /*
 	if (_points == nullptr)
 		return;
 
@@ -270,4 +187,22 @@ void ChannelAction::updateSpec()
 	_spec["canDisplay"]		= canDisplay();
 
     //emit specChanged(this);
+    */
+}
+
+ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
+    WidgetAction::Widget(parent, channelAction),
+    _mainLayout()
+{
+    setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    setLayout(&_mainLayout);
+    
+    _mainLayout.addWidget(new StandardAction::CheckBox(this, &channelAction->_enabledAction));
+    _mainLayout.addWidget(new OptionAction::Widget(this, &channelAction->_datasetNameAction, false), 1);
+    _mainLayout.addWidget(new ColorAction::Widget(this, &channelAction->_colorAction, false));
+    _mainLayout.addWidget(new DecimalAction::Widget(this, &channelAction->_opacityAction, DecimalAction::Widget::Configuration::SpinBoxSlider));
+    _mainLayout.addWidget(new OptionAction::Widget(this, &channelAction->_profileTypeAction, false));
+    _mainLayout.addWidget(new OptionAction::Widget(this, &channelAction->_bandTypeAction, false));
+    _mainLayout.addWidget(new StandardAction::CheckBox(this, &channelAction->_showRangeAction));
+    _mainLayout.addWidget(new StandardAction::CheckBox(this, &channelAction->_lockedAction));
 }

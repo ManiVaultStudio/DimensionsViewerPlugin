@@ -13,7 +13,7 @@ using hdps::plugin::ViewPlugin;
 
 class DimensionsViewerWidget;
 class SettingsWidget;
-class SettingsAction;
+class ConfigurationAction;
 
 namespace hdps {
     namespace gui {
@@ -35,8 +35,8 @@ public:
 	hdps::CoreInterface* getCore() { return _core; }
 
 private:
-	DimensionsViewerWidget*		_dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
-    SettingsAction*             _settingsAction;
+	QWidget*		            _dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
+    ConfigurationAction*        _configurationAction;
     hdps::gui::DropWidget*      _dropWidget;
 };
 

@@ -1,6 +1,6 @@
 #include "DimensionsViewerPlugin.h"
 #include "DimensionsViewerWidget.h"
-#include "SettingsAction.h"
+#include "ConfigurationAction.h"
 
 #include <widgets/DropWidget.h>
 
@@ -15,7 +15,7 @@ using namespace hdps::gui;
 DimensionsViewerPlugin::DimensionsViewerPlugin() : 
 	ViewPlugin("Dimensions Viewer"),
 	_dimensionsViewerWidget(),
-    _settingsAction(),
+    _configurationAction(),
     _dropWidget(nullptr)
 {
 }
@@ -24,9 +24,21 @@ void DimensionsViewerPlugin::init()
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    _dimensionsViewerWidget = new DimensionsViewerWidget(this);
-    _settingsAction         = new SettingsAction(this);
+    _dimensionsViewerWidget = new QWidget(this);
+    _configurationAction    = new ConfigurationAction(this);
     _dropWidget             = new DropWidget(_dimensionsViewerWidget);
+
+    _dimensionsViewerWidget->setAcceptDrops(true);
+
+    auto mainLayout = new QVBoxLayout();
+
+    mainLayout->setMargin(0);
+    mainLayout->setSpacing(0);
+
+    mainLayout->addWidget(_dimensionsViewerWidget, 1);
+    mainLayout->addWidget(_configurationAction->createWidget(this));
+
+    setLayout(mainLayout);
 
     _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(this, "No data loaded", "Drag an item from the data hierarchy and drop it here to visualize data..."));
 
@@ -43,30 +55,19 @@ void DimensionsViewerPlugin::init()
 
         if (!dataTypes.contains(dataType))
             dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", false);
-
+        
         if (dataType == PointType) {
-            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDatasetName), true, [this, datasetName, candidateDatasetName]() {
+            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions in channel %2").arg(candidateDatasetName), true, [this, datasetName, candidateDatasetName]() {
                 _dropWidget->setShowDropIndicator(false);
-                //_configurationsModel.appendRow(new Configuration(this, datasetName));
             });
         }
 
         return dropRegions;
     });
 
-    auto mainLayout = new QVBoxLayout();
-
-    mainLayout->setMargin(0);
-    mainLayout->setSpacing(0);
-
-    mainLayout->addWidget(_dimensionsViewerWidget, 1);
-    mainLayout->addWidget(_settingsAction->createWidget(this));
-
-    setLayout(mainLayout);
-
     registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
         if (dataEvent->getType() == EventType::DataAdded) {
-            _dropWidget->setShowDropIndicator(false);
+            //_dropWidget->setShowDropIndicator(false);
             //_configurationsModel.addDataset(dataEvent->dataSetName);
         }
 
