@@ -2,7 +2,9 @@
 
 #include "ChannelAction.h"
 
-class ConfigurationAction : public PluginAction
+#include "event/EventListener.h"
+
+class ConfigurationAction : public PluginAction, public hdps::EventListener
 {
 public:
     using Channels = QVector<ChannelAction*>;
@@ -27,8 +29,13 @@ public:
         return new Widget(parent, this);
     }
 
+    QVector<ChannelAction*> getChannels() { return _channels; }
+    std::int32_t getNumChannels() const { return _channels.count(); }
+
 protected:
     QVector<ChannelAction*>     _channels;
     hdps::gui::StandardAction   _showAdvancedSettings;
     hdps::gui::StandardAction   _showDimensionNames;
+
+    friend class ChannelAction;
 };

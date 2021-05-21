@@ -57,9 +57,12 @@ void DimensionsViewerPlugin::init()
             dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", false);
         
         if (dataType == PointType) {
-            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions in channel %2").arg(candidateDatasetName), true, [this, datasetName, candidateDatasetName]() {
-                _dropWidget->setShowDropIndicator(false);
-            });
+            for (auto channel : _configurationAction->getChannels()) {
+                dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions in %2").arg(candidateDatasetName, channel->getDisplayName()), true, [this, channel, candidateDatasetName]() {
+                    channel->setDatasetName(candidateDatasetName);
+                    _dropWidget->setShowDropIndicator(false);
+                });
+            }
         }
 
         return dropRegions;

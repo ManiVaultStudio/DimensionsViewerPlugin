@@ -11,15 +11,15 @@
 
 using namespace hdps::gui;
 
-ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const std::uint32_t& index, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity /*= 1.0f*/, const bool& lock /*= false*/) :
-    PluginAction(configurationAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(index)),
-	_index(index),
-	_internalName(QString("channel%1").arg(QString::number(index))),
-	_displayName(QString("Channel %1").arg(index)),
+ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const bool& lock /*= false*/) :
+    PluginAction(configurationAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(configurationAction->getNumChannels())),
+	_index(configurationAction->getNumChannels()),
+	_internalName(QString("channel%1").arg(QString::number(configurationAction->getNumChannels()))),
+	_displayName(QString("Channel %1").arg(configurationAction->getNumChannels() + 1)),
 	_spec(),
     _points(nullptr),
     _configuration(configurationAction),
-    _enabledAction(this, QString("Channel %1").arg(index)),
+    _enabledAction(this, _displayName),
     _datasetNameAction(this, ""),
     _colorAction(this, "Color"),
     _opacityAction(this, "Opacity"),
@@ -28,18 +28,108 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const std
     _showRangeAction(this, "Show range"),
     _lockedAction(this, "Locked")
 {
-    _enabledAction.setEnabled(enabled);
-    _datasetNameAction.setEnabled(enabled);
-    _datasetNameAction.setEnabled(enabled);
-    _colorAction.setEnabled(enabled);
-    _opacityAction.setEnabled(enabled);
-    _profileTypeAction.setEnabled(enabled);
-    _bandTypeAction.setEnabled(enabled);
-    _showRangeAction.setEnabled(enabled);
-    _lockedAction.setEnabled(enabled);
+    _enabledAction.setCheckable(true);
+    _enabledAction.setChecked(false);
 
     _profileTypeAction.setOptions(getProfileTypeNames());
-    _profileTypeAction.setOptions(getBandTypeNames());
+    _bandTypeAction.setOptions(getBandTypeNames());
+    
+    _showRangeAction.setCheckable(true);
+    _showRangeAction.setChecked(true);
+
+    _lockedAction.setVisible(_index > 0);
+    _lockedAction.setCheckable(true);
+    _lockedAction.setChecked(lock);
+    
+    connect(&_datasetNameAction, &OptionAction::currentTextChanged, [this](const QString& currentText) {
+        if (currentText.isEmpty())
+            return;
+
+        _points = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(currentText));
+    });
+
+    const auto updateUI = [this, configurationAction]() {
+        const auto numDatasets  = _datasetNameAction.getOptions().count();
+        const auto isEnabled    = _enabledAction.isChecked();
+        const auto isLocked     = _lockedAction.isChecked();
+        const auto showRange    = _showRangeAction.isChecked();
+
+        _enabledAction.setEnabled(numDatasets >= 1);
+        _datasetNameAction.setEnabled(numDatasets >= 1);
+        _colorAction.setEnabled(isEnabled && !isLocked);
+        _opacityAction.setEnabled(isEnabled && !isLocked);
+        _profileTypeAction.setEnabled(isEnabled && !isLocked);
+        _bandTypeAction.setEnabled(isEnabled && !isLocked && showRange);
+        _showRangeAction.setEnabled(isEnabled && !isLocked);
+        _lockedAction.setEnabled(isEnabled);
+
+        const auto visible = configurationAction->_showAdvancedSettings.isChecked();
+
+        _opacityAction.setVisible(visible);
+        _profileTypeAction.setVisible(visible);
+        _bandTypeAction.setVisible(visible);
+        _showRangeAction.setVisible(visible);
+    };
+
+    connect(&_enabledAction, &StandardAction::toggled, [this, updateUI](bool state) {
+        updateUI();
+    });
+
+    connect(&_datasetNameAction, &OptionAction::optionsChanged, [this, updateUI](const QStringList& options) {
+        updateUI();
+    });
+
+    if (_index >= 1) {
+        auto& channel0 = configurationAction->getChannels()[0];
+
+        connect(&channel0->getColorAction(), &ColorAction::colorChanged, [this, channel0](const QColor& color) {
+            if (_lockedAction.isChecked())
+                _colorAction.setColor(channel0->getColorAction().getColor());
+        });
+
+        connect(&channel0->getOpacityAction(), &DecimalAction::valueChanged, [this, channel0](const double& value) {
+            if (_lockedAction.isChecked())
+                _opacityAction.setValue(channel0->getOpacityAction().getValue());
+        });
+
+        connect(&channel0->getProfileTypeAction(), &OptionAction::currentIndexChanged, [this, channel0](const std::int32_t& currentIndex) {
+            if (_lockedAction.isChecked())
+                _profileTypeAction.setCurrentIndex(channel0->getProfileTypeAction().getCurrentIndex());
+        });
+
+        connect(&channel0->getBandTypeAction(), &OptionAction::currentIndexChanged, [this, channel0](const std::int32_t& currentIndex) {
+            if (_lockedAction.isChecked())
+                _bandTypeAction.setCurrentIndex(channel0->getBandTypeAction().getCurrentIndex());
+        });
+
+        connect(&channel0->getShowRangeAction(), &StandardAction::toggled, [this, channel0](bool state) {
+            if (_lockedAction.isChecked())
+                _showRangeAction.setChecked(channel0->getShowRangeAction().isChecked());
+        });
+    }
+
+    connect(&_showRangeAction, &StandardAction::toggled, [this, updateUI](bool state) {
+        updateUI();
+    });
+
+    connect(&_lockedAction, &StandardAction::toggled, [this, updateUI, configurationAction](bool state) {
+        updateUI();
+
+        if (state) {
+            auto& channel0 = configurationAction->getChannels()[0];
+
+            _opacityAction.setValue(channel0->getOpacityAction().getValue());
+            _profileTypeAction.setCurrentIndex(channel0->getProfileTypeAction().getCurrentIndex());
+            _bandTypeAction.setCurrentIndex(channel0->getBandTypeAction().getCurrentIndex());
+            _showRangeAction.setChecked(channel0->getShowRangeAction().isChecked());
+        }
+    });
+
+    connect(&configurationAction->_showAdvancedSettings, &StandardAction::toggled, [this, updateUI](bool state) {
+        updateUI();
+    });
+
+    updateUI();
 }
 
 std::int32_t ChannelAction::getNoDimensions() const
@@ -197,12 +287,27 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     setLayout(&_mainLayout);
     
-    _mainLayout.addWidget(new StandardAction::CheckBox(this, &channelAction->_enabledAction));
-    _mainLayout.addWidget(new OptionAction::Widget(this, &channelAction->_datasetNameAction, false), 1);
-    _mainLayout.addWidget(new ColorAction::Widget(this, &channelAction->_colorAction, false));
-    _mainLayout.addWidget(new DecimalAction::Widget(this, &channelAction->_opacityAction, DecimalAction::Widget::Configuration::SpinBoxSlider));
-    _mainLayout.addWidget(new OptionAction::Widget(this, &channelAction->_profileTypeAction, false));
-    _mainLayout.addWidget(new OptionAction::Widget(this, &channelAction->_bandTypeAction, false));
-    _mainLayout.addWidget(new StandardAction::CheckBox(this, &channelAction->_showRangeAction));
-    _mainLayout.addWidget(new StandardAction::CheckBox(this, &channelAction->_lockedAction));
+    auto enabledWidget      = new StandardAction::CheckBox(this, &channelAction->_enabledAction);
+    auto datasetNameWidget  = new OptionAction::Widget(this, &channelAction->_datasetNameAction, false);
+    auto colorWidget        = new ColorAction::Widget(this, &channelAction->_colorAction, false);
+    auto opacityWidget      = new DecimalAction::Widget(this, &channelAction->_opacityAction, DecimalAction::Widget::Configuration::Slider);
+    auto profileTypeWidget  = new OptionAction::Widget(this, &channelAction->_profileTypeAction, false);
+    auto bandTypeWidget     = new OptionAction::Widget(this, &channelAction->_bandTypeAction, false);
+    auto showRangeWidget    = new StandardAction::CheckBox(this, &channelAction->_showRangeAction);
+    auto lockedWidget       = new StandardAction::CheckBox(this, &channelAction->_lockedAction);
+
+    auto lockedWidgetSizePolicy = lockedWidget->sizePolicy();
+    
+    lockedWidgetSizePolicy.setRetainSizeWhenHidden(true);
+    
+    lockedWidget->setSizePolicy(lockedWidgetSizePolicy);
+
+    _mainLayout.addWidget(enabledWidget);
+    _mainLayout.addWidget(datasetNameWidget, 1);
+    _mainLayout.addWidget(colorWidget);
+    _mainLayout.addWidget(opacityWidget);
+    _mainLayout.addWidget(profileTypeWidget);
+    _mainLayout.addWidget(bandTypeWidget);
+    _mainLayout.addWidget(showRangeWidget);
+    _mainLayout.addWidget(lockedWidget);
 }

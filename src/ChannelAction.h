@@ -111,17 +111,33 @@ protected: // Construction
 	 * Constructor
 	 * @param configurationAction Parent configuration action
 	 * @param index Channel index
-	 * @param enabled Whether the channel is enabled
 	 * @param datasetName The name of the channel dataset
 	 * @param dataName The data name of the channel
 	 * @param color The color of the channel
 	 * @param opacity Render opacity
 	 * @param lock Whether settings are locked
 	 */
-	ChannelAction(ConfigurationAction* configurationAction, const std::uint32_t& index, const bool& enabled, const QString& datasetName, const QColor& color, const float& opacity = 1.0f, const bool& lock = false);
+	ChannelAction(ConfigurationAction* configurationAction, const bool& lock = false);
 
 public: // Getters/setters
 
+    QString getInternalName() const { return _internalName; }
+
+    QString getDisplayName() const { return _displayName; }
+
+    ConfigurationAction* getConfiguration() { return _configuration; }
+
+
+    
+    QString getDatasetName() const { return _datasetNameAction.getCurrentText(); }
+    void setDatasetName(const QString& datasetName) { _datasetNameAction.setCurrentText(datasetName); }
+
+    hdps::gui::OptionAction& getDatasetNameAction() { return _datasetNameAction; }
+    hdps::gui::ColorAction& getColorAction() { return _colorAction; }
+    hdps::gui::DecimalAction& getOpacityAction() { return _opacityAction; }
+    hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
+    hdps::gui::OptionAction& getBandTypeAction() { return _bandTypeAction; }
+    hdps::gui::StandardAction& getShowRangeAction() { return _showRangeAction; }
 
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
@@ -152,7 +168,7 @@ signals:
     /** Signals that the channel spec has changed */
     //void specChanged(Channel* channel);
 
-    ConfigurationAction* getConfiguration() { return _configuration; }
+    
 
 protected:
 	const std::uint32_t		    _index;				            /** Channel index */
