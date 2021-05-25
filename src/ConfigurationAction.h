@@ -31,6 +31,7 @@ public:
 
     QVector<ChannelAction*> getChannels() { return _channels; }
     std::int32_t getNumChannels() const { return _channels.count(); }
+    hdps::gui::StandardAction& getShowAdvancedSettings() { return _showAdvancedSettings; }
 
 protected:
     QVector<ChannelAction*>     _channels;

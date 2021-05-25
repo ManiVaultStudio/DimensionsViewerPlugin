@@ -18,9 +18,9 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
 	_displayName(QString("Channel %1").arg(configurationAction->getNumChannels() + 1)),
     _configuration(configurationAction),
     _enabledAction(this, _displayName),
-    _profileTypeAction(this, "Profile type"),
     _datasetName1Action(this, "Dataset 1"),
     _datasetName2Action(this, "Dataset 2"),
+    _profileTypeAction(this, "Profile type"),
     _colorAction(this, "Color"),
     _opacityAction(this, "Opacity"),
     _bandTypeAction(this, "Band type"),
@@ -46,27 +46,26 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
     _lockedAction.setChecked(lock);
 
     const auto updateUI = [this, configurationAction]() {
-        const auto numDatasets  = _datasetName1Action.getOptions().count();
-        const auto isEnabled    = _enabledAction.isChecked();
-        const auto isLocked     = _lockedAction.isChecked();
-        const auto showRange    = _showRangeAction.isChecked();
+        const auto numDatasets      = _datasetName1Action.getOptions().count();
+        const auto isEnabled        = _enabledAction.isChecked();
+        const auto isDifferential   = _profileTypeAction.getCurrentText() == getProfileTypeName(ProfileType::Differential);
+        const auto isLocked         = _lockedAction.isChecked();
+        const auto showRange        = _showRangeAction.isChecked();
 
         _enabledAction.setEnabled(numDatasets >= 1);
-        _datasetName1Action.setEnabled(numDatasets >= 1);
-        _datasetName2Action.setEnabled(numDatasets >= 1);
+        _datasetName1Action.setEnabled(isEnabled && numDatasets >= 1);
+        _datasetName2Action.setEnabled(isEnabled && numDatasets >= 2);
         _colorAction.setEnabled(isEnabled && !isLocked);
         _opacityAction.setEnabled(isEnabled && !isLocked);
         _profileTypeAction.setEnabled(isEnabled && !isLocked);
-        _bandTypeAction.setEnabled(isEnabled && !isLocked && showRange);
-        _showRangeAction.setEnabled(isEnabled && !isLocked);
+        _bandTypeAction.setEnabled(isEnabled && !isDifferential && !isLocked && showRange);
+        _showRangeAction.setEnabled(isEnabled && !isDifferential && !isLocked);
         _lockedAction.setEnabled(isEnabled);
 
         const auto visible = configurationAction->_showAdvancedSettings.isChecked();
 
-        qDebug() << _profileTypeAction.getCurrentText();
         _datasetName2Action.setVisible(_profileTypeAction.getCurrentText() == getProfileTypeName(ProfileType::Differential));
         _opacityAction.setVisible(visible);
-        _profileTypeAction.setVisible(visible);
         _bandTypeAction.setVisible(visible);
         _showRangeAction.setVisible(visible);
     };
@@ -315,6 +314,8 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     setLayout(&_mainLayout);
     
+    _mainLayout.setMargin(0);
+
     auto enabledWidget          = new StandardAction::CheckBox(this, &channelAction->_enabledAction);
     auto datasetName1Widget     = new OptionAction::Widget(this, &channelAction->_datasetName1Action, false);
     auto datasetName2Widget     = new OptionAction::Widget(this, &channelAction->_datasetName2Action, false);
@@ -328,6 +329,7 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
 
     auto datasetNamesLayout = new QHBoxLayout();
 
+    datasetNamesLayout->setMargin(0);
     datasetNamesLayout->addWidget(datasetName1Widget);
     datasetNamesLayout->addWidget(datasetName2Widget);
 

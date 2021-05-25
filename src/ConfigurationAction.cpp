@@ -22,32 +22,19 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     _channels << new ChannelAction(this, ChannelAction::ProfileType::Differential, true);
 
     _showAdvancedSettings.setCheckable(true);
-    _showAdvancedSettings.setChecked(true);
+    _showAdvancedSettings.setChecked(false);
 
     _showDimensionNames.setCheckable(true);
     _showDimensionNames.setChecked(true);
 
-    registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
-        if (dataEvent->getType() == EventType::DataAdded) {
-            const auto dataSetName = static_cast<DataAddedEvent*>(dataEvent)->dataSetName;
+    const auto updateDatasetNames = [this]() -> void {
+        QStringList datasetNames;
 
-            QStringList datasetNames;
+        for (auto datasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType })))
+            datasetNames << datasetName;
 
-            for (auto datasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType })))
-                datasetNames << datasetName;
-
-            //qDebug() << datasetNames;
-            auto& datasetNameAction = _channels[0]->getDatasetName1Action();
-
-            datasetNameAction.setOptions(datasetNames);
-            
-            //if (!datasetNames.count() == 1)
-                //datasetNameAction.setCurrentIndex(0);
-        }
-    });
-
-    connect(&_channels[0]->getDatasetName1Action(), &OptionAction::currentTextChanged, [this](const QString& currentText) {
-        auto datasetNames = _channels[0]->getDatasetName1Action().getOptions();
+        _channels[0]->getDatasetName1Action().setOptions(datasetNames);
+        _channels[0]->getDatasetName2Action().setOptions(datasetNames);
 
         datasetNames.removeOne(_channels[0]->getDatasetName1Action().getCurrentText());
 
@@ -58,8 +45,22 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
                 datasetNames.removeOne(datasetName);
         }
 
-        for (int channelIndex = 1; channelIndex < getNumChannels(); channelIndex++)
+        for (int channelIndex = 1; channelIndex < getNumChannels(); channelIndex++) {
             _channels[channelIndex]->getDatasetName1Action().setOptions(datasetNames);
+            _channels[channelIndex]->getDatasetName2Action().setOptions(datasetNames);
+        }
+
+        //if (!datasetNames.count() == 1)
+                //datasetNameAction.setCurrentIndex(0);
+    };
+
+    registerDataEventByType(PointType, [this, updateDatasetNames](hdps::DataEvent* dataEvent) {
+        if (dataEvent->getType() == EventType::DataAdded)
+            updateDatasetNames();
+    });
+
+    connect(&_channels[0]->getDatasetName1Action(), &OptionAction::currentTextChanged, [this, updateDatasetNames](const QString& currentText) {
+        updateDatasetNames();
     });
 }
 
@@ -80,6 +81,8 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
     _layout.addWidget(&_miscellaneousGroupBox);
 
     _channelsGroupBox.setLayout(&_channelsGroupBoxLayout);
+
+    _channelsGroupBoxLayout.setSpacing(4);
 
     const auto addChannels = [this, configurationAction]() {
         for (auto channel : configurationAction->_channels)

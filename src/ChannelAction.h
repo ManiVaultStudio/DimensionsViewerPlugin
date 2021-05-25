@@ -142,6 +142,7 @@ public: // Getters/setters
     hdps::gui::DecimalAction& getOpacityAction() { return _opacityAction; }
     hdps::gui::OptionAction& getBandTypeAction() { return _bandTypeAction; }
     hdps::gui::StandardAction& getShowRangeAction() { return _showRangeAction; }
+    hdps::gui::StandardAction& getLockedAction() { return _lockedAction; }
 
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
@@ -180,9 +181,9 @@ protected:
 	const QString			    _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
     ConfigurationAction*        _configuration;
     hdps::gui::StandardAction   _enabledAction;
-    hdps::gui::OptionAction     _profileTypeAction;
     hdps::gui::OptionAction     _datasetName1Action;
     hdps::gui::OptionAction     _datasetName2Action;
+    hdps::gui::OptionAction     _profileTypeAction;
     hdps::gui::ColorAction      _colorAction;
     hdps::gui::DecimalAction    _opacityAction;
     hdps::gui::OptionAction     _bandTypeAction;
