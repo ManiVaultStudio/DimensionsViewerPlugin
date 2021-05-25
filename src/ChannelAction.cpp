@@ -11,27 +11,31 @@
 
 using namespace hdps::gui;
 
-ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const bool& lock /*= false*/) :
+ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const ProfileType& profileType /*= ProfileType::Mean*/, const bool& lock /*= false*/) :
     PluginAction(configurationAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(configurationAction->getNumChannels())),
 	_index(configurationAction->getNumChannels()),
 	_internalName(QString("channel%1").arg(QString::number(configurationAction->getNumChannels()))),
 	_displayName(QString("Channel %1").arg(configurationAction->getNumChannels() + 1)),
-	_spec(),
-    _points(nullptr),
     _configuration(configurationAction),
     _enabledAction(this, _displayName),
-    _datasetNameAction(this, ""),
+    _profileTypeAction(this, "Profile type"),
+    _datasetName1Action(this, "Dataset 1"),
+    _datasetName2Action(this, "Dataset 2"),
     _colorAction(this, "Color"),
     _opacityAction(this, "Opacity"),
-    _profileTypeAction(this, "Profile type"),
     _bandTypeAction(this, "Band type"),
     _showRangeAction(this, "Show range"),
-    _lockedAction(this, "Locked")
+    _lockedAction(this, "Locked"),
+    _spec(),
+    _points1(nullptr),
+    _points2(nullptr)
 {
     _enabledAction.setCheckable(true);
     _enabledAction.setChecked(false);
 
     _profileTypeAction.setOptions(getProfileTypeNames());
+    _profileTypeAction.setCurrentIndex(static_cast<std::int32_t>(profileType));
+
     _bandTypeAction.setOptions(getBandTypeNames());
     
     _showRangeAction.setCheckable(true);
@@ -40,22 +44,16 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const boo
     _lockedAction.setVisible(_index > 0);
     _lockedAction.setCheckable(true);
     _lockedAction.setChecked(lock);
-    
-    connect(&_datasetNameAction, &OptionAction::currentTextChanged, [this](const QString& currentText) {
-        if (currentText.isEmpty())
-            return;
-
-        _points = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(currentText));
-    });
 
     const auto updateUI = [this, configurationAction]() {
-        const auto numDatasets  = _datasetNameAction.getOptions().count();
+        const auto numDatasets  = _datasetName1Action.getOptions().count();
         const auto isEnabled    = _enabledAction.isChecked();
         const auto isLocked     = _lockedAction.isChecked();
         const auto showRange    = _showRangeAction.isChecked();
 
         _enabledAction.setEnabled(numDatasets >= 1);
-        _datasetNameAction.setEnabled(numDatasets >= 1);
+        _datasetName1Action.setEnabled(numDatasets >= 1);
+        _datasetName2Action.setEnabled(numDatasets >= 1);
         _colorAction.setEnabled(isEnabled && !isLocked);
         _opacityAction.setEnabled(isEnabled && !isLocked);
         _profileTypeAction.setEnabled(isEnabled && !isLocked);
@@ -65,6 +63,8 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const boo
 
         const auto visible = configurationAction->_showAdvancedSettings.isChecked();
 
+        qDebug() << _profileTypeAction.getCurrentText();
+        _datasetName2Action.setVisible(_profileTypeAction.getCurrentText() == getProfileTypeName(ProfileType::Differential));
         _opacityAction.setVisible(visible);
         _profileTypeAction.setVisible(visible);
         _bandTypeAction.setVisible(visible);
@@ -75,7 +75,25 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const boo
         updateUI();
     });
 
-    connect(&_datasetNameAction, &OptionAction::optionsChanged, [this, updateUI](const QStringList& options) {
+    connect(&_datasetName1Action, &OptionAction::currentTextChanged, [this](const QString& currentText) {
+        if (currentText.isEmpty())
+            return;
+
+        _points1 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(currentText));
+    });
+
+    connect(&_datasetName2Action, &OptionAction::currentTextChanged, [this](const QString& currentText) {
+        if (currentText.isEmpty())
+            return;
+
+        _points2 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(currentText));
+    });
+
+    connect(&_datasetName1Action, &OptionAction::optionsChanged, [this, updateUI](const QStringList& options) {
+        updateUI();
+    });
+
+    connect(&_datasetName2Action, &OptionAction::optionsChanged, [this, updateUI](const QStringList& options) {
         updateUI();
     });
 
@@ -93,6 +111,12 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const boo
         });
 
         connect(&channel0->getProfileTypeAction(), &OptionAction::currentIndexChanged, [this, channel0](const std::int32_t& currentIndex) {
+            if (channel0->getProfileTypeAction().getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential))
+                return;
+
+            if (_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential))
+                return;
+
             if (_lockedAction.isChecked())
                 _profileTypeAction.setCurrentIndex(channel0->getProfileTypeAction().getCurrentIndex());
         });
@@ -107,6 +131,10 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const boo
                 _showRangeAction.setChecked(channel0->getShowRangeAction().isChecked());
         });
     }
+
+    connect(&_profileTypeAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
+        updateUI();
+    });
 
     connect(&_showRangeAction, &StandardAction::toggled, [this, updateUI](bool state) {
         updateUI();
@@ -134,20 +162,20 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const boo
 
 std::int32_t ChannelAction::getNoDimensions() const
 {
-    return _points->getNumDimensions();
+    return _points1->getNumDimensions();
 }
 
 std::int32_t ChannelAction::getNoPoints() const
 {
-    return _points->getNumPoints();
+    return _points1->getNumPoints();
 }
 
 bool ChannelAction::isSubset() const
 {
-	if (_points == nullptr)
+	if (_points1 == nullptr)
 		return false;
 
-	return !_points->indices.empty();
+	return !_points1->indices.empty();
 }
 
 void ChannelAction::updateSpec()
@@ -287,14 +315,23 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     setLayout(&_mainLayout);
     
-    auto enabledWidget      = new StandardAction::CheckBox(this, &channelAction->_enabledAction);
-    auto datasetNameWidget  = new OptionAction::Widget(this, &channelAction->_datasetNameAction, false);
-    auto colorWidget        = new ColorAction::Widget(this, &channelAction->_colorAction, false);
-    auto opacityWidget      = new DecimalAction::Widget(this, &channelAction->_opacityAction, DecimalAction::Widget::Configuration::Slider);
-    auto profileTypeWidget  = new OptionAction::Widget(this, &channelAction->_profileTypeAction, false);
-    auto bandTypeWidget     = new OptionAction::Widget(this, &channelAction->_bandTypeAction, false);
-    auto showRangeWidget    = new StandardAction::CheckBox(this, &channelAction->_showRangeAction);
-    auto lockedWidget       = new StandardAction::CheckBox(this, &channelAction->_lockedAction);
+    auto enabledWidget          = new StandardAction::CheckBox(this, &channelAction->_enabledAction);
+    auto datasetName1Widget     = new OptionAction::Widget(this, &channelAction->_datasetName1Action, false);
+    auto datasetName2Widget     = new OptionAction::Widget(this, &channelAction->_datasetName2Action, false);
+    auto datasetNamesWidget     = new QWidget(this);
+    auto profileTypeWidget      = new OptionAction::Widget(this, &channelAction->_profileTypeAction, false);
+    auto colorWidget            = new ColorAction::Widget(this, &channelAction->_colorAction, false);
+    auto opacityWidget          = new DecimalAction::Widget(this, &channelAction->_opacityAction, DecimalAction::Widget::Configuration::Slider);
+    auto bandTypeWidget         = new OptionAction::Widget(this, &channelAction->_bandTypeAction, false);
+    auto showRangeWidget        = new StandardAction::CheckBox(this, &channelAction->_showRangeAction);
+    auto lockedWidget           = new StandardAction::CheckBox(this, &channelAction->_lockedAction);
+
+    auto datasetNamesLayout = new QHBoxLayout();
+
+    datasetNamesLayout->addWidget(datasetName1Widget);
+    datasetNamesLayout->addWidget(datasetName2Widget);
+
+    datasetNamesWidget->setLayout(datasetNamesLayout);
 
     auto lockedWidgetSizePolicy = lockedWidget->sizePolicy();
     
@@ -303,10 +340,10 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     lockedWidget->setSizePolicy(lockedWidgetSizePolicy);
 
     _mainLayout.addWidget(enabledWidget);
-    _mainLayout.addWidget(datasetNameWidget, 1);
+    _mainLayout.addWidget(datasetNamesWidget, 1);
+    _mainLayout.addWidget(profileTypeWidget);
     _mainLayout.addWidget(colorWidget);
     _mainLayout.addWidget(opacityWidget);
-    _mainLayout.addWidget(profileTypeWidget);
     _mainLayout.addWidget(bandTypeWidget);
     _mainLayout.addWidget(showRangeWidget);
     _mainLayout.addWidget(lockedWidget);

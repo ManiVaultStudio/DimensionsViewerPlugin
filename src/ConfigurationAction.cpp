@@ -16,9 +16,10 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
 
-    _channels << new ChannelAction(this, false);
-    _channels << new ChannelAction(this, true);
-    _channels << new ChannelAction(this, true);
+    _channels << new ChannelAction(this, ChannelAction::ProfileType::Mean, false);
+    _channels << new ChannelAction(this, ChannelAction::ProfileType::Mean, true);
+    _channels << new ChannelAction(this, ChannelAction::ProfileType::Mean, true);
+    _channels << new ChannelAction(this, ChannelAction::ProfileType::Differential, true);
 
     _showAdvancedSettings.setCheckable(true);
     _showAdvancedSettings.setChecked(true);
@@ -36,7 +37,7 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
                 datasetNames << datasetName;
 
             //qDebug() << datasetNames;
-            auto& datasetNameAction = _channels[0]->getDatasetNameAction();
+            auto& datasetNameAction = _channels[0]->getDatasetName1Action();
 
             datasetNameAction.setOptions(datasetNames);
             
@@ -45,10 +46,10 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
         }
     });
 
-    connect(&_channels[0]->getDatasetNameAction(), &OptionAction::currentTextChanged, [this](const QString& currentText) {
-        auto datasetNames = _channels[0]->getDatasetNameAction().getOptions();
+    connect(&_channels[0]->getDatasetName1Action(), &OptionAction::currentTextChanged, [this](const QString& currentText) {
+        auto datasetNames = _channels[0]->getDatasetName1Action().getOptions();
 
-        datasetNames.removeOne(_channels[0]->getDatasetNameAction().getCurrentText());
+        datasetNames.removeOne(_channels[0]->getDatasetName1Action().getCurrentText());
 
         for (auto datasetName : datasetNames) {
             auto& points = dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(datasetName));
@@ -58,7 +59,7 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
         }
 
         for (int channelIndex = 1; channelIndex < getNumChannels(); channelIndex++)
-            _channels[channelIndex]->getDatasetNameAction().setOptions(datasetNames);
+            _channels[channelIndex]->getDatasetName1Action().setOptions(datasetNames);
     });
 }
 
