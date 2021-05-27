@@ -11,8 +11,9 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     PluginAction(dimensionsViewerPlugin, "Configuration"),
     hdps::EventListener(),
     _channels(),
-    _showAdvancedSettings(this, "Advanced settings"),
-    _showDimensionNames(this, "Show dimension names")
+    _interactiveAction(this, "Interactive"),
+    _showAdvancedSettingsAction(this, "Advanced settings"),
+    _showDimensionNamesAction(this, "Show dimension names")
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
 
@@ -20,12 +21,16 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     _channels << new ChannelAction(this, ChannelAction::ProfileType::Mean, true);
     _channels << new ChannelAction(this, ChannelAction::ProfileType::Mean, true);
     _channels << new ChannelAction(this, ChannelAction::ProfileType::Differential, true);
+    
+    _interactiveAction.setCheckable(true);
+    _interactiveAction.setChecked(true);
+    _interactiveAction.setToolTip("Whether to display all points or point selection");
 
-    _showAdvancedSettings.setCheckable(true);
-    _showAdvancedSettings.setChecked(false);
+    _showAdvancedSettingsAction.setCheckable(true);
+    _showAdvancedSettingsAction.setChecked(false);
 
-    _showDimensionNames.setCheckable(true);
-    _showDimensionNames.setChecked(true);
+    _showDimensionNamesAction.setCheckable(true);
+    _showDimensionNamesAction.setChecked(true);
 
     const auto updateDatasetNames = [this]() -> void {
         QStringList datasetNames;
@@ -62,6 +67,8 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     connect(&_channels[0]->getDatasetName1Action(), &OptionAction::currentTextChanged, [this, updateDatasetNames](const QString& currentText) {
         updateDatasetNames();
     });
+
+    updateDatasetNames();
 }
 
 ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :
@@ -93,7 +100,8 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
 
     _miscellaneousGroupBox.setLayout(&_miscellaneousGroupBoxLayout);
 
-    _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_showAdvancedSettings));
-    _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_showDimensionNames));
+    _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_interactiveAction));
+    _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_showAdvancedSettingsAction));
+    _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_showDimensionNamesAction));
     _miscellaneousGroupBoxLayout.addStretch(1);
 }

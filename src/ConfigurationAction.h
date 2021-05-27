@@ -31,12 +31,16 @@ public:
 
     QVector<ChannelAction*> getChannels() { return _channels; }
     std::int32_t getNumChannels() const { return _channels.count(); }
-    hdps::gui::StandardAction& getShowAdvancedSettings() { return _showAdvancedSettings; }
+
+    hdps::gui::StandardAction& getInteractiveAction() { return _interactiveAction; }
+    hdps::gui::StandardAction& getShowAdvancedSettingsAction() { return _showAdvancedSettingsAction; }
+    hdps::gui::StandardAction& getShowDimensionNamesAction() { return _showDimensionNamesAction; }
 
 protected:
     QVector<ChannelAction*>     _channels;
-    hdps::gui::StandardAction   _showAdvancedSettings;
-    hdps::gui::StandardAction   _showDimensionNames;
+    hdps::gui::StandardAction   _interactiveAction;
+    hdps::gui::StandardAction   _showAdvancedSettingsAction;
+    hdps::gui::StandardAction   _showDimensionNamesAction;
 
     friend class ChannelAction;
 };

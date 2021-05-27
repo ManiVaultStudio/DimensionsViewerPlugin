@@ -2,6 +2,8 @@
 
 #include "PluginAction.h"
 
+#include "event/EventListener.h"
+
 #include <QStandardItem>
 #include <QVector>
 #include <QColor>
@@ -17,82 +19,40 @@ class ConfigurationAction;
  * 
  * @author T. Kroes
  */
-class ChannelAction : public PluginAction {
+class ChannelAction : public PluginAction, public hdps::EventListener {
 
 public: // Enumerations
 
-	/** Profile type (e.g. mean and median) */
 	enum class ProfileType {
-		Mean,               /** Display statistical mean */
-		Median,             /** Display statistical median */
-		Differential,       /** Display differential profile (difference between two profiles) */
+        None = -1,
+		Mean,
+		Median,
+		Differential,
 
 		End = Differential
 	};
 
-	/** Get string representation of profile type enumeration */
-	static QString getProfileTypeName(const ProfileType& profileType) {
-		switch (profileType) {
-			case ProfileType::Mean:
-				return "Mean";
+    static const QMap<ProfileType, QString> profileTypes;
 
-			case ProfileType::Median:
-				return "Median";
-
-            case ProfileType::Differential:
-                return "Differential";
-
-            default:
-                return QString();
-		}
-
-		return QString();
-	}
-
-	/** Get profile type names in a string list */
-	static QStringList getProfileTypeNames() {
-		QStringList profileTypeNames;
-
-		for (int i = 0; i <= static_cast<int>(ProfileType::End); ++i)
-			profileTypeNames << getProfileTypeName(static_cast<ProfileType>(i));
-
-		return profileTypeNames;
-	}
-
-	/** Band type (e.g. standard deviation) */
-	enum class BandType {
-		None,                   /** Do not display standard deviation */
-		StandardDeviation1,     /** Display one standard deviation */
-		StandardDeviation2,     /** Display two standard deviations */
+	enum class MeanBandType {
+		None = -1,
+		StandardDeviation1,
+		StandardDeviation2,
 
 		End = StandardDeviation2
 	};
 
-	/** Get string representation of band type enumeration */
-	static QString getBandTypeName(const BandType& bandType) {
-		switch (bandType) {
-			case BandType::None:
-				return "None";
+    static const QMap<MeanBandType, QString> meanBandTypes;
 
-			case BandType::StandardDeviation1:
-				return "1 SD";
+    enum class MedianBandType {
+        None = -1,
+        Percentile5,
+        Percentile10,
 
-			case BandType::StandardDeviation2:
-				return "2 SD";
-		}
+        End = Percentile10
+    };
 
-		return QString();
-	}
-
-	/** Get band type names in a string list */
-	static QStringList getBandTypeNames() {
-		QStringList bandTypeNames;
-
-		for (int i = 0; i <= static_cast<int>(BandType::End); ++i)
-			bandTypeNames << getBandTypeName(static_cast<BandType>(i));
-
-		return bandTypeNames;
-	}
+    static const QMap<MedianBandType, QString> medianBandTypes;
 
 public:
     class Widget : public PluginAction::Widget {
@@ -167,6 +127,10 @@ private: // Miscellaneous
 
 	/** Updates the visualization specification */
 	void updateSpec();
+
+    void computeMeanSpec();
+    void computeMedianSpec();
+    void computeDifferentialSpec();
 
 signals:
 
