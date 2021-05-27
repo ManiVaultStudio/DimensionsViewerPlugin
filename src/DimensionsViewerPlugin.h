@@ -34,8 +34,10 @@ public:
 	/** Returns a pointer to the core interface */
 	hdps::CoreInterface* getCore() { return _core; }
 
+    ConfigurationAction& getConfigurationAction() { return *_configurationAction; }
+
 private:
-	QWidget*		            _dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
+    DimensionsViewerWidget*     _dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
     ConfigurationAction*        _configurationAction;
     hdps::gui::DropWidget*      _dropWidget;
 };

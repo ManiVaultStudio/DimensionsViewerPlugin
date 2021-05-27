@@ -14,8 +14,8 @@ using namespace hdps::gui;
 
 DimensionsViewerPlugin::DimensionsViewerPlugin() : 
 	ViewPlugin("Dimensions Viewer"),
-	_dimensionsViewerWidget(),
-    _configurationAction(),
+	_dimensionsViewerWidget(nullptr),
+    _configurationAction(nullptr),
     _dropWidget(nullptr)
 {
 }
@@ -24,11 +24,11 @@ void DimensionsViewerPlugin::init()
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    _dimensionsViewerWidget = new QWidget(this);
+    _dimensionsViewerWidget = new DimensionsViewerWidget(this);
     _configurationAction    = new ConfigurationAction(this);
-    _dropWidget             = new DropWidget(_dimensionsViewerWidget);
+    //_dropWidget             = new DropWidget(_dimensionsViewerWidget);
 
-    _dimensionsViewerWidget->setAcceptDrops(true);
+    //_dimensionsViewerWidget->setAcceptDrops(true);
 
     auto mainLayout = new QVBoxLayout();
 
@@ -40,17 +40,18 @@ void DimensionsViewerPlugin::init()
 
     setLayout(mainLayout);
 
+    /*
     _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(this, "No data loaded", "Drag an item from the data hierarchy and drop it here to visualize data..."));
 
     _dropWidget->initialize([this](const QMimeData* mimeData) -> DropWidget::DropRegions {
         DropWidget::DropRegions dropRegions;
 
-        const auto mimeText = mimeData->text();
-        const auto tokens = mimeText.split("\n");
-        const auto datasetName = tokens[0];
-        const auto dataType = DataType(tokens[1]);
-        const auto dataTypes = DataTypes({ PointType });
-        const auto candidateDataset = _core->requestData<Points>(datasetName);
+        const auto mimeText             = mimeData->text();
+        const auto tokens               = mimeText.split("\n");
+        const auto datasetName          = tokens[0];
+        const auto dataType             = DataType(tokens[1]);
+        const auto dataTypes            = DataTypes({ PointType });
+        const auto candidateDataset     = _core->requestData<Points>(datasetName);
         const auto candidateDatasetName = candidateDataset.getName();
 
         if (!dataTypes.contains(dataType))
@@ -67,6 +68,7 @@ void DimensionsViewerPlugin::init()
 
         return dropRegions;
     });
+    */
 
     registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
         if (dataEvent->getType() == EventType::DataAdded) {

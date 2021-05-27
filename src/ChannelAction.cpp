@@ -20,11 +20,13 @@ const QMap<ChannelAction::ProfileType, QString> ChannelAction::profileTypes = QM
 });
 
 const QMap<ChannelAction::MeanBandType, QString> ChannelAction::meanBandTypes = QMap<MeanBandType, QString>({
+    { ChannelAction::MeanBandType::None, "None" },
     { ChannelAction::MeanBandType::StandardDeviation1, "Std 1" },
-    { ChannelAction::MeanBandType::StandardDeviation1, "Std 1" }
+    { ChannelAction::MeanBandType::StandardDeviation2, "Std 2" }
 });
 
 const QMap<ChannelAction::MedianBandType, QString> ChannelAction::medianBandTypes = QMap<ChannelAction::MedianBandType, QString>({
+    { ChannelAction::MedianBandType::None, "None" },
     { ChannelAction::MedianBandType::Percentile5, "5-95th perc." },
     { ChannelAction::MedianBandType::Percentile10, "10-90th perc." }
 });
@@ -40,11 +42,9 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
     _datasetName1Action(this, "Dataset 1"),
     _datasetName2Action(this, "Dataset 2"),
     _profileTypeAction(this, "Profile type"),
+    _bandTypeAction(this, "Band type"),
     _colorAction(this, "Color"),
     _opacityAction(this, "Opacity"),
-    _bandTypeAction(this, "Band type"),
-    _showRangeAction(this, ""),
-    _lockedAction(this, ""),
     _spec(),
     _points1(nullptr),
     _points2(nullptr)
@@ -57,19 +57,10 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
     _profileTypeAction.setOptions(profileTypes.values());
     _profileTypeAction.setCurrentIndex(static_cast<std::int32_t>(profileType));
     
-    _showRangeAction.setCheckable(true);
-    _showRangeAction.setChecked(true);
-
-    _lockedAction.setVisible(_index > 0);
-    _lockedAction.setCheckable(true);
-    _lockedAction.setChecked(lock);
-
     const auto updateUI = [this, configurationAction]() {
         const auto numDatasets      = _datasetName1Action.getOptions().count();
         const auto isEnabled        = _enabledAction.isChecked();
         const auto isDifferential   = _profileTypeAction.getCurrentText() == profileTypes.value(ProfileType::Differential);
-        const auto isLocked         = _lockedAction.isChecked();
-        const auto showRange        = _showRangeAction.isChecked();
 
         switch (_profileTypeAction.getCurrentIndex())
         {
@@ -92,19 +83,19 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         _enabledAction.setEnabled(numDatasets >= 1);
         _datasetName1Action.setEnabled(isEnabled && numDatasets >= 1);
         _datasetName2Action.setEnabled(isEnabled && numDatasets >= 2);
-        _colorAction.setEnabled(isEnabled && !isLocked);
-        _opacityAction.setEnabled(isEnabled && !isLocked);
-        _profileTypeAction.setEnabled(isEnabled && !isLocked);
-        _bandTypeAction.setEnabled(isEnabled && !isDifferential && !isLocked && showRange);
-        _showRangeAction.setEnabled(isEnabled && !isDifferential && !isLocked);
-        _lockedAction.setEnabled(isEnabled);
+        _colorAction.setEnabled(isEnabled);
+        _opacityAction.setEnabled(isEnabled);
+        _profileTypeAction.setEnabled(isEnabled);
+        _bandTypeAction.setEnabled(isEnabled && !isDifferential);
 
         const auto visible = configurationAction->_showAdvancedSettingsAction.isChecked();
 
-        _datasetName2Action.setVisible(_profileTypeAction.getCurrentText() == profileTypes.value(ProfileType::Differential));
+        _datasetName2Action.setVisible(isDifferential);
         _opacityAction.setVisible(visible);
         _bandTypeAction.setVisible(visible);
-        _showRangeAction.setVisible(visible);
+
+        qDebug() << "Update UI" << numDatasets << isDifferential;
+        //updateSpec();
     };
 
     connect(&_enabledAction, &StandardAction::toggled, [this, updateUI](bool state) {
@@ -127,6 +118,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
     connect(&_datasetName2Action, &OptionAction::currentTextChanged, [this](const QString& currentText) {
         if (currentText.isEmpty())
             return;
+
         try
         {
             _points2 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(currentText));
@@ -145,60 +137,8 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         updateUI();
     });
 
-    if (_index >= 1) {
-        auto& channel0 = configurationAction->getChannels()[0];
-
-        connect(&channel0->getColorAction(), &ColorAction::colorChanged, [this, channel0](const QColor& color) {
-            if (_lockedAction.isChecked())
-                _colorAction.setColor(channel0->getColorAction().getColor());
-        });
-
-        connect(&channel0->getOpacityAction(), &DecimalAction::valueChanged, [this, channel0](const double& value) {
-            if (_lockedAction.isChecked())
-                _opacityAction.setValue(channel0->getOpacityAction().getValue());
-        });
-
-        connect(&channel0->getProfileTypeAction(), &OptionAction::currentIndexChanged, [this, channel0](const std::int32_t& currentIndex) {
-            if (channel0->getProfileTypeAction().getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential))
-                return;
-
-            if (_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential))
-                return;
-
-            if (_lockedAction.isChecked())
-                _profileTypeAction.setCurrentIndex(channel0->getProfileTypeAction().getCurrentIndex());
-        });
-
-        connect(&channel0->getBandTypeAction(), &OptionAction::currentIndexChanged, [this, channel0](const std::int32_t& currentIndex) {
-            if (_lockedAction.isChecked())
-                _bandTypeAction.setCurrentIndex(channel0->getBandTypeAction().getCurrentIndex());
-        });
-
-        connect(&channel0->getShowRangeAction(), &StandardAction::toggled, [this, channel0](bool state) {
-            if (_lockedAction.isChecked())
-                _showRangeAction.setChecked(channel0->getShowRangeAction().isChecked());
-        });
-    }
-
     connect(&_profileTypeAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
         updateUI();
-    });
-
-    connect(&_showRangeAction, &StandardAction::toggled, [this, updateUI](bool state) {
-        updateUI();
-    });
-
-    connect(&_lockedAction, &StandardAction::toggled, [this, updateUI, configurationAction](bool state) {
-        updateUI();
-
-        if (state) {
-            auto& channel0 = configurationAction->getChannels()[0];
-
-            _opacityAction.setValue(channel0->getOpacityAction().getValue());
-            _profileTypeAction.setCurrentIndex(channel0->getProfileTypeAction().getCurrentIndex());
-            _bandTypeAction.setCurrentIndex(channel0->getBandTypeAction().getCurrentIndex());
-            _showRangeAction.setChecked(channel0->getShowRangeAction().isChecked());
-        }
     });
 
     connect(&configurationAction->_interactiveAction, &StandardAction::toggled, [this, updateUI](bool state) {
@@ -211,6 +151,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
 
     updateUI();
 
+    /*
     registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
         if (dataEvent->getType() == EventType::SelectionChanged) {
             const auto datasetName = static_cast<SelectionChangedEvent*>(dataEvent)->dataSetName;
@@ -219,6 +160,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
                 updateSpec();
         }
     });
+    */
 }
 
 std::int32_t ChannelAction::getNoDimensions() const
@@ -233,15 +175,16 @@ std::int32_t ChannelAction::getNoPoints() const
 
 void ChannelAction::updateSpec()
 {
+    if (_points1 == nullptr)
+        return;
+
     const auto isInteractive = getConfiguration()->getInteractiveAction().isChecked();
 
 	std::vector<std::uint32_t> pointIndices1, pointIndices2;
 
-    const auto& selection1 = dynamic_cast<Points&>(_points1->getSelection());
-    const auto& selection2 = dynamic_cast<Points&>(_points2->getSelection());
-
     if (_points1 != nullptr) {
         if (isInteractive) {
+            const auto& selection1 = dynamic_cast<Points&>(_points1->getSelection());
             pointIndices1 = selection1.indices;
         }
         else {
@@ -257,6 +200,7 @@ void ChannelAction::updateSpec()
 
     if (_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential) && _points2 != nullptr) {
         if (isInteractive) {
+            const auto& selection2 = dynamic_cast<Points&>(_points2->getSelection());
             pointIndices2 = selection2.indices;
         }
         else {
@@ -284,8 +228,10 @@ void ChannelAction::updateSpec()
 
     dimensionValues.resize(pointIndices1.size());
     
+    const auto showRange = _bandTypeAction.getCurrentIndex() > 0;
+
 	if (_enabledAction.isChecked() && !pointIndices1.empty()) {
-		_points1->visitSourceData([this, &pointIndices1, &dimensionIndices, &dimensions, &dimensionValues](auto& pointData) {
+		_points1->visitSourceData([&, this](auto& pointData) {
 			for (auto dimensionIndex : dimensionIndices) {
 				auto localPointIndex = 0;
 
@@ -349,7 +295,7 @@ void ChannelAction::updateSpec()
 						break;
 				}
 
-				if (_showRangeAction.isChecked()) {
+				if (showRange) {
 					auto result = std::minmax_element(dimensionValues.begin(), dimensionValues.end());
 
                     dimension["min"] = *result.first;
@@ -370,12 +316,10 @@ void ChannelAction::updateSpec()
 	_spec["opacity"]		= _opacityAction.getValue();
 	_spec["profileType"]	= _profileTypeAction.getCurrentIndex();
 	_spec["bandType"]		= _bandTypeAction.getCurrentIndex();
-	_spec["showRange"]		= _showRangeAction.isChecked() && pointIndices1.size() > 1;
-    _spec["canDisplay"]     = false;// canDisplay();
+	_spec["showRange"]		= showRange;
+    _spec["canDisplay"]     = true;// canDisplay();
 
-    qDebug() << _spec;
-
-    //emit specChanged(this);
+    emit specChanged(this);
 }
 
 void ChannelAction::computeMeanSpec()
@@ -407,11 +351,9 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     auto datasetName2Widget     = new OptionAction::Widget(this, &channelAction->_datasetName2Action, false);
     auto datasetNamesWidget     = new QWidget(this);
     auto profileTypeWidget      = new OptionAction::Widget(this, &channelAction->_profileTypeAction, false);
+    auto bandTypeWidget         = new OptionAction::Widget(this, &channelAction->_bandTypeAction, false);
     auto colorWidget            = new ColorAction::Widget(this, &channelAction->_colorAction, false);
     auto opacityWidget          = new DecimalAction::Widget(this, &channelAction->_opacityAction, DecimalAction::Widget::Configuration::Slider);
-    auto bandTypeWidget         = new OptionAction::Widget(this, &channelAction->_bandTypeAction, false);
-    auto showRangeWidget        = new StandardAction::PushButton(this, &channelAction->_showRangeAction);
-    auto lockedWidget           = new StandardAction::PushButton(this, &channelAction->_lockedAction);
 
     auto datasetNamesLayout = new QHBoxLayout();
 
@@ -421,43 +363,13 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
 
     datasetNamesWidget->setLayout(datasetNamesLayout);
 
-    auto lockedWidgetSizePolicy = lockedWidget->sizePolicy();
-    
-    lockedWidgetSizePolicy.setRetainSizeWhenHidden(true);
-    
-    lockedWidget->setSizePolicy(lockedWidgetSizePolicy);
-
     profileTypeWidget->setFixedWidth(70);
     bandTypeWidget->setFixedWidth(90);
 
     _mainLayout.addWidget(enabledWidget);
     _mainLayout.addWidget(datasetNamesWidget, 1);
     _mainLayout.addWidget(profileTypeWidget);
+    _mainLayout.addWidget(bandTypeWidget);
     _mainLayout.addWidget(colorWidget);
     _mainLayout.addWidget(opacityWidget);
-    _mainLayout.addWidget(bandTypeWidget);
-    _mainLayout.addWidget(showRangeWidget);
-    _mainLayout.addWidget(lockedWidget);
-
-    auto& fontAwesome = Application::getIconFont("FontAwesome");
-
-    const auto updateShowRangeIcon = [showRangeWidget, channelAction, &fontAwesome]() -> void {
-        showRangeWidget->setIcon(channelAction->_showRangeAction.isChecked() ? fontAwesome.getIcon("equals") : fontAwesome.getIcon("equals"));
-    };
-
-    const auto updateLockedIcon = [lockedWidget, channelAction, &fontAwesome]() -> void {
-        lockedWidget->setIcon(channelAction->_lockedAction.isChecked() ? fontAwesome.getIcon("lock") : fontAwesome.getIcon("unlock"));
-    };
-
-    connect(&channelAction->_showRangeAction, &StandardAction::changed, [this, updateShowRangeIcon]() {
-        updateShowRangeIcon();
-    });
-
-    updateShowRangeIcon();
-
-    connect(&channelAction->_lockedAction, &StandardAction::changed, [this, updateLockedIcon]() {
-        updateLockedIcon();
-    });
-
-    updateLockedIcon();
 }

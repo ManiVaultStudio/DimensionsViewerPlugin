@@ -13,7 +13,8 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     _channels(),
     _interactiveAction(this, "Interactive"),
     _showAdvancedSettingsAction(this, "Advanced settings"),
-    _showDimensionNamesAction(this, "Show dimension names")
+    _showDimensionNamesAction(this, "Show dimension names"),
+    _spec()
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
 
@@ -69,6 +70,29 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     });
 
     updateDatasetNames();
+
+    _spec["modified"]           = 0;
+    _spec["showDimensionNames"] = true;
+
+    for (auto channel : _channels) {
+        QObject::connect(channel, &ChannelAction::specChanged, [this](ChannelAction* channel) {
+            _spec["modified"] = _spec["modified"].toInt() + 1;
+        });
+    }
+}
+
+void ConfigurationAction::updateSpec()
+{
+    QVariantMap channels;
+
+    for (auto channel : _channels) {
+        if (!channel->isEnabled())
+            continue;
+
+        channels[channel->getInternalName()] = channel->getSpec();
+    }
+
+    _spec["channels"] = channels;
 }
 
 ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :

@@ -21,10 +21,11 @@ class ConfigurationAction;
  */
 class ChannelAction : public PluginAction, public hdps::EventListener {
 
+    Q_OBJECT
+
 public: // Enumerations
 
 	enum class ProfileType {
-        None = -1,
 		Mean,
 		Median,
 		Differential,
@@ -35,7 +36,7 @@ public: // Enumerations
     static const QMap<ProfileType, QString> profileTypes;
 
 	enum class MeanBandType {
-		None = -1,
+		None,
 		StandardDeviation1,
 		StandardDeviation2,
 
@@ -45,7 +46,7 @@ public: // Enumerations
     static const QMap<MeanBandType, QString> meanBandTypes;
 
     enum class MedianBandType {
-        None = -1,
+        None,
         Percentile5,
         Percentile10,
 
@@ -95,14 +96,12 @@ public: // Getters/setters
     void setDatasetName(const QString& datasetName) { _datasetName1Action.setCurrentText(datasetName); }
 
     hdps::gui::StandardAction& getEnabledAction() { return _enabledAction; }
-    hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
     hdps::gui::OptionAction& getDatasetName1Action() { return _datasetName1Action; }
     hdps::gui::OptionAction& getDatasetName2Action() { return _datasetName2Action; }
+    hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
+    hdps::gui::OptionAction& getBandTypeAction() { return _bandTypeAction; }
     hdps::gui::ColorAction& getColorAction() { return _colorAction; }
     hdps::gui::DecimalAction& getOpacityAction() { return _opacityAction; }
-    hdps::gui::OptionAction& getBandTypeAction() { return _bandTypeAction; }
-    hdps::gui::StandardAction& getShowRangeAction() { return _showRangeAction; }
-    hdps::gui::StandardAction& getLockedAction() { return _lockedAction; }
 
     /** Returns whether the channel can be displayed in the viewer */
     bool canDisplay() const;
@@ -135,9 +134,7 @@ private: // Miscellaneous
 signals:
 
     /** Signals that the channel spec has changed */
-    //void specChanged(Channel* channel);
-
-    
+    void specChanged(ChannelAction* channel);
 
 protected:
 	const std::uint32_t		    _index;				            /** Channel index */
@@ -148,11 +145,9 @@ protected:
     hdps::gui::OptionAction     _datasetName1Action;
     hdps::gui::OptionAction     _datasetName2Action;
     hdps::gui::OptionAction     _profileTypeAction;
+    hdps::gui::OptionAction     _bandTypeAction;
     hdps::gui::ColorAction      _colorAction;
     hdps::gui::DecimalAction    _opacityAction;
-    hdps::gui::OptionAction     _bandTypeAction;
-    hdps::gui::StandardAction   _showRangeAction;
-    hdps::gui::StandardAction   _lockedAction;
     QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
     Points*					    _points1;			            /** Pointer to points dataset */
     Points*					    _points2;			            /** Pointer to points dataset */
