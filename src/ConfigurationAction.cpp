@@ -73,26 +73,27 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
 
     _spec["modified"]           = 0;
     _spec["showDimensionNames"] = true;
-
-    for (auto channel : _channels) {
-        QObject::connect(channel, &ChannelAction::specChanged, [this](ChannelAction* channel) {
-            _spec["modified"] = _spec["modified"].toInt() + 1;
-        });
-    }
 }
 
-void ConfigurationAction::updateSpec()
+QVariantMap ConfigurationAction::getSpec()
 {
     QVariantMap channels;
 
     for (auto channel : _channels) {
-        if (!channel->isEnabled())
+        if (!channel->canDisplaySpec())
             continue;
 
-        channels[channel->getInternalName()] = channel->getSpec();
+        const auto channelSpec = channel->getSpec();
+
+        if (channelSpec["modified"] > _spec["modified"])
+            _spec["modified"] = channelSpec["modified"];
+
+        channels[channel->getInternalName()] = channelSpec;
     }
 
     _spec["channels"] = channels;
+
+    return _spec;
 }
 
 ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :

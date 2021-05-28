@@ -93,13 +93,19 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         _datasetName2Action.setVisible(isDifferential);
         _opacityAction.setVisible(visible);
         _bandTypeAction.setVisible(visible);
-
-        qDebug() << "Update UI" << numDatasets << isDifferential;
-        //updateSpec();
     };
 
     connect(&_enabledAction, &StandardAction::toggled, [this, updateUI](bool state) {
         updateUI();
+        updateSpec();
+    });
+
+    connect(&_datasetName1Action, &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
+        updateSpec();
+    });
+
+    connect(&_datasetName2Action, &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
+        updateSpec();
     });
 
     connect(&_datasetName1Action, &OptionAction::currentTextChanged, [this](const QString& currentText) {
@@ -139,10 +145,25 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
 
     connect(&_profileTypeAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
         updateUI();
+        updateSpec();
+    });
+
+    connect(&_bandTypeAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
+        updateUI();
+        updateSpec();
+    });
+
+    connect(&_colorAction, &ColorAction::colorChanged, [this](const QColor& color) {
+        updateSpec();
+    });
+
+    connect(&_opacityAction, &DecimalAction::valueChanged, [this](const double& value) {
+        updateSpec();
     });
 
     connect(&configurationAction->_interactiveAction, &StandardAction::toggled, [this, updateUI](bool state) {
         updateUI();
+        updateSpec();
     });
 
     connect(&configurationAction->_showAdvancedSettingsAction, &StandardAction::toggled, [this, updateUI](bool state) {
@@ -150,6 +171,10 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
     });
 
     updateUI();
+
+    updateSpec();
+
+    _spec["modified"] = 0;
 
     /*
     registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
@@ -161,6 +186,11 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         }
     });
     */
+}
+
+bool ChannelAction::canDisplaySpec() const
+{
+    return _enabledAction.isChecked() && !_spec["dimensions"].toList().isEmpty();
 }
 
 std::int32_t ChannelAction::getNoDimensions() const
@@ -184,8 +214,15 @@ void ChannelAction::updateSpec()
 
     if (_points1 != nullptr) {
         if (isInteractive) {
-            const auto& selection1 = dynamic_cast<Points&>(_points1->getSelection());
-            pointIndices1 = selection1.indices;
+            const auto& selection = dynamic_cast<Points&>(_points1->getSelection());
+
+            if (selection.indices.empty()) {
+                pointIndices1.resize(_points1->getNumPoints());
+                std::iota(pointIndices1.begin(), pointIndices1.end(), 0);
+            }
+            else {
+                pointIndices1 = selection.indices;
+            }
         }
         else {
             if (_points1->indices.empty()) {
@@ -307,6 +344,7 @@ void ChannelAction::updateSpec()
 		});
 	}
 
+    _spec["modified"]       = _spec["modified"].toInt() + 1;
 	_spec["enabled"]		= _enabledAction.isChecked();
 	_spec["index"]			= _index;
 	_spec["displayName"]    = _displayName;
@@ -317,9 +355,6 @@ void ChannelAction::updateSpec()
 	_spec["profileType"]	= _profileTypeAction.getCurrentIndex();
 	_spec["bandType"]		= _bandTypeAction.getCurrentIndex();
 	_spec["showRange"]		= showRange;
-    _spec["canDisplay"]     = true;// canDisplay();
-
-    emit specChanged(this);
 }
 
 void ChannelAction::computeMeanSpec()

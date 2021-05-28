@@ -9,12 +9,7 @@ SpecSynchronizer::SpecSynchronizer(DimensionsViewerPlugin* dimensionsViewerPlugi
 {
 }
 
-QVariantMap SpecSynchronizer::getSpec(const int& modified)
+QVariantMap SpecSynchronizer::getSpec()
 {
-    auto& configurationAction = _dimensionsViewerPlugin->getConfigurationAction();
-
-    if (configurationAction.getModified() > modified)
-        configurationAction.updateSpec();
-
-    return configurationAction.getSpec();
+    return _dimensionsViewerPlugin->getConfigurationAction().getSpec();
 }

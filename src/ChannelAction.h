@@ -21,8 +21,6 @@ class ConfigurationAction;
  */
 class ChannelAction : public PluginAction, public hdps::EventListener {
 
-    Q_OBJECT
-
 public: // Enumerations
 
 	enum class ProfileType {
@@ -85,15 +83,11 @@ protected: // Construction
 public: // Getters/setters
 
     QString getInternalName() const { return _internalName; }
-
     QString getDisplayName() const { return _displayName; }
 
+public: // Actions
+
     ConfigurationAction* getConfiguration() { return _configuration; }
-
-
-    
-    QString getDatasetName() const { return _datasetName1Action.getCurrentText(); }
-    void setDatasetName(const QString& datasetName) { _datasetName1Action.setCurrentText(datasetName); }
 
     hdps::gui::StandardAction& getEnabledAction() { return _enabledAction; }
     hdps::gui::OptionAction& getDatasetName1Action() { return _datasetName1Action; }
@@ -103,13 +97,11 @@ public: // Getters/setters
     hdps::gui::ColorAction& getColorAction() { return _colorAction; }
     hdps::gui::DecimalAction& getOpacityAction() { return _opacityAction; }
 
-    /** Returns whether the channel can be displayed in the viewer */
-    bool canDisplay() const;
+public: // Visualization spec
 
-	/** Returns the visualization specification */
-	QVariantMap getSpec() {
-		return _spec;
-	};
+	QVariantMap getSpec() { return _spec; };
+    std::int32_t getSpecModified() const { return _spec["modified"].toInt(); }
+    bool canDisplaySpec() const;
 
 public: // Points wrapper functions
 
@@ -130,11 +122,6 @@ private: // Miscellaneous
     void computeMeanSpec();
     void computeMedianSpec();
     void computeDifferentialSpec();
-
-signals:
-
-    /** Signals that the channel spec has changed */
-    void specChanged(ChannelAction* channel);
 
 protected:
 	const std::uint32_t		    _index;				            /** Channel index */

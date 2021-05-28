@@ -191,22 +191,24 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
 //}
 
 function addChannel(design, channel) {
-
+    console.log(design.data.values);
     design.data.values = design.data.values.concat(channel.dimensions);
+    console.log(design.data.values);
 
-    if (channel.profileType > 0) {
+    if (channel.profileType >= 0) {
         design.layer.push(getAggregateLineMark(channel, 2, []));
         design.layer.push(getAggregatePointsMark(channel));
     }
 
+    
     if (channel.bandType > 0) {
         design.layer.push(getStdDevLineMark(channel, "v1", 1, [2, 2]));
         design.layer.push(getStdDevLineMark(channel, "v2", 1, [2, 2]));
     }
-
+    /*
     if (channel.showRange)
         design.layer.push(getRangeMark(channel, 1));
-
+        */
     //design.layer.push(getHistogramMark(channel));
 }
 
@@ -214,7 +216,7 @@ function getDesign(spec) {
 
     design.data.values = [];
     design.layer = [];
-
+    
     let titles = [];
 
     for (channelName in spec.channels) {
@@ -234,6 +236,8 @@ function getDesign(spec) {
     }
 
     design.title.text = `[${titles.join(', ')}]`;
+
+    console.log(design);
 
     return design;
 }

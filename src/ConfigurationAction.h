@@ -36,8 +36,7 @@ public:
     hdps::gui::StandardAction& getShowAdvancedSettingsAction() { return _showAdvancedSettingsAction; }
     hdps::gui::StandardAction& getShowDimensionNamesAction() { return _showDimensionNamesAction; }
 
-    void updateSpec();
-    QVariantMap getSpec() const { return _spec; }
+    QVariantMap getSpec();
 
     std::int32_t getModified() const { return _spec["modified"].toInt(); }
 

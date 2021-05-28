@@ -2,12 +2,10 @@
 <html style="padding: 0; margin: 0; width: 100%; height: 100%;">
 <head>
     <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@5"></script>
-
-    <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>
+    <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>	
 </head>
 	<body style="padding: 0; margin: 0; width: 100%; height: 100%;">
 		<div id="view" style="width: 100%; height: 100%; display: flex; align-items:center; justify-content: center; overflow: hidden;"></div>
@@ -24,7 +22,7 @@
                         let channel = window.currentSpec.channels[channelName];
 
                         if (channel.enabled === true)
-                            if (channel.profileType > 0 || channel.bandType > 0 || channel.showRange)
+                            if (channel.profileType >= 0 || channel.bandType > 0 || channel.showRange)
                                 noChannelsEnabled++;
                     }
 
@@ -81,7 +79,9 @@
 
                         return;
                     }
-
+					
+					console.log(noChannelsForDisplay(spec));
+					
                     if (noChannelsForDisplay(spec) > 0) {
                         window.processingSpec = true;
 
@@ -99,7 +99,9 @@
                         };
 
                         document.getElementById('view').innerHTML = '';
-
+						
+						console.log(window.currentSpec);
+						
                         vegaEmbed('#view', getDesign(window.currentSpec), options).then(p => {
                             removeButtons();
                             window.processingSpec = false;
@@ -118,9 +120,7 @@
                     if (window.processingSpec === true)
                         return;
 
-                    const modified = window.currentSpec === null ? -1 : window.currentSpec.modified;
-
-                    webChannel.objects['specSynchronizer'].getSpec(modified, onSpecChanged);
+                    webChannel.objects['specSynchronizer'].getSpec(onSpecChanged);
                     webChannel.objects['specSynchronizer'].selectionChanged.connect(onSelectionChanged);
                 }
 
