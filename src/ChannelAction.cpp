@@ -19,16 +19,23 @@ const QMap<ChannelAction::ProfileType, QString> ChannelAction::profileTypes = QM
     { ChannelAction::ProfileType::Differential, "Differential" }
 });
 
-const QMap<ChannelAction::MeanBandType, QString> ChannelAction::meanBandTypes = QMap<MeanBandType, QString>({
-    { ChannelAction::MeanBandType::None, "None" },
-    { ChannelAction::MeanBandType::StandardDeviation1, "Std 1" },
-    { ChannelAction::MeanBandType::StandardDeviation2, "Std 2" }
+const QMap<ChannelAction::MeanProfileConfig, QString> ChannelAction::meanProfileConfigs = QMap<MeanProfileConfig, QString>({
+    { ChannelAction::MeanProfileConfig::None, "None" },
+    { ChannelAction::MeanProfileConfig::StandardDeviation1, "Std 1" },
+    { ChannelAction::MeanProfileConfig::StandardDeviation2, "Std 2" }
 });
 
-const QMap<ChannelAction::MedianBandType, QString> ChannelAction::medianBandTypes = QMap<ChannelAction::MedianBandType, QString>({
-    { ChannelAction::MedianBandType::None, "None" },
-    { ChannelAction::MedianBandType::Percentile5, "5-95th perc." },
-    { ChannelAction::MedianBandType::Percentile10, "10-90th perc." }
+const QMap<ChannelAction::MedianProfileConfig, QString> ChannelAction::medianProfileConfigs = QMap<ChannelAction::MedianProfileConfig, QString>({
+    { ChannelAction::MedianProfileConfig::None, "None" },
+    { ChannelAction::MedianProfileConfig::Percentile5, "5-95th perc." },
+    { ChannelAction::MedianProfileConfig::Percentile10, "10-90th perc." }
+});
+
+const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::differentialProfileConfigs = QMap<ChannelAction::DifferentialProfileConfig, QString>({
+    { ChannelAction::DifferentialProfileConfig::Mean, "Mean" },
+    { ChannelAction::DifferentialProfileConfig::Mean, "Median" },
+    { ChannelAction::DifferentialProfileConfig::Mean, "Min" },
+    { ChannelAction::DifferentialProfileConfig::Mean, "Max" }
 });
 
 ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const ProfileType& profileType /*= ProfileType::Mean*/, const bool& lock /*= false*/) :
@@ -42,7 +49,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
     _datasetName1Action(this, "Dataset 1"),
     _datasetName2Action(this, "Dataset 2"),
     _profileTypeAction(this, "Profile type"),
-    _bandTypeAction(this, "Band type"),
+    _profileConfigAction(this, "Profile configuration"),
     _colorAction(this, "Color"),
     _opacityAction(this, "Opacity"),
     _spec(),
@@ -65,15 +72,15 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         switch (_profileTypeAction.getCurrentIndex())
         {
             case static_cast<std::int32_t>(ProfileType::Mean):
-                _bandTypeAction.setOptions(meanBandTypes.values());
+                _profileConfigAction.setOptions(meanProfileConfigs.values());
                 break;
 
             case static_cast<std::int32_t>(ProfileType::Median) :
-                _bandTypeAction.setOptions(medianBandTypes.values());
+                _profileConfigAction.setOptions(medianProfileConfigs.values());
                 break;
                 
             case static_cast<std::int32_t>(ProfileType::Differential) :
-                _bandTypeAction.setOptions({});
+                _profileConfigAction.setOptions(differentialProfileConfigs.values());
                 break;
 
             default:
@@ -86,7 +93,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         _colorAction.setEnabled(isEnabled);
         _opacityAction.setEnabled(isEnabled);
         _profileTypeAction.setEnabled(isEnabled);
-        _bandTypeAction.setEnabled(isEnabled && !isDifferential);
+        _profileConfigAction.setEnabled(isEnabled);
         _datasetName2Action.setVisible(isDifferential);
     };
 
@@ -143,7 +150,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         updateSpec();
     });
 
-    connect(&_bandTypeAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
+    connect(&_profileConfigAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
         updateUI();
         updateSpec();
     });
@@ -245,7 +252,7 @@ void ChannelAction::updateSpec()
 
     dimensionValues.resize(pointIndices1.size());
     
-    const auto showRange = _bandTypeAction.getCurrentIndex() > 0;
+    const auto showRange = _profileConfigAction.getCurrentIndex() > 0;
 
 	if (_enabledAction.isChecked() && !pointIndices1.empty()) {
 		_points1->visitSourceData([&, this](auto& pointData) {
@@ -275,9 +282,9 @@ void ChannelAction::updateSpec()
 					case ProfileType::Mean: {
 						dimension["agg"] = mean;
 
-                        switch (static_cast<ProfileType>(_bandTypeAction.getCurrentIndex()))
+                        switch (static_cast<MeanProfileConfig>(_profileConfigAction.getCurrentIndex()))
                         {
-                            case MeanBandType::StandardDeviation1: {
+                            case MeanProfileConfig::StandardDeviation1: {
                                 double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
                                 double stdDev1 = std::sqrt(sqSum / dimensionValues.size());
 
@@ -286,7 +293,7 @@ void ChannelAction::updateSpec()
                                 break;
                             }
 
-                            case MeanBandType::StandardDeviation2: {
+                            case MeanProfileConfig::StandardDeviation2: {
                                 double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
                                 double stdDev2 = 2.0 * std::sqrt(sqSum / dimensionValues.size());
 
@@ -304,7 +311,28 @@ void ChannelAction::updateSpec()
 
 					case ProfileType::Median: {
 						std::sort(dimensionValues.begin(), dimensionValues.end());
-						dimension["agg"] = dimensionValues[static_cast<int>(floorf(dimensionValues.size() / 2))];
+
+                        const auto noDimensions = dimensionValues.size();
+
+						dimension["agg"] = dimensionValues[static_cast<int>(floorf(noDimensions / 2.0f))];
+
+                        switch (static_cast<MedianProfileConfig>(_profileConfigAction.getCurrentIndex()))
+                        {
+                            case MedianProfileConfig::Percentile5: {
+                                dimension["v1"] = dimensionValues[static_cast<int>(floorf(noDimensions * 0.05f))];
+                                dimension["v2"] = dimensionValues[static_cast<int>(floorf(noDimensions * 0.95f))];
+                                break;
+                            }
+
+                            case MedianProfileConfig::Percentile10: {
+                                dimension["v1"] = dimensionValues[static_cast<int>(floorf(noDimensions * 0.1f))];
+                                dimension["v2"] = dimensionValues[static_cast<int>(floorf(noDimensions * 0.9f))];
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
 						break;
 					}
 
@@ -333,23 +361,8 @@ void ChannelAction::updateSpec()
 	_spec["color"]			= _colorAction.getColor();
 	_spec["opacity"]		= _opacityAction.getValue();
 	_spec["profileType"]	= _profileTypeAction.getCurrentIndex();
-	_spec["bandType"]		= _bandTypeAction.getCurrentIndex();
+	_spec["bandType"]		= _profileConfigAction.getCurrentIndex();
 	_spec["showRange"]		= showRange;
-}
-
-void ChannelAction::computeMeanSpec()
-{
-
-}
-
-void ChannelAction::computeMedianSpec()
-{
-
-}
-
-void ChannelAction::computeDifferentialSpec()
-{
-
 }
 
 ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
@@ -366,7 +379,7 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     auto datasetName2Widget     = new OptionAction::Widget(this, &channelAction->_datasetName2Action, false);
     auto datasetNamesWidget     = new QWidget(this);
     auto profileTypeWidget      = new OptionAction::Widget(this, &channelAction->_profileTypeAction, false);
-    auto bandTypeWidget         = new OptionAction::Widget(this, &channelAction->_bandTypeAction, false);
+    auto profileConfigWidget    = new OptionAction::Widget(this, &channelAction->_profileConfigAction, false);
     auto colorWidget            = new ColorAction::Widget(this, &channelAction->_colorAction, false);
     auto opacityWidget          = new DecimalAction::Widget(this, &channelAction->_opacityAction, DecimalAction::Widget::Configuration::Slider);
 
@@ -379,12 +392,12 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     datasetNamesWidget->setLayout(datasetNamesLayout);
 
     profileTypeWidget->setFixedWidth(70);
-    bandTypeWidget->setFixedWidth(90);
+    profileConfigWidget->setFixedWidth(90);
 
     _mainLayout.addWidget(enabledWidget);
     _mainLayout.addWidget(datasetNamesWidget, 1);
     _mainLayout.addWidget(profileTypeWidget);
-    _mainLayout.addWidget(bandTypeWidget);
+    _mainLayout.addWidget(profileConfigWidget);
     _mainLayout.addWidget(colorWidget);
     _mainLayout.addWidget(opacityWidget);
 }

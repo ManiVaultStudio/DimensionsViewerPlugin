@@ -33,7 +33,7 @@ public: // Enumerations
 
     static const QMap<ProfileType, QString> profileTypes;
 
-	enum class MeanBandType {
+	enum class MeanProfileConfig {
 		None,
 		StandardDeviation1,
 		StandardDeviation2,
@@ -41,9 +41,9 @@ public: // Enumerations
 		End = StandardDeviation2
 	};
 
-    static const QMap<MeanBandType, QString> meanBandTypes;
+    static const QMap<MeanProfileConfig, QString> meanProfileConfigs;
 
-    enum class MedianBandType {
+    enum class MedianProfileConfig {
         None,
         Percentile5,
         Percentile10,
@@ -51,7 +51,18 @@ public: // Enumerations
         End = Percentile10
     };
 
-    static const QMap<MedianBandType, QString> medianBandTypes;
+    static const QMap<MedianProfileConfig, QString> medianProfileConfigs;
+
+    enum class DifferentialProfileConfig {
+        Mean,
+        Median,
+        Min,
+        Max,
+
+        End = Max
+    };
+
+    static const QMap<DifferentialProfileConfig, QString> differentialProfileConfigs;
 
 public:
     class Widget : public PluginAction::Widget {
@@ -93,7 +104,7 @@ public: // Actions
     hdps::gui::OptionAction& getDatasetName1Action() { return _datasetName1Action; }
     hdps::gui::OptionAction& getDatasetName2Action() { return _datasetName2Action; }
     hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
-    hdps::gui::OptionAction& getBandTypeAction() { return _bandTypeAction; }
+    hdps::gui::OptionAction& getBandTypeAction() { return _profileConfigAction; }
     hdps::gui::ColorAction& getColorAction() { return _colorAction; }
     hdps::gui::DecimalAction& getOpacityAction() { return _opacityAction; }
 
@@ -119,10 +130,6 @@ private: // Miscellaneous
 	/** Updates the visualization specification */
 	void updateSpec();
 
-    void computeMeanSpec();
-    void computeMedianSpec();
-    void computeDifferentialSpec();
-
 protected:
 	const std::uint32_t		    _index;				            /** Channel index */
 	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
@@ -132,7 +139,7 @@ protected:
     hdps::gui::OptionAction     _datasetName1Action;
     hdps::gui::OptionAction     _datasetName2Action;
     hdps::gui::OptionAction     _profileTypeAction;
-    hdps::gui::OptionAction     _bandTypeAction;
+    hdps::gui::OptionAction     _profileConfigAction;
     hdps::gui::ColorAction      _colorAction;
     hdps::gui::DecimalAction    _opacityAction;
     QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
