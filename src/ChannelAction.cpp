@@ -87,12 +87,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         _opacityAction.setEnabled(isEnabled);
         _profileTypeAction.setEnabled(isEnabled);
         _bandTypeAction.setEnabled(isEnabled && !isDifferential);
-
-        const auto visible = configurationAction->_showAdvancedSettingsAction.isChecked();
-
         _datasetName2Action.setVisible(isDifferential);
-        _opacityAction.setVisible(visible);
-        _bandTypeAction.setVisible(visible);
     };
 
     connect(&_enabledAction, &StandardAction::toggled, [this, updateUI](bool state) {
@@ -166,26 +161,11 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         updateSpec();
     });
 
-    connect(&configurationAction->_showAdvancedSettingsAction, &StandardAction::toggled, [this, updateUI](bool state) {
-        updateUI();
-    });
-
     updateUI();
 
     updateSpec();
 
     _spec["modified"] = 0;
-
-    /*
-    registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
-        if (dataEvent->getType() == EventType::SelectionChanged) {
-            const auto datasetName = static_cast<SelectionChangedEvent*>(dataEvent)->dataSetName;
-
-            if (datasetName == _datasetName1Action.getCurrentText() || datasetName == _datasetName2Action.getCurrentText())
-                updateSpec();
-        }
-    });
-    */
 }
 
 bool ChannelAction::canDisplaySpec() const

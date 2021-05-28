@@ -191,9 +191,7 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
 //}
 
 function addChannel(design, channel) {
-    console.log(design.data.values);
     design.data.values = design.data.values.concat(channel.dimensions);
-    console.log(design.data.values);
 
     if (channel.profileType >= 0) {
         design.layer.push(getAggregateLineMark(channel, 2, []));

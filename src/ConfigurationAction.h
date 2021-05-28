@@ -33,7 +33,6 @@ public:
     std::int32_t getNumChannels() const { return _channels.count(); }
 
     hdps::gui::StandardAction& getInteractiveAction() { return _interactiveAction; }
-    hdps::gui::StandardAction& getShowAdvancedSettingsAction() { return _showAdvancedSettingsAction; }
     hdps::gui::StandardAction& getShowDimensionNamesAction() { return _showDimensionNamesAction; }
 
     QVariantMap getSpec();
@@ -43,7 +42,6 @@ public:
 protected:
     QVector<ChannelAction*>     _channels;
     hdps::gui::StandardAction   _interactiveAction;
-    hdps::gui::StandardAction   _showAdvancedSettingsAction;
     hdps::gui::StandardAction   _showDimensionNamesAction;
     QVariantMap				    _spec;
 

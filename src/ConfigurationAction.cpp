@@ -12,7 +12,6 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     hdps::EventListener(),
     _channels(),
     _interactiveAction(this, "Interactive"),
-    _showAdvancedSettingsAction(this, "Advanced settings"),
     _showDimensionNamesAction(this, "Show dimension names"),
     _spec()
 {
@@ -26,9 +25,6 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     _interactiveAction.setCheckable(true);
     _interactiveAction.setChecked(true);
     _interactiveAction.setToolTip("Whether to display all points or point selection");
-
-    _showAdvancedSettingsAction.setCheckable(true);
-    _showAdvancedSettingsAction.setChecked(false);
 
     _showDimensionNamesAction.setCheckable(true);
     _showDimensionNamesAction.setChecked(true);
@@ -73,6 +69,11 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
 
     _spec["modified"]           = 0;
     _spec["showDimensionNames"] = true;
+
+    connect(&_showDimensionNamesAction, &StandardAction::toggled, [this](bool state) {
+        _spec["modified"] = _spec["modified"].toInt() + 1;
+        _spec["showDimensionNames"] = state;
+    });
 }
 
 QVariantMap ConfigurationAction::getSpec()
@@ -80,15 +81,13 @@ QVariantMap ConfigurationAction::getSpec()
     QVariantMap channels;
 
     for (auto channel : _channels) {
-        if (!channel->canDisplaySpec())
-            continue;
-
         const auto channelSpec = channel->getSpec();
 
         if (channelSpec["modified"] > _spec["modified"])
             _spec["modified"] = channelSpec["modified"];
 
-        channels[channel->getInternalName()] = channelSpec;
+        if (channel->canDisplaySpec())
+            channels[channel->getInternalName()] = channelSpec;
     }
 
     _spec["channels"] = channels;
@@ -126,7 +125,6 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
     _miscellaneousGroupBox.setLayout(&_miscellaneousGroupBoxLayout);
 
     _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_interactiveAction));
-    _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_showAdvancedSettingsAction));
     _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_showDimensionNamesAction));
     _miscellaneousGroupBoxLayout.addStretch(1);
 }

@@ -22,8 +22,8 @@
                         let channel = window.currentSpec.channels[channelName];
 
                         if (channel.enabled === true)
-                            if (channel.profileType >= 0 || channel.bandType > 0 || channel.showRange)
-                                noChannelsEnabled++;
+							if (channel.profileType >= 0 || channel.bandType > 0 || channel.showRange)
+								noChannelsEnabled++;
                     }
 
                     return noChannelsEnabled;
@@ -32,7 +32,7 @@
                 let setSpec = function (spec) {
                     if (!isValidSpec(spec))
                         return false;
-
+				
                     if (!isValidSpec(window.currentSpec) || spec.modified > window.currentSpec.modified) {
                         window.currentSpec = spec;
                         return true;
@@ -73,6 +73,7 @@
                 }
 
                 var onSpecChanged = function (spec) {
+					console.log(spec.modified);
                     if (!setSpec(spec)) {
                         //if (window.currentSpec === null)
                         //    displayNoChannelsWarning();
@@ -80,6 +81,7 @@
                         return;
                     }
 					
+					console.log("onSpecChanged");
 					console.log(noChannelsForDisplay(spec));
 					
                     if (noChannelsForDisplay(spec) > 0) {
@@ -99,8 +101,6 @@
                         };
 
                         document.getElementById('view').innerHTML = '';
-						
-						console.log(window.currentSpec);
 						
                         vegaEmbed('#view', getDesign(window.currentSpec), options).then(p => {
                             removeButtons();
