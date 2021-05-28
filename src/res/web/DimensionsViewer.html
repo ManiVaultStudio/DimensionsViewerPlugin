@@ -73,16 +73,9 @@
                 }
 
                 var onSpecChanged = function (spec) {
-					console.log(spec.modified);
                     if (!setSpec(spec)) {
-                        //if (window.currentSpec === null)
-                        //    displayNoChannelsWarning();
-
                         return;
                     }
-					
-					console.log("onSpecChanged");
-					console.log(noChannelsForDisplay(spec));
 					
                     if (noChannelsForDisplay(spec) > 0) {
                         window.processingSpec = true;

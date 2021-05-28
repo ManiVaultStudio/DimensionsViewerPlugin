@@ -47,6 +47,8 @@ public: // Enumerations
         None,
         Percentile5,
         Percentile10,
+        Percentile15,
+        Percentile20,
 
         End = Percentile10
     };
@@ -114,14 +116,6 @@ public: // Visualization spec
     std::int32_t getSpecModified() const { return _spec["modified"].toInt(); }
     bool canDisplaySpec() const;
 
-public: // Points wrapper functions
-
-    /** Returns the number of dimensions */
-    std::int32_t getNoDimensions() const;
-
-    /** Returns the number of points */
-    std::int32_t getNoPoints() const;
-
 private: // Miscellaneous
 	
 	/** Returns if the referenced dataset is a subset */
@@ -143,8 +137,6 @@ protected:
     hdps::gui::ColorAction      _colorAction;
     hdps::gui::DecimalAction    _opacityAction;
     QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
-    Points*					    _points1;			            /** Pointer to points dataset */
-    Points*					    _points2;			            /** Pointer to points dataset */
 
     friend class ConfigurationAction;
 };

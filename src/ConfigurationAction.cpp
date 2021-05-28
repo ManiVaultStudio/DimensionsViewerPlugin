@@ -35,25 +35,10 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
         for (auto datasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType })))
             datasetNames << datasetName;
 
-        _channels[0]->getDatasetName1Action().setOptions(datasetNames);
-        _channels[0]->getDatasetName2Action().setOptions(datasetNames);
-
-        datasetNames.removeOne(_channels[0]->getDatasetName1Action().getCurrentText());
-
-        for (auto datasetName : datasetNames) {
-            auto& points = dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(datasetName));
-
-            if (points.getNumDimensions() != _channels[0]->getNoDimensions())
-                datasetNames.removeOne(datasetName);
+        for (auto channel : _channels) {
+            channel->getDatasetName1Action().setOptions(datasetNames);
+            channel->getDatasetName2Action().setOptions(datasetNames);
         }
-
-        for (int channelIndex = 1; channelIndex < getNumChannels(); channelIndex++) {
-            _channels[channelIndex]->getDatasetName1Action().setOptions(datasetNames);
-            _channels[channelIndex]->getDatasetName2Action().setOptions(datasetNames);
-        }
-
-        //if (!datasetNames.count() == 1)
-                //datasetNameAction.setCurrentIndex(0);
     };
 
     registerDataEventByType(PointType, [this, updateDatasetNames](hdps::DataEvent* dataEvent) {
