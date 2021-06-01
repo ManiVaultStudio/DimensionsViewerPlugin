@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PluginAction.h"
+#include "StylingAction.h"
 
 #include "event/EventListener.h"
 
@@ -95,8 +96,13 @@ protected: // Construction
 
 public: // Getters/setters
 
+    std::uint32_t getIndex() const { return _index; }
     QString getInternalName() const { return _internalName; }
     QString getDisplayName() const { return _displayName; }
+    
+    bool isDifferential() const {
+        return _profileTypeAction.getCurrentIndex() == static_cast<std::uint32_t>(ProfileType::Differential);
+    }
 
 public: // Actions
 
@@ -107,13 +113,11 @@ public: // Actions
     hdps::gui::OptionAction& getDatasetName2Action() { return _datasetName2Action; }
     hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
     hdps::gui::OptionAction& getBandTypeAction() { return _profileConfigAction; }
-    hdps::gui::ColorAction& getColorAction() { return _colorAction; }
-    hdps::gui::DecimalAction& getOpacityAction() { return _opacityAction; }
+    
 
 public: // Visualization spec
 
 	QVariantMap getSpec() { return _spec; };
-    std::int32_t getSpecModified() const { return _spec["modified"].toInt(); }
     bool canDisplaySpec() const;
 
 private: // Miscellaneous
@@ -122,7 +126,7 @@ private: // Miscellaneous
 	bool isSubset() const;
 
 	/** Updates the visualization specification */
-	void updateSpec();
+	void updateSpec(const bool& ignoreDimensions = false);
 
 protected:
 	const std::uint32_t		    _index;				            /** Channel index */
@@ -134,9 +138,9 @@ protected:
     hdps::gui::OptionAction     _datasetName2Action;
     hdps::gui::OptionAction     _profileTypeAction;
     hdps::gui::OptionAction     _profileConfigAction;
-    hdps::gui::ColorAction      _colorAction;
-    hdps::gui::DecimalAction    _opacityAction;
+    StylingAction               _stylingAction;
     QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 
     friend class ConfigurationAction;
+    friend class StylingAction;
 };

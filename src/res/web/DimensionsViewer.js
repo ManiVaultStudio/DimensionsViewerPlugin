@@ -32,7 +32,7 @@ function getRangeMark(channel, strokeWidth) {
             //    "opacity": 0.5,
             //    "strokeWidth": strokeWidth,
             //},
-            "opacity": channel.opacity,
+            "opacity": 0.01 * 0.3 * channel.opacity,
         },
         "transform": [
             {
@@ -68,7 +68,7 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash) {
             "strokeWidth": strokeWidth,
             "strokeDash": strokeDash,
             "strokeJoin": "round",
-            "opacity": 1
+            "opacity": 0.01 * channel.opacity,
         },
         "transform": [
             {
@@ -97,7 +97,7 @@ function getAggregatePointsMark(channel) {
         "mark": {
             "type": "point",
             "fill": channel.color,
-            "opacity": 1,
+            "opacity": 0.01 * channel.opacity,
             "size": 11
         },
         "transform": [
@@ -129,7 +129,7 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
             "strokeWidth": strokeWidth,
             "strokeDash": strokeDash,
             "strokeJoin": "round",
-            "opacity": 1
+            "opacity": 0.01 * channel.opacity,
         },
         "transform": [
             {
@@ -203,10 +203,10 @@ function addChannel(design, channel) {
         design.layer.push(getStdDevLineMark(channel, "v1", 1, [2, 2]));
         design.layer.push(getStdDevLineMark(channel, "v2", 1, [2, 2]));
     }
-    /*
+    
     if (channel.showRange)
         design.layer.push(getRangeMark(channel, 1));
-        */
+    
     //design.layer.push(getHistogramMark(channel));
 }
 

@@ -52,8 +52,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
     _datasetName2Action(this, "Dataset 2"),
     _profileTypeAction(this, "Profile type"),
     _profileConfigAction(this, "Profile configuration"),
-    _colorAction(this, "Color"),
-    _opacityAction(this, "Opacity"),
+    _stylingAction(this),
     _spec()
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
@@ -90,10 +89,10 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         _enabledAction.setEnabled(numDatasets >= 1);
         _datasetName1Action.setEnabled(isEnabled && numDatasets >= 1);
         _datasetName2Action.setEnabled(isEnabled && numDatasets >= 2);
-        _colorAction.setEnabled(isEnabled);
-        _opacityAction.setEnabled(isEnabled);
         _profileTypeAction.setEnabled(isEnabled);
         _profileConfigAction.setEnabled(isEnabled);
+        //_stylingAction.setEnabled(isEnabled);
+
         _datasetName2Action.setVisible(isDifferential);
     };
 
@@ -128,12 +127,16 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         updateSpec();
     });
 
-    connect(&_colorAction, &ColorAction::colorChanged, [this](const QColor& color) {
+    connect(&_stylingAction.getShowRangeAction(), &StandardAction::toggled, [this](bool state) {
         updateSpec();
     });
 
-    connect(&_opacityAction, &DecimalAction::valueChanged, [this](const double& value) {
-        updateSpec();
+    connect(&_stylingAction.getColorAction(), &ColorAction::colorChanged, [this](const QColor& color) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getOpacityAction(), &DecimalAction::valueChanged, [this](const double& value) {
+        updateSpec(true);
     });
 
     connect(&configurationAction->_interactiveAction, &StandardAction::toggled, [this, updateUI](bool state) {
@@ -144,10 +147,11 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
 
     updateSpec();
 
-    _spec["modified"] = 0;
-
     registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
         if (dataEvent->getType() == EventType::SelectionChanged) {
+            if (!_enabledAction.isChecked())
+                return;
+
             const auto datasetName = static_cast<SelectionChangedEvent*>(dataEvent)->dataSetName;
             
             if (datasetName == _datasetName1Action.getCurrentText() || datasetName == _datasetName2Action.getCurrentText())
@@ -161,286 +165,291 @@ bool ChannelAction::canDisplaySpec() const
     return _enabledAction.isChecked() && !_spec["dimensions"].toList().isEmpty();
 }
 
-void ChannelAction::updateSpec()
+void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 {
-    Points* points1 = nullptr;
-    Points* points2 = nullptr;
+    const auto showRange = !isDifferential() && _stylingAction.getShowRangeAction().isChecked();
 
-    const auto isInteractive = getConfiguration()->getInteractiveAction().isChecked();
+    if (!ignoreDimensions) {
+        Points* points1 = nullptr;
+        Points* points2 = nullptr;
 
-	std::vector<std::uint32_t> pointIndices1, pointIndices2;
+        const auto isInteractive = getConfiguration()->getInteractiveAction().isChecked();
 
-    const auto datasetName1 = _datasetName1Action.getCurrentText();
-    const auto datasetName2 = _datasetName2Action.getCurrentText();
+        std::vector<std::uint32_t> indices1, indices2;
 
-    if (!datasetName1.isEmpty()) {
-        points1 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(datasetName1));
+        const auto datasetName1 = _datasetName1Action.getCurrentText();
+        const auto datasetName2 = _datasetName2Action.getCurrentText();
 
-        if (isInteractive) {
-            const auto& selection = dynamic_cast<Points&>(points1->getSelection());
+        const auto getIndices = [isInteractive](Points* points) -> std::vector<std::uint32_t> {
+            if (!isInteractive) {
+                if (points->indices.empty()) {
+                    std::vector<std::uint32_t> indices;
 
-            if (selection.indices.empty()) {
-                pointIndices1.resize(points1->getNumPoints());
-                std::iota(pointIndices1.begin(), pointIndices1.end(), 0);
-            }
-            else {
-                pointIndices1 = selection.indices;
-            }
-        }
-        else {
-            if (points1->indices.empty()) {
-                pointIndices1.resize(points1->getNumPoints());
-                std::iota(pointIndices1.begin(), pointIndices1.end(), 0);
-            }
-            else {
-                pointIndices1 = points1->indices;
-            }
-        }
-    }
+                    indices.resize(points->getNumPoints());
+                    std::iota(indices.begin(), indices.end(), 0);
 
-    if (_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential) && !datasetName2.isEmpty()) {
-        points2 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(datasetName2));
-
-        if (isInteractive) {
-            const auto& selection = dynamic_cast<Points&>(points2->getSelection());
-            
-            if (selection.indices.empty()) {
-                pointIndices2.resize(points2->getNumPoints());
-                std::iota(pointIndices2.begin(), pointIndices2.end(), 0);
-            }
-            else {
-                pointIndices2 = selection.indices;
-            }
-        }
-        else {
-            if (points2->indices.empty()) {
-                pointIndices2.resize(points2->getNumPoints());
-                std::iota(pointIndices2.begin(), pointIndices2.end(), 0);
-            }
-            else {
-                pointIndices2 = points2->indices;
-            }
-        }
-    }
-
-    if (points1 == nullptr)
-        return;
-
-	std::vector<std::uint32_t> dimensionIndices;
-
-	dimensionIndices.resize(points1->getNumDimensions());
-	std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
-	
-	QVariantList dimensions;
-
-    QVector<float> dimensionValues1, dimensionValues2;
-
-    dimensionValues1.resize(pointIndices1.size());
-    dimensionValues2.resize(pointIndices2.size());
-
-    const auto showRange = _profileConfigAction.getCurrentIndex() > 0;
-
-    // Get minimum value of sorted float vector
-    const auto getMin = [](QVector<float>& dimensions) -> float {
-        return dimensions.first();
-    };
-
-    // Get minimum value of sorted float vector
-    const auto getMax = [](QVector<float>& dimensions) -> float {
-        return dimensions.last();
-    };
-
-    // Get mean value of sorted float vector
-    const auto getMean = [](QVector<float>& dimensions) -> float {
-        if (dimensions.isEmpty())
-            return 0.0f;
-
-        return std::accumulate(dimensions.begin(), dimensions.end(), 0.0) / static_cast<float>(dimensions.size());
-    };
-
-    // Get median value of sorted float vector
-    const auto getMedian = [](QVector<float>& dimensions) -> float {
-        return dimensions[static_cast<int>(floorf(dimensions.count() / 2.0f))];
-    };
-
-    // Get percentile value of sorted float vector
-    const auto getPercentile = [](QVector<float>& dimensions, const float& percentile) -> float {
-        return dimensions[static_cast<std::int32_t>(floorf(static_cast<float>(dimensions.count()) * percentile))];
-    };
-
-	if (_enabledAction.isChecked() && !pointIndices1.empty()) {
-		for (auto dimensionIndex : dimensionIndices) {
-			auto localPointIndex1 = 0;
-
-            points1->visitSourceData([&, this](auto& pointData1) {
-                for (const auto& pointIndex1 : pointIndices1) {
-                    dimensionValues1[localPointIndex1] = pointData1[pointIndex1][dimensionIndex];
-                    localPointIndex1++;
+                    return indices;
                 }
-            });
+                else {
+                    return points->indices;
+                }
+            }
 
-			QVariantMap dimension;
+            const auto& selection = dynamic_cast<Points&>(points->getSelection());
 
-			dimension["chn"]		= _index;
-			dimension["dimId"]		= dimensionIndex;
-			dimension["dimName"]	= points1->getDimensionNames().at(dimensionIndex);
+            if (selection.indices.empty()) {
+                std::vector<std::uint32_t> indices;
 
-            const auto mean = getMean(dimensionValues1);
+                indices.resize(points->getNumPoints());
+                std::iota(indices.begin(), indices.end(), 0);
 
-			std::vector<float> diff(dimensionValues1.size());
+                return indices;
+            }
+            else {
+                return selection.indices;
+            }
 
-			std::transform(dimensionValues1.begin(), dimensionValues1.end(), diff.begin(), [mean](double x) { return x - mean; });
+            return std::vector<std::uint32_t>();
+        };
 
-			switch (static_cast<ProfileType>(_profileTypeAction.getCurrentIndex()))
-			{
-				case ProfileType::Mean: {
-					dimension["agg"] = mean;
+        if (!datasetName1.isEmpty()) {
+            points1 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(datasetName1));
+            indices1 = getIndices(points1);
+        }
+
+        if (_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential) && !datasetName2.isEmpty()) {
+            points2 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(datasetName2));
+            indices2 = getIndices(points2);
+        }
+
+        if (points1 == nullptr)
+            return;
+
+        std::vector<std::uint32_t> dimensionIndices;
+
+        dimensionIndices.resize(points1->getNumDimensions());
+        std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
+
+        QVariantList dimensions;
+
+        std::vector<float> dimensionValues1, dimensionValues2;
+
+        dimensionValues1.resize(indices1.size());
+        dimensionValues2.resize(indices2.size());
+
+        // Get minimum value of sorted float vector
+        const auto getMin = [](std::vector<float>& dimensions) -> float {
+            return dimensions.front();
+        };
+
+        // Get minimum value of sorted float vector
+        const auto getMax = [](std::vector<float>& dimensions) -> float {
+            return dimensions.back();
+        };
+
+        // Get mean value of sorted float vector
+        const auto getMean = [](std::vector<float>& dimensions) -> float {
+            if (dimensions.empty())
+                return 0.0f;
+
+            return std::accumulate(dimensions.begin(), dimensions.end(), 0.0) / static_cast<float>(dimensions.size());
+        };
+
+        // Get median value of sorted float vector
+        const auto getMedian = [](std::vector<float>& dimensions) -> float {
+            return dimensions[static_cast<int>(floorf(dimensions.size() / 2.0f))];
+        };
+
+        // Get percentile value of sorted float vector
+        const auto getPercentile = [](std::vector<float>& dimensions, const float& percentile) -> float {
+            return dimensions[static_cast<std::int32_t>(floorf(static_cast<float>(dimensions.size()) * percentile))];
+        };
+
+        if (_enabledAction.isChecked() && !indices1.empty()) {
+            const auto noDimensions = points1->getNumDimensions();
+
+            for (auto dimensionIndex : dimensionIndices) {
+                dimensionValues1 = points1->visitFromBeginToEnd<std::vector<float>>([noDimensions, dimensionIndex, &indices1](auto begin, auto end) {
+                    std::vector<float> values;
+
+                    values.reserve(indices1.size());
+
+                    for (const auto& index : indices1)
+                        values.push_back(begin[index * noDimensions + dimensionIndex]);
+
+                    return values;
+                });
+
+                std::sort(dimensionValues1.begin(), dimensionValues1.end());
+
+                QVariantMap dimension;
+
+                dimension["chn"] = _index;
+                dimension["dimId"] = dimensionIndex;
+                dimension["dimName"] = points1->getDimensionNames().at(dimensionIndex);
+
+                const auto mean = getMean(dimensionValues1);
+
+                std::vector<float> diff(dimensionValues1.size());
+
+                std::transform(dimensionValues1.begin(), dimensionValues1.end(), diff.begin(), [mean](double x) { return x - mean; });
+
+                switch (static_cast<ProfileType>(_profileTypeAction.getCurrentIndex()))
+                {
+                case ProfileType::Mean: {
+                    dimension["agg"] = mean;
 
                     switch (static_cast<MeanProfileConfig>(_profileConfigAction.getCurrentIndex()))
                     {
-                        case MeanProfileConfig::StandardDeviation1: {
-                            double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-                            double stdDev1 = std::sqrt(sqSum / dimensionValues1.size());
+                    case MeanProfileConfig::StandardDeviation1: {
+                        double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+                        double stdDev1 = std::sqrt(sqSum / dimensionValues1.size());
 
-                            dimension["v1"] = mean - stdDev1;
-                            dimension["v2"] = mean + stdDev1;
-                            break;
-                        }
-
-                        case MeanProfileConfig::StandardDeviation2: {
-                            double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-                            double stdDev2 = 2.0 * std::sqrt(sqSum / dimensionValues1.size());
-
-                            dimension["v1"] = mean - stdDev2;
-                            dimension["v2"] = mean + stdDev2;
-                            break;
-                        }
-
-                        default:
-                            break;
+                        dimension["v1"] = mean - stdDev1;
+                        dimension["v2"] = mean + stdDev1;
+                        break;
                     }
 
-					break;
-				}
+                    case MeanProfileConfig::StandardDeviation2: {
+                        double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+                        double stdDev2 = 2.0 * std::sqrt(sqSum / dimensionValues1.size());
 
-				case ProfileType::Median: {
-					std::sort(dimensionValues1.begin(), dimensionValues1.end());
+                        dimension["v1"] = mean - stdDev2;
+                        dimension["v2"] = mean + stdDev2;
+                        break;
+                    }
+
+                    default:
+                        break;
+                    }
+
+                    break;
+                }
+
+                case ProfileType::Median: {
+                    std::sort(dimensionValues1.begin(), dimensionValues1.end());
 
                     const auto noDimensions = dimensionValues1.size();
 
-					dimension["agg"] = getMedian(dimensionValues1);
+                    dimension["agg"] = getMedian(dimensionValues1);
 
                     switch (static_cast<MedianProfileConfig>(_profileConfigAction.getCurrentIndex()))
                     {
-                        case MedianProfileConfig::Percentile5: {
-                            dimension["v1"] = getPercentile(dimensionValues1, 0.05f);
-                            dimension["v2"] = getPercentile(dimensionValues1, 0.95f);
-                            break;
-                        }
-
-                        case MedianProfileConfig::Percentile10: {
-                            dimension["v1"] = getPercentile(dimensionValues1, 0.1f);
-                            dimension["v2"] = getPercentile(dimensionValues1, 0.9f);
-                            break;
-                        }
-
-                        case MedianProfileConfig::Percentile15: {
-                            dimension["v1"] = getPercentile(dimensionValues1, 0.15f);
-                            dimension["v2"] = getPercentile(dimensionValues1, 0.85f);
-                            break;
-                        }
-
-                        case MedianProfileConfig::Percentile20: {
-                            dimension["v1"] = getPercentile(dimensionValues1, 0.2f);
-                            dimension["v2"] = getPercentile(dimensionValues1, 0.8f);
-                            break;
-                        }
-
-                        default:
-                            break;
+                    case MedianProfileConfig::Percentile5: {
+                        dimension["v1"] = getPercentile(dimensionValues1, 0.05f);
+                        dimension["v2"] = getPercentile(dimensionValues1, 0.95f);
+                        break;
                     }
 
-					break;
-				}
+                    case MedianProfileConfig::Percentile10: {
+                        dimension["v1"] = getPercentile(dimensionValues1, 0.1f);
+                        dimension["v2"] = getPercentile(dimensionValues1, 0.9f);
+                        break;
+                    }
 
-                case ProfileType::Differential: {
-                    points2->visitSourceData([&, this](auto& pointData2) {
-                        auto localPointIndex2 = 0;
+                    case MedianProfileConfig::Percentile15: {
+                        dimension["v1"] = getPercentile(dimensionValues1, 0.15f);
+                        dimension["v2"] = getPercentile(dimensionValues1, 0.85f);
+                        break;
+                    }
 
-                        for (const auto& pointIndex2 : pointIndices2) {
-                            dimensionValues2[localPointIndex2] = pointData2[pointIndex2][dimensionIndex];
-                            localPointIndex2++;
-                        }
+                    case MedianProfileConfig::Percentile20: {
+                        dimension["v1"] = getPercentile(dimensionValues1, 0.2f);
+                        dimension["v2"] = getPercentile(dimensionValues1, 0.8f);
+                        break;
+                    }
 
-                        std::sort(dimensionValues2.begin(), dimensionValues2.end());
+                    default:
+                        break;
+                    }
 
-                        auto agg1 = 0.0f;
-                        auto agg2 = 0.0f;
-
-                        switch (static_cast<MedianProfileConfig>(_profileConfigAction.getCurrentIndex()))
-                        {
-                            case DifferentialProfileConfig::Mean: {
-                                agg1 = getMean(dimensionValues1);
-                                agg2 = getMean(dimensionValues2);
-                                break;
-                            }
-
-                            case DifferentialProfileConfig::Median: {
-                                agg1 = getMedian(dimensionValues1);
-                                agg2 = getMedian(dimensionValues2);
-                                break;
-                            }
-
-                            case DifferentialProfileConfig::Min: {
-                                agg1 = getMin(dimensionValues1);
-                                agg2 = getMin(dimensionValues2);
-                                break;
-                            }
-
-                            case DifferentialProfileConfig::Max: {
-                                agg1 = getMax(dimensionValues1);
-                                agg2 = getMax(dimensionValues2);
-                                
-                                break;
-                            }
-
-                            default:
-                                break;
-                        }
-
-                        dimension["agg"] = fabs(agg2 - agg1);
-
-                        dimension["v1"] = dimension["agg"];
-                        dimension["v2"] = dimension["agg"];
-                    });
+                    break;
                 }
 
-				default:
-					break;
-			}
+                case ProfileType::Differential: {
+                    dimensionValues2 = points2->visitFromBeginToEnd<std::vector<float>>([noDimensions, dimensionIndex, &indices2](auto begin, auto end) {
+                        std::vector<float> values;
 
-			if (showRange) {
-				auto result = std::minmax_element(dimensionValues1.begin(), dimensionValues1.end());
+                        values.reserve(indices2.size());
 
-                dimension["min"] = *result.first;
-				dimension["max"] = *result.second;
-			}
+                        for (const auto& index : indices2)
+                            values.push_back(begin[index * noDimensions + dimensionIndex]);
 
-			dimensions.append(dimension);
-		}
-	}
+                        return values;
+                    });
 
-    _spec["modified"]       = _spec["modified"].toInt() + 1;
+                    std::sort(dimensionValues2.begin(), dimensionValues2.end());
+
+                    auto agg1 = 0.0f;
+                    auto agg2 = 0.0f;
+
+                    switch (static_cast<MedianProfileConfig>(_profileConfigAction.getCurrentIndex()))
+                    {
+                    case DifferentialProfileConfig::Mean: {
+                        agg1 = getMean(dimensionValues1);
+                        agg2 = getMean(dimensionValues2);
+                        break;
+                    }
+
+                    case DifferentialProfileConfig::Median: {
+                        agg1 = getMedian(dimensionValues1);
+                        agg2 = getMedian(dimensionValues2);
+                        break;
+                    }
+
+                    case DifferentialProfileConfig::Min: {
+                        agg1 = getMin(dimensionValues1);
+                        agg2 = getMin(dimensionValues2);
+                        break;
+                    }
+
+                    case DifferentialProfileConfig::Max: {
+                        agg1 = getMax(dimensionValues1);
+                        agg2 = getMax(dimensionValues2);
+
+                        break;
+                    }
+
+                    default:
+                        break;
+                    }
+
+                    dimension["agg"] = fabs(agg2 - agg1);
+
+                    dimension["v1"] = dimension["agg"];
+                    dimension["v2"] = dimension["agg"];
+                }
+
+                default:
+                    break;
+                }
+
+                if (showRange) {
+                    auto result = std::minmax_element(dimensionValues1.begin(), dimensionValues1.end());
+
+                    dimension["min"] = *result.first;
+                    dimension["max"] = *result.second;
+                }
+
+                dimensions.append(dimension);
+            }
+        }
+
+        _spec["dimensions"] = dimensions;
+    }
+
 	_spec["enabled"]		= _enabledAction.isChecked();
 	_spec["index"]			= _index;
 	_spec["displayName"]    = _displayName;
 	_spec["datasetName"]	= _datasetName1Action.getCurrentText();
-	_spec["dimensions"]		= dimensions;
-	_spec["color"]			= _colorAction.getColor();
-	_spec["opacity"]		= _opacityAction.getValue();
+	
+	_spec["color"]			= _stylingAction.getColorAction().getColor();
+	_spec["opacity"]		= _stylingAction.getOpacityAction().getValue();
 	_spec["profileType"]	= _profileTypeAction.getCurrentIndex();
 	_spec["bandType"]		= _profileConfigAction.getCurrentIndex();
 	_spec["showRange"]		= showRange;
+
+    getConfiguration()->setModified();
 }
 
 ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
@@ -458,10 +467,9 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     auto datasetNamesWidget     = new QWidget(this);
     auto profileTypeWidget      = new OptionAction::Widget(this, &channelAction->_profileTypeAction, false);
     auto profileConfigWidget    = new OptionAction::Widget(this, &channelAction->_profileConfigAction, false);
-    auto colorWidget            = new ColorAction::Widget(this, &channelAction->_colorAction, false);
-    auto opacityWidget          = new DecimalAction::Widget(this, &channelAction->_opacityAction, DecimalAction::Widget::Configuration::Slider);
+    auto stylingWidget          = new StylingAction::Widget(this, &channelAction->_stylingAction);
 
-    auto datasetNamesLayout = new QHBoxLayout();
+    auto datasetNamesLayout     = new QHBoxLayout();
 
     datasetNamesLayout->setMargin(0);
     datasetNamesLayout->addWidget(datasetName1Widget);
@@ -476,6 +484,5 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     _mainLayout.addWidget(datasetNamesWidget, 1);
     _mainLayout.addWidget(profileTypeWidget);
     _mainLayout.addWidget(profileConfigWidget);
-    _mainLayout.addWidget(colorWidget);
-    _mainLayout.addWidget(opacityWidget);
+    _mainLayout.addWidget(stylingWidget);
 }

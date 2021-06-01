@@ -68,9 +68,6 @@ QVariantMap ConfigurationAction::getSpec()
     for (auto channel : _channels) {
         const auto channelSpec = channel->getSpec();
 
-        if (channelSpec["modified"] > _spec["modified"])
-            _spec["modified"] = channelSpec["modified"];
-
         if (channel->canDisplaySpec())
             channels[channel->getInternalName()] = channelSpec;
     }

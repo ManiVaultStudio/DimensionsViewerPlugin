@@ -38,6 +38,7 @@ public:
     QVariantMap getSpec();
 
     std::int32_t getModified() const { return _spec["modified"].toInt(); }
+    void setModified() { _spec["modified"] = _spec["modified"].toInt() + 1; }
 
 protected:
     QVector<ChannelAction*>     _channels;
