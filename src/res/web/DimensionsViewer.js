@@ -190,18 +190,39 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
 //    }
 //}
 
+function getDashPattern(lineType) {
+    if (lineType == "Solid")
+        return [];
+
+    if (lineType == "Dash")
+        return [5, 5];
+
+    if (lineType == "Dot")
+        return [2, 2];
+
+    if (lineType == "DashDot")
+        return [5, 2, 2, 2];
+
+    if (lineType == "DashDotDot")
+        return [5, 2, 2, 2, 2, 2];
+
+    return [];
+}
+
 function addChannel(design, channel) {
     design.data.values = design.data.values.concat(channel.dimensions);
 
     if (channel.profileType >= 0) {
-        design.layer.push(getAggregateLineMark(channel, 2, []));
-        design.layer.push(getAggregatePointsMark(channel));
+        design.layer.push(getAggregateLineMark(channel, channel.primaryLineThickness, getDashPattern(channel.profileLineType)));
+
+        if (channel.showPoints)
+            design.layer.push(getAggregatePointsMark(channel));
     }
 
     
     if (channel.bandType > 0) {
-        design.layer.push(getStdDevLineMark(channel, "v1", 1, [2, 2]));
-        design.layer.push(getStdDevLineMark(channel, "v2", 1, [2, 2]));
+        design.layer.push(getStdDevLineMark(channel, "v1", channel.secondaryLineThickness, getDashPattern(channel.rangeLineType)));
+        design.layer.push(getStdDevLineMark(channel, "v2", channel.secondaryLineThickness, getDashPattern(channel.rangeLineType)));
     }
     
     if (channel.showRange)

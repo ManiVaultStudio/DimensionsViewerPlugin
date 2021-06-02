@@ -21,8 +21,8 @@ const QMap<ChannelAction::ProfileType, QString> ChannelAction::profileTypes = QM
 
 const QMap<ChannelAction::MeanProfileConfig, QString> ChannelAction::meanProfileConfigs = QMap<MeanProfileConfig, QString>({
     { ChannelAction::MeanProfileConfig::None, "None" },
-    { ChannelAction::MeanProfileConfig::StandardDeviation1, "Std 1" },
-    { ChannelAction::MeanProfileConfig::StandardDeviation2, "Std 2" }
+    { ChannelAction::MeanProfileConfig::StandardDeviation1, "+/- 1 Std" },
+    { ChannelAction::MeanProfileConfig::StandardDeviation2, "+/- 2 Std" }
 });
 
 const QMap<ChannelAction::MedianProfileConfig, QString> ChannelAction::medianProfileConfigs = QMap<ChannelAction::MedianProfileConfig, QString>({
@@ -131,11 +131,31 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         updateSpec();
     });
 
+    connect(&_stylingAction.getShowPointsAction(), &StandardAction::toggled, [this](bool state) {
+        updateSpec(true);
+    });
+
     connect(&_stylingAction.getColorAction(), &ColorAction::colorChanged, [this](const QColor& color) {
         updateSpec(true);
     });
 
     connect(&_stylingAction.getOpacityAction(), &DecimalAction::valueChanged, [this](const double& value) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getPrimaryLineTypeAction(), &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getPrimaryLineThicknessAction(), &DecimalAction::valueChanged, [this](const double& value) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getSecondaryLineTypeAction(), &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getSecondaryLineThicknessAction(), &DecimalAction::valueChanged, [this](const double& value) {
         updateSpec(true);
     });
 
@@ -438,16 +458,20 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
         _spec["dimensions"] = dimensions;
     }
 
-	_spec["enabled"]		= _enabledAction.isChecked();
-	_spec["index"]			= _index;
-	_spec["displayName"]    = _displayName;
-	_spec["datasetName"]	= _datasetName1Action.getCurrentText();
-	
-	_spec["color"]			= _stylingAction.getColorAction().getColor();
-	_spec["opacity"]		= _stylingAction.getOpacityAction().getValue();
-	_spec["profileType"]	= _profileTypeAction.getCurrentIndex();
-	_spec["bandType"]		= _profileConfigAction.getCurrentIndex();
-	_spec["showRange"]		= showRange;
+	_spec["enabled"]		        = _enabledAction.isChecked();
+	_spec["index"]			        = _index;
+	_spec["displayName"]            = _displayName;
+	_spec["datasetName"]	        = _datasetName1Action.getCurrentText();
+	_spec["color"]			        = _stylingAction.getColorAction().getColor();
+	_spec["opacity"]		        = _stylingAction.getOpacityAction().getValue();
+	_spec["profileType"]	        = _profileTypeAction.getCurrentIndex();
+	_spec["bandType"]		        = _profileConfigAction.getCurrentIndex();
+	_spec["profileLineType"]        = _stylingAction.getPrimaryLineTypeAction().getCurrentText();
+	_spec["primaryLineThickness"]   = _stylingAction.getPrimaryLineThicknessAction().getValue();
+	_spec["rangeLineType"]          = _stylingAction.getSecondaryLineTypeAction().getCurrentText();
+	_spec["secondaryLineThickness"] = _stylingAction.getSecondaryLineThicknessAction().getValue();
+	_spec["showRange"]		        = showRange;
+	_spec["showPoints"]		        = _stylingAction.getShowPointsAction().isChecked();
 
     getConfiguration()->setModified();
 }

@@ -38,8 +38,6 @@ public: // Enumerations
 		None,
 		StandardDeviation1,
 		StandardDeviation2,
-
-		End = StandardDeviation2
 	};
 
     static const QMap<MeanProfileConfig, QString> meanProfileConfigs;
@@ -50,8 +48,6 @@ public: // Enumerations
         Percentile10,
         Percentile15,
         Percentile20,
-
-        End = Percentile10
     };
 
     static const QMap<MedianProfileConfig, QString> medianProfileConfigs;
@@ -61,8 +57,6 @@ public: // Enumerations
         Median,
         Min,
         Max,
-
-        End = Max
     };
 
     static const QMap<DifferentialProfileConfig, QString> differentialProfileConfigs;
