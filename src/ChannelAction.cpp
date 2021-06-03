@@ -9,6 +9,7 @@
 
 #include <QDebug>
 #include <QVariantList>
+#include <QToolButton>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -91,7 +92,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         _datasetName2Action.setEnabled(isEnabled && numDatasets >= 2);
         _profileTypeAction.setEnabled(isEnabled);
         _profileConfigAction.setEnabled(isEnabled);
-        //_stylingAction.setEnabled(isEnabled);
+        _stylingAction.setEnabled(isEnabled);
 
         _datasetName2Action.setVisible(isDifferential);
     };
@@ -466,9 +467,9 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 	_spec["opacity"]		        = _stylingAction.getOpacityAction().getValue();
 	_spec["profileType"]	        = _profileTypeAction.getCurrentIndex();
 	_spec["bandType"]		        = _profileConfigAction.getCurrentIndex();
-	_spec["profileLineType"]        = _stylingAction.getPrimaryLineTypeAction().getCurrentText();
+	_spec["primaryLineType"]        = _stylingAction.getPrimaryLineTypeAction().getCurrentText();
 	_spec["primaryLineThickness"]   = _stylingAction.getPrimaryLineThicknessAction().getValue();
-	_spec["rangeLineType"]          = _stylingAction.getSecondaryLineTypeAction().getCurrentText();
+	_spec["secondaryLineType"]      = _stylingAction.getSecondaryLineTypeAction().getCurrentText();
 	_spec["secondaryLineThickness"] = _stylingAction.getSecondaryLineThicknessAction().getValue();
 	_spec["showRange"]		        = showRange;
 	_spec["showPoints"]		        = _stylingAction.getShowPointsAction().isChecked();
@@ -491,7 +492,7 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     auto datasetNamesWidget     = new QWidget(this);
     auto profileTypeWidget      = new OptionAction::Widget(this, &channelAction->_profileTypeAction, false);
     auto profileConfigWidget    = new OptionAction::Widget(this, &channelAction->_profileConfigAction, false);
-    auto stylingWidget          = new StylingAction::Widget(this, &channelAction->_stylingAction);
+    auto stylingWidget          = new StylingAction::CompactWidget(this, &channelAction->_stylingAction);
 
     auto datasetNamesLayout     = new QHBoxLayout();
 
@@ -503,6 +504,8 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
 
     profileTypeWidget->setFixedWidth(80);
     profileConfigWidget->setFixedWidth(100);
+
+    stylingWidget->getPopupPushButton().setPopupAlignment(gui::PopupPushButton::PopupAlignmentFlag::TopLeft);
 
     _mainLayout.addWidget(enabledWidget);
     _mainLayout.addWidget(datasetNamesWidget, 1);

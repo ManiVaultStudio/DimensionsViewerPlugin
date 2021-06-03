@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QPainter>
+#include <QToolButton>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -129,31 +130,34 @@ StylingAction::Widget::Widget(QWidget* parent, StylingAction* stylingAction) :
     WidgetAction::Widget(parent, stylingAction),
     _layout()
 {
-    auto popupPushButton = new gui::PopupPushButton(this);
+    /*
+    auto popupPushButton    = new gui::PopupPushButton(this, false);
+    auto toolButton         = new QToolButton();
 
-    popupPushButton->setIcon(Application::getIconFont("FontAwesome").getIcon("brush"));
+    popupPushButton->setIcon(Application::getIconFont("FontAwesome").getIcon("paint-brush"));
 
     _layout.addWidget(popupPushButton);
+    _layout.addWidget(toolButton);
 
-    popupPushButton->setWidget(new StylingAction::PopupWidget(this, stylingAction));
+    toolButton->setDefaultAction(stylingAction);
+
+    popupPushButton->setWidget(new StylingAction::PopupWidget(nullptr, stylingAction));
     popupPushButton->setPopupAlignment(gui::PopupPushButton::PopupAlignmentFlag::TopLeft);
 
     setLayout(&_layout);
-}
+    */
 
-StylingAction::PopupWidget::PopupWidget(QWidget* parent, StylingAction* stylingAction) :
-    WidgetAction::PopupWidget(parent, stylingAction),
-    _layout()
-{
-    auto showRangeWidget                = new StandardAction::CheckBox(this, &stylingAction->_showRangeAction);
-    auto showPointsWidget               = new StandardAction::CheckBox(this, &stylingAction->_showPointsAction);
-    auto colorWidget                    = new ColorAction::Widget(this, &stylingAction->_colorAction);
-    auto opacityWidget                  = new DecimalAction::Widget(this, &stylingAction->_opacityAction, DecimalAction::Widget::Configuration::SpinBoxSlider);
-    auto primaryLineTypeWidget          = new OptionAction::Widget(this, &stylingAction->_primaryLineTypeAction, false);
-    auto primaryLineThicknessWidget     = new DecimalAction::Widget(this, &stylingAction->_primaryLineThicknessAction, DecimalAction::Widget::Configuration::SpinBoxSlider);
-    auto secondaryLineTypeWidget        = new OptionAction::Widget(this, &stylingAction->_secondaryLineTypeAction, false);
-    auto secondaryLineThicknessWidget   = new DecimalAction::Widget(this, &stylingAction->_secondaryLineThicknessAction, DecimalAction::Widget::Configuration::SpinBoxSlider);
-    
+    auto showRangeWidget = new StandardAction::CheckBox(this, &stylingAction->_showRangeAction);
+    auto showPointsWidget = new StandardAction::CheckBox(this, &stylingAction->_showPointsAction);
+    auto colorWidget = new ColorAction::Widget(this, &stylingAction->_colorAction);
+    auto opacityWidget = new DecimalAction::Widget(this, &stylingAction->_opacityAction, DecimalAction::Widget::Configuration::Slider);
+    auto primaryLineTypeWidget = new OptionAction::Widget(this, &stylingAction->_primaryLineTypeAction, false);
+    auto primaryLineThicknessWidget = new DecimalAction::Widget(this, &stylingAction->_primaryLineThicknessAction, DecimalAction::Widget::Configuration::Slider);
+    auto secondaryLineTypeWidget = new OptionAction::Widget(this, &stylingAction->_secondaryLineTypeAction, false);
+    auto secondaryLineThicknessWidget = new DecimalAction::Widget(this, &stylingAction->_secondaryLineThicknessAction, DecimalAction::Widget::Configuration::Slider);
+
+    opacityWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+
     auto miscellaneousLayout = new QHBoxLayout();
 
     miscellaneousLayout->addWidget(showRangeWidget);
@@ -168,12 +172,12 @@ StylingAction::PopupWidget::PopupWidget(QWidget* parent, StylingAction* stylingA
     _layout.addWidget(opacityWidget, 2, 1);
 
     _layout.addWidget(new QLabel("Primary line"), 3, 0);
-    
+
     auto primaryLayout = new QHBoxLayout();
 
     primaryLayout->addWidget(primaryLineTypeWidget);
     primaryLayout->addWidget(primaryLineThicknessWidget);
-    
+
     _layout.addWidget(new QLabel("Secondary line"), 4, 0);
     _layout.addLayout(primaryLayout, 3, 1);
 
@@ -181,10 +185,23 @@ StylingAction::PopupWidget::PopupWidget(QWidget* parent, StylingAction* stylingA
 
     secondaryLayout->addWidget(secondaryLineTypeWidget);
     secondaryLayout->addWidget(secondaryLineThicknessWidget);
-    
-    _layout.addLayout(secondaryLayout, 4, 1);
 
+    _layout.addLayout(secondaryLayout, 4, 1);
+    /**/
     setLayout(&_layout);
+}
+
+StylingAction::PopupWidget::PopupWidget(QWidget* parent, StylingAction* stylingAction) :
+    WidgetAction::PopupWidget(parent, stylingAction),
+    _layout(),
+    _groupBox(),
+    _groupBoxLayout()
+{
+    _layout.addWidget(&_groupBox);
+
+    _groupBox.setLayout(&_groupBoxLayout);
+
+    _groupBoxLayout.addWidget(new StylingAction::Widget(this, stylingAction));
 }
 
 

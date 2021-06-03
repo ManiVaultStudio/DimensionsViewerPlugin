@@ -107,6 +107,7 @@ public: // Actions
     hdps::gui::OptionAction& getDatasetName2Action() { return _datasetName2Action; }
     hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
     hdps::gui::OptionAction& getBandTypeAction() { return _profileConfigAction; }
+    StylingAction& getStylingAction() { return _stylingAction; }
     
 
 public: // Visualization spec

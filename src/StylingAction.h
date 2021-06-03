@@ -65,7 +65,7 @@ public:
         Widget(QWidget* parent, StylingAction* stylingAction);
 
     private:
-        QHBoxLayout     _layout;
+        QGridLayout     _layout;
     };
 
     class PopupWidget : public PluginAction::PopupWidget {
@@ -73,7 +73,9 @@ public:
         PopupWidget(QWidget* parent, StylingAction* stylingAction);
 
     private:
-        QGridLayout     _layout;
+        QVBoxLayout     _layout;
+        QGroupBox       _groupBox;
+        QGridLayout     _groupBoxLayout;
     };
 
 public:

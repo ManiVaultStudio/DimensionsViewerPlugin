@@ -98,7 +98,7 @@ function getAggregatePointsMark(channel) {
             "type": "point",
             "fill": channel.color,
             "opacity": 0.01 * channel.opacity,
-            "size": 11
+            "size": 10 * channel.primaryLineThickness
         },
         "transform": [
             {
@@ -153,43 +153,6 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
     }
 }
 
-//function getHistogramMark(channel) {
-//    return {
-//        "mark": {
-//            "type": "rect",
-//            "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3
-//        },
-//        "transform": [
-//            {
-//                "filter": {
-//                    "field": "chn",
-//                    "equal": channel.index
-//                }
-//            }
-//        ],
-//        "color": {
-//            "x1": 1,
-//            "y1": 1,
-//            "x2": 1,
-//            "y2": 0,
-//            "gradient": "linear",
-//            "stops": [
-//                { "offset": 0.0, "color": "red" },
-//                { "offset": 0.5, "color": "white" },
-//                { "offset": 1.0, "color": "blue" }
-//            ]
-//        },
-//        "encoding": {
-//            "row": 1,
-//            "x": channel.encoding.x,
-//            "y": {
-//                "value": 100
-//            },
-            
-//        }
-//    }
-//}
-
 function getDashPattern(lineType) {
     if (lineType == "Solid")
         return [];
@@ -213,7 +176,7 @@ function addChannel(design, channel) {
     design.data.values = design.data.values.concat(channel.dimensions);
 
     if (channel.profileType >= 0) {
-        design.layer.push(getAggregateLineMark(channel, channel.primaryLineThickness, getDashPattern(channel.profileLineType)));
+        design.layer.push(getAggregateLineMark(channel, channel.primaryLineThickness, getDashPattern(channel.primaryLineType)));
 
         if (channel.showPoints)
             design.layer.push(getAggregatePointsMark(channel));
@@ -221,8 +184,8 @@ function addChannel(design, channel) {
 
     
     if (channel.bandType > 0) {
-        design.layer.push(getStdDevLineMark(channel, "v1", channel.secondaryLineThickness, getDashPattern(channel.rangeLineType)));
-        design.layer.push(getStdDevLineMark(channel, "v2", channel.secondaryLineThickness, getDashPattern(channel.rangeLineType)));
+        design.layer.push(getStdDevLineMark(channel, "v1", channel.secondaryLineThickness, getDashPattern(channel.secondaryLineType)));
+        design.layer.push(getStdDevLineMark(channel, "v2", channel.secondaryLineThickness, getDashPattern(channel.secondaryLineType)));
     }
     
     if (channel.showRange)
@@ -255,8 +218,6 @@ function getDesign(spec) {
     }
 
     design.title.text = `[${titles.join(', ')}]`;
-
-    console.log(design);
 
     return design;
 }
