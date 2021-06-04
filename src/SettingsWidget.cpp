@@ -23,7 +23,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 {
     setAutoFillBackground(true);
 
-	_ui.setupUi(_dimensionsViewerPlugin);
+	_ui.setupUi(this);
 
     _ui.differentialProfileGroupBox->setVisible(false);
 

@@ -47,8 +47,6 @@ public:
 	 */
 	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>());
 
-    QWidget* getWidget() {return _ui.horizontalLayout->parentWidget();}
-
 private:
 	DimensionsViewerPlugin*					_dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
 	Ui::SettingsWidget		                _ui;                            /** UI from creator */

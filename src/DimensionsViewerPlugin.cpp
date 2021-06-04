@@ -64,7 +64,7 @@ void DimensionsViewerPlugin::init()
     mainLayout->setSpacing(0);
 
     mainLayout->addWidget(_dimensionsViewerWidget, 1);
-    mainLayout->addWidget(_settingsWidget->getWidget());
+    mainLayout->addWidget(_settingsWidget);
 
     setLayout(mainLayout);
 
