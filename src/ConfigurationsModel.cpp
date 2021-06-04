@@ -83,7 +83,7 @@ QVariant ConfigurationsModel::headerData(int section, Qt::Orientation orientatio
 
 void ConfigurationsModel::addDataset(const QString& datasetName)
 {
-	Configuration* parentConfiguration = false;
+	Configuration* parentConfiguration = nullptr;
 
 	for (auto configuration : _configurations) {
         auto& addedDataset          = _dimensionsViewerPlugin->getCore()->requestData<Points>(datasetName);

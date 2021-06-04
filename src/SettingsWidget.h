@@ -4,6 +4,7 @@
 
 #include <QWidget.h>
 #include <QVector.h>
+#include "ui_SettingsWidget.h"
 
 class DimensionsViewerPlugin;
 class ColorPickerPushButton;
@@ -13,9 +14,9 @@ class QComboBox;
 class QPushButton;
 class QSlider;
 
-namespace Ui {
-	class SettingsWidget;
-}
+//namespace Ui {
+//	class SettingsWidget;
+//}
 
 /**
  * Settings widget class
@@ -46,9 +47,11 @@ public:
 	 */
 	void updateData(const QModelIndex& begin, const QModelIndex& end, const QVector<int>& roles = QVector<int>());
 
+    QWidget* getWidget() {return _ui.horizontalLayout->parentWidget();}
+
 private:
 	DimensionsViewerPlugin*					_dimensionsViewerPlugin;        /** Pointer to an instance of the dimensions viewer plugin */
-	std::unique_ptr<Ui::SettingsWidget>		_ui;                            /** UI from creator */
+	Ui::SettingsWidget		                _ui;                            /** UI from creator */
     QVector<QCheckBox*>                     _enabledCheckBoxes;             /** Enabled check boxes */
     QVector<QComboBox*>                     _datasetNameComboBoxes;         /** Dataset name combo boxes */
     QVector<ColorPickerPushButton*>         _colorPushButtons;              /** Color push buttons */

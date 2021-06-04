@@ -182,7 +182,7 @@ void Channel::updateSpec()
     dimensionValues.resize(pointIndices.size());
 
 	if (_enabled && !pointIndices.empty()) {
-		_points->visitSourceData([this, &pointIndices, &dimensionIndices, &dimensions, &dimensionValues](auto& pointData) {
+		_points->visitSourceData([this, &pointIndices, &dimensionIndices, &dimensions, &dimensionValues](auto pointData) {
 			for (const auto& dimensionIndex : dimensionIndices) {
 				auto localPointIndex = 0;
 

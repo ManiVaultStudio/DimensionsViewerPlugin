@@ -12,7 +12,6 @@
 
 SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	_dimensionsViewerPlugin(dimensionsViewerPlugin),
-	_ui{ std::make_unique<Ui::SettingsWidget>() },
 	_enabledCheckBoxes(),
 	_datasetNameComboBoxes(),
 	_colorPushButtons(),
@@ -24,29 +23,29 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 {
     setAutoFillBackground(true);
 
-	_ui->setupUi(this);
+	_ui.setupUi(_dimensionsViewerPlugin);
 
-    _ui->differentialProfileGroupBox->setVisible(false);
+    _ui.differentialProfileGroupBox->setVisible(false);
 
-	_enabledCheckBoxes << _ui->channel1EnabledCheckBox<< _ui->channel2EnabledCheckBox << _ui->channel3EnabledCheckBox;
-	_datasetNameComboBoxes << _ui->channel1DatasetNameComboBox<< _ui->channel2DatasetNameComboBox << _ui->channel3DatasetNameComboBox;
-	_colorPushButtons << _ui->channel1ColorPushButton<< _ui->channel2ColorPushButton << _ui->channel3ColorPushButton;
-	_opacitySliders << _ui->channel1OpacitySlider<< _ui->channel2OpacitySlider << _ui->channel3OpacitySlider;
-	_profileTypeComboBoxes << _ui->channel1ProfileTypeComboBox<< _ui->channel2ProfileTypeComboBox << _ui->channel3ProfileTypeComboBox;
-	_bandTypeComboBoxes << _ui->channel1BandTypeComboBox<< _ui->channel2BandTypeComboBox << _ui->channel3BandTypeComboBox;
-	_lockedPushButtons << _ui->channel1LockedPushButton << _ui->channel2LockedPushButton << _ui->channel3LockedPushButton;
-	_showRangeCheckBoxes << _ui->channel1ShowRangeCheckBox<< _ui->channel2ShowRangeCheckBox << _ui->channel3ShowRangeCheckBox;
-    _differentialProfileWidgets << _ui->differentialProfileLabelWith << _ui->differentialProfileDataset1ComboBox << _ui->differentialProfileLabelWith << _ui->differentialProfileDataset2ComboBox << _ui->differentialProfileColorPushButton;
+	_enabledCheckBoxes << _ui.channel1EnabledCheckBox<< _ui.channel2EnabledCheckBox << _ui.channel3EnabledCheckBox;
+	_datasetNameComboBoxes << _ui.channel1DatasetNameComboBox<< _ui.channel2DatasetNameComboBox << _ui.channel3DatasetNameComboBox;
+	_colorPushButtons << _ui.channel1ColorPushButton<< _ui.channel2ColorPushButton << _ui.channel3ColorPushButton;
+	_opacitySliders << _ui.channel1OpacitySlider<< _ui.channel2OpacitySlider << _ui.channel3OpacitySlider;
+	_profileTypeComboBoxes << _ui.channel1ProfileTypeComboBox<< _ui.channel2ProfileTypeComboBox << _ui.channel3ProfileTypeComboBox;
+	_bandTypeComboBoxes << _ui.channel1BandTypeComboBox<< _ui.channel2BandTypeComboBox << _ui.channel3BandTypeComboBox;
+	_lockedPushButtons << _ui.channel1LockedPushButton << _ui.channel2LockedPushButton << _ui.channel3LockedPushButton;
+	_showRangeCheckBoxes << _ui.channel1ShowRangeCheckBox<< _ui.channel2ShowRangeCheckBox << _ui.channel3ShowRangeCheckBox;
+    _differentialProfileWidgets << _ui.differentialProfileLabelWith << _ui.differentialProfileDataset1ComboBox << _ui.differentialProfileLabelWith << _ui.differentialProfileDataset2ComboBox << _ui.differentialProfileColorPushButton;
 
 	auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
 	const auto updateDataset1Combobox = [this]() {
 		auto& configurationsModel = _dimensionsViewerPlugin->getConfigurationsModel();
 
-		_ui->channel1DatasetNameComboBox->blockSignals(true);
-		_ui->channel1DatasetNameComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
-		_ui->channel1DatasetNameComboBox->setEnabled(configurationsModel.rowCount() > 0);
-		_ui->channel1DatasetNameComboBox->blockSignals(false);
+		_ui.channel1DatasetNameComboBox->blockSignals(true);
+		_ui.channel1DatasetNameComboBox->setModel(new QStringListModel(configurationsModel.getConfigurationNames()));
+		_ui.channel1DatasetNameComboBox->setEnabled(configurationsModel.rowCount() > 0);
+		_ui.channel1DatasetNameComboBox->blockSignals(false);
 	};
 	
 	QObject::connect(&configurationsModel, &ConfigurationsModel::rowsInserted, [this, updateDataset1Combobox](const QModelIndex& parent, int first, int last) {
@@ -142,18 +141,18 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 		});
 	}
 
-    QObject::connect(_ui->showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
+    QObject::connect(_ui.showDimensionNamesCheckBox, &QCheckBox::stateChanged, [this, &configurationsModel](int state) {
         configurationsModel.setData(Configuration::Column::ShowDimensionNames, state == Qt::Checked);
     });
 
-    QObject::connect(_ui->differentialProfileGroupBox, &QGroupBox::toggled, [this, &configurationsModel](bool checked) {
+    QObject::connect(_ui.differentialProfileGroupBox, &QGroupBox::toggled, [this, &configurationsModel](bool checked) {
         configurationsModel.setData(Configuration::Column::ShowDifferentialProfile, checked);
     });
 
-    _ui->advancedSettingsCheckBox->setChecked(_dimensionsViewerPlugin->getSetting("AdvancedSettings").toBool());
+    _ui.advancedSettingsCheckBox->setChecked(_dimensionsViewerPlugin->getSetting("AdvancedSettings").toBool());
 
     const auto onAdvancedSettingsChanged = [this]() {
-        const auto advancedSettings = _ui->advancedSettingsCheckBox->isChecked();
+        const auto advancedSettings = _ui.advancedSettingsCheckBox->isChecked();
 
         //for (auto opacitySlider : _opacitySliders)
         //    opacitySlider->setVisible(advancedSettings);
@@ -165,7 +164,7 @@ SettingsWidget::SettingsWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
             bandTypeComboBox->setVisible(advancedSettings);
     };
 
-    QObject::connect(_ui->advancedSettingsCheckBox, &QCheckBox::stateChanged, [this, onAdvancedSettingsChanged](int state) {
+    QObject::connect(_ui.advancedSettingsCheckBox, &QCheckBox::stateChanged, [this, onAdvancedSettingsChanged](int state) {
         onAdvancedSettingsChanged();
 
         _dimensionsViewerPlugin->setSetting("AdvancedSettings", state == Qt::Checked);
@@ -181,7 +180,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 	const auto selectedRows = _dimensionsViewerPlugin->getConfigurationsModel().getSelectionModel().selectedRows();
 
 	if (selectedRows.isEmpty()) {
-		_ui->channelsGroupBox->setEnabled(false);
+		_ui.channelsGroupBox->setEnabled(false);
 
 		for (auto enabledCheckBox : _enabledCheckBoxes) {
 			enabledCheckBox->setEnabled(false);
@@ -223,10 +222,10 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 			lockedPushButton->setChecked(false);
 		}
 
-        _ui->showDimensionNamesCheckBox->setEnabled(false);
+        _ui.showDimensionNamesCheckBox->setEnabled(false);
 
-        _ui->differentialProfileGroupBox->setEnabled(false);
-        _ui->differentialProfileGroupBox->setChecked(false);
+        _ui.differentialProfileGroupBox->setEnabled(false);
+        _ui.differentialProfileGroupBox->setChecked(false);
 
         for (auto differentialProfileWidget : _differentialProfileWidgets) {
             differentialProfileWidget->setEnabled(false);
@@ -238,7 +237,7 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 	if (begin.row() != selectedRows.first().row())
 		return;
 
-	_ui->channelsGroupBox->setEnabled(true);
+	_ui.channelsGroupBox->setEnabled(true);
 
 	for (int column = begin.column(); column <= end.column(); column++) {
 		const auto index = begin.siblingAtColumn(column);
@@ -246,13 +245,13 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		if (column == static_cast<int>(Configuration::Column::Subsets)) {
 			const auto subsets = index.data(Qt::EditRole).toStringList();
 
-			_ui->channel2DatasetNameComboBox->blockSignals(true);
-			_ui->channel2DatasetNameComboBox->setModel(new QStringListModel(subsets));
-			_ui->channel2DatasetNameComboBox->blockSignals(false);
+			_ui.channel2DatasetNameComboBox->blockSignals(true);
+			_ui.channel2DatasetNameComboBox->setModel(new QStringListModel(subsets));
+			_ui.channel2DatasetNameComboBox->blockSignals(false);
 
-			_ui->channel3DatasetNameComboBox->blockSignals(true);
-			_ui->channel3DatasetNameComboBox->setModel(new QStringListModel(subsets));
-			_ui->channel3DatasetNameComboBox->blockSignals(false);
+			_ui.channel3DatasetNameComboBox->blockSignals(true);
+			_ui.channel3DatasetNameComboBox->setModel(new QStringListModel(subsets));
+			_ui.channel3DatasetNameComboBox->blockSignals(false);
 		}
 
 		if (column >= Configuration::Column::ChannelEnabledStart && column < Configuration::Column::ChannelEnabledEnd) {
@@ -353,19 +352,19 @@ void SettingsWidget::updateData(const QModelIndex& begin, const QModelIndex& end
 		}
 
         if (column == Configuration::Column::ShowDimensionNames) {
-            _ui->showDimensionNamesCheckBox->blockSignals(true);
-            _ui->showDimensionNamesCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->showDimensionNamesCheckBox->setChecked(index.data(Qt::EditRole).toBool());
-            _ui->showDimensionNamesCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-            _ui->showDimensionNamesCheckBox->blockSignals(false);
+            _ui.showDimensionNamesCheckBox->blockSignals(true);
+            _ui.showDimensionNamesCheckBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui.showDimensionNamesCheckBox->setChecked(index.data(Qt::EditRole).toBool());
+            _ui.showDimensionNamesCheckBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui.showDimensionNamesCheckBox->blockSignals(false);
         }
 
         if (column == Configuration::Column::ShowDifferentialProfile) {
-            _ui->differentialProfileGroupBox->blockSignals(true);
-            _ui->differentialProfileGroupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
-            _ui->differentialProfileGroupBox->setChecked(index.data(Qt::EditRole).toBool());
-            _ui->differentialProfileGroupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
-            _ui->differentialProfileGroupBox->blockSignals(false);
+            _ui.differentialProfileGroupBox->blockSignals(true);
+            _ui.differentialProfileGroupBox->setEnabled(index.flags() & Qt::ItemIsEnabled);
+            _ui.differentialProfileGroupBox->setChecked(index.data(Qt::EditRole).toBool());
+            _ui.differentialProfileGroupBox->setToolTip(index.data(Qt::ToolTipRole).toString());
+            _ui.differentialProfileGroupBox->blockSignals(false);
 
             for (auto differentialProfileWidget : _differentialProfileWidgets) {
                 differentialProfileWidget->setEnabled(index.data(Qt::EditRole).toBool());
