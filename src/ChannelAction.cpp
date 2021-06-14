@@ -97,7 +97,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         _datasetName2Action.setVisible(isDifferential);
     };
 
-    connect(&_enabledAction, &StandardAction::toggled, [this, updateUI](bool state) {
+    connect(&_enabledAction, &ToggleAction::toggled, [this, updateUI](bool state) {
         updateUI();
         updateSpec();
     });
@@ -128,11 +128,11 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         updateSpec();
     });
 
-    connect(&_stylingAction.getShowRangeAction(), &StandardAction::toggled, [this](bool state) {
+    connect(&_stylingAction.getShowRangeAction(), &ToggleAction::toggled, [this](bool state) {
         updateSpec();
     });
 
-    connect(&_stylingAction.getShowPointsAction(), &StandardAction::toggled, [this](bool state) {
+    connect(&_stylingAction.getShowPointsAction(), &ToggleAction::toggled, [this](bool state) {
         updateSpec(true);
     });
 
@@ -160,7 +160,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const Pro
         updateSpec(true);
     });
 
-    connect(&configurationAction->_interactiveAction, &StandardAction::toggled, [this, updateUI](bool state) {
+    connect(&configurationAction->_interactiveAction, &ToggleAction::toggled, [this, updateUI](bool state) {
         updateSpec();
     });
 
@@ -234,12 +234,12 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
         };
 
         if (!datasetName1.isEmpty()) {
-            points1 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(datasetName1));
+            points1 = &dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName1)));
             indices1 = getIndices(points1);
         }
 
         if (_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential) && !datasetName2.isEmpty()) {
-            points2 = &dynamic_cast<Points&>(_dimensionsViewerPlugin->getCore()->requestData(datasetName2));
+            points2 = &dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName2)));
             indices2 = getIndices(points2);
         }
 
@@ -478,7 +478,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 }
 
 ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
-    WidgetAction::Widget(parent, channelAction),
+    WidgetAction::Widget(parent, channelAction, State::Standard),
     _mainLayout()
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -486,13 +486,13 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     
     _mainLayout.setMargin(0);
 
-    auto enabledWidget          = new StandardAction::CheckBox(this, &channelAction->_enabledAction);
-    auto datasetName1Widget     = new OptionAction::Widget(this, &channelAction->_datasetName1Action, false);
-    auto datasetName2Widget     = new OptionAction::Widget(this, &channelAction->_datasetName2Action, false);
+    auto enabledWidget          = channelAction->_enabledAction.createWidget(this);
     auto datasetNamesWidget     = new QWidget(this);
-    auto profileTypeWidget      = new OptionAction::Widget(this, &channelAction->_profileTypeAction, false);
-    auto profileConfigWidget    = new OptionAction::Widget(this, &channelAction->_profileConfigAction, false);
-    auto stylingWidget          = new StylingAction::CompactWidget(this, &channelAction->_stylingAction);
+    auto datasetName1Widget     = channelAction->_datasetName1Action.createWidget(this);
+    auto datasetName2Widget     = channelAction->_datasetName2Action.createWidget(this);
+    auto profileTypeWidget      = channelAction->_profileTypeAction.createWidget(this);
+    auto profileConfigWidget    = channelAction->_profileConfigAction.createWidget(this);
+    auto stylingWidget          = channelAction->_stylingAction.createCollapsedWidget(this);
 
     auto datasetNamesLayout     = new QHBoxLayout();
 
@@ -504,8 +504,6 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
 
     profileTypeWidget->setFixedWidth(80);
     profileConfigWidget->setFixedWidth(100);
-
-    stylingWidget->getPopupPushButton().setPopupAlignment(gui::PopupPushButton::PopupAlignmentFlag::TopLeft);
 
     _mainLayout.addWidget(enabledWidget);
     _mainLayout.addWidget(datasetNamesWidget, 1);

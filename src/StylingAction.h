@@ -59,34 +59,30 @@ public:
         static const QSize iconSize;
     };
 
-public:
-    class Widget : public PluginAction::Widget {
-    public:
+protected: // Widget
+
+    class Widget : public WidgetAction::Widget {
+    protected:
         Widget(QWidget* parent, StylingAction* stylingAction);
 
-    private:
-        QGridLayout     _layout;
+    public:
+        QGridLayout* getLayout() { return _layout; }
+
+    protected:
+        QGridLayout*    _layout;
+
+        friend class StylingAction;
     };
 
-    class PopupWidget : public PluginAction::PopupWidget {
-    public:
-        PopupWidget(QWidget* parent, StylingAction* stylingAction);
-
-    private:
-        QVBoxLayout     _layout;
-        QGroupBox       _groupBox;
-        QGridLayout     _groupBoxLayout;
+    QWidget* getWidget(QWidget* parent, const Widget::State& state = Widget::State::Standard) override {
+        return new StylingAction::Widget(parent, this);
     };
 
 public:
     StylingAction(ChannelAction* channelAction);
 
-    QWidget* createWidget(QWidget* parent) override {
-        return new Widget(parent, this);
-    }
-
-    hdps::gui::StandardAction& getShowRangeAction() { return _showRangeAction; }
-    hdps::gui::StandardAction& getShowPointsAction() { return _showPointsAction; }
+    hdps::gui::ToggleAction& getShowRangeAction() { return _showRangeAction; }
+    hdps::gui::ToggleAction& getShowPointsAction() { return _showPointsAction; }
     hdps::gui::ColorAction& getColorAction() { return _colorAction; }
     hdps::gui::DecimalAction& getOpacityAction() { return _opacityAction; }
     hdps::gui::OptionAction& getPrimaryLineTypeAction() { return _primaryLineTypeAction; }
@@ -95,8 +91,8 @@ public:
     hdps::gui::DecimalAction& getSecondaryLineThicknessAction() { return _secondaryLineThicknessAction; }
 
 protected:
-    hdps::gui::StandardAction   _showRangeAction;
-    hdps::gui::StandardAction   _showPointsAction;
+    hdps::gui::ToggleAction     _showRangeAction;
+    hdps::gui::ToggleAction     _showPointsAction;
     hdps::gui::ColorAction      _colorAction;
     hdps::gui::DecimalAction    _opacityAction;
     hdps::gui::OptionAction     _primaryLineTypeAction;

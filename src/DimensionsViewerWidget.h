@@ -17,12 +17,7 @@ class DimensionsViewerWidget : public QWebEngineView
 {
 	Q_OBJECT
 
-public: // Construction
-
-    /**
-     * Constructor
-     * @param dimensionsViewerPlugin Pointer to an instance of the dimensions viewer plugin
-     */
+public:
     DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
 private:

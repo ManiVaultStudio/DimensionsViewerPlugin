@@ -55,7 +55,7 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     _spec["modified"]           = 0;
     _spec["showDimensionNames"] = true;
 
-    connect(&_showDimensionNamesAction, &StandardAction::toggled, [this](bool state) {
+    connect(&_showDimensionNamesAction, &ToggleAction::toggled, [this](bool state) {
         _spec["modified"] = _spec["modified"].toInt() + 1;
         _spec["showDimensionNames"] = state;
     });
@@ -78,13 +78,14 @@ QVariantMap ConfigurationAction::getSpec()
 }
 
 ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :
-    WidgetAction::Widget(parent, configurationAction),
+    WidgetAction::Widget(parent, configurationAction, State::Standard),
     _layout(),
     _channelsGroupBox("Channels"),
     _channelsGroupBoxLayout(),
     _miscellaneousGroupBox("Miscellaneous"),
     _miscellaneousGroupBoxLayout()
 {
+    
     setAutoFillBackground(true);
     setLayout(&_layout);
 
@@ -106,7 +107,10 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
 
     _miscellaneousGroupBox.setLayout(&_miscellaneousGroupBoxLayout);
 
-    _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_interactiveAction));
-    _miscellaneousGroupBoxLayout.addWidget(new StandardAction::CheckBox(this, &configurationAction->_showDimensionNamesAction));
+    auto interactiveWidget          = configurationAction->_interactiveAction.createWidget(this);
+    auto showDimensionNamesWidget   = configurationAction->_showDimensionNamesAction.createWidget(this);
+
+    _miscellaneousGroupBoxLayout.addWidget(interactiveWidget);
+    _miscellaneousGroupBoxLayout.addWidget(showDimensionNamesWidget);
     _miscellaneousGroupBoxLayout.addStretch(1);
 }

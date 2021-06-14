@@ -9,7 +9,8 @@ class ConfigurationAction : public PluginAction, public hdps::EventListener
 public:
     using Channels = QVector<ChannelAction*>;
 
-public:
+protected: // Widget
+
     class Widget : public PluginAction::Widget {
     public:
         Widget(QWidget* parent, ConfigurationAction* configurationAction);
@@ -22,18 +23,18 @@ public:
         QVBoxLayout     _miscellaneousGroupBoxLayout;
     };
 
+    QWidget* getWidget(QWidget* parent, const Widget::State& widgetType = Widget::State::Standard) override {
+        return new ConfigurationAction::Widget(parent, this);
+    };
+
 public:
 	ConfigurationAction(DimensionsViewerPlugin* dimensionsViewerPlugin);
-
-    QWidget* createWidget(QWidget* parent) override {
-        return new Widget(parent, this);
-    }
 
     QVector<ChannelAction*> getChannels() { return _channels; }
     std::int32_t getNumChannels() const { return _channels.count(); }
 
-    hdps::gui::StandardAction& getInteractiveAction() { return _interactiveAction; }
-    hdps::gui::StandardAction& getShowDimensionNamesAction() { return _showDimensionNamesAction; }
+    hdps::gui::ToggleAction& getInteractiveAction() { return _interactiveAction; }
+    hdps::gui::ToggleAction& getShowDimensionNamesAction() { return _showDimensionNamesAction; }
 
     QVariantMap getSpec();
 
@@ -42,8 +43,8 @@ public:
 
 protected:
     QVector<ChannelAction*>     _channels;
-    hdps::gui::StandardAction   _interactiveAction;
-    hdps::gui::StandardAction   _showDimensionNamesAction;
+    hdps::gui::ToggleAction     _interactiveAction;
+    hdps::gui::ToggleAction     _showDimensionNamesAction;
     QVariantMap				    _spec;
 
     friend class ChannelAction;

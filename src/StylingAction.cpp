@@ -76,6 +76,8 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _secondaryLineTypeAction(this, "Line type"),
     _secondaryLineThicknessAction(this, "Thickness")
 {
+    setIcon(Application::getIconFont("FontAwesome").getIcon("paint-brush"));
+
     _showRangeAction.setCheckable(true);
     _showRangeAction.setChecked(true);
 
@@ -127,81 +129,49 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
 }
 
 StylingAction::Widget::Widget(QWidget* parent, StylingAction* stylingAction) :
-    WidgetAction::Widget(parent, stylingAction),
-    _layout()
+    WidgetAction::Widget(parent, stylingAction, State::Standard),
+    _layout(new QGridLayout())
 {
-    /*
-    auto popupPushButton    = new gui::PopupPushButton(this, false);
-    auto toolButton         = new QToolButton();
-
-    popupPushButton->setIcon(Application::getIconFont("FontAwesome").getIcon("paint-brush"));
-
-    _layout.addWidget(popupPushButton);
-    _layout.addWidget(toolButton);
-
-    toolButton->setDefaultAction(stylingAction);
-
-    popupPushButton->setWidget(new StylingAction::PopupWidget(nullptr, stylingAction));
-    popupPushButton->setPopupAlignment(gui::PopupPushButton::PopupAlignmentFlag::TopLeft);
-
-    setLayout(&_layout);
-    */
-
-    auto showRangeWidget = new StandardAction::CheckBox(this, &stylingAction->_showRangeAction);
-    auto showPointsWidget = new StandardAction::CheckBox(this, &stylingAction->_showPointsAction);
-    auto colorWidget = new ColorAction::Widget(this, &stylingAction->_colorAction);
-    auto opacityWidget = new DecimalAction::Widget(this, &stylingAction->_opacityAction, DecimalAction::Widget::Configuration::Slider);
-    auto primaryLineTypeWidget = new OptionAction::Widget(this, &stylingAction->_primaryLineTypeAction, false);
-    auto primaryLineThicknessWidget = new DecimalAction::Widget(this, &stylingAction->_primaryLineThicknessAction, DecimalAction::Widget::Configuration::Slider);
-    auto secondaryLineTypeWidget = new OptionAction::Widget(this, &stylingAction->_secondaryLineTypeAction, false);
-    auto secondaryLineThicknessWidget = new DecimalAction::Widget(this, &stylingAction->_secondaryLineThicknessAction, DecimalAction::Widget::Configuration::Slider);
+    auto showRangeWidget                = stylingAction->_showRangeAction.createWidget(this);
+    auto showPointsWidget               = stylingAction->_showPointsAction.createWidget(this);
+    auto colorWidget                    = stylingAction->_colorAction.createWidget(this);
+    auto opacityWidget                  = stylingAction->_opacityAction.createWidget(this);
+    auto primaryLineTypeWidget          = stylingAction->_primaryLineTypeAction.createWidget(this);
+    auto primaryLineThicknessWidget     = stylingAction->_primaryLineThicknessAction.createWidget(this);
+    auto secondaryLineTypeWidget        = stylingAction->_secondaryLineTypeAction.createWidget(this);
+    auto secondaryLineThicknessWidget   = stylingAction->_secondaryLineThicknessAction.createWidget(this);
 
     opacityWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-
+    
     auto miscellaneousLayout = new QHBoxLayout();
 
     miscellaneousLayout->addWidget(showRangeWidget);
     miscellaneousLayout->addWidget(showPointsWidget);
 
-    _layout.addLayout(miscellaneousLayout, 0, 1);
+    _layout->addLayout(miscellaneousLayout, 0, 1);
 
-    _layout.addWidget(new QLabel("Color"), 1, 0);
-    _layout.addWidget(colorWidget, 1, 1);
+    _layout->addWidget(new QLabel("Color"), 1, 0);
+    _layout->addWidget(colorWidget, 1, 1);
 
-    _layout.addWidget(new QLabel("Opacity"), 2, 0);
-    _layout.addWidget(opacityWidget, 2, 1);
+    _layout->addWidget(new QLabel("Opacity"), 2, 0);
+    _layout->addWidget(opacityWidget, 2, 1);
 
-    _layout.addWidget(new QLabel("Primary line"), 3, 0);
+    _layout->addWidget(new QLabel("Primary line"), 3, 0);
 
     auto primaryLayout = new QHBoxLayout();
 
     primaryLayout->addWidget(primaryLineTypeWidget);
     primaryLayout->addWidget(primaryLineThicknessWidget);
 
-    _layout.addWidget(new QLabel("Secondary line"), 4, 0);
-    _layout.addLayout(primaryLayout, 3, 1);
+    _layout->addWidget(new QLabel("Secondary line"), 4, 0);
+    _layout->addLayout(primaryLayout, 3, 1);
 
     auto secondaryLayout = new QHBoxLayout();
 
     secondaryLayout->addWidget(secondaryLineTypeWidget);
     secondaryLayout->addWidget(secondaryLineThicknessWidget);
 
-    _layout.addLayout(secondaryLayout, 4, 1);
-    /**/
-    setLayout(&_layout);
+    _layout->addLayout(secondaryLayout, 4, 1);
+
+    setLayout(_layout);
 }
-
-StylingAction::PopupWidget::PopupWidget(QWidget* parent, StylingAction* stylingAction) :
-    WidgetAction::PopupWidget(parent, stylingAction),
-    _layout(),
-    _groupBox(),
-    _groupBoxLayout()
-{
-    _layout.addWidget(&_groupBox);
-
-    _groupBox.setLayout(&_groupBoxLayout);
-
-    _groupBoxLayout.addWidget(new StylingAction::Widget(this, stylingAction));
-}
-
-

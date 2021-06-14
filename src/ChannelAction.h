@@ -61,7 +61,8 @@ public: // Enumerations
 
     static const QMap<DifferentialProfileConfig, QString> differentialProfileConfigs;
 
-public:
+protected: // Widget
+
     class Widget : public PluginAction::Widget {
     public:
         Widget(QWidget* parent, ChannelAction* channelAction);
@@ -70,9 +71,9 @@ public:
         QHBoxLayout     _mainLayout;
     };
 
-    QWidget* createWidget(QWidget* parent) override {
-        return new Widget(parent, this);
-    }
+    QWidget* getWidget(QWidget* parent, const Widget::State& widgetType = Widget::State::Standard) override {
+        return new ChannelAction::Widget(parent, this);
+    };
 
 protected: // Construction
 
@@ -102,7 +103,7 @@ public: // Actions
 
     ConfigurationAction* getConfiguration() { return _configuration; }
 
-    hdps::gui::StandardAction& getEnabledAction() { return _enabledAction; }
+    hdps::gui::ToggleAction& getEnabledAction() { return _enabledAction; }
     hdps::gui::OptionAction& getDatasetName1Action() { return _datasetName1Action; }
     hdps::gui::OptionAction& getDatasetName2Action() { return _datasetName2Action; }
     hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
@@ -128,7 +129,7 @@ protected:
 	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
 	const QString			    _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
     ConfigurationAction*        _configuration;
-    hdps::gui::StandardAction   _enabledAction;
+    hdps::gui::ToggleAction     _enabledAction;
     hdps::gui::OptionAction     _datasetName1Action;
     hdps::gui::OptionAction     _datasetName2Action;
     hdps::gui::OptionAction     _profileTypeAction;
