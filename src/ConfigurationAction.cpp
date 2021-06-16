@@ -11,7 +11,6 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     PluginAction(dimensionsViewerPlugin, "Configuration"),
     hdps::EventListener(),
     _channels(),
-    _interactiveAction(this, "Interactive"),
     _showDimensionNamesAction(this, "Show dimension names"),
     _graphType(this, "Graph type"),
     _spec()
@@ -24,10 +23,6 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     _channels << new ChannelAction(this, "Channel 4", ChannelAction::ProfileType::Mean);
     _channels << new ChannelAction(this, "Channel 5", ChannelAction::ProfileType::Mean);
     
-    _interactiveAction.setCheckable(true);
-    _interactiveAction.setChecked(true);
-    _interactiveAction.setToolTip("Whether to display all points or point selection");
-
     _showDimensionNamesAction.setCheckable(true);
     _showDimensionNamesAction.setChecked(true);
 
@@ -111,11 +106,9 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
 
     _miscellaneousGroupBox.setLayout(&_miscellaneousGroupBoxLayout);
 
-    auto interactiveWidget          = configurationAction->_interactiveAction.createWidget(this);
     auto showDimensionNamesWidget   = configurationAction->_showDimensionNamesAction.createWidget(this);
     auto graphTypeWidget            = configurationAction->_graphType.createWidget(this);
 
-    _miscellaneousGroupBoxLayout.addWidget(interactiveWidget);
     _miscellaneousGroupBoxLayout.addWidget(showDimensionNamesWidget);
     _miscellaneousGroupBoxLayout.addWidget(graphTypeWidget);
     _miscellaneousGroupBoxLayout.addStretch(1);

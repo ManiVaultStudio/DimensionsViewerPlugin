@@ -87,6 +87,20 @@ public:
     hdps::gui::OptionAction& getSecondaryLineTypeAction() { return _secondaryLineTypeAction; }
     hdps::gui::DecimalAction& getSecondaryLineThicknessAction() { return _secondaryLineThicknessAction; }
 
+    StylingAction& operator= (const StylingAction& other)
+    {
+        _showRangeAction                = other._showRangeAction;
+        _showPointsAction               = other._showPointsAction;
+        _colorAction                    = other._colorAction;
+        _opacityAction                  = other._opacityAction;
+        _primaryLineTypeAction          = other._primaryLineTypeAction;
+        _primaryLineThicknessAction     = other._primaryLineThicknessAction;
+        _secondaryLineTypeAction        = other._secondaryLineTypeAction;
+        _secondaryLineThicknessAction   = other._secondaryLineThicknessAction;
+
+        return *this;
+    }
+
 protected:
     hdps::gui::ToggleAction     _showRangeAction;
     hdps::gui::ToggleAction     _showPointsAction;

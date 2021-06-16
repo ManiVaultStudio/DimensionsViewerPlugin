@@ -129,7 +129,9 @@ protected:
     hdps::gui::OptionAction     _datasetName2Action;
     hdps::gui::OptionAction     _profileTypeAction;
     hdps::gui::OptionAction     _profileConfigAction;
+    hdps::gui::ToggleAction     _useSelectionAction;
     StylingAction               _stylingAction;
+    StylingAction               _cachedStylingAction;
     QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 
     friend class ConfigurationAction;

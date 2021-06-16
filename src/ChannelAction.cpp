@@ -7,6 +7,7 @@
 
 #include <QDebug>
 #include <QVariantList>
+#include <QPushButton>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -50,32 +51,38 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QSt
     _datasetName2Action(this, "Dataset 2"),
     _profileTypeAction(this, "Profile type"),
     _profileConfigAction(this, "Profile configuration"),
+    _useSelectionAction(this, "Selection"),
     _stylingAction(this),
+    _cachedStylingAction(this),
     _spec()
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
 
-    _enabledAction.setCheckable(true);
     _enabledAction.setChecked(false);
 
     _profileTypeAction.setOptions(profileTypes.values());
     _profileTypeAction.setCurrentIndex(static_cast<std::int32_t>(profileType));
     
-    const auto updateUI = [this, configurationAction]() {
+    _useSelectionAction.setChecked(configurationAction->getNumChannels() == 0);
+
+    _cachedStylingAction = _stylingAction;
+
+    const auto updateUI = [this, configurationAction](const bool& init = false) {
         const auto numDatasets      = _datasetName1Action.getOptions().count();
         const auto isEnabled        = _enabledAction.isChecked();
+        const auto useSelection     = _useSelectionAction.isChecked();
         const auto isDifferential   = _profileTypeAction.getCurrentText() == profileTypes.value(ProfileType::Differential);
 
         switch (_profileTypeAction.getCurrentIndex())
         {
-            case static_cast<std::int32_t>(ProfileType::Mean):
+            case static_cast<std::int32_t>(ProfileType::Mean) :
                 _profileConfigAction.setOptions(meanProfileConfigs.values());
                 break;
 
             case static_cast<std::int32_t>(ProfileType::Median) :
                 _profileConfigAction.setOptions(medianProfileConfigs.values());
                 break;
-                
+
             case static_cast<std::int32_t>(ProfileType::Differential) :
                 _profileConfigAction.setOptions(differentialProfileConfigs.values());
                 break;
@@ -84,11 +91,17 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QSt
                 break;
         }
 
+        if (init) {
+            _profileConfigAction.setCurrentIndex(1);
+        }
+
         _enabledAction.setEnabled(numDatasets >= 1);
+        _stylingAction.getColorAction().setEnabled(isEnabled);
         _datasetName1Action.setEnabled(isEnabled && numDatasets >= 1);
         _datasetName2Action.setEnabled(isEnabled && numDatasets >= 2);
         _profileTypeAction.setEnabled(isEnabled);
         _profileConfigAction.setEnabled(isEnabled);
+        _useSelectionAction.setEnabled(isEnabled);
         _stylingAction.setEnabled(isEnabled);
 
         _datasetName2Action.setVisible(isDifferential);
@@ -118,9 +131,16 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QSt
     connect(&_profileTypeAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
         updateUI();
         updateSpec();
+
+        _profileConfigAction.setCurrentIndex(_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential) ? 0 : 1);
     });
 
     connect(&_profileConfigAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
+        updateUI();
+        updateSpec();
+    });
+
+    connect(&_useSelectionAction, &ToggleAction::toggled, [this, updateUI](bool state) {
         updateUI();
         updateSpec();
     });
@@ -157,11 +177,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QSt
         updateSpec(true);
     });
 
-    connect(&configurationAction->_interactiveAction, &ToggleAction::toggled, [this, updateUI](bool state) {
-        updateSpec();
-    });
-
-    updateUI();
+    updateUI(true);
 
     updateSpec();
 
@@ -187,19 +203,17 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 {
     const auto showRange = !isDifferential() && _stylingAction.getShowRangeAction().isChecked();
 
+    std::vector<std::uint32_t> indices1, indices2;
+
     if (!ignoreDimensions) {
         Points* points1 = nullptr;
         Points* points2 = nullptr;
 
-        const auto isInteractive = getConfiguration()->getInteractiveAction().isChecked();
-
-        std::vector<std::uint32_t> indices1, indices2;
-
         const auto datasetName1 = _datasetName1Action.getCurrentText();
         const auto datasetName2 = _datasetName2Action.getCurrentText();
 
-        const auto getIndices = [isInteractive](Points* points) -> std::vector<std::uint32_t> {
-            if (!isInteractive) {
+        const auto getIndices = [this](Points* points) -> std::vector<std::uint32_t> {
+            if (!_useSelectionAction.isChecked()) {
                 if (points->indices.empty()) {
                     std::vector<std::uint32_t> indices;
 
@@ -213,21 +227,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
                 }
             }
 
-            const auto& selection = dynamic_cast<Points&>(points->getSelection());
-
-            if (selection.indices.empty()) {
-                std::vector<std::uint32_t> indices;
-
-                indices.resize(points->getNumPoints());
-                std::iota(indices.begin(), indices.end(), 0);
-
-                return indices;
-            }
-            else {
-                return selection.indices;
-            }
-
-            return std::vector<std::uint32_t>();
+            return dynamic_cast<Points&>(points->getSelection()).indices;
         };
 
         if (!datasetName1.isEmpty()) {
@@ -456,7 +456,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
         _spec["dimensions"] = dimensions;
     }
 
-	_spec["enabled"]		        = _enabledAction.isChecked();
+	_spec["enabled"]		        = _enabledAction.isChecked() && !indices1.empty();
 	_spec["index"]			        = _index;
 	_spec["displayName"]            = _displayName;
 	_spec["datasetName"]	        = _datasetName1Action.getCurrentText();
@@ -490,6 +490,7 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     auto datasetName2Widget     = channelAction->_datasetName2Action.createWidget(this);
     auto profileTypeWidget      = channelAction->_profileTypeAction.createWidget(this);
     auto profileConfigWidget    = channelAction->_profileConfigAction.createWidget(this);
+    auto useSelectionWidget     = channelAction->_useSelectionAction.createWidget(this);
     auto stylingWidget          = channelAction->_stylingAction.createCollapsedWidget(this);
 
     auto datasetNamesLayout     = new QHBoxLayout();
@@ -503,10 +504,13 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     profileTypeWidget->setFixedWidth(80);
     profileConfigWidget->setFixedWidth(100);
 
+    //useSelectionWidget->getPushButton()->setIcon(Application::getIconFont("FontAwesome").getIcon("mouse-pointer"));
+
     _mainLayout.addWidget(enabledWidget);
     _mainLayout.addWidget(colorWidget);
     _mainLayout.addWidget(profileTypeWidget);
     _mainLayout.addWidget(datasetNamesWidget, 1);
     _mainLayout.addWidget(profileConfigWidget);
     _mainLayout.addWidget(stylingWidget);
+    _mainLayout.addWidget(useSelectionWidget);
 }

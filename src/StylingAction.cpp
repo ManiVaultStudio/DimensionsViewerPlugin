@@ -89,8 +89,8 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _opacityAction.setSuffix("%");
     _opacityAction.setValue(100.0);
 
-    const auto colorStepDegrees = 360.0f / 10.0f;
-    const auto defaultColor     = QColor::fromHsl(channelAction->getIndex() * 40, 100, 100);
+    const auto colorStepDegrees = 360.0f / 5.0f;
+    const auto defaultColor     = QColor::fromHsl(30 + channelAction->getIndex() * 40, 255, 100);
 
     _colorAction.setColor(defaultColor);
     _colorAction.setDefaultColor(defaultColor);
