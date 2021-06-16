@@ -3,6 +3,7 @@
 #include "DimensionsViewerPlugin.h"
 
 #include <QDebug>
+#include <QLabel>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -12,7 +13,8 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     hdps::EventListener(),
     _channels(),
     _showDimensionNamesAction(this, "Show dimension names"),
-    _graphType(this, "Graph type"),
+    _dimensionWindowCenterAction(this, "Dimension window center"),
+    _dimensionWindowWidthAction(this, "Dimension window width"),
     _spec()
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
@@ -25,8 +27,6 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     
     _showDimensionNamesAction.setCheckable(true);
     _showDimensionNamesAction.setChecked(true);
-
-    _graphType.setOptions(QStringList() << "Line" << "Bar");
 
     const auto updateDatasetNames = [this]() -> void {
         QStringList datasetNames;
@@ -84,7 +84,6 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
     _miscellaneousGroupBox("Miscellaneous"),
     _miscellaneousGroupBoxLayout()
 {
-    
     setAutoFillBackground(true);
     setLayout(&_layout);
 
@@ -106,10 +105,15 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
 
     _miscellaneousGroupBox.setLayout(&_miscellaneousGroupBoxLayout);
 
-    auto showDimensionNamesWidget   = configurationAction->_showDimensionNamesAction.createWidget(this);
-    auto graphTypeWidget            = configurationAction->_graphType.createWidget(this);
+    auto showDimensionNamesWidget       = configurationAction->_showDimensionNamesAction.createWidget(this);
+    auto dimensionWindowCenterLabel     = new QLabel("Dimension window center");
+    auto dimensionWindowCenterWidget    = configurationAction->_dimensionWindowCenterAction.createWidget(this);
+    auto dimensionWindowWidthLabel      = new QLabel("Dimension window center");
+    auto dimensionWindowWidthWidget     = configurationAction->_dimensionWindowWidthAction.createWidget(this);
 
-    _miscellaneousGroupBoxLayout.addWidget(showDimensionNamesWidget);
-    _miscellaneousGroupBoxLayout.addWidget(graphTypeWidget);
-    _miscellaneousGroupBoxLayout.addStretch(1);
+    _miscellaneousGroupBoxLayout.addWidget(showDimensionNamesWidget, 0, 1);
+    _miscellaneousGroupBoxLayout.addWidget(dimensionWindowCenterLabel, 1, 0);
+    _miscellaneousGroupBoxLayout.addWidget(dimensionWindowCenterWidget, 1, 1);
+    _miscellaneousGroupBoxLayout.addWidget(dimensionWindowWidthLabel, 2, 0);
+    _miscellaneousGroupBoxLayout.addWidget(dimensionWindowWidthWidget, 2, 1);
 }

@@ -63,7 +63,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QSt
     _profileTypeAction.setOptions(profileTypes.values());
     _profileTypeAction.setCurrentIndex(static_cast<std::int32_t>(profileType));
     
-    _useSelectionAction.setChecked(configurationAction->getNumChannels() == 0);
+    //_useSelectionAction.setChecked(configurationAction->getNumChannels() == 0);
 
     _cachedStylingAction = _stylingAction;
 

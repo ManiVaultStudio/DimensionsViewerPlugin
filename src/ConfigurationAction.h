@@ -20,7 +20,7 @@ protected: // Widget
         QGroupBox       _channelsGroupBox;
         QVBoxLayout     _channelsGroupBoxLayout;
         QGroupBox       _miscellaneousGroupBox;
-        QVBoxLayout     _miscellaneousGroupBoxLayout;
+        QGridLayout     _miscellaneousGroupBoxLayout;
     };
 
     QWidget* getWidget(QWidget* parent, const Widget::State& widgetType = Widget::State::Standard) override {
@@ -43,7 +43,8 @@ public:
 protected:
     QVector<ChannelAction*>     _channels;
     hdps::gui::ToggleAction     _showDimensionNamesAction;
-    hdps::gui::OptionAction     _graphType;
+    hdps::gui::IntegralAction   _dimensionWindowCenterAction;
+    hdps::gui::IntegralAction   _dimensionWindowWidthAction;
     QVariantMap				    _spec;
 
     friend class ChannelAction;
