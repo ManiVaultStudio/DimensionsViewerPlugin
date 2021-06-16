@@ -13,14 +13,16 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     _channels(),
     _interactiveAction(this, "Interactive"),
     _showDimensionNamesAction(this, "Show dimension names"),
+    _graphType(this, "Graph type"),
     _spec()
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
 
-    _channels << new ChannelAction(this, ChannelAction::ProfileType::Mean, false);
-    _channels << new ChannelAction(this, ChannelAction::ProfileType::Mean, true);
-    _channels << new ChannelAction(this, ChannelAction::ProfileType::Mean, true);
-    _channels << new ChannelAction(this, ChannelAction::ProfileType::Differential, true);
+    _channels << new ChannelAction(this, "Channel 1", ChannelAction::ProfileType::Mean);
+    _channels << new ChannelAction(this, "Channel 2", ChannelAction::ProfileType::Mean);
+    _channels << new ChannelAction(this, "Channel 3", ChannelAction::ProfileType::Mean);
+    _channels << new ChannelAction(this, "Channel 4", ChannelAction::ProfileType::Mean);
+    _channels << new ChannelAction(this, "Channel 5", ChannelAction::ProfileType::Mean);
     
     _interactiveAction.setCheckable(true);
     _interactiveAction.setChecked(true);
@@ -28,6 +30,8 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
 
     _showDimensionNamesAction.setCheckable(true);
     _showDimensionNamesAction.setChecked(true);
+
+    _graphType.setOptions(QStringList() << "Line" << "Bar");
 
     const auto updateDatasetNames = [this]() -> void {
         QStringList datasetNames;
@@ -91,7 +95,7 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
 
     _layout.setMargin(4);
 
-    _layout.addWidget(&_channelsGroupBox);
+    _layout.addWidget(&_channelsGroupBox, 1);
     _layout.addWidget(&_miscellaneousGroupBox);
 
     _channelsGroupBox.setLayout(&_channelsGroupBoxLayout);
@@ -109,8 +113,10 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
 
     auto interactiveWidget          = configurationAction->_interactiveAction.createWidget(this);
     auto showDimensionNamesWidget   = configurationAction->_showDimensionNamesAction.createWidget(this);
+    auto graphTypeWidget            = configurationAction->_graphType.createWidget(this);
 
     _miscellaneousGroupBoxLayout.addWidget(interactiveWidget);
     _miscellaneousGroupBoxLayout.addWidget(showDimensionNamesWidget);
+    _miscellaneousGroupBoxLayout.addWidget(graphTypeWidget);
     _miscellaneousGroupBoxLayout.addStretch(1);
 }

@@ -5,7 +5,6 @@
 
 #include "event/EventListener.h"
 
-#include <QStandardItem>
 #include <QVector>
 #include <QColor>
 #include <QVariantMap>
@@ -80,14 +79,10 @@ protected: // Construction
 	/**
 	 * Constructor
 	 * @param configurationAction Parent configuration action
-	 * @param index Channel index
-	 * @param datasetName The name of the channel dataset
-	 * @param dataName The data name of the channel
-	 * @param color The color of the channel
-	 * @param opacity Render opacity
-	 * @param lock Whether settings are locked
+	 * @param displayName Channel name in the GUI
+	 * @param profileType Type of profile
 	 */
-	ChannelAction(ConfigurationAction* configurationAction, const ProfileType& profileType = ProfileType::Mean, const bool& lock = false);
+	ChannelAction(ConfigurationAction* configurationAction, const QString& displayName, const ProfileType& profileType = ProfileType::Mean);
 
 public: // Getters/setters
 

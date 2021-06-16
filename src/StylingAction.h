@@ -20,8 +20,6 @@ public:
 
     static const QMap<LineType, QString> lineTypes;
 
-    static QIcon getLineTypeIcon(const LineType& lineType, const QSize& iconSize = QSize(24, 12));
-
     class LineTypesModel : public QAbstractListModel {
     public:
         int rowCount(const QModelIndex& parent = QModelIndex()) const {
@@ -52,7 +50,6 @@ public:
         }
 
     private:
-        
         QIcon getDecorationRole(const LineType& lineType) const;
 
     public:

@@ -92,6 +92,46 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash) {
     }
 }
 
+/*
+function getAggregateBarMark(channel) {
+    return {
+        "mark": {
+            "type": "rect",
+            "opacity": 0.01 * channel.opacity,
+        },
+        "transform": [
+            {
+                "filter": {
+                    "field": "chn",
+                    "equal": channel.index
+                }
+            }
+        ],
+        "encoding": {
+            "x": channel.encoding.x,
+            "width": {
+                "scale": "xscale", "value": 0.1
+            },
+            "y": {
+                "scale": "yscale",
+                "field": "min",
+                "type": "quantitative",
+                "title": "Point value"
+            },
+            "y2": {
+                "scale": "yscale",
+                "field": "max",
+                "type": "quantitative",
+                "title": "Point value"
+            },
+            "color": {
+                "value": channel.color
+            }
+        }
+    }
+}
+*/
+
 function getAggregatePointsMark(channel) {
     return {
         "mark": {
@@ -177,6 +217,7 @@ function addChannel(design, channel) {
 
     if (channel.profileType >= 0) {
         design.layer.push(getAggregateLineMark(channel, channel.primaryLineThickness, getDashPattern(channel.primaryLineType)));
+        //design.layer.push(getAggregateBarMark(channel));
 
         if (channel.showPoints)
             design.layer.push(getAggregatePointsMark(channel));

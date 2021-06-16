@@ -3,6 +3,8 @@
 
 #include <QFileInfo>
 #include <QWebChannel>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 
 DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin) :
 	QWebEngineView(),
@@ -18,3 +20,15 @@ DimensionsViewerWidget::DimensionsViewerWidget(DimensionsViewerPlugin* dimension
 
     load(QUrl("qrc:DimensionsViewer.html"));
 }
+
+/*
+void DimensionsViewerWidget::dragEnterEvent(QDragEnterEvent* dragEnterEvent)
+{
+    dragEnterEvent->ignore();
+}
+
+void DimensionsViewerWidget::dropEvent(QDropEvent* dropEvent)
+{
+    dropEvent->ignore();
+}
+*/

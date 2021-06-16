@@ -45,6 +45,7 @@ protected:
     QVector<ChannelAction*>     _channels;
     hdps::gui::ToggleAction     _interactiveAction;
     hdps::gui::ToggleAction     _showDimensionNamesAction;
+    hdps::gui::OptionAction     _graphType;
     QVariantMap				    _spec;
 
     friend class ChannelAction;

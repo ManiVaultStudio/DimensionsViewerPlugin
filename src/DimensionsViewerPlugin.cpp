@@ -28,8 +28,6 @@ void DimensionsViewerPlugin::init()
     _configurationAction    = new ConfigurationAction(this);
     //_dropWidget             = new DropWidget(_dimensionsViewerWidget);
 
-    //_dimensionsViewerWidget->setAcceptDrops(true);
-
     auto mainLayout = new QVBoxLayout();
 
     mainLayout->setMargin(0);
@@ -40,7 +38,6 @@ void DimensionsViewerPlugin::init()
     mainLayout->addWidget(_configurationAction->createWidget(this));
 
     setLayout(mainLayout);
-
     /*
     _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(this, "No data loaded", "Drag an item from the data hierarchy and drop it here to visualize data..."));
 
@@ -59,18 +56,19 @@ void DimensionsViewerPlugin::init()
             dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", false);
         
         if (dataType == PointType) {
-            for (auto channel : _configurationAction->getChannels()) {
-                dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions in %2").arg(candidateDatasetName, channel->getDisplayName()), true, [this, channel, candidateDatasetName]() {
-                    channel->setDatasetName(candidateDatasetName);
-                    _dropWidget->setShowDropIndicator(false);
-                });
-            }
+            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDatasetName), true, [this, candidateDatasetName]() {
+                auto primaryChannel = _configurationAction->getChannels().first();
+
+                primaryChannel->getDatasetName1Action().setCurrentText(candidateDatasetName);
+                primaryChannel->getEnabledAction().setChecked(true);
+                qDebug() << "--";
+                _dropWidget->setShowDropIndicator(false);
+            });
         }
 
         return dropRegions;
     });
     */
-
     registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
         if (dataEvent->getType() == EventType::DataAdded) {
             //_dropWidget->setShowDropIndicator(false);

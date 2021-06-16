@@ -5,11 +5,8 @@
 #include "Application.h"
 #include "PointData.h"
 
-#include "util/Timer.h"
-
 #include <QDebug>
 #include <QVariantList>
-#include <QToolButton>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -41,12 +38,12 @@ const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::dif
     { ChannelAction::DifferentialProfileConfig::Max, "Max" }
 });
 
-ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const ProfileType& profileType /*= ProfileType::Mean*/, const bool& lock /*= false*/) :
+ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
     PluginAction(configurationAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(configurationAction->getNumChannels())),
     hdps::EventListener(),
 	_index(configurationAction->getNumChannels()),
-	_internalName(QString("channel%1").arg(QString::number(configurationAction->getNumChannels()))),
-	_displayName(QString("Channel %1").arg(configurationAction->getNumChannels() + 1)),
+	_internalName(QString("channel_%1").arg(QString::number(configurationAction->getNumChannels()))),
+	_displayName(displayName),
     _configuration(configurationAction),
     _enabledAction(this, _displayName),
     _datasetName1Action(this, "Dataset 1"),
@@ -487,6 +484,7 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     _mainLayout.setMargin(0);
 
     auto enabledWidget          = channelAction->_enabledAction.createWidget(this);
+    auto colorWidget            = channelAction->getStylingAction().getColorAction().createWidget(this);
     auto datasetNamesWidget     = new QWidget(this);
     auto datasetName1Widget     = channelAction->_datasetName1Action.createWidget(this);
     auto datasetName2Widget     = channelAction->_datasetName2Action.createWidget(this);
@@ -506,8 +504,9 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     profileConfigWidget->setFixedWidth(100);
 
     _mainLayout.addWidget(enabledWidget);
-    _mainLayout.addWidget(datasetNamesWidget, 1);
+    _mainLayout.addWidget(colorWidget);
     _mainLayout.addWidget(profileTypeWidget);
+    _mainLayout.addWidget(datasetNamesWidget, 1);
     _mainLayout.addWidget(profileConfigWidget);
     _mainLayout.addWidget(stylingWidget);
 }
