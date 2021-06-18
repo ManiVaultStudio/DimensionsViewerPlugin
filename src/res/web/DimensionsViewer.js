@@ -1,21 +1,21 @@
 let design = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "width": "container",
-    "height": "container",
-    "title": {
-        "text": []
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    width: "container",
+    height: "container",
+    title: {
+        text: []
     },
-    "config": {
-        "axis": {
-            "grid": true,
-            "gridColor": "#dedede"
+    config: {
+        axis: {
+            grid: true,
+            gridColor: "#dedede"
         }
     },
-    "padding": 10,
-    "autosize":
+    padding: 10,
+    autosize:
     {
-        "type": "fit",
-        "resize": true,
+        type: "fit",
+        resize: true,
     },
     "data": {
         "name": "dimensions",
@@ -78,85 +78,45 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash) {
                 }
             }
         ],
-        "encoding": {
-            "x": channel.encoding.x,
-            "y": {
-                "field": "agg",
-                "type": "quantitative",
-                "title": "Point value"
+        encoding: {
+            x: channel.encoding.x,
+            y: {
+                field: "agg",
+                type: "quantitative",
+                title: "Point value"
             },
-            "color": {
-                "value": channel.color
+            color: {
+                value: channel.color
             }
         }
     }
 }
-
-/*
-function getAggregateBarMark(channel) {
-    return {
-        "mark": {
-            "type": "rect",
-            "opacity": 0.01 * channel.opacity,
-        },
-        "transform": [
-            {
-                "filter": {
-                    "field": "chn",
-                    "equal": channel.index
-                }
-            }
-        ],
-        "encoding": {
-            "x": channel.encoding.x,
-            "width": {
-                "scale": "xscale", "value": 0.1
-            },
-            "y": {
-                "scale": "yscale",
-                "field": "min",
-                "type": "quantitative",
-                "title": "Point value"
-            },
-            "y2": {
-                "scale": "yscale",
-                "field": "max",
-                "type": "quantitative",
-                "title": "Point value"
-            },
-            "color": {
-                "value": channel.color
-            }
-        }
-    }
-}
-*/
 
 function getAggregatePointsMark(channel) {
     return {
-        "mark": {
-            "type": "point",
-            "fill": channel.color,
-            "opacity": 0.01 * channel.opacity,
-            "size": 10 * channel.primaryLineThickness
+        mark: {
+            type: "point",
+            fill: channel.color,
+            opacity: 0.01 * channel.opacity,
+            size: 10 * channel.primaryLineThickness
         },
-        "transform": [
+        transform: [
             {
-                "filter": {
+                filter: {
                     "field": "chn",
-                    "equal": channel.index
+                    equal: channel.index
                 }
             }
         ],
-        "encoding": {
-            "x": channel.encoding.x,
-            "y": {
+        encoding: {
+            x: channel.encoding.x,
+            y: {
                 "field": "agg",
-                "type": "quantitative",
-                "title": "Point value"
+                type: "quantitative",
+                title: "Point value"
             },
-            "color": {
-                "value": channel.color
+            color: {
+                value: channel.color
             }
         }
     }
@@ -164,30 +124,30 @@ function getAggregatePointsMark(channel) {
 
 function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
     return {
-        "mark": {
-            "type": "line",
-            "strokeWidth": strokeWidth,
-            "strokeDash": strokeDash,
-            "strokeJoin": "round",
-            "opacity": 0.01 * channel.opacity,
+        mark: {
+            type: "line",
+            strokeWidth: strokeWidth,
+            strokeDash: strokeDash,
+            strokeJoin: "round",
+            opacity: 0.01 * channel.opacity,
         },
-        "transform": [
+        transform: [
             {
-                "filter": {
-                    "field": "chn",
-                    "equal": channel.index
+                filter: {
+                    field: "chn",
+                    equal: channel.index
                 }
             }
         ],
-        "encoding": {
-            "x": channel.encoding.x,
-            "y": {
+        encoding: {
+            x: channel.encoding.x,
+            y: {
                 "field": field,
-                "type": "quantitative",
-                "title": "Point value"
+                type: "quantitative",
+                title: "Point value"
             },
-            "color": {
-                "value": channel.color
+            color: {
+                value: channel.color
             }
         }
     }
@@ -220,9 +180,8 @@ function addChannel(design, channel) {
         //design.layer.push(getAggregateBarMark(channel));
 
         if (channel.showPoints)
-            design.layer.push(getAggregatePointsMark(channel));
+            design.layer.push(getAggregatePointsMark(channel));       
     }
-
     
     if (channel.bandType > 0) {
         design.layer.push(getStdDevLineMark(channel, "v1", channel.secondaryLineThickness, getDashPattern(channel.secondaryLineType)));
@@ -260,6 +219,40 @@ function getDesign(spec) {
 
         addChannel(design, channel);
     }
+    /*
+    design.layer.push({
+        "encoding": {
+            //"color": { "field": "symbol", "type": "nominal" },
+            "y": {
+                "field": "agg",
+                "type": "quantitative"
+            }
+        },
+        "transform": [{
+            "filter": {
+                "param": "hover",
+                "empty": false
+            }
+        }],
+        "mark": "point"
+    });
+    */
+    
+    design.layer.push({
+        "transform": [{
+            "pivot": "chn",
+            "value": "min",
+            "groupby": ["dimName"]
+        }],
+        "mark": "bar",
+        "encoding": {
+            "x": { "field": "dimName", "type": "nominal" },
+            "opacity": {
+                "value": 0
+            }
+        },
+    });
+    
 
     design.title.text = `[${titles.join(', ')}]`;
 

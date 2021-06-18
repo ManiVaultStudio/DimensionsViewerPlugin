@@ -388,9 +388,9 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 
                 QVariantMap dimension;
 
-                dimension["chn"] = _index;
-                dimension["dimId"] = dimensionIndex;
-                dimension["dimName"] = points1->getDimensionNames().at(dimensionIndex);
+                dimension["chn"]        = _index;
+                dimension["dimId"]      = dimensionIndex;
+                dimension["dimName"]    = points1->getDimensionNames().at(dimensionIndex);
 
                 const auto mean = getMean(dimensionValues1);
 
