@@ -38,7 +38,7 @@ function getRangeMark(channel, strokeWidth) {
             {
                 "filter": {
                     "field": "chn",
-                    "equal": channel.index
+                    "equal": channel.index.toString()
                 }
             }
         ],
@@ -74,7 +74,7 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash) {
             {
                 "filter": {
                     "field": "chn",
-                    "equal": channel.index
+                    "equal": channel.index.toString()
                 }
             }
         ],
@@ -104,7 +104,7 @@ function getAggregatePointsMark(channel) {
             {
                 filter: {
                     "field": "chn",
-                    equal: channel.index
+                    equal: channel.index.toString()
                 }
             }
         ],
@@ -135,7 +135,7 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
             {
                 filter: {
                     field: "chn",
-                    equal: channel.index
+                    equal: channel.index.toString()
                 }
             }
         ],
@@ -244,13 +244,31 @@ function getDesign(spec) {
             "value": "min",
             "groupby": ["dimName"]
         }],
-        "mark": "bar",
+        "mark": "rule",
         "encoding": {
             "x": { "field": "dimName", "type": "nominal" },
             "opacity": {
+                "condition": {
+                    "value": 0.3,
+                    "param": "hover",
+                    "empty": false
+                },
                 "value": 0
-            }
+            },
+            "size": {
+                "value": 2
+            },
         },
+        "params": [{
+            "name": "hover",
+            "select": {
+                "type": "point",
+                "fields": ["dimName"],
+                "nearest": true,
+                "on": "mouseover",
+                "clear": "mouseout"
+            }
+        }]
     });
     
 
