@@ -14,7 +14,7 @@ DimensionsAction::DimensionsAction(ConfigurationAction* configurationAction) :
     hdps::EventListener(),
     _selectionCenterIndexAction(this, "Selection center dimension index"),
     _selectionCenterNameAction(this, "Selection center dimension name"),
-    _selectionRadiusAction(this, "Selection radius"),
+    _selectionRadiusAction(this, "Selection radius", 1, 100, 25, 25),
     _showNamesAction(this, "Show names"),
     _dimensionNames()
 {
@@ -23,11 +23,8 @@ DimensionsAction::DimensionsAction(ConfigurationAction* configurationAction) :
 
     _selectionCenterIndexAction.setUpdateDuringDrag(false);
 
-    _selectionRadiusAction.setMinimum(1);
-    _selectionRadiusAction.setMaximum(50);
-    _selectionRadiusAction.setValue(50);
     _selectionRadiusAction.setUpdateDuringDrag(false);
-    _selectionRadiusAction.setSuffix(" dimensions");
+    _selectionRadiusAction.setSuffix(" dims");
 
     _showNamesAction.setChecked(true);
 

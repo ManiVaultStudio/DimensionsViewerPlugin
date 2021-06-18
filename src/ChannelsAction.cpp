@@ -32,16 +32,20 @@ ChannelsAction::ChannelsAction(ConfigurationAction* configurationAction) :
             channel->getDatasetName2Action().setOptions(datasetNames);
         }
 
+        const auto numPoints = _channels.first()->getNumPoints();
+
         auto& dimensionsAction = configurationAction->getDimensionsAction();
 
         const auto numDimensions    = _channels.first()->getNumDimensions();
-        const auto updateDuringDrag = _channels.first()->getNumPoints() < 100000;
+        const auto updateDuringDrag = numPoints < 100000;
 
         dimensionsAction.getSelectionCenterIndexAction().setUpdateDuringDrag(updateDuringDrag);
         dimensionsAction.getSelectionCenterIndexAction().setMaximum(numDimensions - 1);
         dimensionsAction.getSelectionCenterIndexAction().setValue(static_cast<std::int32_t>(floorf(static_cast<float>(numDimensions) / 2.0f)));
         dimensionsAction.getSelectionCenterNameAction().setOptions(_channels.first()->getDimensionNames());
         dimensionsAction.getSelectionRadiusAction().setUpdateDuringDrag(updateDuringDrag);
+
+        configurationAction->getSubsamplingAction().setChecked(numPoints > 100000);
     };
 
     registerDataEventByType(PointType, [this, update](hdps::DataEvent* dataEvent) {
@@ -60,7 +64,7 @@ ChannelsAction::ChannelsAction(ConfigurationAction* configurationAction) :
     for (auto channel : _channels) {
         connect(&channel->getEnabledAction(), &ToggleAction::toggled, [this, configurationAction](bool state) {
             configurationAction->getDimensionsAction().setEnabled(canDisplay());
-            configurationAction->getMiscellaneousAction().setEnabled(canDisplay());
+            configurationAction->getSubsamplingAction().setEnabled(canDisplay());
         });
     }
 }

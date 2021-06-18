@@ -187,6 +187,16 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
         updateSpec();
     });
 
+    auto& subsamplingAction = getChannelsAction()->getConfigurationAction()->getSubsamplingAction();
+
+    connect(&subsamplingAction, &SubsamplingAction::toggled, [this](bool state) {
+        updateSpec();
+    });
+
+    connect(&subsamplingAction.getSubsamplingFactorAction(), &DecimalAction::valueChanged, [this](const double& value) {
+        updateSpec();
+    });
+
     updateUI(true);
 
     updateSpec();
@@ -277,14 +287,34 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
             return dynamic_cast<Points&>(points->getSelection()).indices;
         };
 
+        auto& subsamplingAction = getChannelsAction()->getConfigurationAction()->getSubsamplingAction();
+            
+        const auto getSubsampledIndices = [this, getIndices, &subsamplingAction](Points* points) -> std::vector<std::uint32_t> {
+            auto indices = getIndices(points);
+
+            if (subsamplingAction.shouldSubsample()) {
+                std::vector<std::uint32_t> temp;
+
+                const auto stepSize = static_cast<std::int32_t>(1.0 / subsamplingAction.getNormalizedFactor());
+                temp.reserve(indices.size());
+
+                for (int i = 0; i < indices.size(); i += stepSize)
+                    temp.push_back(indices[i]);
+
+                indices = temp;
+            }
+
+            return indices;
+        };
+
         if (!datasetName1.isEmpty()) {
             points1 = &dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName1)));
-            indices1 = getIndices(points1);
+            indices1 = getSubsampledIndices(points1);
         }
 
         if (_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential) && !datasetName2.isEmpty()) {
             points2 = &dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName2)));
-            indices2 = getIndices(points2);
+            indices2 = getSubsampledIndices(points2);
         }
 
         if (points1 == nullptr)
