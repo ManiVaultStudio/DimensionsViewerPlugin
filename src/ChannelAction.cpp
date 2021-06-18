@@ -1,4 +1,5 @@
 #include "ChannelAction.h"
+#include "ChannelsAction.h"
 #include "ConfigurationAction.h"
 #include "DimensionsViewerPlugin.h"
 
@@ -7,7 +8,6 @@
 
 #include <QDebug>
 #include <QVariantList>
-#include <QPushButton>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -39,13 +39,13 @@ const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::dif
     { ChannelAction::DifferentialProfileConfig::Max, "Max" }
 });
 
-ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
-    PluginAction(configurationAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(configurationAction->getNumChannels())),
+ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
+    PluginAction(channelsAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(channelsAction->getNumChannels())),
     hdps::EventListener(),
-	_index(configurationAction->getNumChannels()),
-	_internalName(QString("channel_%1").arg(QString::number(configurationAction->getNumChannels()))),
+	_index(channelsAction->getNumChannels()),
+	_internalName(QString("channel_%1").arg(QString::number(channelsAction->getNumChannels()))),
 	_displayName(displayName),
-    _configuration(configurationAction),
+    _channelsAction(channelsAction),
     _enabledAction(this, _displayName),
     _datasetName1Action(this, "Dataset 1"),
     _datasetName2Action(this, "Dataset 2"),
@@ -67,7 +67,7 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QSt
 
     _cachedStylingAction = _stylingAction;
 
-    const auto updateUI = [this, configurationAction](const bool& init = false) {
+    const auto updateUI = [this, channelsAction](const bool& init = false) {
         const auto numDatasets      = _datasetName1Action.getOptions().count();
         const auto isEnabled        = _enabledAction.isChecked();
         const auto useSelection     = _useSelectionAction.isChecked();
@@ -177,6 +177,16 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QSt
         updateSpec(true);
     });
 
+    auto& dimensionsAction = getChannelsAction()->getConfigurationAction()->getDimensionsAction();
+
+    connect(&dimensionsAction.getSelectionCenterIndexAction(), &IntegralAction::valueChanged, [this](const std::int32_t& value) {
+        updateSpec();
+    });
+
+    connect(&dimensionsAction.getSelectionRadiusAction(), &IntegralAction::valueChanged, [this](const std::int32_t& value) {
+        updateSpec();
+    });
+
     updateUI(true);
 
     updateSpec();
@@ -192,6 +202,43 @@ ChannelAction::ChannelAction(ConfigurationAction* configurationAction, const QSt
                 updateSpec();
         }
     });
+}
+
+QStringList ChannelAction::getDimensionNames() const
+{
+    QStringList dimensionNames;
+
+    const auto datasetName1 = _datasetName1Action.getCurrentText();
+
+    if (datasetName1.isEmpty())
+        return dimensionNames;
+
+    auto points1 = getPoints1();
+
+    for (auto dimensionName : points1->getDimensionNames())
+        dimensionNames << dimensionName;
+
+    return dimensionNames;
+}
+
+std::int32_t ChannelAction::getNumPoints() const
+{
+    auto points1 = getPoints1();
+
+    if (!points1)
+        return 0;
+
+    return getPoints1()->getNumPoints();
+}
+
+std::int32_t ChannelAction::getNumDimensions() const
+{
+    auto points1 = getPoints1();
+
+    if (!points1)
+        return 0;
+
+    return getPoints1()->getNumDimensions();
 }
 
 bool ChannelAction::canDisplaySpec() const
@@ -245,8 +292,17 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 
         std::vector<std::uint32_t> dimensionIndices;
 
-        dimensionIndices.resize(points1->getNumDimensions());
-        std::iota(dimensionIndices.begin(), dimensionIndices.end(), 0);
+        auto& dimensionsAction = getChannelsAction()->getConfigurationAction()->getDimensionsAction();
+
+        const auto numDimensions    = static_cast<std::int32_t>(points1->getNumDimensions());
+        const auto selectionCenter  = dimensionsAction.getSelectionCenterIndexAction().getValue();
+        const auto selectionRadius  = dimensionsAction.getSelectionRadiusAction().getValue();
+        const auto dimensionStart   = std::max(0, selectionCenter - selectionRadius);
+        const auto dimensionEnd     = std::min(numDimensions - 1, selectionCenter + selectionRadius);
+        const auto noDimensions     = dimensionEnd - dimensionStart + 1;
+
+        dimensionIndices.resize(noDimensions);
+        std::iota(dimensionIndices.begin(), dimensionIndices.end(), dimensionStart);
 
         QVariantList dimensions;
 
@@ -456,7 +512,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
         _spec["dimensions"] = dimensions;
     }
 
-	_spec["enabled"]		        = _enabledAction.isChecked() && !indices1.empty();
+    _spec["enabled"]                = _enabledAction.isChecked();// && !indices1.empty();
 	_spec["index"]			        = _index;
 	_spec["displayName"]            = _displayName;
 	_spec["datasetName"]	        = _datasetName1Action.getCurrentText();
@@ -471,7 +527,27 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 	_spec["showRange"]		        = showRange;
 	_spec["showPoints"]		        = _stylingAction.getShowPointsAction().isChecked();
 
-    getConfiguration()->setModified();
+    getChannelsAction()->getConfigurationAction()->setModified();
+}
+
+Points* ChannelAction::getPoints1() const
+{
+    const auto datasetName1 = _datasetName1Action.getCurrentText();
+
+    if (datasetName1.isEmpty())
+        return nullptr;
+
+    return &dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName1)));
+}
+
+Points* ChannelAction::getPoints2() const
+{
+    const auto datasetName2 = _datasetName1Action.getCurrentText();
+
+    if (datasetName2.isEmpty())
+        return nullptr;
+
+    return &dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName2)));
 }
 
 ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
@@ -503,8 +579,6 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
 
     profileTypeWidget->setFixedWidth(80);
     profileConfigWidget->setFixedWidth(100);
-
-    //useSelectionWidget->getPushButton()->setIcon(Application::getIconFont("FontAwesome").getIcon("mouse-pointer"));
 
     _mainLayout.addWidget(enabledWidget);
     _mainLayout.addWidget(colorWidget);

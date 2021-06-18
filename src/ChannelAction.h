@@ -10,7 +10,7 @@
 #include <QVariantMap>
 
 class Points;
-class ConfigurationAction;
+class ChannelsAction;
 
 /**
  * Channel class
@@ -21,7 +21,7 @@ class ConfigurationAction;
  */
 class ChannelAction : public PluginAction, public hdps::EventListener {
 
-public: // Enumerations
+public:
 
 	enum class ProfileType {
 		Mean,
@@ -60,7 +60,7 @@ public: // Enumerations
 
     static const QMap<DifferentialProfileConfig, QString> differentialProfileConfigs;
 
-protected: // Widget
+protected:
 
     class Widget : public PluginAction::Widget {
     public:
@@ -74,17 +74,11 @@ protected: // Widget
         return new ChannelAction::Widget(parent, this);
     };
 
-protected: // Construction
+protected:
 
-	/**
-	 * Constructor
-	 * @param configurationAction Parent configuration action
-	 * @param displayName Channel name in the GUI
-	 * @param profileType Type of profile
-	 */
-	ChannelAction(ConfigurationAction* configurationAction, const QString& displayName, const ProfileType& profileType = ProfileType::Mean);
+	ChannelAction(ChannelsAction* channelsAction, const QString& displayName, const ProfileType& profileType = ProfileType::Mean);
 
-public: // Getters/setters
+public:
 
     std::uint32_t getIndex() const { return _index; }
     QString getInternalName() const { return _internalName; }
@@ -94,9 +88,9 @@ public: // Getters/setters
         return _profileTypeAction.getCurrentIndex() == static_cast<std::uint32_t>(ProfileType::Differential);
     }
 
-public: // Actions
+public:
 
-    ConfigurationAction* getConfiguration() { return _configuration; }
+    ChannelsAction* getChannelsAction() { return _channelsAction; }
 
     hdps::gui::ToggleAction& getEnabledAction() { return _enabledAction; }
     hdps::gui::OptionAction& getDatasetName1Action() { return _datasetName1Action; }
@@ -105,25 +99,29 @@ public: // Actions
     hdps::gui::OptionAction& getBandTypeAction() { return _profileConfigAction; }
     StylingAction& getStylingAction() { return _stylingAction; }
     
+    QStringList getDimensionNames() const;
+    
+    std::int32_t getNumPoints() const;
+    std::int32_t getNumDimensions() const;
 
-public: // Visualization spec
+public:
 
 	QVariantMap getSpec() { return _spec; };
     bool canDisplaySpec() const;
 
-private: // Miscellaneous
+private:
 	
-	/** Returns if the referenced dataset is a subset */
 	bool isSubset() const;
-
-	/** Updates the visualization specification */
 	void updateSpec(const bool& ignoreDimensions = false);
+
+    Points* getPoints1() const;
+    Points* getPoints2() const;
 
 protected:
 	const std::uint32_t		    _index;				            /** Channel index */
 	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
 	const QString			    _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
-    ConfigurationAction*        _configuration;
+    ChannelsAction*             _channelsAction;
     hdps::gui::ToggleAction     _enabledAction;
     hdps::gui::OptionAction     _datasetName1Action;
     hdps::gui::OptionAction     _datasetName2Action;
@@ -134,6 +132,7 @@ protected:
     StylingAction               _cachedStylingAction;
     QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 
+    friend class ChannelsAction;
     friend class ConfigurationAction;
     friend class StylingAction;
 };

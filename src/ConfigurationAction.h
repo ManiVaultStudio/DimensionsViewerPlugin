@@ -1,26 +1,17 @@
 #pragma once
 
-#include "ChannelAction.h"
+#include "DimensionsAction.h"
+#include "ChannelsAction.h"
 
 #include "event/EventListener.h"
 
 class ConfigurationAction : public PluginAction, public hdps::EventListener
 {
-public:
-    using Channels = QVector<ChannelAction*>;
-
-protected: // Widget
+protected:
 
     class Widget : public PluginAction::Widget {
     public:
         Widget(QWidget* parent, ConfigurationAction* configurationAction);
-
-    protected:
-        QHBoxLayout     _layout;
-        QGroupBox       _channelsGroupBox;
-        QVBoxLayout     _channelsGroupBoxLayout;
-        QGroupBox       _miscellaneousGroupBox;
-        QGridLayout     _miscellaneousGroupBoxLayout;
     };
 
     QWidget* getWidget(QWidget* parent, const Widget::State& widgetType = Widget::State::Standard) override {
@@ -30,10 +21,8 @@ protected: // Widget
 public:
 	ConfigurationAction(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
-    QVector<ChannelAction*> getChannels() { return _channels; }
-    std::int32_t getNumChannels() const { return _channels.count(); }
-
-    hdps::gui::ToggleAction& getShowDimensionNamesAction() { return _showDimensionNamesAction; }
+    ChannelsAction& getChannelsAction() { return _channelsAction; }
+    DimensionsAction& getDimensionsAction() { return _dimensionsAction; }
 
     QVariantMap getSpec();
 
@@ -41,11 +30,9 @@ public:
     void setModified() { _spec["modified"] = _spec["modified"].toInt() + 1; }
 
 protected:
-    QVector<ChannelAction*>     _channels;
-    hdps::gui::ToggleAction     _showDimensionNamesAction;
-    hdps::gui::IntegralAction   _dimensionWindowCenterAction;
-    hdps::gui::IntegralAction   _dimensionWindowWidthAction;
-    QVariantMap				    _spec;
+    DimensionsAction    _dimensionsAction;
+    ChannelsAction      _channelsAction;
+    QVariantMap			_spec;
 
     friend class ChannelAction;
 };
