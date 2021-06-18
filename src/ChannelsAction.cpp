@@ -60,6 +60,7 @@ ChannelsAction::ChannelsAction(ConfigurationAction* configurationAction) :
     for (auto channel : _channels) {
         connect(&channel->getEnabledAction(), &ToggleAction::toggled, [this, configurationAction](bool state) {
             configurationAction->getDimensionsAction().setEnabled(canDisplay());
+            configurationAction->getMiscellaneousAction().setEnabled(canDisplay());
         });
     }
 }

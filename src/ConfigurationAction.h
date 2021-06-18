@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DimensionsAction.h"
+#include "MiscellaneousAction.h"
 #include "ChannelsAction.h"
 
 #include "event/EventListener.h"
@@ -21,8 +22,9 @@ protected:
 public:
 	ConfigurationAction(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
-    ChannelsAction& getChannelsAction() { return _channelsAction; }
     DimensionsAction& getDimensionsAction() { return _dimensionsAction; }
+    MiscellaneousAction& getMiscellaneousAction() { return _miscellaneousAction; }
+    ChannelsAction& getChannelsAction() { return _channelsAction; }
 
     QVariantMap getSpec();
 
@@ -30,9 +32,10 @@ public:
     void setModified() { _spec["modified"] = _spec["modified"].toInt() + 1; }
 
 protected:
-    DimensionsAction    _dimensionsAction;
-    ChannelsAction      _channelsAction;
-    QVariantMap			_spec;
+    DimensionsAction        _dimensionsAction;
+    MiscellaneousAction     _miscellaneousAction;
+    ChannelsAction          _channelsAction;
+    QVariantMap			    _spec;
 
     friend class ChannelAction;
 };

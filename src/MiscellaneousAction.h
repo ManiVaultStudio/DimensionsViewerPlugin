@@ -23,9 +23,9 @@ public:
     MiscellaneousAction(ConfigurationAction* configurationAction);
 
     hdps::gui::ToggleAction& getEnableSubsamplingAction() { return _enableSubsamplingAction; }
-    hdps::gui::IntegralAction& getSubsamplingFactorAction() { return _subsamplingFactorAction; }
+    hdps::gui::DecimalAction& getSubsamplingFactorAction() { return _subsamplingFactorAction; }
 
 protected:
     hdps::gui::ToggleAction     _enableSubsamplingAction;
-    hdps::gui::IntegralAction   _subsamplingFactorAction;
+    hdps::gui::DecimalAction    _subsamplingFactorAction;
 };

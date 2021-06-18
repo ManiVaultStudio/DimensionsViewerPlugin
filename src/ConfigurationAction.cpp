@@ -12,6 +12,7 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     PluginAction(dimensionsViewerPlugin, "Configuration"),
     hdps::EventListener(),
     _dimensionsAction(this),
+    _miscellaneousAction(this),
     _channelsAction(this),
     _spec()
 {
@@ -54,6 +55,11 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
     layout->setMargin(3);
     layout->setSpacing(3);
 
-    layout->addWidget(configurationAction->_dimensionsAction.createWidget(this));
+    auto topLayout = new QHBoxLayout();
+
+    topLayout->addWidget(configurationAction->_dimensionsAction.createWidget(this), 1);
+    topLayout->addWidget(configurationAction->_miscellaneousAction.createWidget(this));
+
+    layout->addLayout(topLayout);
     layout->addWidget(configurationAction->_channelsAction.createWidget(this));
 }

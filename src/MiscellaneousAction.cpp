@@ -12,16 +12,21 @@ using namespace hdps::gui;
 MiscellaneousAction::MiscellaneousAction(ConfigurationAction* configurationAction) :
     PluginAction(configurationAction->getDimensionsViewerPlugin(), "Configuration"),
     hdps::EventListener(),
-    _enableSubsamplingAction(this, "Enable subsampling"),
-    _subsamplingFactorAction(this, "Subsampling factor")
+    _enableSubsamplingAction(this, "Subsampling"),
+    _subsamplingFactorAction(this, "Subsampling factor", 0.1, 1.0, 0.5, 0.5, 2)
 {
     setEnabled(false);
     setEventCore(_dimensionsViewerPlugin->getCore());
 
-    _subsamplingFactorAction.setMinimum(1);
-    _subsamplingFactorAction.setMaximum(10);
-    _subsamplingFactorAction.setValue(50);
-    _subsamplingFactorAction.setPrefix(" dimensions");
+    const auto updateUI = [this]() -> void {
+        _subsamplingFactorAction.setEnabled(_enableSubsamplingAction.isChecked());
+    };
+
+    connect(&_enableSubsamplingAction, &ToggleAction::toggled, [this, updateUI]() {
+        updateUI();
+    });
+
+    updateUI();
 }
 
 MiscellaneousAction::Widget::Widget(QWidget* parent, MiscellaneousAction* miscellaneousAction) :
@@ -40,23 +45,13 @@ MiscellaneousAction::Widget::Widget(QWidget* parent, MiscellaneousAction* miscel
     
     groupBox->setLayout(groupBoxLayout);
 
-    /*
-    auto selectionCenterLabel           = new QLabel("Center");
-    auto selectionCenterIndexWidget     = DimensionsAction->_selectionCenterIndexAction.createSliderWidget(this);
-    auto selectionCenterNameWidget      = dynamic_cast<OptionAction::Widget*>(DimensionsAction->_selectionCenterNameAction.createWidget(this));
-    auto selectionRadiusLabel           = new QLabel("Radius");
-    auto selectionRadiusWidget          = DimensionsAction->_selectionRadiusAction.createWidget(this);
-    auto showDimensionNamesWidget       = DimensionsAction->_showNamesAction.createWidget(this);
+    auto enableSubsamplingWidget    = miscellaneousAction->_enableSubsamplingAction.createWidget(this);
+    auto subsamplingFactorWidget    = miscellaneousAction->_subsamplingFactorAction.createWidget(this);
 
-    selectionCenterNameWidget->getComboBox()->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    //selectionCenterNameWidget->getComboBox()->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
     groupBoxLayout->setMargin(9);
     groupBoxLayout->setSpacing(10);
-    groupBoxLayout->addWidget(selectionCenterLabel);
-    groupBoxLayout->addWidget(selectionCenterNameWidget);
-    groupBoxLayout->addWidget(selectionCenterIndexWidget, 1);
-    groupBoxLayout->addWidget(selectionRadiusLabel);
-    groupBoxLayout->addWidget(selectionRadiusWidget, 1);
-    groupBoxLayout->addWidget(showDimensionNamesWidget);
-    */
+    groupBoxLayout->addWidget(enableSubsamplingWidget);
+    groupBoxLayout->addWidget(subsamplingFactorWidget);
 }
