@@ -4,6 +4,8 @@
 
 #include "event/EventListener.h"
 
+class ConfigurationAction;
+
 class ChannelsAction: public PluginAction, public hdps::EventListener
 {
 public:
