@@ -19,6 +19,13 @@ const QMap<StylingAction::LineType, QString> StylingAction::lineTypes = QMap<Sty
     { StylingAction::LineType::DashDotDot, "DashDotDot" }
 });
 
+const QVector<QColor> StylingAction::defaultColors = QVector<QColor>({
+    QColor::fromHsv(109, 182, 200),
+    QColor::fromHsv(204, 179, 200),
+    QColor::fromHsv(300, 150, 200),
+    QColor::fromHsv(40, 240, 200)
+});
+
 QIcon StylingAction::LineTypesModel::getDecorationRole(const LineType& lineType) const
 {
     QPixmap pixmap(iconSize);
@@ -29,31 +36,31 @@ QIcon StylingAction::LineTypesModel::getDecorationRole(const LineType& lineType)
 
     painter.setRenderHint(QPainter::Antialiasing);
 
-    const auto lineWidth = 1.6;
-    const auto color = QColor(0, 0, 0);
-    const auto margin = 2;
+    const auto lineWidth    = 1.6;
+    const auto color        = QColor(0, 0, 0);
+    const auto margin       = 2;
 
     switch (lineType)
     {
-    case LineType::Solid:
-        painter.setPen(QPen(color, lineWidth, Qt::SolidLine));
-        break;
+        case LineType::Solid:
+            painter.setPen(QPen(color, lineWidth, Qt::SolidLine));
+            break;
 
-    case LineType::Dash:
-        painter.setPen(QPen(color, lineWidth, Qt::DashLine));
-        break;
+        case LineType::Dash:
+            painter.setPen(QPen(color, lineWidth, Qt::DashLine));
+            break;
 
-    case LineType::Dot:
-        painter.setPen(QPen(color, lineWidth, Qt::DotLine));
-        break;
+        case LineType::Dot:
+            painter.setPen(QPen(color, lineWidth, Qt::DotLine));
+            break;
 
-    case LineType::DashDot:
-        painter.setPen(QPen(color, lineWidth, Qt::DashDotLine));
-        break;
+        case LineType::DashDot:
+            painter.setPen(QPen(color, lineWidth, Qt::DashDotLine));
+            break;
 
-    case LineType::DashDotDot:
-        painter.setPen(QPen(color, lineWidth, Qt::DashDotDotLine));
-        break;
+        case LineType::DashDotDot:
+            painter.setPen(QPen(color, lineWidth, Qt::DashDotDotLine));
+            break;
     }
 
     const auto y = iconSize.height() / 2.0;
@@ -89,11 +96,10 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _opacityAction.setSuffix("%");
     _opacityAction.setValue(100.0);
 
-    const auto colorStepDegrees = 360.0f / 5.0f;
-    const auto defaultColor     = QColor::fromHsl(30 + channelAction->getIndex() * 40, 255, 100);
+    const auto color = defaultColors[channelAction->getIndex()];
 
-    _colorAction.setColor(defaultColor);
-    _colorAction.setDefaultColor(defaultColor);
+    _colorAction.setColor(color);
+    _colorAction.setDefaultColor(color);
 
     auto lineTypesModel = new LineTypesModel();
 

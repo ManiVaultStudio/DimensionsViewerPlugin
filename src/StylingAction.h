@@ -56,6 +56,8 @@ public:
         static const QSize iconSize;
     };
 
+    static const QVector<QColor> defaultColors;
+
 protected: // Widget
 
     class Widget : public WidgetAction::Widget {
