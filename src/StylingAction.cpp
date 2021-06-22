@@ -27,7 +27,7 @@ QIcon StylingAction::LineTypesModel::getDecorationRole(const LineType& lineType)
 
     QPainter painter(&pixmap);
 
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
 
     const auto lineWidth = 1.6;
     const auto color = QColor(0, 0, 0);
