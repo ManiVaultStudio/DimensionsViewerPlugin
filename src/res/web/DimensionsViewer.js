@@ -33,11 +33,7 @@ function getRangeMark(channel, strokeWidth) {
     return {
         "mark": {
             "type": "errorband",
-            //"borders": {
-            //    "opacity": 0.5,
-            //    "strokeWidth": strokeWidth,
-            //},
-            "opacity": 0.01 * 0.3 * channel.opacity,
+            "opacity": 0.005 * 0.3 * channel.opacity,
         },
         "transform": [
             {
@@ -107,6 +103,7 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash, selectionPointRa
                 "mark": {
                     "type": "point",
                     "size": getPointArea(selectionPointRadius),
+                    "opacity": 0.7,
                     "strokeWidth": selectionPointThickness
                 }
             }
@@ -200,10 +197,10 @@ function addChannel(design, channel) {
     let halfPrimaryLineThickness = channel.primaryLineThickness / 2.0;
 
     if (channel.profileType >= 0) {
-        design.layer.push(getAggregateLineMark(channel, channel.primaryLineThickness, getDashPattern(channel.primaryLineType), halfPrimaryLineThickness + 5, 3));
+        design.layer.push(getAggregateLineMark(channel, channel.primaryLineThickness, getDashPattern(channel.primaryLineType), halfPrimaryLineThickness + 4, 2));
 
         if (channel.showPoints)
-            design.layer.push(getAggregatePointsMark(channel, halfPrimaryLineThickness + 2));
+            design.layer.push(getAggregatePointsMark(channel, halfPrimaryLineThickness + 1));
     }
     
     if (channel.bandType > 0) {
@@ -213,8 +210,6 @@ function addChannel(design, channel) {
     
     if (channel.showRange)
         design.layer.push(getRangeMark(channel, 1));
-    
-    //design.layer.push(getHistogramMark(channel));
 }
 
 function getDesign(spec) {
@@ -242,26 +237,6 @@ function getDesign(spec) {
 
         addChannel(design, channel);
     }
-    /*
-    design.layer.push({
-        "encoding": {
-            //"color": { "field": "symbol", "type": "nominal" },
-            "y": {
-                "field": "agg",
-                "type": "quantitative"
-            }
-        },
-        "transform": [{
-            "filter": {
-                "param": "hover",
-                "empty": false
-            }
-        }],
-        "mark": "point"
-    });
-    */
-    
-    
 
     design.layer.push({
         "transform": [{
@@ -296,15 +271,6 @@ function getDesign(spec) {
         }]
     })
     
-    /*
-    design.layer.push({
-        "transform": [{
-            "filter": { "selection": "hover" }
-        }],
-        "mark": "point"
-    })
-    */
-
     design.title.text = `[${titles.join(', ')}]`;
 
     return design;
