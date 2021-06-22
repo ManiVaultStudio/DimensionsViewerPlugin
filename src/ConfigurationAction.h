@@ -23,7 +23,7 @@ public:
 	ConfigurationAction(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
     DimensionsAction& getDimensionsAction() { return _dimensionsAction; }
-    SubsamplingAction& getSubsamplingAction() { return _miscellaneousAction; }
+    SubsamplingAction& getSubsamplingAction() { return _subsamplingAction; }
     ChannelsAction& getChannelsAction() { return _channelsAction; }
 
     QVariantMap getSpec();
@@ -31,11 +31,17 @@ public:
     std::int32_t getModified() const { return _spec["modified"].toInt(); }
     void setModified() { _spec["modified"] = _spec["modified"].toInt() + 1; }
 
+    void loadDataset(const QString& datasetName);
+    QString getLoadedDataset();
+    bool isLoading() const;
+    bool isLoaded() const;
+
 protected:
     DimensionsAction    _dimensionsAction;
-    SubsamplingAction   _miscellaneousAction;
+    SubsamplingAction   _subsamplingAction;
     ChannelsAction      _channelsAction;
     QVariantMap			_spec;
+    bool                _isLoading;
 
     friend class ChannelAction;
 };

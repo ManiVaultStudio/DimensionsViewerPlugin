@@ -53,7 +53,6 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
     _profileConfigAction(this, "Profile configuration"),
     _useSelectionAction(this, "Selection"),
     _stylingAction(this),
-    _cachedStylingAction(this),
     _spec()
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
@@ -64,8 +63,6 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
     _profileTypeAction.setCurrentIndex(static_cast<std::int32_t>(profileType));
     
     //_useSelectionAction.setChecked(configurationAction->getNumChannels() == 0);
-
-    _cachedStylingAction = _stylingAction;
 
     const auto updateUI = [this, channelsAction](const bool& init = false) {
         const auto numDatasets      = _datasetName1Action.getOptions().count();
@@ -97,7 +94,7 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
 
         _enabledAction.setEnabled(numDatasets >= 1);
         _stylingAction.getColorAction().setEnabled(isEnabled);
-        _datasetName1Action.setEnabled(isEnabled && numDatasets >= 1);
+        _datasetName1Action.setEnabled(isEnabled && numDatasets >= 1 && _index >= 1);
         _datasetName2Action.setEnabled(isEnabled && numDatasets >= 2);
         _profileTypeAction.setEnabled(isEnabled);
         _profileConfigAction.setEnabled(isEnabled);
@@ -132,7 +129,8 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
         updateUI();
         updateSpec();
 
-        _profileConfigAction.setCurrentIndex(_profileTypeAction.getCurrentIndex() == static_cast<std::int32_t>(ProfileType::Differential) ? 0 : 1);
+        _profileConfigAction.reset();
+        _profileConfigAction.setCurrentIndex(isDifferential() ? 0 : 1);
     });
 
     connect(&_profileConfigAction, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
@@ -256,8 +254,16 @@ bool ChannelAction::canDisplaySpec() const
     return _enabledAction.isChecked() && !_spec["dimensions"].toList().isEmpty();
 }
 
+bool ChannelAction::isLoaded() const
+{
+    return !_datasetName1Action.getCurrentText().isEmpty();
+}
+
 void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 {
+    if (getChannelsAction()->getConfigurationAction()->isLoading())
+        return;
+
     const auto showRange = !isDifferential() && _stylingAction.getShowRangeAction().isChecked();
 
     std::vector<std::uint32_t> indices1, indices2;

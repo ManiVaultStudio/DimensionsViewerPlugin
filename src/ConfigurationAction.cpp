@@ -12,9 +12,10 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     PluginAction(dimensionsViewerPlugin, "Configuration"),
     hdps::EventListener(),
     _dimensionsAction(this),
-    _miscellaneousAction(this),
+    _subsamplingAction(this),
     _channelsAction(this),
-    _spec()
+    _spec(),
+    _isLoading(false)
 {
     setEventCore(_dimensionsViewerPlugin->getCore());
 
@@ -43,6 +44,73 @@ QVariantMap ConfigurationAction::getSpec()
     return _spec;
 }
 
+void ConfigurationAction::loadDataset(const QString& datasetName)
+{
+    _isLoading = true;
+
+    auto primaryChannel = _channelsAction.getChannels().first();
+
+    if (datasetName == primaryChannel->getDatasetName1Action().getCurrentText())
+        return;
+
+    primaryChannel->getDatasetName1Action().setOptions(QStringList() << datasetName);
+    primaryChannel->getDatasetName2Action().setOptions(QStringList() << datasetName);
+    primaryChannel->getDatasetName1Action().setCurrentText(datasetName);
+    primaryChannel->getDatasetName2Action().setCurrentText(datasetName);
+    primaryChannel->getEnabledAction().setChecked(true);
+
+    const auto numPoints        = primaryChannel->getNumPoints();
+    const auto numDimensions    = primaryChannel->getNumDimensions();
+    const auto updateDuringDrag = numPoints < 100000;
+
+    QStringList datasetNames;
+
+    for (auto candidateDatasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType }))) {
+        auto& points = dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(candidateDatasetName)));
+
+        if (points.getNumDimensions() == numDimensions)
+            datasetNames << datasetName;
+    }
+
+    for (auto channel : _channelsAction.getChannels()) {
+        if (channel->getIndex() == 0)
+            continue;
+
+        channel->getDatasetName1Action().setOptions(datasetNames);
+        channel->getDatasetName2Action().setOptions(datasetNames);
+        channel->getDatasetName1Action().setCurrentText(datasetName);
+        channel->getDatasetName2Action().setCurrentText(datasetName);
+    }
+       
+    _dimensionsAction.getSelectionCenterIndexAction().setUpdateDuringDrag(updateDuringDrag);
+    _dimensionsAction.getSelectionCenterIndexAction().setMaximum(numDimensions - 1);
+    _dimensionsAction.getSelectionCenterIndexAction().setValue(static_cast<std::int32_t>(floorf(static_cast<float>(numDimensions) / 2.0f)));
+    _dimensionsAction.getSelectionCenterNameAction().setOptions(primaryChannel->getDimensionNames());
+    _dimensionsAction.getSelectionRadiusAction().setUpdateDuringDrag(updateDuringDrag);
+
+    _subsamplingAction.setChecked(numPoints > 100000);
+
+    _isLoading = false;
+
+    for (auto channel : _channelsAction.getChannels())
+        channel->updateSpec();
+}
+
+QString ConfigurationAction::getLoadedDataset()
+{
+    return _channelsAction.getChannels().first()->getDatasetName1Action().getCurrentText();
+}
+
+bool ConfigurationAction::isLoading() const
+{
+    return _isLoading;
+}
+
+bool ConfigurationAction::isLoaded() const
+{
+    return false;// _channelsAction.getChannels().first()->isLoaded();
+}
+
 ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :
     WidgetAction::Widget(parent, configurationAction, State::Standard)
 {
@@ -58,7 +126,7 @@ ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* config
     auto topLayout = new QHBoxLayout();
 
     topLayout->addWidget(configurationAction->_dimensionsAction.createWidget(this), 1);
-    topLayout->addWidget(configurationAction->_miscellaneousAction.createWidget(this));
+    topLayout->addWidget(configurationAction->_subsamplingAction.createWidget(this));
 
     layout->addLayout(topLayout);
     layout->addWidget(configurationAction->_channelsAction.createWidget(this));

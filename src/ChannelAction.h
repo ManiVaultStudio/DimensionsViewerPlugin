@@ -109,6 +109,8 @@ public:
 	QVariantMap getSpec() { return _spec; };
     bool canDisplaySpec() const;
 
+    bool isLoaded() const;
+
 private:
 	
 	bool isSubset() const;
@@ -129,7 +131,6 @@ protected:
     hdps::gui::OptionAction     _profileConfigAction;
     hdps::gui::ToggleAction     _useSelectionAction;
     StylingAction               _stylingAction;
-    StylingAction               _cachedStylingAction;
     QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
 
     friend class ChannelsAction;
