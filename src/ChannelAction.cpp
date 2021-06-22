@@ -487,35 +487,35 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
                     auto agg1 = 0.0f;
                     auto agg2 = 0.0f;
 
-                    switch (static_cast<MedianProfileConfig>(_profileConfigAction.getCurrentIndex()))
+                    switch (static_cast<DifferentialProfileConfig>(_profileConfigAction.getCurrentIndex()))
                     {
-                    case DifferentialProfileConfig::Mean: {
-                        agg1 = getMean(dimensionValues1);
-                        agg2 = getMean(dimensionValues2);
-                        break;
-                    }
+                        case DifferentialProfileConfig::Mean: {
+                            agg1 = getMean(dimensionValues1);
+                            agg2 = getMean(dimensionValues2);
+                            break;
+                        }
 
-                    case DifferentialProfileConfig::Median: {
-                        agg1 = getMedian(dimensionValues1);
-                        agg2 = getMedian(dimensionValues2);
-                        break;
-                    }
+                        case DifferentialProfileConfig::Median: {
+                            agg1 = getMedian(dimensionValues1);
+                            agg2 = getMedian(dimensionValues2);
+                            break;
+                        }
 
-                    case DifferentialProfileConfig::Min: {
-                        agg1 = getMin(dimensionValues1);
-                        agg2 = getMin(dimensionValues2);
-                        break;
-                    }
+                        case DifferentialProfileConfig::Min: {
+                            agg1 = getMin(dimensionValues1);
+                            agg2 = getMin(dimensionValues2);
+                            break;
+                        }
 
-                    case DifferentialProfileConfig::Max: {
-                        agg1 = getMax(dimensionValues1);
-                        agg2 = getMax(dimensionValues2);
+                        case DifferentialProfileConfig::Max: {
+                            agg1 = getMax(dimensionValues1);
+                            agg2 = getMax(dimensionValues2);
 
-                        break;
-                    }
+                            break;
+                        }
 
-                    default:
-                        break;
+                        default:
+                            break;
                     }
 
                     dimension["agg"] = fabs(agg2 - agg1);
