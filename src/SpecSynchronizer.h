@@ -26,11 +26,8 @@ public: // Construction
 
 public slots: // Functions called from the Vega JS client
 
-    /**
-     * Get the spec of the current configuration
-     * @param modified Modification time stamp
-     */
-    QVariantMap getSpec(const int& modified);
+    /** Get the spec of the current configuration */
+    QVariantMap getSpec();
 
 signals:
 

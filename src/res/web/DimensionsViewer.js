@@ -1,5 +1,5 @@
 let design = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
     "width": "container",
     "height": "container",
     "title": {
@@ -24,21 +24,22 @@ let design = {
     "layer": []
 }
 
+function getPointArea(radius) {
+    let width = 2 * radius;
+    return width * width;
+}
+
 function getRangeMark(channel, strokeWidth) {
     return {
         "mark": {
             "type": "errorband",
-            //"borders": {
-            //    "opacity": 0.5,
-            //    "strokeWidth": strokeWidth,
-            //},
-            "opacity": channel.opacity,
+            "opacity": 0.005 * 0.3 * channel.opacity,
         },
         "transform": [
             {
                 "filter": {
                     "field": "chn",
-                    "equal": channel.index
+                    "equal": channel.index.toString()
                 }
             }
         ],
@@ -61,20 +62,13 @@ function getRangeMark(channel, strokeWidth) {
     }
 }
 
-function getAggregateLineMark(channel, strokeWidth, strokeDash) {
+function getAggregateLineMark(channel, strokeWidth, strokeDash, selectionPointRadius, selectionPointThickness) {
     return {
-        "mark": {
-            "type": "line",
-            "strokeWidth": strokeWidth,
-            "strokeDash": strokeDash,
-            "strokeJoin": "round",
-            "opacity": 1
-        },
         "transform": [
             {
                 "filter": {
                     "field": "chn",
-                    "equal": channel.index
+                    "equal": channel.index.toString()
                 }
             }
         ],
@@ -88,23 +82,48 @@ function getAggregateLineMark(channel, strokeWidth, strokeDash) {
             "color": {
                 "value": channel.color
             }
-        }
+        },
+        "layer": [
+            {
+                "mark": {
+                    "type": "line",
+                    "strokeWidth": strokeWidth,
+                    "strokeDash": strokeDash,
+                    "strokeJoin": "round",
+                    "opacity": 0.01 * channel.opacity,
+                }
+            },
+            {
+                "transform": [{
+                    "filter": {
+                        "param": "hover",
+                        "empty": false
+                    }
+                }],
+                "mark": {
+                    "type": "point",
+                    "size": getPointArea(selectionPointRadius),
+                    "opacity": 0.7,
+                    "strokeWidth": selectionPointThickness
+                }
+            }
+        ]
     }
 }
 
-function getAggregatePointsMark(channel) {
+function getAggregatePointsMark(channel, pointRadius) {
     return {
         "mark": {
             "type": "point",
             "fill": channel.color,
-            "opacity": 1,
-            "size": 11
+            "opacity": 0.01 * channel.opacity,
+            "size": getPointArea(pointRadius)
         },
         "transform": [
             {
                 "filter": {
                     "field": "chn",
-                    "equal": channel.index
+                    "equal": channel.index.toString()
                 }
             }
         ],
@@ -129,13 +148,13 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
             "strokeWidth": strokeWidth,
             "strokeDash": strokeDash,
             "strokeJoin": "round",
-            "opacity": 1
+            "opacity": 0.01 * channel.opacity,
         },
         "transform": [
             {
                 "filter": {
                     "field": "chn",
-                    "equal": channel.index
+                    "equal": channel.index.toString()
                 }
             }
         ],
@@ -153,68 +172,51 @@ function getStdDevLineMark(channel, field, strokeWidth, strokeDash) {
     }
 }
 
-//function getHistogramMark(channel) {
-//    return {
-//        "mark": {
-//            "type": "rect",
-//            "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3
-//        },
-//        "transform": [
-//            {
-//                "filter": {
-//                    "field": "chn",
-//                    "equal": channel.index
-//                }
-//            }
-//        ],
-//        "color": {
-//            "x1": 1,
-//            "y1": 1,
-//            "x2": 1,
-//            "y2": 0,
-//            "gradient": "linear",
-//            "stops": [
-//                { "offset": 0.0, "color": "red" },
-//                { "offset": 0.5, "color": "white" },
-//                { "offset": 1.0, "color": "blue" }
-//            ]
-//        },
-//        "encoding": {
-//            "row": 1,
-//            "x": channel.encoding.x,
-//            "y": {
-//                "value": 100
-//            },
-            
-//        }
-//    }
-//}
+function getDashPattern(lineType) {
+    if (lineType == "Solid")
+        return [];
+
+    if (lineType == "Dash")
+        return [5, 5];
+
+    if (lineType == "Dot")
+        return [2, 2];
+
+    if (lineType == "DashDot")
+        return [5, 2, 2, 2];
+
+    if (lineType == "DashDotDot")
+        return [5, 2, 2, 2, 2, 2];
+
+    return [];
+}
 
 function addChannel(design, channel) {
-
     design.data.values = design.data.values.concat(channel.dimensions);
 
-    if (channel.profileType > 0) {
-        design.layer.push(getAggregateLineMark(channel, 2, []));
-        design.layer.push(getAggregatePointsMark(channel));
-    }
+    let halfPrimaryLineThickness = channel.primaryLineThickness / 2.0;
 
+    if (channel.profileType >= 0) {
+        design.layer.push(getAggregateLineMark(channel, channel.primaryLineThickness, getDashPattern(channel.primaryLineType), halfPrimaryLineThickness + 4, 2));
+
+        if (channel.showPoints)
+            design.layer.push(getAggregatePointsMark(channel, halfPrimaryLineThickness + 1));
+    }
+    
     if (channel.bandType > 0) {
-        design.layer.push(getStdDevLineMark(channel, "v1", 1, [2, 2]));
-        design.layer.push(getStdDevLineMark(channel, "v2", 1, [2, 2]));
+        design.layer.push(getStdDevLineMark(channel, "v1", channel.secondaryLineThickness, getDashPattern(channel.secondaryLineType)));
+        design.layer.push(getStdDevLineMark(channel, "v2", channel.secondaryLineThickness, getDashPattern(channel.secondaryLineType)));
     }
-
+    
     if (channel.showRange)
         design.layer.push(getRangeMark(channel, 1));
-
-    //design.layer.push(getHistogramMark(channel));
 }
 
 function getDesign(spec) {
 
     design.data.values = [];
     design.layer = [];
-
+    
     let titles = [];
 
     for (channelName in spec.channels) {
@@ -223,16 +225,52 @@ function getDesign(spec) {
         titles.push(channel.datasetName);
 
         channel.encoding = {
-            x: {
-                field: spec.showDimensionNames ? 'dimName' : 'dimId',
-                type: spec.showDimensionNames ? 'ordinal' : 'nominal',
-                title: spec.showDimensionNames ? 'Dimension name' : 'Dimensions index'
+            "x": {
+                "field": spec.showDimensionNames ? 'dimName' : 'dimId',
+                "type": spec.showDimensionNames ? 'ordinal' : 'nominal',
+                "title": spec.showDimensionNames ? 'Dimension name' : 'Dimensions index',
+                "axis": {
+                    "labelAngle": spec.showDimensionNames ? -45 : 0
+                }
             }
         }
 
         addChannel(design, channel);
     }
 
+    design.layer.push({
+        "transform": [{
+            "pivot": "chn",
+            "value": "min",
+            "groupby": ["dimName"]
+        }],
+        "mark": "rule",
+        "encoding": {
+            "x": { "field": "dimName", "type": "nominal" },
+            "opacity": {
+                "condition": {
+                    "value": 0.3,
+                    "param": "hover",
+                    "empty": false
+                },
+                "value": 0
+            },
+            "size": {
+                "value": 2
+            },
+        },
+        "params": [{
+            "name": "hover",
+            "select": {
+                "type": "point",
+                "fields": ["dimName"],
+                "nearest": true,
+                "on": "mouseover",
+                "clear": "mouseout"
+            }
+        }]
+    })
+    
     design.title.text = `[${titles.join(', ')}]`;
 
     return design;
