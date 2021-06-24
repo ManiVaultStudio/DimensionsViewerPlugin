@@ -31,10 +31,15 @@ public:
     std::int32_t getModified() const { return _spec["modified"].toInt(); }
     void setModified() { _spec["modified"] = _spec["modified"].toInt() + 1; }
 
+    void updateSecondaryDatasetNames();
     void loadDataset(const QString& datasetName);
     QString getLoadedDataset();
     bool isLoading() const;
     bool isLoaded() const;
+
+protected:
+    std::int32_t getNumDimensions(const QString& datasetName) const;
+    QStringList getCompatibleDatasetNames(const QString& datasetName) const;
 
 protected:
     DimensionsAction    _dimensionsAction;

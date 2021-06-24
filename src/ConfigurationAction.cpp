@@ -26,6 +26,11 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
         _spec["modified"] = _spec["modified"].toInt() + 1;
         _spec["showDimensionNames"] = state;
     });
+
+    registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
+        if (dataEvent->getType() == EventType::DataAdded)
+            updateSecondaryDatasetNames();
+    });
 }
 
 QVariantMap ConfigurationAction::getSpec()
@@ -44,6 +49,28 @@ QVariantMap ConfigurationAction::getSpec()
     return _spec;
 }
 
+void ConfigurationAction::updateSecondaryDatasetNames()
+{
+    auto primaryChannel = _channelsAction.getChannels().first();
+
+    const auto numDimensions = primaryChannel->getNumDimensions();
+
+    QStringList datasetNames;
+
+    for (auto candidateDatasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType }))) {
+        if (getNumDimensions(candidateDatasetName) == numDimensions)
+            datasetNames << candidateDatasetName;
+    }
+
+    for (auto channel : _channelsAction.getChannels()) {
+        if (channel->getIndex() == 0)
+            continue;
+
+        channel->getDatasetName1Action().setOptions(datasetNames);
+        channel->getDatasetName2Action().setOptions(datasetNames);
+    }
+}
+
 void ConfigurationAction::loadDataset(const QString& datasetName)
 {
     _isLoading = true;
@@ -57,30 +84,15 @@ void ConfigurationAction::loadDataset(const QString& datasetName)
     primaryChannel->getDatasetName2Action().setOptions(QStringList() << datasetName);
     primaryChannel->getDatasetName1Action().setCurrentText(datasetName);
     primaryChannel->getDatasetName2Action().setCurrentText(datasetName);
-    primaryChannel->getEnabledAction().setChecked(true);
+
+    for (auto channel : _channelsAction.getChannels())
+        channel->getEnabledAction().setChecked(channel->getIndex() == 0);
 
     const auto numPoints        = primaryChannel->getNumPoints();
     const auto numDimensions    = primaryChannel->getNumDimensions();
     const auto updateDuringDrag = numPoints < 100000;
 
-    QStringList datasetNames;
-
-    for (auto candidateDatasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType }))) {
-        auto& points = dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(candidateDatasetName)));
-
-        if (points.getNumDimensions() == numDimensions)
-            datasetNames << datasetName;
-    }
-
-    for (auto channel : _channelsAction.getChannels()) {
-        if (channel->getIndex() == 0)
-            continue;
-
-        channel->getDatasetName1Action().setOptions(datasetNames);
-        channel->getDatasetName2Action().setOptions(datasetNames);
-        channel->getDatasetName1Action().setCurrentText(datasetName);
-        channel->getDatasetName2Action().setCurrentText(datasetName);
-    }
+    updateSecondaryDatasetNames();
        
     _dimensionsAction.getSelectionCenterIndexAction().setUpdateDuringDrag(updateDuringDrag);
     _dimensionsAction.getSelectionCenterIndexAction().setMaximum(numDimensions - 1);
@@ -109,6 +121,25 @@ bool ConfigurationAction::isLoading() const
 bool ConfigurationAction::isLoaded() const
 {
     return false;// _channelsAction.getChannels().first()->isLoaded();
+}
+
+std::int32_t ConfigurationAction::getNumDimensions(const QString& datasetName) const
+{
+    return dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName))).getNumDimensions();
+}
+
+QStringList ConfigurationAction::getCompatibleDatasetNames(const QString& datasetName) const
+{
+    QStringList datasetNames;
+
+    const auto numDimensions = getNumDimensions(datasetName);
+
+    for (auto candidateDatasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType }))) {
+        if (getNumDimensions(candidateDatasetName) == numDimensions)
+            datasetNames << candidateDatasetName;
+    }
+
+    return datasetNames;
 }
 
 ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :
