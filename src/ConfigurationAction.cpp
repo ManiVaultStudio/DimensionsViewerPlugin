@@ -68,6 +68,8 @@ void ConfigurationAction::updateSecondaryDatasetNames()
 
         channel->getDatasetName1Action().setOptions(datasetNames);
         channel->getDatasetName2Action().setOptions(datasetNames);
+        channel->getDatasetName1Action().setCurrentIndex(0);
+        channel->getDatasetName2Action().setCurrentIndex(0);
     }
 }
 
