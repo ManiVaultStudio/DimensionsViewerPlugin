@@ -65,9 +65,10 @@
                     textDiv.innerHTML           = 'No channels to display...';
                     textDiv.style.textAlign     = 'center';
                     textDiv.style.fontFamily    = 'sans-serif';
-                    textDiv.style.fontSize      = '8pt';
+                    textDiv.style.fontSize      = '10pt';
                     textDiv.style.fontWeight    = 'bold';
                     textDiv.style.verticalAlign = 'middle';
+                    textDiv.style.opacity       = 0.5;
 
                     document.getElementById('view').appendChild(textDiv);
                 }
@@ -101,6 +102,7 @@
                         });
                     } else {
                         //displayNoChannelsWarning();
+                        emptyView();
                     }
                 }
 

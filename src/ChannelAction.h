@@ -56,12 +56,15 @@ public:
         Median,
         Min,
         Max,
+        AbsMean,
+        AbsMedian,
+        AbsMin,
+        AbsMax,
     };
 
     static const QMap<DifferentialProfileConfig, QString> differentialProfileConfigs;
 
 protected:
-
     class Widget : public PluginAction::Widget {
     public:
         Widget(QWidget* parent, ChannelAction* channelAction);
@@ -75,23 +78,26 @@ protected:
     };
 
 protected:
-
 	ChannelAction(ChannelsAction* channelsAction, const QString& displayName, const ProfileType& profileType = ProfileType::Mean);
 
 public:
+    std::uint32_t getIndex() const {
+        return _index;
+    }
+    
+    QString getInternalName() const {
+        return _internalName;
+    }
 
-    std::uint32_t getIndex() const { return _index; }
-    QString getInternalName() const { return _internalName; }
-    QString getDisplayName() const { return _displayName; }
+    QString getDisplayName() const {
+        return _displayName;}
     
     bool isDifferential() const {
         return _profileTypeAction.getCurrentIndex() == static_cast<std::uint32_t>(ProfileType::Differential);
     }
 
 public:
-
     ChannelsAction* getChannelsAction() { return _channelsAction; }
-
     hdps::gui::ToggleAction& getEnabledAction() { return _enabledAction; }
     hdps::gui::OptionAction& getDatasetName1Action() { return _datasetName1Action; }
     hdps::gui::OptionAction& getDatasetName2Action() { return _datasetName2Action; }
@@ -99,21 +105,42 @@ public:
     hdps::gui::OptionAction& getBandTypeAction() { return _profileConfigAction; }
     StylingAction& getStylingAction() { return _stylingAction; }
     
+public: // Point data wrapper
     QStringList getDimensionNames() const;
-    
     std::int32_t getNumPoints() const;
     std::int32_t getNumDimensions() const;
 
-public:
+public: // Vega visualization specification
 
-	QVariantMap getSpec() { return _spec; };
-    bool canDisplaySpec() const;
+    /**
+     * Get Vega visualization specification for channel
+     * @return Visualization spec in QT variant map form
+     */
+    QVariantMap getSpec() {
+        return _spec;
+    }
 
-    bool isLoaded() const;
+    /**
+     * Returns whether the specification should be displayed
+     * @return Whether the specification should be displayed
+     */
+    bool shouldDisplaySpec() const {
+        return _enabledAction.isChecked() && !_spec["dimensions"].toList().isEmpty();
+    }
+
+    /**
+     * Returns whether the channel data selection is correct
+     * @return Whether the channel data selection is correct
+     */
+    bool isLoaded() const {
+        return !_datasetName1Action.getCurrentText().isEmpty();
+    }
 
 private:
-	
-	bool isSubset() const;
+    /**
+     * Updates the Vega visualization specification
+
+     */
 	void updateSpec(const bool& ignoreDimensions = false);
 
     Points* getPoints1() const;

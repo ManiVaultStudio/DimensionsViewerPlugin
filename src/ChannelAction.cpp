@@ -36,7 +36,11 @@ const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::dif
     { ChannelAction::DifferentialProfileConfig::Mean, "Mean" },
     { ChannelAction::DifferentialProfileConfig::Median, "Median" },
     { ChannelAction::DifferentialProfileConfig::Min, "Min" },
-    { ChannelAction::DifferentialProfileConfig::Max, "Max" }
+    { ChannelAction::DifferentialProfileConfig::Max, "Max" },
+    { ChannelAction::DifferentialProfileConfig::AbsMean, "Mean (absolute)" },
+    { ChannelAction::DifferentialProfileConfig::AbsMedian, "Median (absolute)" },
+    { ChannelAction::DifferentialProfileConfig::AbsMin, "Min (absolute)" },
+    { ChannelAction::DifferentialProfileConfig::AbsMax, "Max (absolute)" }
 });
 
 ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
@@ -249,16 +253,6 @@ std::int32_t ChannelAction::getNumDimensions() const
     return getPoints1()->getNumDimensions();
 }
 
-bool ChannelAction::canDisplaySpec() const
-{
-    return _enabledAction.isChecked() && !_spec["dimensions"].toList().isEmpty();
-}
-
-bool ChannelAction::isLoaded() const
-{
-    return !_datasetName1Action.getCurrentText().isEmpty();
-}
-
 void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 {
     if (getChannelsAction()->getConfigurationAction()->isLoading())
@@ -406,129 +400,142 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 
                 switch (static_cast<ProfileType>(_profileTypeAction.getCurrentIndex()))
                 {
-                case ProfileType::Mean: {
-                    dimension["agg"] = mean;
+                    case ProfileType::Mean: {
+                        dimension["agg"] = mean;
 
-                    switch (static_cast<MeanProfileConfig>(_profileConfigAction.getCurrentIndex()))
-                    {
-                    case MeanProfileConfig::StandardDeviation1: {
-                        double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-                        double stdDev1 = std::sqrt(sqSum / dimensionValues1.size());
+                        switch (static_cast<MeanProfileConfig>(_profileConfigAction.getCurrentIndex()))
+                        {
+                            case MeanProfileConfig::StandardDeviation1: {
+                                double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+                                double stdDev1 = std::sqrt(sqSum / dimensionValues1.size());
 
-                        dimension["v1"] = mean - stdDev1;
-                        dimension["v2"] = mean + stdDev1;
-                        break;
-                    }
+                                dimension["v1"] = mean - stdDev1;
+                                dimension["v2"] = mean + stdDev1;
+                                break;
+                            }
 
-                    case MeanProfileConfig::StandardDeviation2: {
-                        double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-                        double stdDev2 = 2.0 * std::sqrt(sqSum / dimensionValues1.size());
+                            case MeanProfileConfig::StandardDeviation2: {
+                                double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+                                double stdDev2 = 2.0 * std::sqrt(sqSum / dimensionValues1.size());
 
-                        dimension["v1"] = mean - stdDev2;
-                        dimension["v2"] = mean + stdDev2;
-                        break;
-                    }
+                                dimension["v1"] = mean - stdDev2;
+                                dimension["v2"] = mean + stdDev2;
+                                break;
+                            }
 
-                    default:
-                        break;
-                    }
-
-                    break;
-                }
-
-                case ProfileType::Median: {
-                    std::sort(dimensionValues1.begin(), dimensionValues1.end());
-
-                    const auto noDimensions = dimensionValues1.size();
-
-                    dimension["agg"] = getMedian(dimensionValues1);
-
-                    switch (static_cast<MedianProfileConfig>(_profileConfigAction.getCurrentIndex()))
-                    {
-                    case MedianProfileConfig::Percentile5: {
-                        dimension["v1"] = getPercentile(dimensionValues1, 0.05f);
-                        dimension["v2"] = getPercentile(dimensionValues1, 0.95f);
-                        break;
-                    }
-
-                    case MedianProfileConfig::Percentile10: {
-                        dimension["v1"] = getPercentile(dimensionValues1, 0.1f);
-                        dimension["v2"] = getPercentile(dimensionValues1, 0.9f);
-                        break;
-                    }
-
-                    case MedianProfileConfig::Percentile15: {
-                        dimension["v1"] = getPercentile(dimensionValues1, 0.15f);
-                        dimension["v2"] = getPercentile(dimensionValues1, 0.85f);
-                        break;
-                    }
-
-                    case MedianProfileConfig::Percentile20: {
-                        dimension["v1"] = getPercentile(dimensionValues1, 0.2f);
-                        dimension["v2"] = getPercentile(dimensionValues1, 0.8f);
-                        break;
-                    }
-
-                    default:
-                        break;
-                    }
-
-                    break;
-                }
-
-                case ProfileType::Differential: {
-                    dimensionValues2 = points2->visitFromBeginToEnd<std::vector<float>>([noDimensions, dimensionIndex, &indices2](auto begin, auto end) {
-                        std::vector<float> values;
-
-                        values.reserve(indices2.size());
-
-                        for (const auto& index : indices2)
-                            values.push_back(begin[index * noDimensions + dimensionIndex]);
-
-                        return values;
-                    });
-
-                    std::sort(dimensionValues2.begin(), dimensionValues2.end());
-
-                    auto agg1 = 0.0f;
-                    auto agg2 = 0.0f;
-
-                    switch (static_cast<DifferentialProfileConfig>(_profileConfigAction.getCurrentIndex()))
-                    {
-                        case DifferentialProfileConfig::Mean: {
-                            agg1 = getMean(dimensionValues1);
-                            agg2 = getMean(dimensionValues2);
-                            break;
+                            default:
+                                break;
                         }
 
-                        case DifferentialProfileConfig::Median: {
-                            agg1 = getMedian(dimensionValues1);
-                            agg2 = getMedian(dimensionValues2);
-                            break;
-                        }
-
-                        case DifferentialProfileConfig::Min: {
-                            agg1 = getMin(dimensionValues1);
-                            agg2 = getMin(dimensionValues2);
-                            break;
-                        }
-
-                        case DifferentialProfileConfig::Max: {
-                            agg1 = getMax(dimensionValues1);
-                            agg2 = getMax(dimensionValues2);
-
-                            break;
-                        }
-
-                        default:
-                            break;
+                        break;
                     }
 
-                    dimension["agg"] = fabs(agg2 - agg1);
+                    case ProfileType::Median: {
+                        std::sort(dimensionValues1.begin(), dimensionValues1.end());
 
-                    dimension["v1"] = dimension["agg"];
-                    dimension["v2"] = dimension["agg"];
-                }
+                        const auto noDimensions = dimensionValues1.size();
+
+                        dimension["agg"] = getMedian(dimensionValues1);
+
+                        switch (static_cast<MedianProfileConfig>(_profileConfigAction.getCurrentIndex()))
+                        {
+                            case MedianProfileConfig::Percentile5: {
+                                dimension["v1"] = getPercentile(dimensionValues1, 0.05f);
+                                dimension["v2"] = getPercentile(dimensionValues1, 0.95f);
+                                break;
+                            }
+
+                            case MedianProfileConfig::Percentile10: {
+                                dimension["v1"] = getPercentile(dimensionValues1, 0.1f);
+                                dimension["v2"] = getPercentile(dimensionValues1, 0.9f);
+                                break;
+                            }
+
+                            case MedianProfileConfig::Percentile15: {
+                                dimension["v1"] = getPercentile(dimensionValues1, 0.15f);
+                                dimension["v2"] = getPercentile(dimensionValues1, 0.85f);
+                                break;
+                            }
+
+                            case MedianProfileConfig::Percentile20: {
+                                dimension["v1"] = getPercentile(dimensionValues1, 0.2f);
+                                dimension["v2"] = getPercentile(dimensionValues1, 0.8f);
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
+
+                        break;
+                    }
+
+                    case ProfileType::Differential: {
+                        dimensionValues2 = points2->visitFromBeginToEnd<std::vector<float>>([noDimensions, dimensionIndex, &indices2](auto begin, auto end) {
+                            std::vector<float> values;
+
+                            values.reserve(indices2.size());
+
+                            for (const auto& index : indices2)
+                                values.push_back(begin[index * noDimensions + dimensionIndex]);
+
+                            return values;
+                        });
+
+                        std::sort(dimensionValues2.begin(), dimensionValues2.end());
+
+                        auto agg1 = 0.0f;
+                        auto agg2 = 0.0f;
+
+                        switch (static_cast<DifferentialProfileConfig>(_profileConfigAction.getCurrentIndex()))
+                        {
+                            case DifferentialProfileConfig::Mean: {
+                                dimension["agg"] = getMean(dimensionValues2) - getMean(dimensionValues1);
+                                break;
+                            }
+
+                            case DifferentialProfileConfig::Median: {
+                                dimension["agg"] = getMedian(dimensionValues2) - getMedian(dimensionValues1);
+                                break;
+                            }
+
+                            case DifferentialProfileConfig::Min: {
+                                dimension["agg"] = getMin(dimensionValues2) - getMin(dimensionValues1);
+                                break;
+                            }
+
+                            case DifferentialProfileConfig::Max: {
+                                dimension["agg"] = getMax(dimensionValues2) - getMax(dimensionValues1);
+                                break;
+                            }
+
+                            case DifferentialProfileConfig::AbsMean: {
+                                dimension["agg"] = fabs(getMean(dimensionValues2) - getMean(dimensionValues1));
+                                break;
+                            }
+
+                            case DifferentialProfileConfig::AbsMedian: {
+                                dimension["agg"] = fabs(getMedian(dimensionValues2) - getMedian(dimensionValues1));
+                                break;
+                            }
+
+                            case DifferentialProfileConfig::AbsMin: {
+                                dimension["agg"] = fabs(getMin(dimensionValues2) - getMin(dimensionValues1));
+                                break;
+                            }
+
+                            case DifferentialProfileConfig::AbsMax: {
+                                dimension["agg"] = fabs(getMax(dimensionValues2) - getMax(dimensionValues1));
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
+
+                        dimension["v1"] = dimension["agg"];
+                        dimension["v2"] = dimension["agg"];
+                    }
 
                 default:
                     break;

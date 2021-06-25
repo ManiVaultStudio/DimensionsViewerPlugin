@@ -72,9 +72,9 @@ SubsamplingAction::Widget::Widget(QWidget* parent, SubsamplingAction* subsamplin
     groupBox->setLayout(groupBoxLayout);
 
     auto subsamplingFactorWidget                = subsamplingAction->_subsamplingFactorAction.createWidget(this);
-    auto subsamplingFactorOneOverEighthWidget   = subsamplingAction->_subsamplingFactorOneOverEighthAction.createWidget(this);
-    auto subsamplingFactorOneOverFourWidget     = subsamplingAction->_subsamplingFactorOneOverFourAction.createWidget(this);
-    auto subsamplingFactorOneOverTwoWidget      = subsamplingAction->_subsamplingFactorOneOverTwoAction.createWidget(this);
+    //auto subsamplingFactorOneOverEighthWidget   = subsamplingAction->_subsamplingFactorOneOverEighthAction.createWidget(this);
+    //auto subsamplingFactorOneOverFourWidget     = subsamplingAction->_subsamplingFactorOneOverFourAction.createWidget(this);
+    //auto subsamplingFactorOneOverTwoWidget      = subsamplingAction->_subsamplingFactorOneOverTwoAction.createWidget(this);
 
     groupBoxLayout->setMargin(9);
     groupBoxLayout->setSpacing(10);
@@ -87,9 +87,11 @@ SubsamplingAction::Widget::Widget(QWidget* parent, SubsamplingAction* subsamplin
 
     groupBoxLayout->addLayout(factorsLayout);
     
+    /*
     factorsLayout->addWidget(subsamplingFactorOneOverEighthWidget);
     factorsLayout->addWidget(subsamplingFactorOneOverFourWidget);
     factorsLayout->addWidget(subsamplingFactorOneOverTwoWidget);
+    */
 
     const auto updateUI = [this, groupBox, subsamplingAction]() -> void {
         QSignalBlocker groupBoxBlocker(groupBox);

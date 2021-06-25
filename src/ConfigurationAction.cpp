@@ -40,7 +40,7 @@ QVariantMap ConfigurationAction::getSpec()
     for (auto channel : _channelsAction.getChannels()) {
         const auto channelSpec = channel->getSpec();
 
-        if (channel->canDisplaySpec())
+        if (channel->shouldDisplaySpec())
             channels[channel->getInternalName()] = channelSpec;
     }
 

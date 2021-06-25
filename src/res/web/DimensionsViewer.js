@@ -238,6 +238,7 @@ function getDesign(spec) {
         addChannel(design, channel);
     }
 
+    
     design.layer.push({
         "transform": [{
             "pivot": "chn",
@@ -269,6 +270,7 @@ function getDesign(spec) {
                 "clear": "mouseout"
             }
         }]
+        
     })
     
     design.title.text = `[${titles.join(', ')}]`;
