@@ -72,6 +72,24 @@ void DimensionsViewerPlugin::init()
 
         return dropRegions;
     });
+
+    connect(&_dimensionsViewerWidget->getSpecSynchronizer(), &SpecSynchronizer::dimensionSelectionChanged, [this](const std::uint32_t& dimensionIndex) {
+        auto& channels = _configurationAction->getChannelsAction().getChannels();
+
+        if (channels.isEmpty())
+            return;
+        
+        auto points = channels.first()->getPoints1();
+
+        if (points == nullptr)
+            return;
+
+        points->dimensionIndices = std::vector<std::uint32_t>({ dimensionIndex });
+
+        _core->notifyDimensionSelectionChanged(points->getName());
+
+        qDebug() << points->getName() << "dimension selection changed";
+    });
 }
 
 DimensionsViewerPlugin* DimensionsViewerPluginFactory::produce()

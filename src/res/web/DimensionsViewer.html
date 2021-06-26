@@ -3,7 +3,7 @@
 <head>
     <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@5"></script>
     <script type="text/javascript" src="qrc:///DimensionsViewer.js"></script>	
 </head>
@@ -96,10 +96,19 @@
 
                         document.getElementById('view').innerHTML = '';
 						
-                        vegaEmbed('#view', getDesign(window.currentSpec), options).then(p => {
+                        var view = vegaEmbed('#view', getDesign(window.currentSpec), options).then(({spec, view}) => {
                             removeButtons();
                             window.processingSpec = false;
-                        });
+                            
+                            view.addSignalListener('hover', function (signalName, value) {
+                                if (value.dimName !== undefined) {
+                                    var dimensionIndex = window.currentSpec.dimensionNames.indexOf(value.dimName[0]);
+                                    webChannel.objects['specSynchronizer'].setDimensionSelection(dimensionIndex);
+                                }
+                            });
+                            
+                            
+                        }).catch(console.warn);
                     } else {
                         //displayNoChannelsWarning();
                         emptyView();
@@ -116,7 +125,6 @@
                         return;
 
                     webChannel.objects['specSynchronizer'].getSpec(onSpecChanged);
-                    webChannel.objects['specSynchronizer'].selectionChanged.connect(onSelectionChanged);
                 }
 
                 new QWebChannel(qt.webChannelTransport,

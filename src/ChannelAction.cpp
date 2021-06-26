@@ -262,6 +262,8 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 
     std::vector<std::uint32_t> indices1, indices2;
 
+    const auto dimensionNames = getDimensionNames();
+
     if (!ignoreDimensions) {
         Points* points1 = nullptr;
         Points* points2 = nullptr;
@@ -390,7 +392,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 
                 dimension["chn"]        = QString::number(_index);
                 dimension["dimId"]      = dimensionIndex;
-                dimension["dimName"]    = points1->getDimensionNames().at(dimensionIndex);
+                dimension["dimName"]    = dimensionNames.at(dimensionIndex);
 
                 const auto mean = getMean(dimensionValues1);
 
@@ -555,7 +557,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
         _spec["dimensions"] = dimensions;
     }
 
-    _spec["enabled"]                = _enabledAction.isChecked();// && !indices1.empty();
+    _spec["enabled"]                = _enabledAction.isChecked();
 	_spec["index"]			        = _index;
 	_spec["displayName"]            = _displayName;
 	_spec["datasetName"]	        = _datasetName1Action.getCurrentText();

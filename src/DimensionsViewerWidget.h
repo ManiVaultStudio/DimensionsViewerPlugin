@@ -20,6 +20,10 @@ class DimensionsViewerWidget : public QWebEngineView
 public:
     DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
+    SpecSynchronizer& getSpecSynchronizer() {
+        return _specSynchronizer;
+    };
+
     void dragEnterEvent(QDragEnterEvent* dragEnterEvent);
     void dropEvent(QDropEvent* dropEvent) override;
 

@@ -1,5 +1,5 @@
 let design = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.1.json",
     "width": "container",
     "height": "container",
     "title": {
@@ -213,7 +213,6 @@ function addChannel(design, channel) {
 }
 
 function getDesign(spec) {
-
     design.data.values = [];
     design.layer = [];
     
@@ -238,16 +237,18 @@ function getDesign(spec) {
         addChannel(design, channel);
     }
 
-    
     design.layer.push({
         "transform": [{
             "pivot": "chn",
-            "value": "min",
+            "value": "agg",
             "groupby": ["dimName"]
         }],
         "mark": "rule",
         "encoding": {
-            "x": { "field": "dimName", "type": "nominal" },
+            "x": {
+                "field": "dimName",
+                "type": "nominal"
+            },
             "opacity": {
                 "condition": {
                     "value": 0.3,
@@ -267,12 +268,12 @@ function getDesign(spec) {
                 "fields": ["dimName"],
                 "nearest": true,
                 "on": "mouseover",
-                "clear": "mouseout"
+                //"clear": "mouseout"
             }
         }]
         
     })
-    
+
     design.title.text = `[${titles.join(', ')}]`;
 
     return design;

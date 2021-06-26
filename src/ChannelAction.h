@@ -136,7 +136,6 @@ public: // Vega visualization specification
         return !_datasetName1Action.getCurrentText().isEmpty();
     }
 
-private:
     /**
      * Updates the Vega visualization specification
 
