@@ -10,7 +10,7 @@ class ConfigurationAction : public PluginAction, public hdps::EventListener
 {
 protected:
 
-    class Widget : public PluginAction::Widget {
+    class Widget : public hdps::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, ConfigurationAction* configurationAction);
     };

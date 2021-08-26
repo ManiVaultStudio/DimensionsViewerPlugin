@@ -23,16 +23,16 @@ namespace hdps {
 
 class DimensionsViewerPlugin : public ViewPlugin
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	DimensionsViewerPlugin();
+    DimensionsViewerPlugin(const PluginFactory* factory);
 
-	void init() override;
+    void init() override;
 
 public:
-	/** Returns a pointer to the core interface */
-	hdps::CoreInterface* getCore() { return _core; }
+    /** Returns a pointer to the core interface */
+    hdps::CoreInterface* getCore() { return _core; }
 
     ConfigurationAction& getConfigurationAction() { return *_configurationAction; }
 
@@ -44,14 +44,16 @@ private:
 
 class DimensionsViewerPluginFactory : public ViewPluginFactory
 {
-	Q_INTERFACES(hdps::plugin::ViewPluginFactory hdps::plugin::PluginFactory)
+    Q_INTERFACES(hdps::plugin::ViewPluginFactory hdps::plugin::PluginFactory)
     Q_OBJECT
     Q_PLUGIN_METADATA(IID   "lumc.lkeb.DimensionsViewerPlugin"
                       FILE  "DimensionsViewerPlugin.json")
     
 public:
-	DimensionsViewerPluginFactory() {}
+    DimensionsViewerPluginFactory() {}
     ~DimensionsViewerPluginFactory() {}
     
-	DimensionsViewerPlugin* produce();
+    DimensionsViewerPlugin* produce();
+
+    hdps::DataTypes supportedDataTypes() const override;
 };

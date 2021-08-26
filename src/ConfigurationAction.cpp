@@ -145,7 +145,7 @@ QStringList ConfigurationAction::getCompatibleDatasetNames(const QString& datase
 }
 
 ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :
-    WidgetAction::Widget(parent, configurationAction, State::Standard)
+    WidgetActionWidget(parent, configurationAction, State::Standard)
 {
     setAutoFillBackground(true);
 

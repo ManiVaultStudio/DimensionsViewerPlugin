@@ -8,6 +8,7 @@
 #include <QVector>
 #include <QColor>
 #include <QVariantMap>
+#include <QHBoxLayout>
 
 class Points;
 class ChannelsAction;
@@ -65,7 +66,7 @@ public:
     static const QMap<DifferentialProfileConfig, QString> differentialProfileConfigs;
 
 protected:
-    class Widget : public PluginAction::Widget {
+    class Widget : public hdps::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, ChannelAction* channelAction);
 

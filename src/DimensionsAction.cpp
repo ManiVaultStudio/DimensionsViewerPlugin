@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QComboBox>
+#include <QGroupBox>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -38,7 +39,7 @@ DimensionsAction::DimensionsAction(ConfigurationAction* configurationAction) :
 }
 
 DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAction) :
-    WidgetAction::Widget(parent, DimensionsAction, State::Standard)
+    WidgetActionWidget(parent, DimensionsAction, State::Standard)
 {
     auto layout = new QVBoxLayout();
     
@@ -55,10 +56,10 @@ DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAc
 
     auto selectionCenterLabel           = new QLabel("Center");
     auto selectionCenterIndexWidget     = DimensionsAction->_selectionCenterIndexAction.createSliderWidget(this);
-    auto selectionCenterNameWidget      = dynamic_cast<OptionAction::Widget*>(DimensionsAction->_selectionCenterNameAction.createWidget(this));
+    auto selectionCenterNameWidget      = dynamic_cast<OptionAction::ComboBoxWidget*>(DimensionsAction->_selectionCenterNameAction.createWidget(this));
     auto selectionRadiusLabel           = new QLabel("Radius");
     auto selectionRadiusWidget          = DimensionsAction->_selectionRadiusAction.createWidget(this);
-    auto showDimensionNamesWidget       = DimensionsAction->_showNamesAction.createWidget(this);
+    auto showDimensionNamesWidget       = DimensionsAction->_showNamesAction.createCheckBoxWidget(this);
 
     selectionCenterNameWidget->getComboBox()->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 

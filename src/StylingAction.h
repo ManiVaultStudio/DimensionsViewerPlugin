@@ -60,7 +60,7 @@ public:
 
 protected: // Widget
 
-    class Widget : public WidgetAction::Widget {
+    class Widget : public hdps::gui::WidgetActionWidget {
     protected:
         Widget(QWidget* parent, StylingAction* stylingAction);
 
@@ -89,6 +89,7 @@ public:
     hdps::gui::OptionAction& getSecondaryLineTypeAction() { return _secondaryLineTypeAction; }
     hdps::gui::DecimalAction& getSecondaryLineThicknessAction() { return _secondaryLineThicknessAction; }
 
+    /*
     StylingAction& operator= (const StylingAction& other)
     {
         _showRangeAction                = other._showRangeAction;
@@ -102,6 +103,7 @@ public:
 
         return *this;
     }
+    */
 
 protected:
     hdps::gui::ToggleAction     _showRangeAction;

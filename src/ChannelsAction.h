@@ -13,7 +13,7 @@ public:
 
 protected: // Widget
 
-    class Widget : public PluginAction::Widget {
+    class Widget : public hdps::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, ChannelsAction* channelsAction);
     };

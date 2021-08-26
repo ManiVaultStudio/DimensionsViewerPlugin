@@ -103,7 +103,7 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
 
     auto lineTypesModel = new LineTypesModel();
 
-    _primaryLineTypeAction.setModel(lineTypesModel);
+    _primaryLineTypeAction.setCustomModel(lineTypesModel);
     _primaryLineTypeAction.setCurrentIndex(0);
     _primaryLineTypeAction.setDefaultIndex(0);
 
@@ -113,7 +113,7 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _primaryLineThicknessAction.setValue(2.0);
     _primaryLineThicknessAction.setDefaultValue(2.0);
 
-    _secondaryLineTypeAction.setModel(lineTypesModel);
+    _secondaryLineTypeAction.setCustomModel(lineTypesModel);
     _secondaryLineTypeAction.setCurrentIndex(1);
     _secondaryLineTypeAction.setDefaultIndex(1);
 
@@ -135,7 +135,7 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
 }
 
 StylingAction::Widget::Widget(QWidget* parent, StylingAction* stylingAction) :
-    WidgetAction::Widget(parent, stylingAction, State::Standard),
+    WidgetActionWidget(parent, stylingAction, State::Standard),
     _layout(new QGridLayout())
 {
     auto showRangeWidget                = stylingAction->_showRangeAction.createWidget(this);
