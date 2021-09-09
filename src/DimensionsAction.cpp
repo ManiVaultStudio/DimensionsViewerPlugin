@@ -61,7 +61,7 @@ DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAc
     auto selectionRadiusWidget          = DimensionsAction->_selectionRadiusAction.createWidget(this);
     auto showDimensionNamesWidget       = DimensionsAction->_showNamesAction.createCheckBoxWidget(this);
 
-    selectionCenterNameWidget->getComboBox()->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    selectionCenterNameWidget->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
     groupBoxLayout->setMargin(9);
     groupBoxLayout->setSpacing(10);
