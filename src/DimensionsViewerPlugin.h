@@ -52,7 +52,10 @@ class DimensionsViewerPluginFactory : public ViewPluginFactory
 public:
     DimensionsViewerPluginFactory() {}
     ~DimensionsViewerPluginFactory() {}
-    
+
+    /** Returns the plugin icon */
+    QIcon getIcon() const override;
+
     DimensionsViewerPlugin* produce();
 
     hdps::DataTypes supportedDataTypes() const override;

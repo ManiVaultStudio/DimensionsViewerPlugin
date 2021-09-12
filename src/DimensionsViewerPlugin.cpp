@@ -74,6 +74,11 @@ void DimensionsViewerPlugin::init()
     });
 }
 
+QIcon DimensionsViewerPluginFactory::getIcon() const
+{
+    return Application::getIconFont("FontAwesome").getIcon("chart-area");
+}
+
 DimensionsViewerPlugin* DimensionsViewerPluginFactory::produce()
 {
     return new DimensionsViewerPlugin(this);
