@@ -63,8 +63,8 @@ void ConfigurationAction::updateSecondaryDatasetNames()
     }
 
     for (auto channel : _channelsAction.getChannels()) {
-        if (channel->getIndex() == 0)
-            continue;
+        //if (channel->getIndex() == 0)
+            //continue;
 
         channel->getDatasetName1Action().setOptions(datasetNames);
         channel->getDatasetName2Action().setOptions(datasetNames);

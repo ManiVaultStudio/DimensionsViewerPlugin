@@ -74,6 +74,8 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
         const auto useSelection     = _useSelectionAction.isChecked();
         const auto isDifferential   = _profileTypeAction.getCurrentText() == profileTypes.value(ProfileType::Differential);
 
+        qDebug() << _profileTypeAction.getCurrentText() << isDifferential << numDatasets;
+
         switch (_profileTypeAction.getCurrentIndex())
         {
             case static_cast<std::int32_t>(ProfileType::Mean) :
@@ -92,9 +94,8 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
                 break;
         }
 
-        if (init) {
+        if (init)
             _profileConfigAction.setCurrentIndex(1);
-        }
 
         _enabledAction.setEnabled(numDatasets >= 1);
         _stylingAction.getColorAction().setEnabled(isEnabled);
