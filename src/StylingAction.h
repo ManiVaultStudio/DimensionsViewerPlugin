@@ -73,7 +73,7 @@ protected: // Widget
         friend class StylingAction;
     };
 
-    QWidget* getWidget(QWidget* parent, const Widget::State& state = Widget::State::Standard) override {
+    QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
         return new StylingAction::Widget(parent, this);
     };
 

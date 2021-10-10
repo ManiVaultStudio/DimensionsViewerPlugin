@@ -95,7 +95,7 @@ void ConfigurationAction::loadDataset(const QString& datasetName)
     const auto updateDuringDrag = numPoints < 100000;
 
     updateSecondaryDatasetNames();
-       
+
     _dimensionsAction.getSelectionCenterIndexAction().setUpdateDuringDrag(updateDuringDrag);
     _dimensionsAction.getSelectionCenterIndexAction().setMaximum(numDimensions - 1);
     _dimensionsAction.getSelectionCenterIndexAction().setValue(static_cast<std::int32_t>(floorf(static_cast<float>(numDimensions) / 2.0f)));

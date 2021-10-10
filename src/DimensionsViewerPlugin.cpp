@@ -43,12 +43,12 @@ void DimensionsViewerPlugin::init()
     _dropWidget->initialize([this](const QMimeData* mimeData) -> DropWidget::DropRegions {
         DropWidget::DropRegions dropRegions;
 
-        const auto mimeText = mimeData->text();
-        const auto tokens = mimeText.split("\n");
-        const auto datasetName = tokens[0];
-        const auto dataType = DataType(tokens[1]);
-        const auto dataTypes = DataTypes({ PointType });
-        const auto candidateDataset = _core->requestData<Points>(datasetName);
+        const auto mimeText             = mimeData->text();
+        const auto tokens               = mimeText.split("\n");
+        const auto datasetName          = tokens[0];
+        const auto dataType             = DataType(tokens[1]);
+        const auto dataTypes            = DataTypes({ PointType });
+        const auto candidateDataset     = _core->requestData<Points>(datasetName);
         const auto candidateDatasetName = candidateDataset.getName();
 
         if (!dataTypes.contains(dataType))

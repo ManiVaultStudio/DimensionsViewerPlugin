@@ -15,7 +15,7 @@ protected:
         Widget(QWidget* parent, SubsamplingAction* subsamplingAction);
     };
 
-    QWidget* getWidget(QWidget* parent, const Widget::State& widgetType = Widget::State::Standard) override {
+    QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
         return new SubsamplingAction::Widget(parent, this);
     };
 

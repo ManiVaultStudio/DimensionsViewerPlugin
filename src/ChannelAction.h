@@ -74,7 +74,7 @@ protected:
         QHBoxLayout     _mainLayout;
     };
 
-    QWidget* getWidget(QWidget* parent, const Widget::State& widgetType = Widget::State::Standard) override {
+    QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
         return new ChannelAction::Widget(parent, this);
     };
 

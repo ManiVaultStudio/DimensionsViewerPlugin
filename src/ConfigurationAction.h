@@ -15,7 +15,7 @@ protected:
         Widget(QWidget* parent, ConfigurationAction* configurationAction);
     };
 
-    QWidget* getWidget(QWidget* parent, const Widget::State& widgetType = Widget::State::Standard) override {
+    QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
         return new ConfigurationAction::Widget(parent, this);
     };
 
@@ -45,7 +45,7 @@ protected:
     DimensionsAction    _dimensionsAction;
     SubsamplingAction   _subsamplingAction;
     ChannelsAction      _channelsAction;
-    QVariantMap			_spec;
+    QVariantMap         _spec;
     bool                _isLoading;
 
     friend class ChannelAction;

@@ -55,13 +55,13 @@ DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAc
     groupBox->setLayout(groupBoxLayout);
 
     auto selectionCenterLabel           = new QLabel("Center");
-    auto selectionCenterIndexWidget     = DimensionsAction->_selectionCenterIndexAction.createSliderWidget(this);
-    auto selectionCenterNameWidget      = dynamic_cast<OptionAction::ComboBoxWidget*>(DimensionsAction->_selectionCenterNameAction.createWidget(this));
+    auto selectionCenterIndexWidget     = DimensionsAction->_selectionCenterIndexAction.createWidget(this);
+    auto selectionCenterNameWidget      = DimensionsAction->_selectionCenterNameAction.createWidget(this);
     auto selectionRadiusLabel           = new QLabel("Radius");
     auto selectionRadiusWidget          = DimensionsAction->_selectionRadiusAction.createWidget(this);
-    auto showDimensionNamesWidget       = DimensionsAction->_showNamesAction.createCheckBoxWidget(this);
+    auto showDimensionNamesWidget       = DimensionsAction->_showNamesAction.createWidget(this);
 
-    selectionCenterNameWidget->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    selectionCenterNameWidget->findChild<QComboBox*>("ComboBox")->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
     groupBoxLayout->setMargin(9);
     groupBoxLayout->setSpacing(10);
