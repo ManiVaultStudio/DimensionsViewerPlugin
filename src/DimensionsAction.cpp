@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QComboBox>
+#include <QGroupBox>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -38,7 +39,7 @@ DimensionsAction::DimensionsAction(ConfigurationAction* configurationAction) :
 }
 
 DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAction) :
-    WidgetAction::Widget(parent, DimensionsAction, State::Standard)
+    WidgetActionWidget(parent, DimensionsAction, State::Standard)
 {
     auto layout = new QVBoxLayout();
     
@@ -54,13 +55,13 @@ DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAc
     groupBox->setLayout(groupBoxLayout);
 
     auto selectionCenterLabel           = new QLabel("Center");
-    auto selectionCenterIndexWidget     = DimensionsAction->_selectionCenterIndexAction.createSliderWidget(this);
-    auto selectionCenterNameWidget      = dynamic_cast<OptionAction::Widget*>(DimensionsAction->_selectionCenterNameAction.createWidget(this));
+    auto selectionCenterIndexWidget     = DimensionsAction->_selectionCenterIndexAction.createWidget(this);
+    auto selectionCenterNameWidget      = DimensionsAction->_selectionCenterNameAction.createWidget(this);
     auto selectionRadiusLabel           = new QLabel("Radius");
     auto selectionRadiusWidget          = DimensionsAction->_selectionRadiusAction.createWidget(this);
     auto showDimensionNamesWidget       = DimensionsAction->_showNamesAction.createWidget(this);
 
-    selectionCenterNameWidget->getComboBox()->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    selectionCenterNameWidget->findChild<QComboBox*>("ComboBox")->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
     groupBoxLayout->setMargin(9);
     groupBoxLayout->setSpacing(10);

@@ -13,12 +13,12 @@ public:
 
 protected: // Widget
 
-    class Widget : public PluginAction::Widget {
+    class Widget : public hdps::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, ChannelsAction* channelsAction);
     };
 
-    QWidget* getWidget(QWidget* parent, const Widget::State& widgetType = Widget::State::Standard) override {
+    QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
         return new ChannelsAction::Widget(parent, this);
     };
 

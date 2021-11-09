@@ -46,9 +46,9 @@ const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::dif
 ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
     PluginAction(channelsAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(channelsAction->getNumChannels())),
     hdps::EventListener(),
-	_index(channelsAction->getNumChannels()),
-	_internalName(QString("channel_%1").arg(QString::number(channelsAction->getNumChannels()))),
-	_displayName(displayName),
+    _index(channelsAction->getNumChannels()),
+    _internalName(QString("channel_%1").arg(QString::number(channelsAction->getNumChannels()))),
+    _displayName(displayName),
     _channelsAction(channelsAction),
     _enabledAction(this, _displayName),
     _datasetName1Action(this, "Dataset 1"),
@@ -74,6 +74,8 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
         const auto useSelection     = _useSelectionAction.isChecked();
         const auto isDifferential   = _profileTypeAction.getCurrentText() == profileTypes.value(ProfileType::Differential);
 
+        qDebug() << _profileTypeAction.getCurrentText() << isDifferential << numDatasets;
+
         switch (_profileTypeAction.getCurrentIndex())
         {
             case static_cast<std::int32_t>(ProfileType::Mean) :
@@ -92,9 +94,8 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
                 break;
         }
 
-        if (init) {
+        if (init)
             _profileConfigAction.setCurrentIndex(1);
-        }
 
         _enabledAction.setEnabled(numDatasets >= 1);
         _stylingAction.getColorAction().setEnabled(isEnabled);
@@ -556,19 +557,19 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
     }
 
     _spec["enabled"]                = _enabledAction.isChecked();// && !indices1.empty();
-	_spec["index"]			        = _index;
-	_spec["displayName"]            = _displayName;
-	_spec["datasetName"]	        = _datasetName1Action.getCurrentText();
-	_spec["color"]			        = _stylingAction.getColorAction().getColor();
-	_spec["opacity"]		        = _stylingAction.getOpacityAction().getValue();
-	_spec["profileType"]	        = _profileTypeAction.getCurrentIndex();
-	_spec["bandType"]		        = _profileConfigAction.getCurrentIndex();
-	_spec["primaryLineType"]        = _stylingAction.getPrimaryLineTypeAction().getCurrentText();
-	_spec["primaryLineThickness"]   = _stylingAction.getPrimaryLineThicknessAction().getValue();
-	_spec["secondaryLineType"]      = _stylingAction.getSecondaryLineTypeAction().getCurrentText();
-	_spec["secondaryLineThickness"] = _stylingAction.getSecondaryLineThicknessAction().getValue();
-	_spec["showRange"]		        = showRange;
-	_spec["showPoints"]		        = _stylingAction.getShowPointsAction().isChecked();
+    _spec["index"]                  = _index;
+    _spec["displayName"]            = _displayName;
+    _spec["datasetName"]            = _datasetName1Action.getCurrentText();
+    _spec["color"]                  = _stylingAction.getColorAction().getColor();
+    _spec["opacity"]                = _stylingAction.getOpacityAction().getValue();
+    _spec["profileType"]            = _profileTypeAction.getCurrentIndex();
+    _spec["bandType"]               = _profileConfigAction.getCurrentIndex();
+    _spec["primaryLineType"]        = _stylingAction.getPrimaryLineTypeAction().getCurrentText();
+    _spec["primaryLineThickness"]   = _stylingAction.getPrimaryLineThicknessAction().getValue();
+    _spec["secondaryLineType"]      = _stylingAction.getSecondaryLineTypeAction().getCurrentText();
+    _spec["secondaryLineThickness"] = _stylingAction.getSecondaryLineThicknessAction().getValue();
+    _spec["showRange"]              = showRange;
+    _spec["showPoints"]             = _stylingAction.getShowPointsAction().isChecked();
 
     getChannelsAction()->getConfigurationAction()->setModified();
 }
@@ -594,7 +595,7 @@ Points* ChannelAction::getPoints2() const
 }
 
 ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
-    WidgetAction::Widget(parent, channelAction, State::Standard),
+    WidgetActionWidget(parent, channelAction, State::Standard),
     _mainLayout()
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));

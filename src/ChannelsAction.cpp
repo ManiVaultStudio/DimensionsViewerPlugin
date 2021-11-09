@@ -3,6 +3,7 @@
 #include "DimensionsViewerPlugin.h"
 
 #include <QDebug>
+#include <QGroupBox>
 
 using namespace hdps;
 using namespace hdps::gui;
@@ -43,7 +44,7 @@ bool ChannelsAction::canDisplay() const
 }
 
 ChannelsAction::Widget::Widget(QWidget* parent, ChannelsAction* channelsAction) :
-    WidgetAction::Widget(parent, channelsAction, State::Standard)
+    WidgetActionWidget(parent, channelsAction, State::Standard)
 {
     auto layout         = new QVBoxLayout();
     auto groupBox       = new QGroupBox("Channels");

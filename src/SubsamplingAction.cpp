@@ -2,6 +2,8 @@
 #include "ConfigurationAction.h"
 #include "DimensionsViewerPlugin.h"
 
+#include <QGroupBox>
+
 using namespace hdps;
 using namespace hdps::gui;
 
@@ -55,7 +57,7 @@ double SubsamplingAction::getNormalizedFactor() const
 }
 
 SubsamplingAction::Widget::Widget(QWidget* parent, SubsamplingAction* subsamplingAction) :
-    WidgetAction::Widget(parent, subsamplingAction, State::Standard)
+    WidgetActionWidget(parent, subsamplingAction, State::Standard)
 {
     auto layout = new QVBoxLayout();
     
