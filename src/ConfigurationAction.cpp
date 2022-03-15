@@ -2,6 +2,8 @@
 #include "ChannelAction.h"
 #include "DimensionsViewerPlugin.h"
 
+#include <event/Event.h>
+
 #include <QDebug>
 #include <QLabel>
 
@@ -27,10 +29,12 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
         _spec["showDimensionNames"] = state;
     });
 
+    /* TODO
     registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
         if (dataEvent->getType() == EventType::DataAdded)
             updateSecondaryDatasetNames();
     });
+    */
 }
 
 QVariantMap ConfigurationAction::getSpec()
@@ -51,6 +55,7 @@ QVariantMap ConfigurationAction::getSpec()
 
 void ConfigurationAction::updateSecondaryDatasetNames()
 {
+    /* TODO
     auto primaryChannel = _channelsAction.getChannels().first();
 
     const auto numDimensions = primaryChannel->getNumDimensions();
@@ -71,10 +76,12 @@ void ConfigurationAction::updateSecondaryDatasetNames()
         channel->getDatasetName1Action().setCurrentIndex(0);
         channel->getDatasetName2Action().setCurrentIndex(0);
     }
+    */
 }
 
 void ConfigurationAction::loadDataset(const QString& datasetName)
 {
+    /* TODO
     _isLoading = true;
 
     auto primaryChannel = _channelsAction.getChannels().first();
@@ -108,11 +115,12 @@ void ConfigurationAction::loadDataset(const QString& datasetName)
 
     for (auto channel : _channelsAction.getChannels())
         channel->updateSpec();
+    */
 }
 
-QString ConfigurationAction::getLoadedDataset()
+Dataset<Points> ConfigurationAction::getLoadedDataset()
 {
-    return _channelsAction.getChannels().first()->getDatasetName1Action().getCurrentText();
+    return _channelsAction.getChannels().first()->getDataset1Action().getCurrentDataset();
 }
 
 bool ConfigurationAction::isLoading() const
@@ -125,23 +133,20 @@ bool ConfigurationAction::isLoaded() const
     return false;// _channelsAction.getChannels().first()->isLoaded();
 }
 
-std::int32_t ConfigurationAction::getNumDimensions(const QString& datasetName) const
+Datasets ConfigurationAction::getCompatibleDatasets(const QString& datasetName) const
 {
-    return dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName))).getNumDimensions();
-}
+    Datasets datasets;
 
-QStringList ConfigurationAction::getCompatibleDatasetNames(const QString& datasetName) const
-{
-    QStringList datasetNames;
-
+    /* TODO
     const auto numDimensions = getNumDimensions(datasetName);
 
-    for (auto candidateDatasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType }))) {
-        if (getNumDimensions(candidateDatasetName) == numDimensions)
-            datasetNames << candidateDatasetName;
+    for (auto candidateDataset : Application::core()->requestAllDataSets(QVector<DataType>({ PointType }))) {
+        if (Dataset<Points>(candidateDataset)->getNumDimensions() == numDimensions)
+            datasets << candidateDataset;
     }
+    */
 
-    return datasetNames;
+    return datasets;
 }
 
 ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :

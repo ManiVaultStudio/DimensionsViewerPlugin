@@ -3,7 +3,9 @@
 #include "PluginAction.h"
 #include "StylingAction.h"
 
-#include "event/EventListener.h"
+#include <event/EventListener.h>
+#include <actions/DatasetPickerAction.h>
+#include <Dataset.h>
 
 #include <QVector>
 #include <QColor>
@@ -12,6 +14,9 @@
 
 class Points;
 class ChannelsAction;
+
+using namespace hdps;
+using namespace hdps::gui;
 
 /**
  * Channel class
@@ -97,16 +102,18 @@ public:
         return _profileTypeAction.getCurrentIndex() == static_cast<std::uint32_t>(ProfileType::Differential);
     }
 
-public:
+public: // Action getters
+
     ChannelsAction* getChannelsAction() { return _channelsAction; }
     hdps::gui::ToggleAction& getEnabledAction() { return _enabledAction; }
-    hdps::gui::OptionAction& getDatasetName1Action() { return _datasetName1Action; }
-    hdps::gui::OptionAction& getDatasetName2Action() { return _datasetName2Action; }
+    DatasetPickerAction& getDataset1Action() { return _dataset1Action; }
+    DatasetPickerAction& getDataset2Action() { return _dataset2Action; }
     hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
     hdps::gui::OptionAction& getBandTypeAction() { return _profileConfigAction; }
     StylingAction& getStylingAction() { return _stylingAction; }
     
 public: // Point data wrapper
+
     QStringList getDimensionNames() const;
     std::int32_t getNumPoints() const;
     std::int32_t getNumDimensions() const;
@@ -134,32 +141,42 @@ public: // Vega visualization specification
      * @return Whether the channel data selection is correct
      */
     bool isLoaded() const {
-        return !_datasetName1Action.getCurrentText().isEmpty();
+        return !_dataset1Action.getCurrentText().isEmpty();
     }
 
 private:
+
     /**
      * Updates the Vega visualization specification
-
+     * @param ignoreDimensions Whether to ignore the dimensions
      */
-	void updateSpec(const bool& ignoreDimensions = false);
+    void updateSpec(const bool& ignoreDimensions = false);
 
-    Points* getPoints1() const;
-    Points* getPoints2() const;
+    /**
+     * Get the first points dataset
+     * @return Smart pointer to the first points dataset
+     */
+    Dataset<Points> getPoints1() const;
+
+    /**
+     * Get the second points dataset
+     * @return Smart pointer to the second points dataset
+     */
+    Dataset<Points> getPoints2() const;
 
 protected:
-	const std::uint32_t		    _index;				            /** Channel index */
-	const QString			    _internalName;		            /** Channel internal name (e.g. channel1, channel2) */
-	const QString			    _displayName;		            /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
-    ChannelsAction*             _channelsAction;
-    hdps::gui::ToggleAction     _enabledAction;
-    hdps::gui::OptionAction     _datasetName1Action;
-    hdps::gui::OptionAction     _datasetName2Action;
-    hdps::gui::OptionAction     _profileTypeAction;
-    hdps::gui::OptionAction     _profileConfigAction;
-    hdps::gui::ToggleAction     _useSelectionAction;
-    StylingAction               _stylingAction;
-    QVariantMap				    _spec;				            /** Specification for use in JS visualization client (Vega) */
+	const std::uint32_t         _index;                         /** Channel index */
+	const QString               _internalName;                  /** Channel internal name (e.g. channel1, channel2) */
+	const QString               _displayName;                   /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
+    ChannelsAction*             _channelsAction;                /** Pointer to the owning channels action */
+    hdps::gui::ToggleAction     _enabledAction;                 /** Channel on/off action */
+    DatasetPickerAction         _dataset1Action;                /** Dataset picker action for the first dataset */
+    DatasetPickerAction         _dataset2Action;                /** Dataset picker action for the second dataset */
+    hdps::gui::OptionAction     _profileTypeAction;             /** Profile type picker action */
+    hdps::gui::OptionAction     _profileConfigAction;           /** Profile configuration action */
+    hdps::gui::ToggleAction     _useSelectionAction;            /** Whether to respect the selection or not */
+    StylingAction               _stylingAction;                 /** Action for configuring the channel styling */
+    QVariantMap                 _spec;                          /** Specification for use in JS visualization client (Vega) */
 
     friend class ChannelsAction;
     friend class ConfigurationAction;

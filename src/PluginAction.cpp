@@ -8,7 +8,7 @@ PluginAction::PluginAction(DimensionsViewerPlugin* dimensionsViewerPlugin, const
     WidgetAction(reinterpret_cast<QObject*>(dimensionsViewerPlugin)),
     _dimensionsViewerPlugin(dimensionsViewerPlugin)
 {
-    _dimensionsViewerPlugin->addAction(this);
+    _dimensionsViewerPlugin->getWidget().addAction(this);
 
     setText(title);
     setToolTip(title);

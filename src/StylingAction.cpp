@@ -108,8 +108,8 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _primaryLineTypeAction.setDefaultIndex(0);
 
     _primaryLineThicknessAction.setSuffix("px");
-    _primaryLineThicknessAction.setMinimum(0.1);
-    _primaryLineThicknessAction.setMaximum(10.0);
+    _primaryLineThicknessAction.setMinimum(0.1f);
+    _primaryLineThicknessAction.setMaximum(10.0f);
     _primaryLineThicknessAction.setValue(2.0);
     _primaryLineThicknessAction.setDefaultValue(2.0);
 
@@ -118,10 +118,10 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _secondaryLineTypeAction.setDefaultIndex(1);
 
     _secondaryLineThicknessAction.setSuffix("px");
-    _secondaryLineThicknessAction.setMinimum(0.1);
-    _secondaryLineThicknessAction.setMaximum(10.0);
-    _secondaryLineThicknessAction.setValue(1.0);
-    _secondaryLineThicknessAction.setDefaultValue(1.0);
+    _secondaryLineThicknessAction.setMinimum(0.1f);
+    _secondaryLineThicknessAction.setMaximum(10.0f);
+    _secondaryLineThicknessAction.setValue(1.0f);
+    _secondaryLineThicknessAction.setDefaultValue(1.0f);
 
     const auto updateShowRange = [this, channelAction]() {
         _showRangeAction.setEnabled(!channelAction->isDifferential());

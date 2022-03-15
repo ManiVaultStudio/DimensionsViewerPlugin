@@ -4,7 +4,9 @@
 #include "SubsamplingAction.h"
 #include "ChannelsAction.h"
 
-#include "event/EventListener.h"
+#include <event/EventListener.h>
+
+using namespace hdps;
 
 class ConfigurationAction : public PluginAction, public hdps::EventListener
 {
@@ -33,13 +35,12 @@ public:
 
     void updateSecondaryDatasetNames();
     void loadDataset(const QString& datasetName);
-    QString getLoadedDataset();
+    Dataset<Points> getLoadedDataset();
     bool isLoading() const;
     bool isLoaded() const;
 
 protected:
-    std::int32_t getNumDimensions(const QString& datasetName) const;
-    QStringList getCompatibleDatasetNames(const QString& datasetName) const;
+    Datasets getCompatibleDatasets(const QString& datasetName) const;
 
 protected:
     DimensionsAction    _dimensionsAction;

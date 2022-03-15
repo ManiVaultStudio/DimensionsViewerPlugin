@@ -22,11 +22,11 @@ DimensionsViewerPlugin::DimensionsViewerPlugin(const PluginFactory* factory) :
 
 void DimensionsViewerPlugin::init()
 {
-    setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    _widget.setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     _dimensionsViewerWidget = new DimensionsViewerWidget(this);
-    _configurationAction = new ConfigurationAction(this);
-    _dropWidget = new DropWidget(_dimensionsViewerWidget);
+    _configurationAction    = new ConfigurationAction(this);
+    _dropWidget             = new DropWidget(_dimensionsViewerWidget);
 
     auto mainLayout = new QVBoxLayout();
 
@@ -34,11 +34,11 @@ void DimensionsViewerPlugin::init()
     mainLayout->setSpacing(0);
 
     mainLayout->addWidget(_dimensionsViewerWidget, 1);
-    mainLayout->addWidget(_configurationAction->createWidget(this));
+    mainLayout->addWidget(_configurationAction->createWidget(&_widget));
 
-    setLayout(mainLayout);
+    _widget.setLayout(mainLayout);
 
-    _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(this, "No channels to display", "Drag an item from the data hierarchy and drop it here to visualize data..."));
+    _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(&_widget, "No channels to display", "Drag an item from the data hierarchy and drop it here to visualize data..."));
 
     _dropWidget->initialize([this](const QMimeData* mimeData) -> DropWidget::DropRegions {
         DropWidget::DropRegions dropRegions;
@@ -46,25 +46,21 @@ void DimensionsViewerPlugin::init()
         const auto mimeText             = mimeData->text();
         const auto tokens               = mimeText.split("\n");
         const auto datasetName          = tokens[0];
-        const auto dataType             = DataType(tokens[1]);
+        const auto datasetId            = tokens[1];
+        const auto dataType             = DataType(tokens[2]);
         const auto dataTypes            = DataTypes({ PointType });
-        const auto candidateDataset     = _core->requestData<Points>(datasetName);
-        const auto candidateDatasetName = candidateDataset.getName();
+        const auto candidateDataset     = _core->requestDataset(datasetId);
 
         if (!dataTypes.contains(dataType))
-            dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", false);
+            dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", "exclamation-circle", false);
 
-        if (datasetName == _configurationAction->getLoadedDataset()) {
+        if (candidateDataset == _configurationAction->getLoadedDataset()) {
             dropRegions << new DropWidget::DropRegion(this, "Warning", "Data already loaded", false);
         }
         else {
             if (dataType == PointType) {
-                dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDatasetName), true, [this, candidateDatasetName]() {
-                    if (candidateDatasetName.isEmpty())
-                        return;
-
-                    _configurationAction->loadDataset(candidateDatasetName);
-
+                dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDataset->getGuiName()), "map-marker-alt", true, [this, candidateDataset]() {
+                    _configurationAction->loadDataset(candidateDataset->getGuiName());
                     _dropWidget->setShowDropIndicator(false);
                 });
             }

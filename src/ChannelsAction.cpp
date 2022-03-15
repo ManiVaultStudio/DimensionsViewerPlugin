@@ -22,9 +22,11 @@ ChannelsAction::ChannelsAction(ConfigurationAction* configurationAction) :
     _channels << new ChannelAction(this, "Channel 3", ChannelAction::ProfileType::Mean);
     _channels << new ChannelAction(this, "Channel 4", ChannelAction::ProfileType::Mean);
 
-    connect(&_channels.first()->getDatasetName1Action(), &OptionAction::optionsChanged, [this](const QStringList& options) {
-        setEnabled(!options.isEmpty());
+    /* TODO
+    connect(&_channels.first()->getDatasetName1Action(), &OptionAction::modelChanged, [this]() {
+        setEnabled(_channels.first()->getDatasetName1Action().hasOptions());
     });
+    */
 
     for (auto channel : _channels) {
         connect(&channel->getEnabledAction(), &ToggleAction::toggled, [this, configurationAction](bool state) {

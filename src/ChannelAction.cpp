@@ -3,8 +3,9 @@
 #include "ConfigurationAction.h"
 #include "DimensionsViewerPlugin.h"
 
-#include "Application.h"
-#include "PointData.h"
+#include <Application.h>
+#include <PointData.h>
+#include <event/Event.h>
 
 #include <QDebug>
 #include <QVariantList>
@@ -51,8 +52,8 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
     _displayName(displayName),
     _channelsAction(channelsAction),
     _enabledAction(this, _displayName),
-    _datasetName1Action(this, "Dataset 1"),
-    _datasetName2Action(this, "Dataset 2"),
+    _dataset1Action(this, "Dataset 1"),
+    _dataset2Action(this, "Dataset 2"),
     _profileTypeAction(this, "Profile type"),
     _profileConfigAction(this, "Profile configuration"),
     _useSelectionAction(this, "Selection"),
@@ -69,12 +70,10 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
     //_useSelectionAction.setChecked(configurationAction->getNumChannels() == 0);
 
     const auto updateUI = [this, channelsAction](const bool& init = false) {
-        const auto numDatasets      = _datasetName1Action.getOptions().count();
+        const auto numDatasets      = _dataset1Action.getOptions().count();
         const auto isEnabled        = _enabledAction.isChecked();
         const auto useSelection     = _useSelectionAction.isChecked();
         const auto isDifferential   = _profileTypeAction.getCurrentText() == profileTypes.value(ProfileType::Differential);
-
-        qDebug() << _profileTypeAction.getCurrentText() << isDifferential << numDatasets;
 
         switch (_profileTypeAction.getCurrentIndex())
         {
@@ -99,14 +98,14 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
 
         _enabledAction.setEnabled(numDatasets >= 1);
         _stylingAction.getColorAction().setEnabled(isEnabled);
-        _datasetName1Action.setEnabled(isEnabled && numDatasets >= 1 && _index >= 1);
-        _datasetName2Action.setEnabled(isEnabled && numDatasets >= 2);
+        _dataset1Action.setEnabled(isEnabled && numDatasets >= 1 && _index >= 1);
+        _dataset2Action.setEnabled(isEnabled && numDatasets >= 2);
         _profileTypeAction.setEnabled(isEnabled);
         _profileConfigAction.setEnabled(isEnabled);
         _useSelectionAction.setEnabled(isEnabled);
         _stylingAction.setEnabled(isEnabled);
 
-        _datasetName2Action.setVisible(isDifferential);
+        _dataset2Action.setVisible(isDifferential);
     };
 
     connect(&_enabledAction, &ToggleAction::toggled, [this, updateUI](bool state) {
@@ -114,19 +113,19 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
         updateSpec();
     });
 
-    connect(&_datasetName1Action, &OptionAction::optionsChanged, [this, updateUI](const QStringList& options) {
+    connect(&_dataset1Action, &OptionAction::modelChanged, [this, updateUI]() {
         updateUI();
     });
 
-    connect(&_datasetName2Action, &OptionAction::optionsChanged, [this, updateUI](const QStringList& options) {
+    connect(&_dataset2Action, &OptionAction::modelChanged, [this, updateUI]() {
         updateUI();
     });
 
-    connect(&_datasetName1Action, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
+    connect(&_dataset1Action, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
         updateSpec();
     });
 
-    connect(&_datasetName2Action, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
+    connect(&_dataset2Action, &OptionAction::currentIndexChanged, [this, updateUI](const std::int32_t& currentIndex) {
         updateSpec();
     });
 
@@ -205,14 +204,16 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
     updateSpec();
 
     registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
-        if (dataEvent->getType() == EventType::SelectionChanged) {
+        if (dataEvent->getType() == EventType::DataSelectionChanged) {
             if (!_enabledAction.isChecked())
                 return;
 
-            const auto datasetName = static_cast<SelectionChangedEvent*>(dataEvent)->dataSetName;
+            /* TODO
+            const auto datasetName = static_cast<DataSelectionChangedEvent*>(dataEvent)->getDataset();
             
             if (datasetName == _datasetName1Action.getCurrentText() || datasetName == _datasetName2Action.getCurrentText())
                 updateSpec();
+            */
         }
     });
 }
@@ -221,14 +222,10 @@ QStringList ChannelAction::getDimensionNames() const
 {
     QStringList dimensionNames;
 
-    const auto datasetName1 = _datasetName1Action.getCurrentText();
-
-    if (datasetName1.isEmpty())
+    if (!_dataset1Action.getCurrentDataset().isValid())
         return dimensionNames;
 
-    auto points1 = getPoints1();
-
-    for (auto dimensionName : points1->getDimensionNames())
+    for (auto dimensionName : getPoints1()->getDimensionNames())
         dimensionNames << dimensionName;
 
     return dimensionNames;
@@ -236,9 +233,7 @@ QStringList ChannelAction::getDimensionNames() const
 
 std::int32_t ChannelAction::getNumPoints() const
 {
-    auto points1 = getPoints1();
-
-    if (!points1)
+    if (!_dataset1Action.getCurrentDataset().isValid())
         return 0;
 
     return getPoints1()->getNumPoints();
@@ -246,9 +241,7 @@ std::int32_t ChannelAction::getNumPoints() const
 
 std::int32_t ChannelAction::getNumDimensions() const
 {
-    auto points1 = getPoints1();
-
-    if (!points1)
+    if (!_dataset1Action.getCurrentDataset().isValid())
         return 0;
 
     return getPoints1()->getNumDimensions();
@@ -263,6 +256,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 
     std::vector<std::uint32_t> indices1, indices2;
 
+    /* TODO
     if (!ignoreDimensions) {
         Points* points1 = nullptr;
         Points* points2 = nullptr;
@@ -572,26 +566,17 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
     _spec["showPoints"]             = _stylingAction.getShowPointsAction().isChecked();
 
     getChannelsAction()->getConfigurationAction()->setModified();
+    */
 }
 
-Points* ChannelAction::getPoints1() const
+Dataset<Points> ChannelAction::getPoints1() const
 {
-    const auto datasetName1 = _datasetName1Action.getCurrentText();
-
-    if (datasetName1.isEmpty())
-        return nullptr;
-
-    return &dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName1)));
+    return _dataset1Action.getCurrentDataset();
 }
 
-Points* ChannelAction::getPoints2() const
+Dataset<Points> ChannelAction::getPoints2() const
 {
-    const auto datasetName2 = _datasetName1Action.getCurrentText();
-
-    if (datasetName2.isEmpty())
-        return nullptr;
-
-    return &dynamic_cast<Points&>(DataSet::getSourceData(_dimensionsViewerPlugin->getCore()->requestData(datasetName2)));
+    return _dataset2Action.getCurrentDataset();
 }
 
 ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
@@ -606,8 +591,8 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     auto enabledWidget          = channelAction->_enabledAction.createWidget(this);
     auto colorWidget            = channelAction->getStylingAction().getColorAction().createWidget(this);
     auto datasetNamesWidget     = new QWidget(this);
-    auto datasetName1Widget     = channelAction->_datasetName1Action.createWidget(this);
-    auto datasetName2Widget     = channelAction->_datasetName2Action.createWidget(this);
+    auto datasetName1Widget     = channelAction->_dataset1Action.createWidget(this);
+    auto datasetName2Widget     = channelAction->_dataset2Action.createWidget(this);
     auto profileTypeWidget      = channelAction->_profileTypeAction.createWidget(this);
     auto profileConfigWidget    = channelAction->_profileConfigAction.createWidget(this);
     auto useSelectionWidget     = channelAction->_useSelectionAction.createWidget(this);
