@@ -1,7 +1,7 @@
 #include "ChannelAction.h"
-#include "ChannelsAction.h"
-#include "ConfigurationAction.h"
+#include "SettingsAction.h"
 #include "DimensionsViewerPlugin.h"
+#include "Layer.h"
 
 #include <Application.h>
 #include <PointData.h>
@@ -44,23 +44,29 @@ const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::dif
     { ChannelAction::DifferentialProfileConfig::AbsMax, "Max (absolute)" }
 });
 
-ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
-    PluginAction(channelsAction->getDimensionsViewerPlugin(), QString("Channel %1").arg(channelsAction->getNumChannels())),
+ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
+    WidgetAction(&layer),
     hdps::EventListener(),
-    _index(channelsAction->getNumChannels()),
-    _internalName(QString("channel_%1").arg(QString::number(channelsAction->getNumChannels()))),
+    _layer(layer),
+    _index(0),
+    _internalName("channel_0"),
     _displayName(displayName),
-    _channelsAction(channelsAction),
+    _removeAction(this, "Remove"),
     _enabledAction(this, _displayName),
     _dataset1Action(this, "Dataset 1"),
     _dataset2Action(this, "Dataset 2"),
     _profileTypeAction(this, "Profile type"),
     _profileConfigAction(this, "Profile configuration"),
     _useSelectionAction(this, "Selection"),
-    _stylingAction(this),
+    _stylingAction(layer, this),
     _spec()
 {
-    setEventCore(_dimensionsViewerPlugin->getCore());
+    setText("Settings");
+
+    //setEventCore(_dimensionsViewerPlugin->getCore());
+
+    _removeAction.setDefaultWidgetFlags(TriggerAction::Icon);
+    _removeAction.setIcon(Application::getIconFont("FontAwesome").getIcon("trash-alt"));
 
     _enabledAction.setChecked(false);
 
@@ -69,7 +75,7 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
     
     //_useSelectionAction.setChecked(configurationAction->getNumChannels() == 0);
 
-    const auto updateUI = [this, channelsAction](const bool& init = false) {
+    const auto updateUI = [this](const bool& init = false) {
         const auto numDatasets      = _dataset1Action.getOptions().count();
         const auto isEnabled        = _enabledAction.isChecked();
         const auto useSelection     = _useSelectionAction.isChecked();
@@ -97,13 +103,11 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
             _profileConfigAction.setCurrentIndex(1);
 
         _enabledAction.setEnabled(numDatasets >= 1);
-        _stylingAction.getColorAction().setEnabled(isEnabled);
         _dataset1Action.setEnabled(isEnabled && numDatasets >= 1 && _index >= 1);
         _dataset2Action.setEnabled(isEnabled && numDatasets >= 2);
         _profileTypeAction.setEnabled(isEnabled);
         _profileConfigAction.setEnabled(isEnabled);
         _useSelectionAction.setEnabled(isEnabled);
-        _stylingAction.setEnabled(isEnabled);
 
         _dataset2Action.setVisible(isDifferential);
     };
@@ -142,43 +146,7 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
         updateSpec();
     });
 
-    connect(&_useSelectionAction, &ToggleAction::toggled, [this, updateUI](bool state) {
-        updateUI();
-        updateSpec();
-    });
-
-    connect(&_stylingAction.getShowRangeAction(), &ToggleAction::toggled, [this](bool state) {
-        updateSpec();
-    });
-
-    connect(&_stylingAction.getShowPointsAction(), &ToggleAction::toggled, [this](bool state) {
-        updateSpec(true);
-    });
-
-    connect(&_stylingAction.getColorAction(), &ColorAction::colorChanged, [this](const QColor& color) {
-        updateSpec(true);
-    });
-
-    connect(&_stylingAction.getOpacityAction(), &DecimalAction::valueChanged, [this](const double& value) {
-        updateSpec(true);
-    });
-
-    connect(&_stylingAction.getPrimaryLineTypeAction(), &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
-        updateSpec(true);
-    });
-
-    connect(&_stylingAction.getPrimaryLineThicknessAction(), &DecimalAction::valueChanged, [this](const double& value) {
-        updateSpec(true);
-    });
-
-    connect(&_stylingAction.getSecondaryLineTypeAction(), &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
-        updateSpec(true);
-    });
-
-    connect(&_stylingAction.getSecondaryLineThicknessAction(), &DecimalAction::valueChanged, [this](const double& value) {
-        updateSpec(true);
-    });
-
+    /* TODO
     auto& dimensionsAction = getChannelsAction()->getConfigurationAction()->getDimensionsAction();
 
     connect(&dimensionsAction.getSelectionCenterIndexAction(), &IntegralAction::valueChanged, [this](const std::int32_t& value) {
@@ -198,6 +166,7 @@ ChannelAction::ChannelAction(ChannelsAction* channelsAction, const QString& disp
     connect(&subsamplingAction.getSubsamplingFactorAction(), &DecimalAction::valueChanged, [this](const double& value) {
         updateSpec();
     });
+    */
 
     updateUI(true);
 
@@ -249,6 +218,7 @@ std::int32_t ChannelAction::getNumDimensions() const
 
 void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 {
+    /* TODO
     if (getChannelsAction()->getConfigurationAction()->isLoading())
         return;
 
@@ -256,7 +226,6 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 
     std::vector<std::uint32_t> indices1, indices2;
 
-    /* TODO
     if (!ignoreDimensions) {
         Points* points1 = nullptr;
         Points* points2 = nullptr;
@@ -585,20 +554,14 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     setLayout(&_mainLayout);
-    
+
     _mainLayout.setMargin(0);
 
-    auto enabledWidget          = channelAction->_enabledAction.createWidget(this);
-    auto colorWidget            = channelAction->getStylingAction().getColorAction().createWidget(this);
     auto datasetNamesWidget     = new QWidget(this);
     auto datasetName1Widget     = channelAction->_dataset1Action.createWidget(this);
     auto datasetName2Widget     = channelAction->_dataset2Action.createWidget(this);
-    auto profileTypeWidget      = channelAction->_profileTypeAction.createWidget(this);
-    auto profileConfigWidget    = channelAction->_profileConfigAction.createWidget(this);
-    auto useSelectionWidget     = channelAction->_useSelectionAction.createWidget(this);
-    auto stylingWidget          = channelAction->_stylingAction.createCollapsedWidget(this);
 
-    auto datasetNamesLayout     = new QHBoxLayout();
+    auto datasetNamesLayout = new QHBoxLayout();
 
     datasetNamesLayout->setMargin(0);
     datasetNamesLayout->addWidget(datasetName1Widget);
@@ -606,14 +569,12 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
 
     datasetNamesWidget->setLayout(datasetNamesLayout);
 
-    profileTypeWidget->setFixedWidth(80);
-    profileConfigWidget->setFixedWidth(100);
-
-    _mainLayout.addWidget(enabledWidget);
-    _mainLayout.addWidget(colorWidget);
-    _mainLayout.addWidget(profileTypeWidget);
+    _mainLayout.addWidget(channelAction->_enabledAction.createWidget(this));
+    _mainLayout.addWidget(channelAction->_layer.getChannelAction().getStylingAction().getColorAction().createWidget(this));
+    _mainLayout.addWidget(channelAction->_profileTypeAction.createWidget(this));
     _mainLayout.addWidget(datasetNamesWidget, 1);
-    _mainLayout.addWidget(profileConfigWidget);
-    _mainLayout.addWidget(stylingWidget);
-    _mainLayout.addWidget(useSelectionWidget);
+    _mainLayout.addWidget(channelAction->_profileConfigAction.createWidget(this));
+    _mainLayout.addWidget(channelAction->_layer.getChannelAction().getStylingAction().createCollapsedWidget(this));
+    _mainLayout.addWidget(channelAction->_useSelectionAction.createWidget(this));
+    _mainLayout.addWidget(channelAction->_removeAction.createWidget(this));
 }

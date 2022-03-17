@@ -1,5 +1,5 @@
 #include "SubsamplingAction.h"
-#include "ConfigurationAction.h"
+#include "SettingsAction.h"
 #include "DimensionsViewerPlugin.h"
 
 #include <QGroupBox>
@@ -7,7 +7,7 @@
 using namespace hdps;
 using namespace hdps::gui;
 
-SubsamplingAction::SubsamplingAction(ConfigurationAction* configurationAction) :
+SubsamplingAction::SubsamplingAction(SettingsAction* configurationAction) :
     PluginAction(configurationAction->getDimensionsViewerPlugin(), "Configuration"),
     hdps::EventListener(),
     _subsamplingFactorAction(this, "Subsampling factor", 1.0, 100.0, 50.0, 50.0, 1),

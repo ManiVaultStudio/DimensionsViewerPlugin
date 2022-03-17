@@ -1,4 +1,4 @@
-#include "ConfigurationAction.h"
+#include "SettingsAction.h"
 #include "ChannelAction.h"
 #include "DimensionsViewerPlugin.h"
 
@@ -10,12 +10,12 @@
 using namespace hdps;
 using namespace hdps::gui;
 
-ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewerPlugin) :
+SettingsAction::SettingsAction(DimensionsViewerPlugin* dimensionsViewerPlugin) :
     PluginAction(dimensionsViewerPlugin, "Configuration"),
     hdps::EventListener(),
+    _layersAction(*this),
     _dimensionsAction(this),
     _subsamplingAction(this),
-    _channelsAction(this),
     _spec(),
     _isLoading(false)
 {
@@ -37,10 +37,11 @@ ConfigurationAction::ConfigurationAction(DimensionsViewerPlugin* dimensionsViewe
     */
 }
 
-QVariantMap ConfigurationAction::getSpec()
+QVariantMap SettingsAction::getSpec()
 {
     QVariantMap channels;
 
+    /*
     for (auto channel : _channelsAction.getChannels()) {
         const auto channelSpec = channel->getSpec();
 
@@ -49,11 +50,12 @@ QVariantMap ConfigurationAction::getSpec()
     }
 
     _spec["channels"] = channels;
+    */
 
     return _spec;
 }
 
-void ConfigurationAction::updateSecondaryDatasetNames()
+void SettingsAction::updateSecondaryDatasetNames()
 {
     /* TODO
     auto primaryChannel = _channelsAction.getChannels().first();
@@ -79,7 +81,7 @@ void ConfigurationAction::updateSecondaryDatasetNames()
     */
 }
 
-void ConfigurationAction::loadDataset(const QString& datasetName)
+void SettingsAction::loadDataset(const QString& datasetName)
 {
     /* TODO
     _isLoading = true;
@@ -118,22 +120,17 @@ void ConfigurationAction::loadDataset(const QString& datasetName)
     */
 }
 
-Dataset<Points> ConfigurationAction::getLoadedDataset()
-{
-    return _channelsAction.getChannels().first()->getDataset1Action().getCurrentDataset();
-}
-
-bool ConfigurationAction::isLoading() const
+bool SettingsAction::isLoading() const
 {
     return _isLoading;
 }
 
-bool ConfigurationAction::isLoaded() const
+bool SettingsAction::isLoaded() const
 {
     return false;// _channelsAction.getChannels().first()->isLoaded();
 }
 
-Datasets ConfigurationAction::getCompatibleDatasets(const QString& datasetName) const
+Datasets SettingsAction::getCompatibleDatasets(const QString& datasetName) const
 {
     Datasets datasets;
 
@@ -149,23 +146,18 @@ Datasets ConfigurationAction::getCompatibleDatasets(const QString& datasetName) 
     return datasets;
 }
 
-ConfigurationAction::Widget::Widget(QWidget* parent, ConfigurationAction* configurationAction) :
-    WidgetActionWidget(parent, configurationAction, State::Standard)
+SettingsAction::Widget::Widget(QWidget* parent, SettingsAction* settingsAction) :
+    WidgetActionWidget(parent, settingsAction, State::Standard)
 {
     setAutoFillBackground(true);
 
-    auto layout = new QVBoxLayout();
+    auto layout = new QHBoxLayout();
 
     setLayout(layout);
 
     layout->setMargin(3);
     layout->setSpacing(3);
 
-    auto topLayout = new QHBoxLayout();
-
-    topLayout->addWidget(configurationAction->_dimensionsAction.createWidget(this), 1);
-    topLayout->addWidget(configurationAction->_subsamplingAction.createWidget(this));
-
-    layout->addLayout(topLayout);
-    layout->addWidget(configurationAction->_channelsAction.createWidget(this));
+    layout->addWidget(settingsAction->getLayersAction().createCollapsedWidget(this));
+    layout->addStretch(1);
 }

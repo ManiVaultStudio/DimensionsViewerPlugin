@@ -1,6 +1,6 @@
 #include "DimensionsViewerPlugin.h"
 #include "DimensionsViewerWidget.h"
-#include "ConfigurationAction.h"
+#include "SettingsAction.h"
 
 #include <widgets/DropWidget.h>
 
@@ -15,7 +15,8 @@ using namespace hdps::gui;
 DimensionsViewerPlugin::DimensionsViewerPlugin(const PluginFactory* factory) :
     ViewPlugin(factory),
     _dimensionsViewerWidget(nullptr),
-    _configurationAction(nullptr),
+    _layersModel(this),
+    _settingsAction(nullptr),
     _dropWidget(nullptr)
 {
 }
@@ -25,7 +26,7 @@ void DimensionsViewerPlugin::init()
     _widget.setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     _dimensionsViewerWidget = new DimensionsViewerWidget(this);
-    _configurationAction    = new ConfigurationAction(this);
+    _settingsAction    = new SettingsAction(this);
     _dropWidget             = new DropWidget(_dimensionsViewerWidget);
 
     auto mainLayout = new QVBoxLayout();
@@ -33,8 +34,8 @@ void DimensionsViewerPlugin::init()
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
 
+    mainLayout->addWidget(_settingsAction->createWidget(&_widget));
     mainLayout->addWidget(_dimensionsViewerWidget, 1);
-    mainLayout->addWidget(_configurationAction->createWidget(&_widget));
 
     _widget.setLayout(mainLayout);
 
@@ -54,20 +55,20 @@ void DimensionsViewerPlugin::init()
         if (!dataTypes.contains(dataType))
             dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", "exclamation-circle", false);
 
-        if (candidateDataset == _configurationAction->getLoadedDataset()) {
-            dropRegions << new DropWidget::DropRegion(this, "Warning", "Data already loaded", false);
-        }
-        else {
-            if (dataType == PointType) {
-                dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDataset->getGuiName()), "map-marker-alt", true, [this, candidateDataset]() {
-                    _configurationAction->loadDataset(candidateDataset->getGuiName());
-                    _dropWidget->setShowDropIndicator(false);
-                });
-            }
+        if (dataType == PointType) {
+            dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDataset->getGuiName()), "map-marker-alt", true, [this, candidateDataset]() {
+                _layersModel.addLayer(new Layer(this, candidateDataset->getGuiName()));
+                _dropWidget->setShowDropIndicator(false);
+            });
         }
 
         return dropRegions;
     });
+}
+
+LayersModel& DimensionsViewerPlugin::getLayersModel()
+{
+    return _layersModel;
 }
 
 QIcon DimensionsViewerPluginFactory::getIcon() const

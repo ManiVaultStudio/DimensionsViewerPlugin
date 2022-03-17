@@ -1,6 +1,6 @@
 #include "SpecSynchronizer.h"
 #include "DimensionsViewerPlugin.h"
-#include "ConfigurationAction.h"
+#include "SettingsAction.h"
 
 #include <QDebug>
 

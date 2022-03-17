@@ -1,7 +1,9 @@
-#include "StylingAction.h"
+#include "ChannelStylingAction.h"
 #include "ChannelAction.h"
 #include "DimensionsViewerPlugin.h"
-#include "Application.h"
+#include "Layer.h"
+
+#include <Application.h>
 
 #include <QDebug>
 #include <QLabel>
@@ -11,22 +13,22 @@
 using namespace hdps;
 using namespace hdps::gui;
 
-const QMap<StylingAction::LineType, QString> StylingAction::lineTypes = QMap<StylingAction::LineType, QString>({
-    { StylingAction::LineType::Solid, "Solid" },
-    { StylingAction::LineType::Dash, "Dash" },
-    { StylingAction::LineType::Dot, "Dot" },
-    { StylingAction::LineType::DashDot, "DashDot" },
-    { StylingAction::LineType::DashDotDot, "DashDotDot" }
+const QMap<ChannelStylingAction::LineType, QString> ChannelStylingAction::lineTypes = QMap<ChannelStylingAction::LineType, QString>({
+    { ChannelStylingAction::LineType::Solid, "Solid" },
+    { ChannelStylingAction::LineType::Dash, "Dash" },
+    { ChannelStylingAction::LineType::Dot, "Dot" },
+    { ChannelStylingAction::LineType::DashDot, "DashDot" },
+    { ChannelStylingAction::LineType::DashDotDot, "DashDotDot" }
 });
 
-const QVector<QColor> StylingAction::defaultColors = QVector<QColor>({
+const QVector<QColor> ChannelStylingAction::defaultColors = QVector<QColor>({
     QColor::fromHsv(109, 182, 200),
     QColor::fromHsv(204, 179, 200),
     QColor::fromHsv(300, 150, 200),
     QColor::fromHsv(40, 240, 200)
 });
 
-QIcon StylingAction::LineTypesModel::getDecorationRole(const LineType& lineType) const
+QIcon ChannelStylingAction::LineTypesModel::getDecorationRole(const LineType& lineType) const
 {
     QPixmap pixmap(iconSize);
 
@@ -70,10 +72,11 @@ QIcon StylingAction::LineTypesModel::getDecorationRole(const LineType& lineType)
     return QIcon(pixmap);
 }
 
-const QSize StylingAction::LineTypesModel::iconSize = QSize(24, 12);
+const QSize ChannelStylingAction::LineTypesModel::iconSize = QSize(24, 12);
 
-StylingAction::StylingAction(ChannelAction* channelAction) :
-    PluginAction(channelAction->getDimensionsViewerPlugin(), "Styling"),
+ChannelStylingAction::ChannelStylingAction(Layer& layer, ChannelAction* channelConfigurationAction) :
+    WidgetAction(&layer),
+    _layer(layer),
     _showRangeAction(this, "Show min/max range"),
     _showPointsAction(this, "Show points"),
     _colorAction(this, "Color"),
@@ -83,6 +86,7 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _secondaryLineTypeAction(this, "Line type"),
     _secondaryLineThicknessAction(this, "Thickness")
 {
+    setText("Styling");
     setIcon(Application::getIconFont("FontAwesome").getIcon("paint-brush"));
 
     _showRangeAction.setCheckable(true);
@@ -96,7 +100,7 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _opacityAction.setSuffix("%");
     _opacityAction.setValue(100.0);
 
-    const auto color = defaultColors[channelAction->getIndex()];
+    const auto color = defaultColors[_layer.getChannelAction().getIndex()];
 
     _colorAction.setColor(color);
     _colorAction.setDefaultColor(color);
@@ -123,32 +127,71 @@ StylingAction::StylingAction(ChannelAction* channelAction) :
     _secondaryLineThicknessAction.setValue(1.0f);
     _secondaryLineThicknessAction.setDefaultValue(1.0f);
 
-    const auto updateShowRange = [this, channelAction]() {
-        _showRangeAction.setEnabled(!channelAction->isDifferential());
+    const auto updateShowRange = [this]() {
+        _showRangeAction.setEnabled(!_layer.getChannelAction().isDifferential());
     };
 
-    connect(&channelAction->getProfileTypeAction(), &OptionAction::currentIndexChanged, [this, updateShowRange](const std::int32_t& currentIndex) {
+    connect(&_layer.getChannelAction().getProfileTypeAction(), &OptionAction::currentIndexChanged, [this, updateShowRange](const std::int32_t& currentIndex) {
         updateShowRange();
     });
 
     updateShowRange();
+
+    /* TODO
+    connect(&_useSelectionAction, &ToggleAction::toggled, [this, updateUI](bool state) {
+        updateUI();
+        updateSpec();
+    });
+
+    connect(&_stylingAction.getShowRangeAction(), &ToggleAction::toggled, [this](bool state) {
+        updateSpec();
+    });
+
+    connect(&_stylingAction.getShowPointsAction(), &ToggleAction::toggled, [this](bool state) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getColorAction(), &ColorAction::colorChanged, [this](const QColor& color) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getOpacityAction(), &DecimalAction::valueChanged, [this](const double& value) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getPrimaryLineTypeAction(), &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getPrimaryLineThicknessAction(), &DecimalAction::valueChanged, [this](const double& value) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getSecondaryLineTypeAction(), &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
+        updateSpec(true);
+    });
+
+    connect(&_stylingAction.getSecondaryLineThicknessAction(), &DecimalAction::valueChanged, [this](const double& value) {
+        updateSpec(true);
+    });
+    */
 }
 
-StylingAction::Widget::Widget(QWidget* parent, StylingAction* stylingAction) :
-    WidgetActionWidget(parent, stylingAction, State::Standard),
+ChannelStylingAction::Widget::Widget(QWidget* parent, ChannelStylingAction* channelStylingAction) :
+    WidgetActionWidget(parent, channelStylingAction, State::Standard),
     _layout(new QGridLayout())
 {
-    auto showRangeWidget                = stylingAction->_showRangeAction.createWidget(this);
-    auto showPointsWidget               = stylingAction->_showPointsAction.createWidget(this);
-    auto colorWidget                    = stylingAction->_colorAction.createWidget(this);
-    auto opacityWidget                  = stylingAction->_opacityAction.createWidget(this);
-    auto primaryLineTypeWidget          = stylingAction->_primaryLineTypeAction.createWidget(this);
-    auto primaryLineThicknessWidget     = stylingAction->_primaryLineThicknessAction.createWidget(this);
-    auto secondaryLineTypeWidget        = stylingAction->_secondaryLineTypeAction.createWidget(this);
-    auto secondaryLineThicknessWidget   = stylingAction->_secondaryLineThicknessAction.createWidget(this);
+    auto showRangeWidget                = channelStylingAction->_showRangeAction.createWidget(this);
+    auto showPointsWidget               = channelStylingAction->_showPointsAction.createWidget(this);
+    auto colorWidget                    = channelStylingAction->_colorAction.createWidget(this);
+    auto opacityWidget                  = channelStylingAction->_opacityAction.createWidget(this);
+    auto primaryLineTypeWidget          = channelStylingAction->_primaryLineTypeAction.createWidget(this);
+    auto primaryLineThicknessWidget     = channelStylingAction->_primaryLineThicknessAction.createWidget(this);
+    auto secondaryLineTypeWidget        = channelStylingAction->_secondaryLineTypeAction.createWidget(this);
+    auto secondaryLineThicknessWidget   = channelStylingAction->_secondaryLineThicknessAction.createWidget(this);
 
     opacityWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-    
+
     auto miscellaneousLayout = new QHBoxLayout();
 
     miscellaneousLayout->addWidget(showRangeWidget);
@@ -179,5 +222,5 @@ StylingAction::Widget::Widget(QWidget* parent, StylingAction* stylingAction) :
 
     _layout->addLayout(secondaryLayout, 4, 1);
 
-    setLayout(_layout);
+    setPopupLayout(_layout);
 }

@@ -1,5 +1,5 @@
 #include "DimensionsAction.h"
-#include "ConfigurationAction.h"
+#include "SettingsAction.h"
 #include "DimensionsViewerPlugin.h"
 
 #include <QDebug>
@@ -10,7 +10,7 @@
 using namespace hdps;
 using namespace hdps::gui;
 
-DimensionsAction::DimensionsAction(ConfigurationAction* configurationAction) :
+DimensionsAction::DimensionsAction(SettingsAction* configurationAction) :
     PluginAction(configurationAction->getDimensionsViewerPlugin(), "Configuration"),
     hdps::EventListener(),
     _selectionCenterIndexAction(this, "Selection center dimension index"),

@@ -4,7 +4,7 @@
 
 #include "event/EventListener.h"
 
-class ConfigurationAction;
+class SettingsAction;
 
 class DimensionsAction : public PluginAction, public hdps::EventListener
 {
@@ -20,7 +20,7 @@ protected:
     };
 
 public:
-    DimensionsAction(ConfigurationAction* configurationAction);
+    DimensionsAction(SettingsAction* configurationAction);
 
     hdps::gui::IntegralAction& getSelectionCenterIndexAction() { return _selectionCenterIndexAction; }
     hdps::gui::OptionAction& getSelectionCenterNameAction() { return _selectionCenterNameAction; }

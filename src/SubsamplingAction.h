@@ -4,7 +4,7 @@
 
 #include "event/EventListener.h"
 
-class ConfigurationAction;
+class SettingsAction;
 
 class SubsamplingAction : public PluginAction, public hdps::EventListener
 {
@@ -20,7 +20,7 @@ protected:
     };
 
 public:
-    SubsamplingAction(ConfigurationAction* configurationAction);
+    SubsamplingAction(SettingsAction* configurationAction);
 
     hdps::gui::DecimalAction& getSubsamplingFactorAction() { return _subsamplingFactorAction; }
 

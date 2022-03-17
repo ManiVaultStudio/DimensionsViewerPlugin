@@ -1,10 +1,13 @@
 #pragma once
 
 #include "PluginAction.h"
-#include "StylingAction.h"
+#include "ChannelStylingAction.h"
 
 #include <event/EventListener.h>
+
+#include <actions/WidgetAction.h>
 #include <actions/DatasetPickerAction.h>
+
 #include <Dataset.h>
 
 #include <QVector>
@@ -12,6 +15,7 @@
 #include <QVariantMap>
 #include <QHBoxLayout>
 
+class Layer;
 class Points;
 class ChannelsAction;
 
@@ -25,7 +29,7 @@ using namespace hdps::gui;
  * 
  * @author T. Kroes
  */
-class ChannelAction : public PluginAction, public hdps::EventListener {
+class ChannelAction : public WidgetAction, public hdps::EventListener {
 
 public:
 
@@ -71,20 +75,21 @@ public:
     static const QMap<DifferentialProfileConfig, QString> differentialProfileConfigs;
 
 protected:
+
     class Widget : public hdps::gui::WidgetActionWidget {
     public:
-        Widget(QWidget* parent, ChannelAction* channelAction);
+        Widget(QWidget* parent, ChannelAction* channelConfigurationAction);
 
     protected:
         QHBoxLayout     _mainLayout;
     };
 
     QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
-        return new ChannelAction::Widget(parent, this);
+        return new Widget(parent, this);
     };
 
 protected:
-	ChannelAction(ChannelsAction* channelsAction, const QString& displayName, const ProfileType& profileType = ProfileType::Mean);
+	ChannelAction(Layer& layer, const QString& displayName, const ProfileType& profileType = ProfileType::Mean);
 
 public:
     std::uint32_t getIndex() const {
@@ -102,16 +107,6 @@ public:
         return _profileTypeAction.getCurrentIndex() == static_cast<std::uint32_t>(ProfileType::Differential);
     }
 
-public: // Action getters
-
-    ChannelsAction* getChannelsAction() { return _channelsAction; }
-    hdps::gui::ToggleAction& getEnabledAction() { return _enabledAction; }
-    DatasetPickerAction& getDataset1Action() { return _dataset1Action; }
-    DatasetPickerAction& getDataset2Action() { return _dataset2Action; }
-    hdps::gui::OptionAction& getProfileTypeAction() { return _profileTypeAction; }
-    hdps::gui::OptionAction& getBandTypeAction() { return _profileConfigAction; }
-    StylingAction& getStylingAction() { return _stylingAction; }
-    
 public: // Point data wrapper
 
     QStringList getDimensionNames() const;
@@ -164,21 +159,31 @@ private:
      */
     Dataset<Points> getPoints2() const;
 
+public: // Action getters
+
+    ToggleAction& getEnabledAction() { return _enabledAction; }
+    DatasetPickerAction& getDataset1Action() { return _dataset1Action; }
+    DatasetPickerAction& getDataset2Action() { return _dataset2Action; }
+    OptionAction& getProfileTypeAction() { return _profileTypeAction; }
+    OptionAction& getBandTypeAction() { return _profileConfigAction; }
+    ChannelStylingAction& getStylingAction() { return _stylingAction; }
+    TriggerAction& getRemoveAction() { return _removeAction; }
+
 protected:
+    Layer&                      _layer;                         /** Reference to owning layer */
 	const std::uint32_t         _index;                         /** Channel index */
 	const QString               _internalName;                  /** Channel internal name (e.g. channel1, channel2) */
 	const QString               _displayName;                   /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
-    ChannelsAction*             _channelsAction;                /** Pointer to the owning channels action */
     hdps::gui::ToggleAction     _enabledAction;                 /** Channel on/off action */
     DatasetPickerAction         _dataset1Action;                /** Dataset picker action for the first dataset */
     DatasetPickerAction         _dataset2Action;                /** Dataset picker action for the second dataset */
     hdps::gui::OptionAction     _profileTypeAction;             /** Profile type picker action */
     hdps::gui::OptionAction     _profileConfigAction;           /** Profile configuration action */
     hdps::gui::ToggleAction     _useSelectionAction;            /** Whether to respect the selection or not */
-    StylingAction               _stylingAction;                 /** Action for configuring the channel styling */
+    ChannelStylingAction        _stylingAction;
+    TriggerAction               _removeAction;                  /** Channel remove action */
     QVariantMap                 _spec;                          /** Specification for use in JS visualization client (Vega) */
 
-    friend class ChannelsAction;
-    friend class ConfigurationAction;
-    friend class StylingAction;
+    friend class Layer;
+    friend class ChannelStylingAction;
 };

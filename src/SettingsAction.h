@@ -1,32 +1,28 @@
 #pragma once
 
 #include "DimensionsAction.h"
+#include "LayersAction.h"
 #include "SubsamplingAction.h"
-#include "ChannelsAction.h"
 
 #include <event/EventListener.h>
 
 using namespace hdps;
 
-class ConfigurationAction : public PluginAction, public hdps::EventListener
+class SettingsAction : public PluginAction, public hdps::EventListener
 {
 protected:
 
     class Widget : public hdps::gui::WidgetActionWidget {
     public:
-        Widget(QWidget* parent, ConfigurationAction* configurationAction);
+        Widget(QWidget* parent, SettingsAction* settingsAction);
     };
 
     QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
-        return new ConfigurationAction::Widget(parent, this);
+        return new SettingsAction::Widget(parent, this);
     };
 
 public:
-	ConfigurationAction(DimensionsViewerPlugin* dimensionsViewerPlugin);
-
-    DimensionsAction& getDimensionsAction() { return _dimensionsAction; }
-    SubsamplingAction& getSubsamplingAction() { return _subsamplingAction; }
-    ChannelsAction& getChannelsAction() { return _channelsAction; }
+    SettingsAction(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
     QVariantMap getSpec();
 
@@ -35,17 +31,22 @@ public:
 
     void updateSecondaryDatasetNames();
     void loadDataset(const QString& datasetName);
-    Dataset<Points> getLoadedDataset();
     bool isLoading() const;
     bool isLoaded() const;
 
 protected:
     Datasets getCompatibleDatasets(const QString& datasetName) const;
 
+public: // Action getters
+
+    LayersAction& getLayersAction() { return _layersAction; }
+    DimensionsAction& getDimensionsAction() { return _dimensionsAction; }
+    SubsamplingAction& getSubsamplingAction() { return _subsamplingAction; }
+
 protected:
+    LayersAction        _layersAction;
     DimensionsAction    _dimensionsAction;
     SubsamplingAction   _subsamplingAction;
-    ChannelsAction      _channelsAction;
     QVariantMap         _spec;
     bool                _isLoading;
 

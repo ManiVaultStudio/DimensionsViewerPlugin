@@ -11,35 +11,72 @@ set(CMAKE_AUTOUIC ON)
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /NODEFAULTLIB:LIBCMT")
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /NODEFAULTLIB:LIBCMT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif(MSVC)
 
 find_package(OpenGL REQUIRED)
 find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
-file(GLOB H src/*.h)
-file(GLOB CPP src/*.cpp)
-file(GLOB UIS src/*.ui)
-file(GLOB WEB src/res/web/*.html src/res/web/*.js)
-file(GLOB JSON src/*.json)
-file(GLOB QRC src/*.qrc)
+set(PLUGIN
+    src/DimensionsViewerPlugin.h
+    src/DimensionsViewerPlugin.cpp
+    src/SpecSynchronizer.h
+    src/SpecSynchronizer.cpp
+)
 
-set(SOURCES ${H} ${CPP})
-set(WEB ${WEB})
-set(AUX ${JSON} ${QRC})
+set(MODEL
+    src/LayersModel.h
+    src/LayersModel.cpp
+    src/Layer.h
+    src/Layer.cpp
+)
+
+set(ACTIONS
+    src/PluginAction.h
+    src/PluginAction.cpp
+    src/ChannelAction.h
+    src/ChannelAction.cpp
+    src/SettingsAction.h
+    src/SettingsAction.cpp
+    src/DimensionsAction.h
+    src/DimensionsAction.cpp
+    src/SubsamplingAction.h
+    src/SubsamplingAction.cpp
+    src/ChannelStylingAction.h
+    src/ChannelStylingAction.cpp
+    src/LayersAction.h
+    src/LayersAction.cpp
+)
+
+set(WIDGETS
+    src/DimensionsViewerWidget.h
+    src/DimensionsViewerWidget.cpp
+)
+
+set(WEB
+    src/res/web/DimensionsViewer.html
+    src/res/web/DimensionsViewer.js
+)
+
+set(AUX
+    src/Resources.qrc
+    src/DimensionsViewerPlugin.json
+)
+
+set(SOURCES ${PLUGIN} ${ACTIONS} ${MODEL} ${WIDGETS})
 
 source_group(Plugin FILES ${SOURCES})
-source_group(UI FILES ${UIS})
+source_group(Actions FILES ${ACTIONS})
+source_group(Model FILES ${MODEL})
+source_group(Widget FILES ${WIDGETS})
 source_group(Web FILES ${WEB})
 source_group(Aux FILES ${AUX})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
 
-QT5_WRAP_UI(UI_HEADERS ${UIS})
-
-add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${WEB} ${AUX} ${WEB})
+add_library(${PROJECT} SHARED ${SOURCES} ${WEB} ${AUX} ${WEB} ${WIDGETS})
 
 target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 

@@ -2,7 +2,9 @@
 
 #include <ViewPlugin.h>
 
-#include "PointData.h"
+#include "LayersModel.h"
+
+#include <PointData.h>
 
 #include <QMap>
 #include <QStringList>
@@ -13,7 +15,7 @@ using hdps::plugin::ViewPlugin;
 
 class DimensionsViewerWidget;
 class SettingsWidget;
-class ConfigurationAction;
+class SettingsAction;
 
 namespace hdps {
     namespace gui {
@@ -34,11 +36,16 @@ public:
     /** Returns a pointer to the core interface */
     hdps::CoreInterface* getCore() { return _core; }
 
-    ConfigurationAction& getConfigurationAction() { return *_configurationAction; }
+    LayersModel& getLayersModel();
+
+public: // Action getters
+
+    SettingsAction& getConfigurationAction() { return *_settingsAction; }
 
 private:
     DimensionsViewerWidget*     _dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
-    ConfigurationAction*        _configurationAction;
+    LayersModel                 _layersModel;
+    SettingsAction*             _settingsAction;
     hdps::gui::DropWidget*      _dropWidget;
 };
 
