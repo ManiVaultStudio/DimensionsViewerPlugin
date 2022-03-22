@@ -137,44 +137,37 @@ ChannelStylingAction::ChannelStylingAction(Layer& layer, ChannelAction* channelC
 
     updateShowRange();
 
-    /* TODO
-    connect(&_useSelectionAction, &ToggleAction::toggled, [this, updateUI](bool state) {
-        updateUI();
-        updateSpec();
+    connect(&_showRangeAction, &ToggleAction::toggled, [this](bool state) {
+        _layer.getChannelAction().updateSpec();
     });
 
-    connect(&_stylingAction.getShowRangeAction(), &ToggleAction::toggled, [this](bool state) {
-        updateSpec();
+    connect(&_showPointsAction, &ToggleAction::toggled, [this](bool state) {
+        _layer.getChannelAction().updateSpec(true);
     });
 
-    connect(&_stylingAction.getShowPointsAction(), &ToggleAction::toggled, [this](bool state) {
-        updateSpec(true);
+    connect(&_colorAction, &ColorAction::colorChanged, [this](const QColor& color) {
+        _layer.getChannelAction().updateSpec(true);
     });
 
-    connect(&_stylingAction.getColorAction(), &ColorAction::colorChanged, [this](const QColor& color) {
-        updateSpec(true);
+    connect(&_opacityAction, &DecimalAction::valueChanged, [this](const double& value) {
+        _layer.getChannelAction().updateSpec(true);
     });
 
-    connect(&_stylingAction.getOpacityAction(), &DecimalAction::valueChanged, [this](const double& value) {
-        updateSpec(true);
+    connect(&_primaryLineTypeAction, &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
+        _layer.getChannelAction().updateSpec(true);
     });
 
-    connect(&_stylingAction.getPrimaryLineTypeAction(), &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
-        updateSpec(true);
+    connect(&_primaryLineThicknessAction, &DecimalAction::valueChanged, [this](const double& value) {
+        _layer.getChannelAction().updateSpec(true);
     });
 
-    connect(&_stylingAction.getPrimaryLineThicknessAction(), &DecimalAction::valueChanged, [this](const double& value) {
-        updateSpec(true);
+    connect(&_secondaryLineTypeAction, &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
+        _layer.getChannelAction().updateSpec(true);
     });
 
-    connect(&_stylingAction.getSecondaryLineTypeAction(), &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
-        updateSpec(true);
+    connect(&_secondaryLineThicknessAction, &DecimalAction::valueChanged, [this](const double& value) {
+        _layer.getChannelAction().updateSpec(true);
     });
-
-    connect(&_stylingAction.getSecondaryLineThicknessAction(), &DecimalAction::valueChanged, [this](const double& value) {
-        updateSpec(true);
-    });
-    */
 }
 
 ChannelStylingAction::Widget::Widget(QWidget* parent, ChannelStylingAction* channelStylingAction) :

@@ -1,14 +1,13 @@
 #pragma once
 
-#include "PluginAction.h"
-#include "ChannelStylingAction.h"
-
-#include <event/EventListener.h>
-
 #include <actions/WidgetAction.h>
+#include <actions/TriggerAction.h>
+#include <actions/ToggleAction.h>
 #include <actions/DatasetPickerAction.h>
 
 #include <Dataset.h>
+
+#include "ChannelStylingAction.h"
 
 #include <QVector>
 #include <QColor>
@@ -29,7 +28,8 @@ using namespace hdps::gui;
  * 
  * @author T. Kroes
  */
-class ChannelAction : public WidgetAction, public hdps::EventListener {
+class ChannelAction : public WidgetAction
+{
 
 public:
 
@@ -89,7 +89,7 @@ protected:
     };
 
 protected:
-	ChannelAction(Layer& layer, const QString& displayName, const ProfileType& profileType = ProfileType::Mean);
+    ChannelAction(Layer& layer, const QString& displayName, const ProfileType& profileType = ProfileType::Mean);
 
 public:
     std::uint32_t getIndex() const {
@@ -148,16 +148,16 @@ private:
     void updateSpec(const bool& ignoreDimensions = false);
 
     /**
-     * Get the first points dataset
-     * @return Smart pointer to the first points dataset
+     * Get the primary points dataset
+     * @return Smart pointer to the primary points dataset
      */
-    Dataset<Points> getPoints1() const;
+    Dataset<Points> getPrimaryDataset() const;
 
     /**
-     * Get the second points dataset
-     * @return Smart pointer to the second points dataset
+     * Get the differential points dataset (if any)
+     * @return Smart pointer to the differential points dataset (if any)
      */
-    Dataset<Points> getPoints2() const;
+    Dataset<Points> getDifferentialDataset() const;
 
 public: // Action getters
 

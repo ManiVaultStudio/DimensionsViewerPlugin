@@ -40,7 +40,7 @@ public:
 
 public: // Action getters
 
-    SettingsAction& getConfigurationAction() { return *_settingsAction; }
+    SettingsAction& getSettingsAction() { return *_settingsAction; }
 
 private:
     DimensionsViewerWidget*     _dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */

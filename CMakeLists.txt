@@ -34,8 +34,6 @@ set(MODEL
 )
 
 set(ACTIONS
-    src/PluginAction.h
-    src/PluginAction.cpp
     src/ChannelAction.h
     src/ChannelAction.cpp
     src/SettingsAction.h

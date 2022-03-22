@@ -1,4 +1,5 @@
 #include "LayersModel.h"
+#include "SettingsAction.h"
 
 #include <Application.h>
 #include <util/Exception.h>
@@ -290,6 +291,20 @@ void LayersModel::addLayer(Layer* layer)
             });
         }
         endInsertRows();
+
+        if (_layers.count() == 1) {
+            const auto numPoints        = layer->getDatasetReference()->getNumPoints();
+            const auto numDimensions    = layer->getDatasetReference()->getNumDimensions();
+            const auto updateDuringDrag = numPoints < 100000;
+
+            auto& dimensionsAction = layer->getSettingsAction().getDimensionsAction();
+
+            dimensionsAction.getSelectionCenterIndexAction().setUpdateDuringDrag(updateDuringDrag);
+            dimensionsAction.getSelectionCenterIndexAction().setMaximum(numDimensions - 1);
+            dimensionsAction.getSelectionCenterIndexAction().setValue(static_cast<std::int32_t>(floorf(static_cast<float>(numDimensions) / 2.0f)));
+            dimensionsAction.getSelectionCenterNameAction().setOptions(layer->getChannelAction().getDimensionNames());
+            dimensionsAction.getSelectionRadiusAction().setUpdateDuringDrag(updateDuringDrag);
+        }
     }
     catch (std::exception& e)
     {

@@ -1,12 +1,15 @@
 #pragma once
 
-#include "PluginAction.h"
+#include <actions/WidgetAction.h>
+#include <actions/IntegralAction.h>
+#include <actions/OptionAction.h>
+#include <actions/ToggleAction.h>
 
-#include "event/EventListener.h"
+using namespace hdps::gui;
 
 class SettingsAction;
 
-class DimensionsAction : public PluginAction, public hdps::EventListener
+class DimensionsAction : public WidgetAction
 {
 protected:
 
@@ -20,17 +23,20 @@ protected:
     };
 
 public:
-    DimensionsAction(SettingsAction* configurationAction);
+    DimensionsAction(SettingsAction& settingsAction);
 
-    hdps::gui::IntegralAction& getSelectionCenterIndexAction() { return _selectionCenterIndexAction; }
-    hdps::gui::OptionAction& getSelectionCenterNameAction() { return _selectionCenterNameAction; }
-    hdps::gui::IntegralAction& getSelectionRadiusAction() { return _selectionRadiusAction; }
-    hdps::gui::ToggleAction& getShowNamesAction() { return _showNamesAction; }
+public: // Action getters
+
+    IntegralAction& getSelectionCenterIndexAction() { return _selectionCenterIndexAction; }
+    OptionAction& getSelectionCenterNameAction() { return _selectionCenterNameAction; }
+    IntegralAction& getSelectionRadiusAction() { return _selectionRadiusAction; }
+    ToggleAction& getShowNamesAction() { return _showNamesAction; }
 
 protected:
-    hdps::gui::IntegralAction   _selectionCenterIndexAction;
-    hdps::gui::OptionAction     _selectionCenterNameAction;
-    hdps::gui::IntegralAction   _selectionRadiusAction;
-    hdps::gui::ToggleAction     _showNamesAction;
-    QStringList                 _dimensionNames;
+    SettingsAction&     _settingsAction;
+    IntegralAction      _selectionCenterIndexAction;
+    OptionAction        _selectionCenterNameAction;
+    IntegralAction      _selectionRadiusAction;
+    ToggleAction        _showNamesAction;
+    QStringList         _dimensionNames;
 };

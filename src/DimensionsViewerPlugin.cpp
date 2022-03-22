@@ -26,7 +26,7 @@ void DimensionsViewerPlugin::init()
     _widget.setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     _dimensionsViewerWidget = new DimensionsViewerWidget(this);
-    _settingsAction    = new SettingsAction(this);
+    _settingsAction         = new SettingsAction(*this);
     _dropWidget             = new DropWidget(_dimensionsViewerWidget);
 
     auto mainLayout = new QVBoxLayout();
@@ -57,7 +57,7 @@ void DimensionsViewerPlugin::init()
 
         if (dataType == PointType) {
             dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDataset->getGuiName()), "map-marker-alt", true, [this, candidateDataset]() {
-                _layersModel.addLayer(new Layer(this, candidateDataset->getGuiName()));
+                _layersModel.addLayer(new Layer(*_settingsAction, candidateDataset));
                 _dropWidget->setShowDropIndicator(false);
             });
         }

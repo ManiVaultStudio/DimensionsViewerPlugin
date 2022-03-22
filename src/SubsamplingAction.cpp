@@ -7,9 +7,9 @@
 using namespace hdps;
 using namespace hdps::gui;
 
-SubsamplingAction::SubsamplingAction(SettingsAction* configurationAction) :
-    PluginAction(configurationAction->getDimensionsViewerPlugin(), "Configuration"),
-    hdps::EventListener(),
+SubsamplingAction::SubsamplingAction(SettingsAction& settingsAction) :
+    WidgetAction(&settingsAction),
+    _settingsAction(settingsAction),
     _subsamplingFactorAction(this, "Subsampling factor", 1.0, 100.0, 50.0, 50.0, 1),
     _subsamplingFactorOneOverEighthAction(this, "12.5%"),
     _subsamplingFactorOneOverFourAction(this, "25.0%"),
@@ -18,7 +18,6 @@ SubsamplingAction::SubsamplingAction(SettingsAction* configurationAction) :
     setCheckable(true);
     setChecked(true);
     setEnabled(false);
-    setEventCore(_dimensionsViewerPlugin->getCore());
 
     _subsamplingFactorAction.setUpdateDuringDrag(false);
     _subsamplingFactorAction.setSuffix("%");
@@ -26,10 +25,6 @@ SubsamplingAction::SubsamplingAction(SettingsAction* configurationAction) :
     const auto updateUI = [this]() -> void {
         //_subsamplingFactorAction.setEnabled(isChecked());
     };
-
-    connect(this, &PluginAction::toggled, [this, updateUI]() {
-        updateUI();
-    });
 
     connect(&_subsamplingFactorOneOverEighthAction, &TriggerAction::triggered, [this]() {
         _subsamplingFactorAction.setValue(12.5);

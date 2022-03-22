@@ -1,16 +1,18 @@
 #pragma once
 
-#include "PluginAction.h"
+#include <actions/WidgetAction.h>
+#include <actions/DecimalAction.h>
+#include <actions/TriggerAction.h>
 
-#include "event/EventListener.h"
+using namespace hdps::gui;
 
 class SettingsAction;
 
-class SubsamplingAction : public PluginAction, public hdps::EventListener
+class SubsamplingAction : public WidgetAction
 {
 protected:
 
-    class Widget : public hdps::gui::WidgetActionWidget {
+    class Widget : public WidgetActionWidget {
     public:
         Widget(QWidget* parent, SubsamplingAction* subsamplingAction);
     };
@@ -20,16 +22,19 @@ protected:
     };
 
 public:
-    SubsamplingAction(SettingsAction* configurationAction);
-
-    hdps::gui::DecimalAction& getSubsamplingFactorAction() { return _subsamplingFactorAction; }
+    SubsamplingAction(SettingsAction& settingsAction);
 
     bool shouldSubsample() const;
     double getNormalizedFactor() const;
 
+public: // Action getters
+
+    DecimalAction& getSubsamplingFactorAction() { return _subsamplingFactorAction; }
+
 protected:
-    hdps::gui::DecimalAction    _subsamplingFactorAction;
-    hdps::gui::TriggerAction    _subsamplingFactorOneOverEighthAction;
-    hdps::gui::TriggerAction    _subsamplingFactorOneOverFourAction;
-    hdps::gui::TriggerAction    _subsamplingFactorOneOverTwoAction;
+    SettingsAction&     _settingsAction;
+    DecimalAction       _subsamplingFactorAction;
+    TriggerAction       _subsamplingFactorOneOverEighthAction;
+    TriggerAction       _subsamplingFactorOneOverFourAction;
+    TriggerAction       _subsamplingFactorOneOverTwoAction;
 };

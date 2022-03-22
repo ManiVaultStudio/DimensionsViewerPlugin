@@ -1,14 +1,16 @@
 #pragma once
 
+#include <actions/WidgetAction.h>
+
 #include "DimensionsAction.h"
 #include "LayersAction.h"
 #include "SubsamplingAction.h"
 
-#include <event/EventListener.h>
-
 using namespace hdps;
 
-class SettingsAction : public PluginAction, public hdps::EventListener
+class DimensionsViewerPlugin;
+
+class SettingsAction : public WidgetAction
 {
 protected:
 
@@ -22,20 +24,14 @@ protected:
     };
 
 public:
-    SettingsAction(DimensionsViewerPlugin* dimensionsViewerPlugin);
+    SettingsAction(DimensionsViewerPlugin& dimensionsViewerPlugin);
+
+    DimensionsViewerPlugin& getDimensionsViewerPlugin();
 
     QVariantMap getSpec();
 
     std::int32_t getModified() const { return _spec["modified"].toInt(); }
     void setModified() { _spec["modified"] = _spec["modified"].toInt() + 1; }
-
-    void updateSecondaryDatasetNames();
-    void loadDataset(const QString& datasetName);
-    bool isLoading() const;
-    bool isLoaded() const;
-
-protected:
-    Datasets getCompatibleDatasets(const QString& datasetName) const;
 
 public: // Action getters
 
@@ -44,11 +40,12 @@ public: // Action getters
     SubsamplingAction& getSubsamplingAction() { return _subsamplingAction; }
 
 protected:
-    LayersAction        _layersAction;
-    DimensionsAction    _dimensionsAction;
-    SubsamplingAction   _subsamplingAction;
-    QVariantMap         _spec;
-    bool                _isLoading;
+    DimensionsViewerPlugin&     _dimensionsViewerPlugin;
+    LayersAction                _layersAction;
+    DimensionsAction            _dimensionsAction;
+    SubsamplingAction           _subsamplingAction;
+    QVariantMap                 _spec;
+    bool                        _isLoading;
 
     friend class ChannelAction;
 };

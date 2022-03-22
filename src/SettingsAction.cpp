@@ -10,17 +10,15 @@
 using namespace hdps;
 using namespace hdps::gui;
 
-SettingsAction::SettingsAction(DimensionsViewerPlugin* dimensionsViewerPlugin) :
-    PluginAction(dimensionsViewerPlugin, "Configuration"),
-    hdps::EventListener(),
+SettingsAction::SettingsAction(DimensionsViewerPlugin& dimensionsViewerPlugin) :
+    WidgetAction(&dimensionsViewerPlugin),
+    _dimensionsViewerPlugin(dimensionsViewerPlugin),
     _layersAction(*this),
-    _dimensionsAction(this),
-    _subsamplingAction(this),
+    _dimensionsAction(*this),
+    _subsamplingAction(*this),
     _spec(),
     _isLoading(false)
 {
-    setEventCore(_dimensionsViewerPlugin->getCore());
-
     _spec["modified"]           = 0;
     _spec["showDimensionNames"] = true;
 
@@ -28,122 +26,29 @@ SettingsAction::SettingsAction(DimensionsViewerPlugin* dimensionsViewerPlugin) :
         _spec["modified"] = _spec["modified"].toInt() + 1;
         _spec["showDimensionNames"] = state;
     });
+}
 
-    /* TODO
-    registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
-        if (dataEvent->getType() == EventType::DataAdded)
-            updateSecondaryDatasetNames();
-    });
-    */
+DimensionsViewerPlugin& SettingsAction::getDimensionsViewerPlugin()
+{
+    return _dimensionsViewerPlugin;
 }
 
 QVariantMap SettingsAction::getSpec()
 {
     QVariantMap channels;
 
-    /*
-    for (auto channel : _channelsAction.getChannels()) {
-        const auto channelSpec = channel->getSpec();
+    for (std::int32_t rowIndex = 0; rowIndex < _dimensionsViewerPlugin.getLayersModel().rowCount(); rowIndex++) {
+        auto layer = static_cast<Layer*>(_dimensionsViewerPlugin.getLayersModel().index(rowIndex, 0).internalPointer());
 
-        if (channel->shouldDisplaySpec())
-            channels[channel->getInternalName()] = channelSpec;
+        auto& channelAction = layer->getChannelAction();
+
+        const auto channelSpec = channelAction.getSpec();
+
+        if (channelAction.shouldDisplaySpec())
+            channels[channelAction.getInternalName()] = channelSpec;
     }
-
-    _spec["channels"] = channels;
-    */
 
     return _spec;
-}
-
-void SettingsAction::updateSecondaryDatasetNames()
-{
-    /* TODO
-    auto primaryChannel = _channelsAction.getChannels().first();
-
-    const auto numDimensions = primaryChannel->getNumDimensions();
-
-    QStringList datasetNames;
-
-    for (auto candidateDatasetName : _dimensionsViewerPlugin->getCore()->requestAllDataNames(std::vector<DataType>({ PointType }))) {
-        if (getNumDimensions(candidateDatasetName) == numDimensions)
-            datasetNames << candidateDatasetName;
-    }
-
-    for (auto channel : _channelsAction.getChannels()) {
-        //if (channel->getIndex() == 0)
-            //continue;
-
-        channel->getDatasetName1Action().setOptions(datasetNames);
-        channel->getDatasetName2Action().setOptions(datasetNames);
-        channel->getDatasetName1Action().setCurrentIndex(0);
-        channel->getDatasetName2Action().setCurrentIndex(0);
-    }
-    */
-}
-
-void SettingsAction::loadDataset(const QString& datasetName)
-{
-    /* TODO
-    _isLoading = true;
-
-    auto primaryChannel = _channelsAction.getChannels().first();
-
-    if (datasetName == primaryChannel->getDatasetName1Action().getCurrentText())
-        return;
-
-    primaryChannel->getDatasetName1Action().setOptions(QStringList() << datasetName);
-    primaryChannel->getDatasetName2Action().setOptions(QStringList() << datasetName);
-    primaryChannel->getDatasetName1Action().setCurrentText(datasetName);
-    primaryChannel->getDatasetName2Action().setCurrentText(datasetName);
-
-    for (auto channel : _channelsAction.getChannels())
-        channel->getEnabledAction().setChecked(channel->getIndex() == 0);
-
-    const auto numPoints        = primaryChannel->getNumPoints();
-    const auto numDimensions    = primaryChannel->getNumDimensions();
-    const auto updateDuringDrag = numPoints < 100000;
-
-    updateSecondaryDatasetNames();
-
-    _dimensionsAction.getSelectionCenterIndexAction().setUpdateDuringDrag(updateDuringDrag);
-    _dimensionsAction.getSelectionCenterIndexAction().setMaximum(numDimensions - 1);
-    _dimensionsAction.getSelectionCenterIndexAction().setValue(static_cast<std::int32_t>(floorf(static_cast<float>(numDimensions) / 2.0f)));
-    _dimensionsAction.getSelectionCenterNameAction().setOptions(primaryChannel->getDimensionNames());
-    _dimensionsAction.getSelectionRadiusAction().setUpdateDuringDrag(updateDuringDrag);
-
-    _subsamplingAction.setChecked(numPoints > 100000);
-
-    _isLoading = false;
-
-    for (auto channel : _channelsAction.getChannels())
-        channel->updateSpec();
-    */
-}
-
-bool SettingsAction::isLoading() const
-{
-    return _isLoading;
-}
-
-bool SettingsAction::isLoaded() const
-{
-    return false;// _channelsAction.getChannels().first()->isLoaded();
-}
-
-Datasets SettingsAction::getCompatibleDatasets(const QString& datasetName) const
-{
-    Datasets datasets;
-
-    /* TODO
-    const auto numDimensions = getNumDimensions(datasetName);
-
-    for (auto candidateDataset : Application::core()->requestAllDataSets(QVector<DataType>({ PointType }))) {
-        if (Dataset<Points>(candidateDataset)->getNumDimensions() == numDimensions)
-            datasets << candidateDataset;
-    }
-    */
-
-    return datasets;
 }
 
 SettingsAction::Widget::Widget(QWidget* parent, SettingsAction* settingsAction) :
@@ -159,5 +64,6 @@ SettingsAction::Widget::Widget(QWidget* parent, SettingsAction* settingsAction) 
     layout->setSpacing(3);
 
     layout->addWidget(settingsAction->getLayersAction().createCollapsedWidget(this));
+    layout->addWidget(settingsAction->getDimensionsAction().createCollapsedWidget(this));
     layout->addStretch(1);
 }

@@ -10,18 +10,15 @@
 using namespace hdps;
 using namespace hdps::gui;
 
-DimensionsAction::DimensionsAction(SettingsAction* configurationAction) :
-    PluginAction(configurationAction->getDimensionsViewerPlugin(), "Configuration"),
-    hdps::EventListener(),
+DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
+    WidgetAction(&settingsAction),
+    _settingsAction(settingsAction),
     _selectionCenterIndexAction(this, "Selection center dimension index"),
     _selectionCenterNameAction(this, "Selection center dimension name"),
     _selectionRadiusAction(this, "Selection radius", 1, 100, 25, 25),
     _showNamesAction(this, "Show names"),
     _dimensionNames()
 {
-    setEnabled(false);
-    setEventCore(_dimensionsViewerPlugin->getCore());
-
     _selectionCenterIndexAction.setUpdateDuringDrag(false);
 
     _selectionRadiusAction.setUpdateDuringDrag(false);
@@ -36,6 +33,15 @@ DimensionsAction::DimensionsAction(SettingsAction* configurationAction) :
     connect(&_selectionCenterNameAction, &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
         _selectionCenterIndexAction.setValue(currentIndex);
     });
+
+    auto& layersModel = _settingsAction.getDimensionsViewerPlugin().getLayersModel();
+
+    const auto updateReadOnly = [this, &layersModel]() {
+        setEnabled(layersModel.rowCount() > 0);
+    };
+
+    connect(&layersModel, &QAbstractListModel::rowsInserted, this, updateReadOnly);
+    connect(&layersModel, &QAbstractListModel::rowsRemoved, this, updateReadOnly);
 }
 
 DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAction) :
