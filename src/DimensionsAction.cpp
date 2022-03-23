@@ -20,6 +20,7 @@ DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
     _dimensionNames()
 {
     setText("Dimensions");
+    setIcon(Application::getIconFont("FontAwesome").getIcon("ruler-horizontal"));
 
     _selectionCenterIndexAction.setUpdateDuringDrag(false);
 

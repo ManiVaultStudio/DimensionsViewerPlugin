@@ -57,7 +57,7 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
     _internalName(QUuid::createUuid().toString(QUuid::WithoutBraces)),
     _displayName(displayName),
     _removeAction(this, "Remove"),
-    _enabledAction(this, _displayName),
+    _enabledAction(this, _displayName, true),
     _dataset1Action(this, "Dataset 1"),
     _dataset2Action(this, "Dataset 2"),
     _profileTypeAction(this, "Profile type"),
@@ -73,13 +73,16 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
     _removeAction.setDefaultWidgetFlags(TriggerAction::Icon);
     _removeAction.setIcon(Application::getIconFont("FontAwesome").getIcon("trash-alt"));
 
-    _enabledAction.setChecked(false);
-
     _dataset1Action.setDatasets({ _layer.getDatasetReference() });
     _dataset2Action.setDatasets({ _layer.getDifferentialDatasetCandidates() });
 
-    connect(&_layer, &Layer::differentialDatasetCandidatesChanged, this, [this]() -> void {
+    _dataset1Action.setCurrentDataset(_layer.getDatasetReference());
+
+    connect(&_layer, &Layer::differentialDatasetCandidatesChanged, this, [this](Datasets differentialDatasetCandidates) -> void {
         _dataset2Action.setDatasets(_layer.getDifferentialDatasetCandidates());
+
+        if (!differentialDatasetCandidates.isEmpty())
+            _dataset2Action.setCurrentDataset(differentialDatasetCandidates.first());
     });
 
     _profileTypeAction.setOptions(profileTypes.values());
@@ -161,8 +164,7 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
         updateSpec();
     });
 
-    /* TODO
-    auto& dimensionsAction = getChannelsAction()->getConfigurationAction()->getDimensionsAction();
+    auto& dimensionsAction = _layer.getSettingsAction().getDimensionsAction();
 
     connect(&dimensionsAction.getSelectionCenterIndexAction(), &IntegralAction::valueChanged, [this](const std::int32_t& value) {
         updateSpec();
@@ -172,7 +174,7 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
         updateSpec();
     });
 
-    auto& subsamplingAction = getChannelsAction()->getConfigurationAction()->getSubsamplingAction();
+    auto& subsamplingAction = _layer.getSettingsAction().getSubsamplingAction();
 
     connect(&subsamplingAction, &SubsamplingAction::toggled, [this](bool state) {
         updateSpec();
@@ -181,7 +183,6 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
     connect(&subsamplingAction.getSubsamplingFactorAction(), &DecimalAction::valueChanged, [this](const double& value) {
         updateSpec();
     });
-    */
 
     updateUI(true);
 
@@ -224,11 +225,10 @@ std::int32_t ChannelAction::getNumDimensions() const
 
 void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 {
-    // TODO
-    //if (getChannelsAction()->getConfigurationAction()->isLoading())
-        //return;
-
     if (!getPrimaryDataset().isValid())
+        return;
+
+    if (isDifferential() && !getDifferentialDataset().isValid())
         return;
 
     const auto showRange = !isDifferential() && _stylingAction.getShowRangeAction().isChecked();
@@ -559,6 +559,7 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     auto datasetName2Widget     = channelAction->_dataset2Action.createWidget(this);
 
     datasetName1Widget->findChild<QComboBox*>("ComboBox")->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    datasetName2Widget->findChild<QComboBox*>("ComboBox")->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
     auto datasetNamesLayout = new QHBoxLayout();
 
