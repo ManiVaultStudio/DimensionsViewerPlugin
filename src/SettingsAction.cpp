@@ -48,6 +48,8 @@ QVariantMap SettingsAction::getSpec()
             channels[channelAction.getInternalName()] = channelSpec;
     }
 
+    _spec["channels"] = channels;
+
     return _spec;
 }
 

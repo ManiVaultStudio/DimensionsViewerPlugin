@@ -7,7 +7,7 @@
 #include <QDebug>
 #include <QMimeData>
 
-Q_PLUGIN_METADATA(IID "nl.tudelft.DimensionsViewerPlugin")
+Q_PLUGIN_METADATA(IID "nl.BioVault.DimensionsViewerPlugin")
 
 using namespace hdps;
 using namespace hdps::gui;

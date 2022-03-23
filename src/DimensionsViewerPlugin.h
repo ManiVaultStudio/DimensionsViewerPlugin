@@ -6,15 +6,10 @@
 
 #include <PointData.h>
 
-#include <QMap>
-#include <QStringList>
-#include <QStandardItemModel>
-
 using hdps::plugin::ViewPluginFactory;
 using hdps::plugin::ViewPlugin;
 
 class DimensionsViewerWidget;
-class SettingsWidget;
 class SettingsAction;
 
 namespace hdps {
@@ -53,7 +48,7 @@ class DimensionsViewerPluginFactory : public ViewPluginFactory
 {
     Q_INTERFACES(hdps::plugin::ViewPluginFactory hdps::plugin::PluginFactory)
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID   "lumc.lkeb.DimensionsViewerPlugin"
+    Q_PLUGIN_METADATA(IID   "nl.BioVault.DimensionsViewerPlugin"
                       FILE  "DimensionsViewerPlugin.json")
     
 public:

@@ -33,21 +33,21 @@ class ChannelAction : public WidgetAction
 
 public:
 
-	enum class ProfileType {
-		Mean,
-		Median,
-		Differential,
+    enum class ProfileType {
+        Mean,
+        Median,
+        Differential,
 
-		End = Differential
-	};
+        End = Differential
+    };
 
     static const QMap<ProfileType, QString> profileTypes;
 
-	enum class MeanProfileConfig {
-		None,
-		StandardDeviation1,
-		StandardDeviation2,
-	};
+    enum class MeanProfileConfig {
+        None,
+        StandardDeviation1,
+        StandardDeviation2,
+    };
 
     static const QMap<MeanProfileConfig, QString> meanProfileConfigs;
 
@@ -171,9 +171,9 @@ public: // Action getters
 
 protected:
     Layer&                      _layer;                         /** Reference to owning layer */
-	const std::uint32_t         _index;                         /** Channel index */
-	const QString               _internalName;                  /** Channel internal name (e.g. channel1, channel2) */
-	const QString               _displayName;                   /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
+    const std::uint32_t         _index;                         /** Channel index */
+    const QString               _internalName;                  /** Channel internal name (e.g. channel1, channel2) */
+    const QString               _displayName;                   /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
     hdps::gui::ToggleAction     _enabledAction;                 /** Channel on/off action */
     DatasetPickerAction         _dataset1Action;                /** Dataset picker action for the first dataset */
     DatasetPickerAction         _dataset2Action;                /** Dataset picker action for the second dataset */
@@ -183,6 +183,8 @@ protected:
     ChannelStylingAction        _stylingAction;
     TriggerAction               _removeAction;                  /** Channel remove action */
     QVariantMap                 _spec;                          /** Specification for use in JS visualization client (Vega) */
+
+    static std::uint32_t  numberOfChannels;     /** Number of channels created globally */
 
     friend class Layer;
     friend class ChannelStylingAction;

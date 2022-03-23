@@ -12,6 +12,10 @@
 #include <QComboBox>
 #include <QUuid>
 
+#if (__cplusplus < 201703L)   // definition needed for pre C++17 gcc and clang
+    std::uint32_t  ChannelAction::numberOfChannels = 0;
+#endif
+
 using namespace hdps;
 using namespace hdps::gui;
 
@@ -49,7 +53,7 @@ const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::dif
 ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
     WidgetAction(&layer),
     _layer(layer),
-    _index(0),
+    _index(numberOfChannels),
     _internalName(QUuid::createUuid().toString(QUuid::WithoutBraces)),
     _displayName(displayName),
     _removeAction(this, "Remove"),
@@ -62,6 +66,8 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
     _stylingAction(layer, this),
     _spec()
 {
+    numberOfChannels++;
+
     setText("Settings");
 
     _removeAction.setDefaultWidgetFlags(TriggerAction::Icon);
@@ -108,7 +114,7 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
 
         _enabledAction.setEnabled(numDatasets >= 1);
         _stylingAction.getColorAction().setEnabled(isEnabled);
-        _dataset1Action.setEnabled(isEnabled && numDatasets >= 1 && _index >= 1);
+        _dataset1Action.setEnabled(isEnabled);
         _dataset2Action.setEnabled(isEnabled && isDifferential);
         _profileTypeAction.setEnabled(isEnabled);
         _profileConfigAction.setEnabled(isEnabled);

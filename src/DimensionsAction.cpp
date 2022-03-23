@@ -19,6 +19,8 @@ DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
     _showNamesAction(this, "Show names"),
     _dimensionNames()
 {
+    setText("Dimensions");
+
     _selectionCenterIndexAction.setUpdateDuringDrag(false);
 
     _selectionRadiusAction.setUpdateDuringDrag(false);
@@ -27,7 +29,7 @@ DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
     _showNamesAction.setChecked(true);
 
     connect(&_selectionCenterIndexAction, &IntegralAction::valueChanged, [this](const std::int32_t& value){
-        _selectionCenterNameAction.setCurrentIndex(value);
+        //_selectionCenterNameAction.setCurrentIndex(value);
     });
 
     connect(&_selectionCenterNameAction, &OptionAction::currentIndexChanged, [this](const std::int32_t& currentIndex) {
@@ -47,18 +49,7 @@ DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
 DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAction) :
     WidgetActionWidget(parent, DimensionsAction, State::Standard)
 {
-    auto layout = new QVBoxLayout();
-    
-    setLayout(layout);
-
-    auto groupBox = new QGroupBox("Dimensions");
-
-    layout->setMargin(2);
-    layout->addWidget(groupBox);
-
-    auto groupBoxLayout = new QHBoxLayout();
-    
-    groupBox->setLayout(groupBoxLayout);
+    auto layout = new QHBoxLayout();
 
     auto selectionCenterLabel           = new QLabel("Center");
     auto selectionCenterIndexWidget     = DimensionsAction->_selectionCenterIndexAction.createWidget(this);
@@ -69,12 +60,12 @@ DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAc
 
     selectionCenterNameWidget->findChild<QComboBox*>("ComboBox")->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
-    groupBoxLayout->setMargin(9);
-    groupBoxLayout->setSpacing(10);
-    groupBoxLayout->addWidget(selectionCenterLabel);
-    groupBoxLayout->addWidget(selectionCenterNameWidget);
-    groupBoxLayout->addWidget(selectionCenterIndexWidget, 1);
-    groupBoxLayout->addWidget(selectionRadiusLabel);
-    groupBoxLayout->addWidget(selectionRadiusWidget, 1);
-    groupBoxLayout->addWidget(showDimensionNamesWidget);
+    layout->addWidget(selectionCenterLabel);
+    layout->addWidget(selectionCenterNameWidget);
+    layout->addWidget(selectionCenterIndexWidget, 1);
+    layout->addWidget(selectionRadiusLabel);
+    layout->addWidget(selectionRadiusWidget, 1);
+    layout->addWidget(showDimensionNamesWidget);
+
+    setPopupLayout(layout);
 }
