@@ -12,9 +12,11 @@
 #include <QComboBox>
 #include <QUuid>
 
-#if (__cplusplus < 201703L)   // definition needed for pre C++17 gcc and clang
-    std::uint32_t  ChannelAction::numberOfChannels = 0;
-#endif
+//#if (__cplusplus < 201703L)   // definition needed for pre C++17 gcc and clang
+//    std::uint32_t  ChannelAction::numberOfChannels = 0;
+//#endif
+
+std::uint32_t  ChannelAction::numberOfChannels = 0;
 
 using namespace hdps;
 using namespace hdps::gui;
