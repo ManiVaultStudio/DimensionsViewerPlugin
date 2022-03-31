@@ -58,7 +58,7 @@ public:
     /** Returns the plugin icon */
     QIcon getIcon() const override;
 
-    DimensionsViewerPlugin* produce();
+    DimensionsViewerPlugin* produce() override;
 
     hdps::DataTypes supportedDataTypes() const override;
 };
