@@ -53,7 +53,7 @@ const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::dif
 ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
     WidgetAction(&layer),
     _layer(layer),
-    _index(numberOfChannels),
+    _index(ChannelAction::numberOfChannels),
     _internalName(QUuid::createUuid().toString(QUuid::WithoutBraces)),
     _displayName(displayName),
     _removeAction(this, "Remove"),
@@ -66,7 +66,7 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
     _stylingAction(layer, this),
     _spec()
 {
-    numberOfChannels++;
+    ChannelAction::numberOfChannels++;
 
     setText("Settings");
 
