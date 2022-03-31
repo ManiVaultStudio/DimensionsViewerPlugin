@@ -20,7 +20,7 @@ class DimensionsViewerWidget : public QWebEngineView
 public:
     DimensionsViewerWidget(DimensionsViewerPlugin* dimensionsViewerPlugin);
 
-    void dragEnterEvent(QDragEnterEvent* dragEnterEvent);
+    void dragEnterEvent(QDragEnterEvent* dragEnterEvent) override;
     void dropEvent(QDropEvent* dropEvent) override;
 
 private:
