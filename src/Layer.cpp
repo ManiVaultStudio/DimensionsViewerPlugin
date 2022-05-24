@@ -6,14 +6,14 @@
 
 Layer::Layer(SettingsAction& settingsAction, Dataset<Points> dataset, const ChannelAction::ProfileType& profileType /*= ChannelConfigurationAction::ProfileType::Mean*/) :
     QObject(&settingsAction),
-    EventListener(),
     _settingsAction(settingsAction),
     _dataset(dataset),
-    _channelAction(*this, dataset->getGuiName(), profileType)
+    _channelAction(*this, dataset->getGuiName(), profileType),
+    _eventListener()
 {
-    setEventCore(Application::core());
+    _eventListener.setEventCore(Application::core());
 
-    registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
+    _eventListener.registerDataEventByType(PointType, [this](hdps::DataEvent* dataEvent) {
         if (dataEvent->getType() == EventType::DataAdded || dataEvent->getType() == EventType::DataChanged)
             updateDifferentialDatasetCandidates();
     });

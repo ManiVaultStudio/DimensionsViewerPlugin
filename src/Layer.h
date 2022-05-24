@@ -4,13 +4,11 @@
 
 #include "ChannelAction.h"
 
-#include <event/EventListener.h>
-
 using namespace hdps;
 
 class SettingsAction;
 
-class Layer : public QObject, public EventListener
+class Layer : public QObject
 {
     Q_OBJECT
 
@@ -59,9 +57,10 @@ signals:
      */
     void differentialDatasetCandidatesChanged(Datasets differentialDatasetCandidates);
 
-protected:
+private:
     SettingsAction&     _settingsAction;                    /** Reference to the global settings action */
     Dataset<Points>     _dataset;                           /** Smart pointer to primary dataset */
     Datasets            _differentialDatasetCandidates;     /** Vector of smart pointers to datasets which can be used for differential analysis */
     ChannelAction       _channelAction;                     /** Channel action */
+    EventListener       _eventListener;                     /** Liste to HDPS events */
 };
