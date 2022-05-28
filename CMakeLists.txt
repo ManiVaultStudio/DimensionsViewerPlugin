@@ -91,10 +91,17 @@ endif()
 target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}HDPS_Public${LIB_SUFFIX}")
 target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}PointData${LIB_SUFFIX}")
 
+install(TARGETS ${PROJECT}
+   RUNTIME DESTINATION Plugins COMPONENT SHAREDLIB
+   LIBRARY DESTINATION Plugins COMPONENT LINKLIB
+   ARCHIVE DESTINATION lib COMPONENT LINKLIB
+)
+
 add_custom_command(TARGET ${PROJECT} POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-	"$<TARGET_FILE:${PROJECT}>"
-	"$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/Plugins/$<TARGET_FILE_NAME:${PROJECT}>"
+    COMMAND "${CMAKE_COMMAND}"
+        --install ${CMAKE_CURRENT_BINARY_DIR}
+        --config $<CONFIGURATION>
+        --prefix ${INSTALL_DIR}/$<CONFIGURATION>
 )
 
 # Automatically set the debug environment (command + working directory) for MSVC in debug mode
