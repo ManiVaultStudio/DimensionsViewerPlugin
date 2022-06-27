@@ -554,7 +554,7 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     setLayout(&_mainLayout);
 
-    _mainLayout.setMargin(0);
+    _mainLayout.setContentsMargins(0, 0, 0, 0);
 
     auto datasetNamesWidget     = new QWidget(this);
     auto datasetName1Widget     = channelAction->_dataset1Action.createWidget(this);
@@ -565,7 +565,7 @@ ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
 
     auto datasetNamesLayout = new QHBoxLayout();
 
-    datasetNamesLayout->setMargin(0);
+    datasetNamesLayout->setContentsMargins(0, 0, 0, 0);
     datasetNamesLayout->addWidget(datasetName1Widget);
     datasetNamesLayout->addWidget(datasetName2Widget);
 
