@@ -60,7 +60,7 @@ SubsamplingAction::Widget::Widget(QWidget* parent, SubsamplingAction* subsamplin
 
     auto groupBox = new QGroupBox("Subsampling");
 
-    layout->setMargin(2);
+    layout->setContentsMargins(2, 2, 2, 2);
     layout->addWidget(groupBox);
 
     auto groupBoxLayout = new QHBoxLayout();
@@ -73,13 +73,13 @@ SubsamplingAction::Widget::Widget(QWidget* parent, SubsamplingAction* subsamplin
     //auto subsamplingFactorOneOverFourWidget     = subsamplingAction->_subsamplingFactorOneOverFourAction.createWidget(this);
     //auto subsamplingFactorOneOverTwoWidget      = subsamplingAction->_subsamplingFactorOneOverTwoAction.createWidget(this);
 
-    groupBoxLayout->setMargin(9);
+    groupBoxLayout->setContentsMargins(9, 9, 9, 9);
     groupBoxLayout->setSpacing(10);
     groupBoxLayout->addWidget(subsamplingFactorWidget);
 
     auto factorsLayout = new QHBoxLayout();
 
-    factorsLayout->setMargin(0);
+    factorsLayout->setContentsMargins(0, 0, 0, 0);
     factorsLayout->setSpacing(2);
 
     groupBoxLayout->addLayout(factorsLayout);

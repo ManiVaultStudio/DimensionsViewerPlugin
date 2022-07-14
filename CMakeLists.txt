@@ -17,7 +17,7 @@ if(MSVC)
 endif(MSVC)
 
 find_package(OpenGL REQUIRED)
-find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
+find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 set(PLUGIN
     src/DimensionsViewerPlugin.h
@@ -78,9 +78,8 @@ add_library(${PROJECT} SHARED ${SOURCES} ${WEB} ${AUX} ${WEB} ${WIDGETS})
 
 target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
-target_link_libraries(${PROJECT} ${OPENGL_LIBRARIES})
-target_link_libraries(${PROJECT} Qt5::Widgets)
-target_link_libraries(${PROJECT} Qt5::WebEngineWidgets)
+target_link_libraries(${PROJECT} Qt6::Widgets)
+target_link_libraries(${PROJECT} Qt6::WebEngineWidgets)
 
 if(MSVC)
 	set(LIB_SUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")

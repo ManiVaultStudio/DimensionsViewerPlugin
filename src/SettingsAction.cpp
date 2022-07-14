@@ -62,7 +62,7 @@ SettingsAction::Widget::Widget(QWidget* parent, SettingsAction* settingsAction) 
 
     setLayout(layout);
 
-    layout->setMargin(3);
+    layout->setContentsMargins(3, 3, 3, 3);
     layout->setSpacing(3);
 
     layout->addWidget(settingsAction->getLayersAction().createCollapsedWidget(this));
