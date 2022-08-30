@@ -27,6 +27,12 @@ public:
 
     void init() override;
 
+    /**
+     * Load one (or more datasets in the view)
+     * @param datasets Dataset(s) to load
+     */
+    void loadData(const hdps::Datasets& datasets) override;
+
 public:
     /** Returns a pointer to the core interface */
     hdps::CoreInterface* getCore() { return _core; }
@@ -55,10 +61,29 @@ public:
     DimensionsViewerPluginFactory() {}
     ~DimensionsViewerPluginFactory() {}
 
-    /** Returns the plugin icon */
-    QIcon getIcon() const override;
+    /**
+     * Get plugin icon
+     * @param color Icon color for flat (font) icons
+     * @return Icon
+     */
+    QIcon getIcon(const QColor& color = Qt::black) const override;
 
+    /**
+     * Produces the plugin
+     * @return Pointer to the produced plugin
+     */
     DimensionsViewerPlugin* produce() override;
 
+    /**
+     * Get the data types that the plugin supports
+     * @return Supported data types
+     */
     hdps::DataTypes supportedDataTypes() const override;
+
+    /**
+     * Get plugin trigger actions given \p datasets
+     * @param datasets Vector of input datasets
+     * @return Vector of plugin trigger actions
+     */
+    PluginTriggerActions getPluginTriggerActions(const hdps::Datasets& datasets) const override;
 };

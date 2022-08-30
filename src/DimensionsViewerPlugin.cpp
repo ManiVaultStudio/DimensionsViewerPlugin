@@ -4,6 +4,8 @@
 
 #include <widgets/DropWidget.h>
 
+#include <actions/PluginTriggerAction.h>
+
 #include <QDebug>
 #include <QMimeData>
 
@@ -66,14 +68,20 @@ void DimensionsViewerPlugin::init()
     });
 }
 
+void DimensionsViewerPlugin::loadData(const hdps::Datasets& datasets)
+{
+    for (const auto& dataset : datasets)
+        _layersModel.addLayer(new Layer(*_settingsAction, dataset));
+}
+
 LayersModel& DimensionsViewerPlugin::getLayersModel()
 {
     return _layersModel;
 }
 
-QIcon DimensionsViewerPluginFactory::getIcon() const
+QIcon DimensionsViewerPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const
 {
-    return Application::getIconFont("FontAwesome").getIcon("chart-area");
+    return Application::getIconFont("FontAwesome").getIcon("chart-area", color);
 }
 
 DimensionsViewerPlugin* DimensionsViewerPluginFactory::produce()
@@ -86,4 +94,46 @@ hdps::DataTypes DimensionsViewerPluginFactory::supportedDataTypes() const
     DataTypes supportedTypes;
     supportedTypes.append(PointType);
     return supportedTypes;
+}
+
+hdps::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerActions(const hdps::Datasets& datasets) const
+{
+    PluginTriggerActions pluginTriggerActions;
+
+    const auto getPluginInstance = [this]() -> DimensionsViewerPlugin* {
+        return dynamic_cast<DimensionsViewerPlugin*>(Application::core()->requestPlugin(getKind()));
+    };
+
+    const auto numberOfDatasets = datasets.count();
+
+    if (PluginFactory::areAllDatasetsOfTheSameType(datasets, PointType)) {
+        if (numberOfDatasets == 1) {
+            auto pluginTriggerAction = createPluginTriggerAction("Dimensions", "View dimensions", datasets, "chart-area");
+
+            connect(pluginTriggerAction, &QAction::triggered, [this, getPluginInstance, datasets]() -> void {
+                for (auto dataset : datasets)
+                    getPluginInstance()->loadData({ dataset });
+            });
+
+            pluginTriggerActions << pluginTriggerAction;
+        }
+
+        if (numberOfDatasets >= 2) {
+            auto viewTogetherAction     = createPluginTriggerAction("Dimensions combined", "View selected datasets together in a single dimensions viewer", datasets, "chart-area");
+            auto viewSeparatelyAction   = createPluginTriggerAction("Dimensions side-by-side", "View selected datasets in separate dimensions viewers", datasets, "chart-area");
+
+            connect(viewTogetherAction, &QAction::triggered, [this, getPluginInstance, datasets]() -> void {
+                getPluginInstance()->loadData(datasets);
+            });
+
+            connect(viewSeparatelyAction, &QAction::triggered, [this, getPluginInstance, datasets]() -> void {
+                for (auto dataset : datasets)
+                    getPluginInstance()->loadData(Datasets({ dataset }));
+            });
+
+            pluginTriggerActions << viewTogetherAction << viewSeparatelyAction;
+        }
+    }
+
+    return pluginTriggerActions;
 }
