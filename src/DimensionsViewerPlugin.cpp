@@ -119,19 +119,13 @@ hdps::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerA
         }
 
         if (numberOfDatasets >= 2) {
-            auto viewTogetherAction     = createPluginTriggerAction("Dimensions combined", "View selected datasets together in a single dimensions viewer", datasets, "chart-area");
-            auto viewSeparatelyAction   = createPluginTriggerAction("Dimensions side-by-side", "View selected datasets in separate dimensions viewers", datasets, "chart-area");
+            auto pluginTriggerAction = createPluginTriggerAction("Compare dimensions", "View selected datasets together in a single dimensions viewer", datasets, "chart-area");
 
-            connect(viewTogetherAction, &QAction::triggered, [this, getPluginInstance, datasets]() -> void {
+            connect(pluginTriggerAction, &QAction::triggered, [this, getPluginInstance, datasets]() -> void {
                 getPluginInstance()->loadData(datasets);
             });
 
-            connect(viewSeparatelyAction, &QAction::triggered, [this, getPluginInstance, datasets]() -> void {
-                for (auto dataset : datasets)
-                    getPluginInstance()->loadData(Datasets({ dataset }));
-            });
-
-            pluginTriggerActions << viewTogetherAction << viewSeparatelyAction;
+            pluginTriggerActions << pluginTriggerAction;
         }
     }
 
