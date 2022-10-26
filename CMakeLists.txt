@@ -19,6 +19,8 @@ endif(MSVC)
 find_package(OpenGL REQUIRED)
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
+file(TO_CMAKE_PATH $ENV{HDPS_INSTALL_DIR} INSTALL_DIR)
+
 set(PLUGIN
     src/DimensionsViewerPlugin.h
     src/DimensionsViewerPlugin.cpp
