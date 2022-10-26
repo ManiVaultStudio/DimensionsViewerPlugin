@@ -59,8 +59,7 @@ void DimensionsViewerPlugin::init()
 
         if (dataType == PointType) {
             dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDataset->getGuiName()), "map-marker-alt", true, [this, candidateDataset]() {
-                _layersModel.addLayer(new Layer(*_settingsAction, candidateDataset));
-                _dropWidget->setShowDropIndicator(false);
+                loadData({ candidateDataset });
             });
         }
 
@@ -72,6 +71,9 @@ void DimensionsViewerPlugin::loadData(const hdps::Datasets& datasets)
 {
     for (const auto& dataset : datasets)
         _layersModel.addLayer(new Layer(*_settingsAction, dataset));
+
+    if (_layersModel.rowCount() >= 1)
+        _dropWidget->setShowDropIndicator(false);
 }
 
 LayersModel& DimensionsViewerPlugin::getLayersModel()
