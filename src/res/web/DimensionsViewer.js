@@ -226,9 +226,9 @@ function getDesign(spec) {
 
         channel.encoding = {
             "x": {
-                "field": spec.showDimensionNames ? 'dimName' : 'dimId',
-                "type": spec.showDimensionNames ? 'ordinal' : 'nominal',
-                "title": spec.showDimensionNames ? 'Dimension name' : 'Dimensions index',
+                "field": spec.showDimensionNames ? "dimName" : "dimId",
+                "type": spec.showDimensionNames ? "ordinal" : "nominal",
+                "title": spec.showDimensionNames ? "Dimension name" : "Dimensions index",
                 "axis": {
                     "labelAngle": spec.showDimensionNames ? -45 : 0
                 }
@@ -238,16 +238,19 @@ function getDesign(spec) {
         addChannel(design, channel);
     }
 
-    
     design.layer.push({
         "transform": [{
             "pivot": "chn",
             "value": "min",
-            "groupby": ["dimName"]
+            "groupby": [spec.showDimensionNames ? "dimName" : "dimId"]
         }],
         "mark": "rule",
         "encoding": {
-            "x": { "field": "dimName", "type": "nominal" },
+            "x": {
+                "field": spec.showDimensionNames ? "dimName" : "dimId",
+                "type": spec.showDimensionNames ? "ordinal" : "nominal"
+            },
+            
             "opacity": {
                 "condition": {
                     "value": 0.3,
@@ -264,7 +267,7 @@ function getDesign(spec) {
             "name": "hover",
             "select": {
                 "type": "point",
-                "fields": ["dimName"],
+                "fields": [spec.showDimensionNames ? "dimName" : "dimId"],
                 "nearest": true,
                 "on": "mouseover",
                 "clear": "mouseout"
