@@ -12,6 +12,8 @@
 #include <QComboBox>
 #include <QUuid>
 
+#include <cmath>
+
 //#if (__cplusplus < 201703L)   // definition needed for pre C++17 gcc and clang
 //    std::uint32_t  ChannelAction::numberOfChannels = 0;
 //#endif
@@ -354,7 +356,8 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
 
                 dimension["chn"]        = QString::number(_index);
                 dimension["dimId"]      = dimensionIndex;
-                dimension["dimName"]    = getDimensionNames().at(dimensionIndex);
+                // Use (leading zero-padded) dimension index as channel name if none is given
+                dimension["dimName"]    = (getDimensionNames().size() == dimensionIndices.size()) ? getDimensionNames().at(dimensionIndex) : QString::number(dimensionIndex).rightJustified(std::ceil(std::log10(dimensionIndices.size() + 1)), '0');;
 
                 const auto mean = getMean(dimensionValues1);
 
