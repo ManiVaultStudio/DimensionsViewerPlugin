@@ -25,7 +25,7 @@ DimensionsViewerPlugin::DimensionsViewerPlugin(const PluginFactory* factory) :
 
 void DimensionsViewerPlugin::init()
 {
-    _widget.setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    getWidget().setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     _dimensionsViewerWidget = new DimensionsViewerWidget(this);
     _settingsAction         = new SettingsAction(*this);
@@ -36,12 +36,12 @@ void DimensionsViewerPlugin::init()
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
-    mainLayout->addWidget(_settingsAction->createWidget(&_widget));
+    mainLayout->addWidget(_settingsAction->createWidget(&getWidget()));
     mainLayout->addWidget(_dimensionsViewerWidget, 1);
 
-    _widget.setLayout(mainLayout);
+    getWidget().setLayout(mainLayout);
 
-    _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(&_widget, "No channels to display", "Drag an item from the data hierarchy and drop it here to visualize data..."));
+    _dropWidget->setDropIndicatorWidget(new DropWidget::DropIndicatorWidget(&getWidget(), "No channels to display", "Drag an item from the data hierarchy and drop it here to visualize data..."));
 
     _dropWidget->initialize([this](const QMimeData* mimeData) -> DropWidget::DropRegions {
         DropWidget::DropRegions dropRegions;
