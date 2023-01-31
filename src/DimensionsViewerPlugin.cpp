@@ -103,16 +103,14 @@ hdps::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerA
     PluginTriggerActions pluginTriggerActions;
 
     const auto getPluginInstance = [this]() -> DimensionsViewerPlugin* {
-        return dynamic_cast<DimensionsViewerPlugin*>(Application::core()->requestPlugin(getKind()));
+        return dynamic_cast<DimensionsViewerPlugin*>(plugins().requestPlugin(getKind()));
     };
 
     const auto numberOfDatasets = datasets.count();
 
     if (PluginFactory::areAllDatasetsOfTheSameType(datasets, PointType)) {
         if (numberOfDatasets == 1) {
-            auto pluginTriggerAction = createPluginTriggerAction("Dimensions", "View dimensions", datasets, "chart-area");
-
-            connect(pluginTriggerAction, &QAction::triggered, [this, getPluginInstance, datasets]() -> void {
+            auto pluginTriggerAction = new PluginTriggerAction(const_cast<DimensionsViewerPluginFactory*>(this), this, "Dimensions", "View dimensions", getIcon(), [this, getPluginInstance, datasets](PluginTriggerAction& pluginTriggerAction) -> void {
                 for (auto dataset : datasets)
                     getPluginInstance()->loadData({ dataset });
             });
@@ -121,9 +119,7 @@ hdps::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerA
         }
 
         if (numberOfDatasets >= 2) {
-            auto pluginTriggerAction = createPluginTriggerAction("Compare dimensions", "View selected datasets together in a single dimensions viewer", datasets, "chart-area");
-
-            connect(pluginTriggerAction, &QAction::triggered, [this, getPluginInstance, datasets]() -> void {
+            auto pluginTriggerAction = new PluginTriggerAction(const_cast<DimensionsViewerPluginFactory*>(this), this, "Compare dimensions", "View selected datasets together in a single dimensions viewer", getIcon(), [this, getPluginInstance, datasets](PluginTriggerAction& pluginTriggerAction) -> void {
                 getPluginInstance()->loadData(datasets);
             });
 
