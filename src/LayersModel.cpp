@@ -12,6 +12,7 @@
 #include <stdexcept>
 
 using namespace hdps;
+using namespace hdps::util;
 
 LayersModel::LayersModel(QObject* parent) :
     QAbstractListModel(parent),
