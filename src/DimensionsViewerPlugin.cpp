@@ -103,7 +103,7 @@ hdps::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerA
     PluginTriggerActions pluginTriggerActions;
 
     const auto getPluginInstance = [this]() -> DimensionsViewerPlugin* {
-        return dynamic_cast<DimensionsViewerPlugin*>(plugins().requestPlugin(getKind()));
+        return dynamic_cast<DimensionsViewerPlugin*>(plugins().requestViewPlugin(getKind()));
     };
 
     const auto numberOfDatasets = datasets.count();
