@@ -61,7 +61,7 @@ set(WEB
 )
 
 set(AUX
-    src/Resources_DimViewer.qrc
+    src/ResourcesDimensionsViewer.qrc
     src/DimensionsViewerPlugin.json
 )
 
