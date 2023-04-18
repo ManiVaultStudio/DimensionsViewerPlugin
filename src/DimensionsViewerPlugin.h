@@ -4,7 +4,7 @@
 
 #include "LayersModel.h"
 
-#include <PointData.h>
+#include <PointData/PointData.h>
 
 using hdps::plugin::ViewPluginFactory;
 using hdps::plugin::ViewPlugin;

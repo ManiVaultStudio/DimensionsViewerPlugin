@@ -1,7 +1,7 @@
 #include "Layer.h"
 #include "SettingsAction.h"
 
-#include <PointData.h>
+#include <PointData/PointData.h>
 #include <event/Event.h>
 
 Layer::Layer(SettingsAction& settingsAction, Dataset<Points> dataset, const ChannelAction::ProfileType& profileType /*= ChannelConfigurationAction::ProfileType::Mean*/) :
