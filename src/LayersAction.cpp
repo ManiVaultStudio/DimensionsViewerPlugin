@@ -7,7 +7,7 @@
 #include <QDebug>
 
 LayersAction::LayersAction(SettingsAction& settingsAction) :
-    WidgetAction(&settingsAction),
+    WidgetAction(&settingsAction, "LayersAction"),
     _settingsAction(settingsAction)
 {
     setText("Channels");
@@ -36,7 +36,7 @@ LayersAction::Widget::Widget(QWidget* parent, LayersAction* layersAction) :
 
     auto layout = new QVBoxLayout();
 
-    setPopupLayout(layout);
+    setLayout(layout);
 
     for (auto layer : layersModel.getLayers())
         layout->addWidget(layer->getChannelAction().createWidget(this));

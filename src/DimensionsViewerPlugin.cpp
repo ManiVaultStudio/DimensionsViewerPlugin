@@ -6,6 +6,8 @@
 
 #include <actions/PluginTriggerAction.h>
 
+#include <DatasetsMimeData.h>
+
 #include <QDebug>
 #include <QMimeData>
 
@@ -46,18 +48,26 @@ void DimensionsViewerPlugin::init()
     _dropWidget->initialize([this](const QMimeData* mimeData) -> DropWidget::DropRegions {
         DropWidget::DropRegions dropRegions;
 
-        const auto mimeText             = mimeData->text();
-        const auto tokens               = mimeText.split("\n");
-        const auto datasetName          = tokens[0];
-        const auto datasetId            = tokens[1];
-        const auto dataType             = DataType(tokens[2]);
-        const auto dataTypes            = DataTypes({ PointType });
-        const auto candidateDataset     = _core->requestDataset(datasetId);
+        const auto datasetsMimeData = dynamic_cast<const DatasetsMimeData*>(mimeData);
+
+        if (datasetsMimeData == nullptr)
+            return dropRegions;
+
+        if (datasetsMimeData->getDatasets().count() > 1)
+            return dropRegions;
+
+        const auto dataset = datasetsMimeData->getDatasets().first();
+        const auto datasetGuiName = dataset->text();
+        const auto datasetId = dataset->getId();
+        const auto dataType = dataset->getDataType();
+        const auto dataTypes = DataTypes({ PointType });
 
         if (!dataTypes.contains(dataType))
             dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", "exclamation-circle", false);
 
         if (dataType == PointType) {
+            const auto candidateDataset = _core->requestDataset(datasetId);
+
             dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDataset->getGuiName()), "map-marker-alt", true, [this, candidateDataset]() {
                 loadData({ candidateDataset });
             });

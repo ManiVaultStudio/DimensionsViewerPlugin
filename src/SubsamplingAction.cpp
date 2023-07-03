@@ -8,9 +8,9 @@ using namespace hdps;
 using namespace hdps::gui;
 
 SubsamplingAction::SubsamplingAction(SettingsAction& settingsAction) :
-    WidgetAction(&settingsAction),
+    WidgetAction(&settingsAction, "SubsamplingAction"),
     _settingsAction(settingsAction),
-    _subsamplingFactorAction(this, "Subsampling factor", 1.0, 100.0, 50.0, 50.0, 1),
+    _subsamplingFactorAction(this, "Subsampling factor", 1.0, 100.0, 50.0, 50.0),
     _subsamplingFactorOneOverEighthAction(this, "12.5%"),
     _subsamplingFactorOneOverFourAction(this, "25.0%"),
     _subsamplingFactorOneOverTwoAction(this, "50.0%")

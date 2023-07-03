@@ -75,7 +75,7 @@ QIcon ChannelStylingAction::LineTypesModel::getDecorationRole(const LineType& li
 const QSize ChannelStylingAction::LineTypesModel::iconSize = QSize(24, 12);
 
 ChannelStylingAction::ChannelStylingAction(Layer& layer, ChannelAction* channelConfigurationAction) :
-    WidgetAction(&layer),
+    WidgetAction(&layer, "ChannelStylingWidgetAction"),
     _layer(layer),
     _showRangeAction(this, "Show min/max range"),
     _showPointsAction(this, "Show points"),
@@ -103,29 +103,29 @@ ChannelStylingAction::ChannelStylingAction(Layer& layer, ChannelAction* channelC
     const auto color = defaultColors[_layer.getChannelAction().getIndex()];
 
     _colorAction.setColor(color);
-    _colorAction.setDefaultColor(color);
+    //_colorAction.setDefaultColor(color);
 
     auto lineTypesModel = new LineTypesModel();
 
     _primaryLineTypeAction.setCustomModel(lineTypesModel);
     _primaryLineTypeAction.setCurrentIndex(0);
-    _primaryLineTypeAction.setDefaultIndex(0);
+    //_primaryLineTypeAction.setDefaultIndex(0);
 
     _primaryLineThicknessAction.setSuffix("px");
     _primaryLineThicknessAction.setMinimum(0.1f);
     _primaryLineThicknessAction.setMaximum(10.0f);
     _primaryLineThicknessAction.setValue(2.0);
-    _primaryLineThicknessAction.setDefaultValue(2.0);
+    //_primaryLineThicknessAction.setDefaultValue(2.0);
 
     _secondaryLineTypeAction.setCustomModel(lineTypesModel);
     _secondaryLineTypeAction.setCurrentIndex(1);
-    _secondaryLineTypeAction.setDefaultIndex(1);
+    //_secondaryLineTypeAction.setDefaultIndex(1);
 
     _secondaryLineThicknessAction.setSuffix("px");
     _secondaryLineThicknessAction.setMinimum(0.1f);
     _secondaryLineThicknessAction.setMaximum(10.0f);
     _secondaryLineThicknessAction.setValue(1.0f);
-    _secondaryLineThicknessAction.setDefaultValue(1.0f);
+    //_secondaryLineThicknessAction.setDefaultValue(1.0f);
 
     const auto updateShowRange = [this]() {
         _showRangeAction.setEnabled(!_layer.getChannelAction().isDifferential());
@@ -215,5 +215,5 @@ ChannelStylingAction::Widget::Widget(QWidget* parent, ChannelStylingAction* chan
 
     _layout->addLayout(secondaryLayout, 4, 1);
 
-    setPopupLayout(_layout);
+    setLayout(_layout);
 }

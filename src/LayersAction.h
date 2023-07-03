@@ -15,9 +15,6 @@ protected:
     class Widget : public hdps::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, LayersAction* layersAction);
-
-    protected:
-        GroupsAction    _groupsAction;
     };
 
     QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {

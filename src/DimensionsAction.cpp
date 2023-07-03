@@ -11,11 +11,11 @@ using namespace hdps;
 using namespace hdps::gui;
 
 DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
-    WidgetAction(&settingsAction),
+    WidgetAction(&settingsAction, "DimensionsAction"),
     _settingsAction(settingsAction),
     _selectionCenterIndexAction(this, "Selection center dimension index"),
     _selectionCenterNameAction(this, "Selection center dimension name"),
-    _selectionRadiusAction(this, "Selection radius", 1, 100, 25, 25),
+    _selectionRadiusAction(this, "Selection radius", 1, 100, 25),
     _showNamesAction(this, "Show names"),
     _dimensionNames()
 {
@@ -68,5 +68,5 @@ DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAc
     layout->addWidget(selectionRadiusWidget, 1);
     layout->addWidget(showDimensionNamesWidget);
 
-    setPopupLayout(layout);
+    setLayout(layout);
 }

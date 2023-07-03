@@ -55,7 +55,7 @@ const QMap<ChannelAction::DifferentialProfileConfig, QString> ChannelAction::dif
 });
 
 ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const ProfileType& profileType /*= ProfileType::Mean*/) :
-    WidgetAction(&layer),
+    WidgetAction(&layer, "ChannelWidgetAction"),
     _layer(layer),
     _index(ChannelAction::numberOfChannels),
     _internalName(QUuid::createUuid().toString(QUuid::WithoutBraces)),

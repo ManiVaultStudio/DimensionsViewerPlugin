@@ -11,7 +11,7 @@ using namespace hdps;
 using namespace hdps::gui;
 
 SettingsAction::SettingsAction(DimensionsViewerPlugin& dimensionsViewerPlugin) :
-    WidgetAction(&dimensionsViewerPlugin),
+    WidgetAction(&dimensionsViewerPlugin, "SettingsAction"),
     _dimensionsViewerPlugin(dimensionsViewerPlugin),
     _layersAction(*this),
     _dimensionsAction(*this),
