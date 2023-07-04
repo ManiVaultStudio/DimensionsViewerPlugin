@@ -551,7 +551,7 @@ Dataset<Points> ChannelAction::getDifferentialDataset() const
 }
 
 ChannelAction::Widget::Widget(QWidget* parent, ChannelAction* channelAction) :
-    WidgetActionWidget(parent, channelAction, State::Standard),
+    WidgetActionWidget(parent, channelAction),
     _mainLayout()
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));

@@ -171,7 +171,7 @@ ChannelStylingAction::ChannelStylingAction(Layer& layer, ChannelAction* channelC
 }
 
 ChannelStylingAction::Widget::Widget(QWidget* parent, ChannelStylingAction* channelStylingAction) :
-    WidgetActionWidget(parent, channelStylingAction, State::Standard),
+    WidgetActionWidget(parent, channelStylingAction),
     _layout(new QGridLayout())
 {
     auto showRangeWidget                = channelStylingAction->_showRangeAction.createWidget(this);

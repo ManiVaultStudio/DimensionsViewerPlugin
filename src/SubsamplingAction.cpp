@@ -52,7 +52,7 @@ double SubsamplingAction::getNormalizedFactor() const
 }
 
 SubsamplingAction::Widget::Widget(QWidget* parent, SubsamplingAction* subsamplingAction) :
-    WidgetActionWidget(parent, subsamplingAction, State::Standard)
+    WidgetActionWidget(parent, subsamplingAction)
 {
     auto layout = new QVBoxLayout();
     

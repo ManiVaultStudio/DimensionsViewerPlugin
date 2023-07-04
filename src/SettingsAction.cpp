@@ -54,7 +54,7 @@ QVariantMap SettingsAction::getSpec()
 }
 
 SettingsAction::Widget::Widget(QWidget* parent, SettingsAction* settingsAction) :
-    WidgetActionWidget(parent, settingsAction, State::Standard)
+    WidgetActionWidget(parent, settingsAction)
 {
     setAutoFillBackground(true);
 

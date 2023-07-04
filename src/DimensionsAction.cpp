@@ -48,7 +48,7 @@ DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
 }
 
 DimensionsAction::Widget::Widget(QWidget* parent, DimensionsAction* DimensionsAction) :
-    WidgetActionWidget(parent, DimensionsAction, State::Standard)
+    WidgetActionWidget(parent, DimensionsAction)
 {
     auto layout = new QHBoxLayout();
 
