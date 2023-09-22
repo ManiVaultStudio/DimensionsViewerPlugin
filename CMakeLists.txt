@@ -67,6 +67,12 @@ set(AUX
 
 set(SOURCES ${PLUGIN} ${ACTIONS} ${MODEL} ${WIDGETS})
 
+set(PLUGIN_MOC_HEADERS
+    src/DimensionsViewerPlugin.h
+    src/DimensionsViewerWidget.h
+    src/SpecSynchronizer.h
+)
+
 source_group(Plugin FILES ${SOURCES})
 source_group(Actions FILES ${ACTIONS})
 source_group(Model FILES ${MODEL})
@@ -75,6 +81,9 @@ source_group(Web FILES ${WEB})
 source_group(Aux FILES ${AUX})
 
 add_library(${PROJECT} SHARED ${SOURCES} ${WEB} ${AUX} ${WEB} ${WIDGETS})
+
+qt_wrap_cpp(DIMENSIONSVIEWERPLUGIN_MOC ${PLUGIN_MOC_HEADERS} TARGET ${PROJECT})
+target_sources(${PROJECT} PRIVATE ${DIMENSIONSVIEWERPLUGIN_MOC})
 
 target_include_directories(${PROJECT} PRIVATE "${INSTALL_DIR}/$<CONFIGURATION>/include/")
 
