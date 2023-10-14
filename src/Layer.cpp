@@ -11,7 +11,7 @@ Layer::Layer(SettingsAction& settingsAction, Dataset<Points> dataset, const Chan
     _channelAction(*this, dataset->getGuiName(), profileType),
     _eventListener()
 {
-    _eventListener.registerDataEventByType(PointType, [this](hdps::DatasetEvent* dataEvent) {
+    _eventListener.registerDataEventByType(PointType, [this](mv::DatasetEvent* dataEvent) {
         if (dataEvent->getType() == EventType::DatasetAdded || dataEvent->getType() == EventType::DatasetDataChanged)
             updateDifferentialDatasetCandidates();
     });

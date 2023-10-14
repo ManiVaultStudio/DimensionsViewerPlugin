@@ -4,8 +4,8 @@
 
 #include <QGroupBox>
 
-using namespace hdps;
-using namespace hdps::gui;
+using namespace mv;
+using namespace mv::gui;
 
 SubsamplingAction::SubsamplingAction(SettingsAction& settingsAction) :
     WidgetAction(&settingsAction, "SubsamplingAction"),

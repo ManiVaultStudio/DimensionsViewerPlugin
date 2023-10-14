@@ -8,7 +8,7 @@
 
 #include <QAbstractListModel>
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 class Layer;
 class ChannelAction;
@@ -67,7 +67,7 @@ public:
 
 protected: // Widget
 
-    class Widget : public hdps::gui::WidgetActionWidget {
+    class Widget : public mv::gui::WidgetActionWidget {
     protected:
         Widget(QWidget* parent, ChannelStylingAction* channelStylingAction);
 

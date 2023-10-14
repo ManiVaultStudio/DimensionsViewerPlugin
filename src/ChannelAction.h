@@ -18,8 +18,8 @@ class Layer;
 class Points;
 class ChannelsAction;
 
-using namespace hdps;
-using namespace hdps::gui;
+using namespace mv;
+using namespace mv::gui;
 
 /**
  * Channel class
@@ -76,7 +76,7 @@ public:
 
 protected:
 
-    class Widget : public hdps::gui::WidgetActionWidget {
+    class Widget : public mv::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, ChannelAction* channelConfigurationAction);
 
@@ -174,12 +174,12 @@ protected:
     const std::uint32_t         _index;                         /** Channel index */
     const QString               _internalName;                  /** Channel internal name (e.g. channel1, channel2) */
     const QString               _displayName;                   /** Channel display name (e.g. dataset, Subset1 and Subset 2) */
-    hdps::gui::ToggleAction     _enabledAction;                 /** Channel on/off action */
+    mv::gui::ToggleAction     _enabledAction;                 /** Channel on/off action */
     DatasetPickerAction         _dataset1Action;                /** Dataset picker action for the first dataset */
     DatasetPickerAction         _dataset2Action;                /** Dataset picker action for the second dataset */
-    hdps::gui::OptionAction     _profileTypeAction;             /** Profile type picker action */
-    hdps::gui::OptionAction     _profileConfigAction;           /** Profile configuration action */
-    hdps::gui::ToggleAction     _useSelectionAction;            /** Whether to respect the selection or not */
+    mv::gui::OptionAction     _profileTypeAction;             /** Profile type picker action */
+    mv::gui::OptionAction     _profileConfigAction;           /** Profile configuration action */
+    mv::gui::ToggleAction     _useSelectionAction;            /** Whether to respect the selection or not */
     ChannelStylingAction        _stylingAction;
     TriggerAction               _removeAction;                  /** Channel remove action */
     QVariantMap                 _spec;                          /** Specification for use in JS visualization client (Vega) */

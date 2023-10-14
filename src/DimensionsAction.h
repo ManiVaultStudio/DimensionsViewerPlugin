@@ -5,7 +5,7 @@
 #include <actions/OptionAction.h>
 #include <actions/ToggleAction.h>
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 class SettingsAction;
 
@@ -13,7 +13,7 @@ class DimensionsAction : public WidgetAction
 {
 protected:
 
-    class Widget : public hdps::gui::WidgetActionWidget {
+    class Widget : public mv::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, DimensionsAction* dimensionsAction);
     };

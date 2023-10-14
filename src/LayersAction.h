@@ -3,8 +3,8 @@
 #include <actions/WidgetAction.h>
 #include <actions/GroupsAction.h>
 
-using namespace hdps;
-using namespace hdps::gui;
+using namespace mv;
+using namespace mv::gui;
 
 class SettingsAction;
 
@@ -12,7 +12,7 @@ class LayersAction : public WidgetAction
 {
 protected:
 
-    class Widget : public hdps::gui::WidgetActionWidget {
+    class Widget : public mv::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, LayersAction* layersAction);
     };

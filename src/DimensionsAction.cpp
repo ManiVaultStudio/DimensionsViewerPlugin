@@ -7,8 +7,8 @@
 #include <QComboBox>
 #include <QGroupBox>
 
-using namespace hdps;
-using namespace hdps::gui;
+using namespace mv;
+using namespace mv::gui;
 
 DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
     WidgetAction(&settingsAction, "DimensionsAction"),

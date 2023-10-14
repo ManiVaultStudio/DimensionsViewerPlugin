@@ -7,8 +7,8 @@
 #include <QDebug>
 #include <QLabel>
 
-using namespace hdps;
-using namespace hdps::gui;
+using namespace mv;
+using namespace mv::gui;
 
 SettingsAction::SettingsAction(DimensionsViewerPlugin& dimensionsViewerPlugin) :
     WidgetAction(&dimensionsViewerPlugin, "SettingsAction"),

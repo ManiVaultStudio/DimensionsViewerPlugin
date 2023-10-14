@@ -6,13 +6,13 @@
 
 #include <PointData/PointData.h>
 
-using hdps::plugin::ViewPluginFactory;
-using hdps::plugin::ViewPlugin;
+using mv::plugin::ViewPluginFactory;
+using mv::plugin::ViewPlugin;
 
 class DimensionsViewerWidget;
 class SettingsAction;
 
-namespace hdps {
+namespace mv {
     namespace gui {
         class DropWidget;
     }
@@ -31,11 +31,11 @@ public:
      * Load one (or more datasets in the view)
      * @param datasets Dataset(s) to load
      */
-    void loadData(const hdps::Datasets& datasets) override;
+    void loadData(const mv::Datasets& datasets) override;
 
 public:
     /** Returns a pointer to the core interface */
-    hdps::CoreInterface* getCore() { return _core; }
+    mv::CoreInterface* getCore() { return _core; }
 
     LayersModel& getLayersModel();
 
@@ -47,12 +47,12 @@ private:
     DimensionsViewerWidget*     _dimensionsViewerWidget;        /** HTML dimensions viewer (Vega) */
     LayersModel                 _layersModel;
     SettingsAction*             _settingsAction;
-    hdps::gui::DropWidget*      _dropWidget;
+    mv::gui::DropWidget*      _dropWidget;
 };
 
 class DimensionsViewerPluginFactory : public ViewPluginFactory
 {
-    Q_INTERFACES(hdps::plugin::ViewPluginFactory hdps::plugin::PluginFactory)
+    Q_INTERFACES(mv::plugin::ViewPluginFactory mv::plugin::PluginFactory)
     Q_OBJECT
     Q_PLUGIN_METADATA(IID   "nl.BioVault.DimensionsViewerPlugin"
                       FILE  "DimensionsViewerPlugin.json")
@@ -78,12 +78,12 @@ public:
      * Get the data types that the plugin supports
      * @return Supported data types
      */
-    hdps::DataTypes supportedDataTypes() const override;
+    mv::DataTypes supportedDataTypes() const override;
 
     /**
      * Get plugin trigger actions given \p datasets
      * @param datasets Vector of input datasets
      * @return Vector of plugin trigger actions
      */
-    PluginTriggerActions getPluginTriggerActions(const hdps::Datasets& datasets) const override;
+    PluginTriggerActions getPluginTriggerActions(const mv::Datasets& datasets) const override;
 };

@@ -4,7 +4,7 @@
 
 #include "ChannelAction.h"
 
-using namespace hdps;
+using namespace mv;
 
 class SettingsAction;
 

@@ -20,8 +20,8 @@
 
 std::uint32_t  ChannelAction::numberOfChannels = 0;
 
-using namespace hdps;
-using namespace hdps::gui;
+using namespace mv;
+using namespace mv::gui;
 
 const QMap<ChannelAction::ProfileType, QString> ChannelAction::profileTypes = QMap<ChannelAction::ProfileType, QString>({
     { ChannelAction::ProfileType::Mean, "Mean" },

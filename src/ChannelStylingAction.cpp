@@ -10,8 +10,8 @@
 #include <QPainter>
 #include <QToolButton>
 
-using namespace hdps;
-using namespace hdps::gui;
+using namespace mv;
+using namespace mv::gui;
 
 const QMap<ChannelStylingAction::LineType, QString> ChannelStylingAction::lineTypes = QMap<ChannelStylingAction::LineType, QString>({
     { ChannelStylingAction::LineType::Solid, "Solid" },

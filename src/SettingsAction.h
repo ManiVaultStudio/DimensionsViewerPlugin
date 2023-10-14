@@ -6,7 +6,7 @@
 #include "LayersAction.h"
 #include "SubsamplingAction.h"
 
-using namespace hdps;
+using namespace mv;
 
 class DimensionsViewerPlugin;
 
@@ -14,7 +14,7 @@ class SettingsAction : public WidgetAction
 {
 protected:
 
-    class Widget : public hdps::gui::WidgetActionWidget {
+    class Widget : public mv::gui::WidgetActionWidget {
     public:
         Widget(QWidget* parent, SettingsAction* settingsAction);
     };

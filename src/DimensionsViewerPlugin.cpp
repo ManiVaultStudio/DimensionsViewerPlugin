@@ -13,8 +13,8 @@
 
 Q_PLUGIN_METADATA(IID "nl.BioVault.DimensionsViewerPlugin")
 
-using namespace hdps;
-using namespace hdps::gui;
+using namespace mv;
+using namespace mv::gui;
 
 DimensionsViewerPlugin::DimensionsViewerPlugin(const PluginFactory* factory) :
     ViewPlugin(factory),
@@ -77,7 +77,7 @@ void DimensionsViewerPlugin::init()
     });
 }
 
-void DimensionsViewerPlugin::loadData(const hdps::Datasets& datasets)
+void DimensionsViewerPlugin::loadData(const mv::Datasets& datasets)
 {
     for (const auto& dataset : datasets)
         _layersModel.addLayer(new Layer(*_settingsAction, dataset));
@@ -101,14 +101,14 @@ DimensionsViewerPlugin* DimensionsViewerPluginFactory::produce()
     return new DimensionsViewerPlugin(this);
 }
 
-hdps::DataTypes DimensionsViewerPluginFactory::supportedDataTypes() const
+mv::DataTypes DimensionsViewerPluginFactory::supportedDataTypes() const
 {
     DataTypes supportedTypes;
     supportedTypes.append(PointType);
     return supportedTypes;
 }
 
-hdps::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerActions(const hdps::Datasets& datasets) const
+mv::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerActions(const mv::Datasets& datasets) const
 {
     PluginTriggerActions pluginTriggerActions;
 
