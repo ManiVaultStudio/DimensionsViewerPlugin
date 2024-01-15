@@ -45,7 +45,7 @@ void Layer::updateDifferentialDatasetCandidates()
 
     QStringList datasetNames;
 
-    for (auto candidateDataset : Application::core()->requestAllDataSets(QVector<DataType>({ PointType })))
+    for (auto candidateDataset : mv::data().getAllDatasets(std::vector<DataType>({ PointType })))
         if (Dataset<Points>(candidateDataset)->getNumDimensions() == numDimensions && candidateDataset != _dataset)
             _differentialDatasetCandidates << candidateDataset;
 

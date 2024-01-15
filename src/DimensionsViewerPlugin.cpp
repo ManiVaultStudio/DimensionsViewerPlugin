@@ -66,7 +66,7 @@ void DimensionsViewerPlugin::init()
             dropRegions << new DropWidget::DropRegion(this, "Incompatible data", "This type of data is not supported", "exclamation-circle", false);
 
         if (dataType == PointType) {
-            const auto candidateDataset = _core->requestDataset(datasetId);
+            const auto candidateDataset = mv::data().getDataset(datasetId);
 
             dropRegions << new DropWidget::DropRegion(this, "Points", QString("Visualize %1 dimensions").arg(candidateDataset->getGuiName()), "map-marker-alt", true, [this, candidateDataset]() {
                 loadData({ candidateDataset });
