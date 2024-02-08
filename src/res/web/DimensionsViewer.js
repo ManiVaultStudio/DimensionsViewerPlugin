@@ -213,7 +213,7 @@ function addChannel(design, channel) {
 }
 
 function getDesign(spec) {
-
+	
     design.data.values = [];
     design.layer = [];
     

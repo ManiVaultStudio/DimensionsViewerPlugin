@@ -8,19 +8,8 @@ using namespace mv::gui;
 
 class SettingsAction;
 
-class LayersAction : public WidgetAction
+class LayersAction : public GroupAction
 {
-protected:
-
-    class Widget : public mv::gui::WidgetActionWidget {
-    public:
-        Widget(QWidget* parent, LayersAction* layersAction);
-    };
-
-    QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
-        return new Widget(parent, this);
-    };
-
 public:
     LayersAction(SettingsAction& settingsAction);
 
