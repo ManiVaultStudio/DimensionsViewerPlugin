@@ -15,7 +15,7 @@ DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
     _settingsAction(settingsAction),
     _selectionCenterIndexAction(this, "Selection center dimension index"),
     _selectionCenterNameAction(this, "Selection center dimension name"),
-    _selectionRadiusAction(this, "Selection radius", 1, 100, 25),
+    _selectionRadiusAction(this, "Selection radius", 1, 250, 100),
     _showNamesAction(this, "Show names"),
     _dimensionNames()
 {

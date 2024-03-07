@@ -7,12 +7,14 @@
 #include <QDebug>
 
 LayersAction::LayersAction(SettingsAction& settingsAction) :
-    WidgetAction(&settingsAction, "LayersAction"),
+    GroupAction(&settingsAction, "Layers"),
     _settingsAction(settingsAction)
 {
     setText("Channels");
     setIcon(Application::getIconFont("FontAwesome").getIcon("layer-group"));
     setEnabled(false);
+
+    addAction(&_settingsAction);
 
     auto& layersModel = _settingsAction.getDimensionsViewerPlugin().getLayersModel();
 
@@ -22,37 +24,24 @@ LayersAction::LayersAction(SettingsAction& settingsAction) :
 
     connect(&layersModel, &QAbstractListModel::rowsInserted, this, updateReadOnly);
     connect(&layersModel, &QAbstractListModel::rowsRemoved, this, updateReadOnly);
+
+    for (auto layer : layersModel.getLayers())
+        addAction(&layer->getChannelAction());
+
+    connect(&layersModel, &QAbstractListModel::rowsInserted, this, [this, &layersModel](const QModelIndex& parent, int first, int last) {
+        auto layer = static_cast<Layer*>(layersModel.index(first, 0).internalPointer());
+
+        addAction(&layer->getChannelAction());
+    });
+
+    connect(&layersModel, &QAbstractListModel::rowsRemoved, this, [this, &layersModel](const QModelIndex& parent, int first, int last) {
+        auto layer = static_cast<Layer*>(layersModel.index(first, 0).internalPointer());
+
+        addAction(&layer->getChannelAction());
+    });
 }
 
 SettingsAction& LayersAction::getSettingsAction()
 {
     return _settingsAction;
-}
-
-LayersAction::Widget::Widget(QWidget* parent, LayersAction* layersAction) :
-    WidgetActionWidget(parent, layersAction)
-{
-    auto& layersModel = layersAction->getSettingsAction().getDimensionsViewerPlugin().getLayersModel();
-
-    auto layout = new QVBoxLayout();
-
-    setLayout(layout);
-
-    for (auto layer : layersModel.getLayers())
-        layout->addWidget(layer->getChannelAction().createWidget(this));
-
-    connect(&layersModel, &QAbstractListModel::rowsInserted, this, [this, layout, &layersModel](const QModelIndex& parent, int first, int last) {
-        layout->insertWidget(first, static_cast<Layer*>(layersModel.index(first, 0).internalPointer())->getChannelAction().createWidget(this));
-    });
-
-    connect(&layersModel, &QAbstractListModel::rowsRemoved, this, [layout, layersAction](const QModelIndex& parent, int first, int last) {
-        auto item = layout->takeAt(first);
-
-        if (item->widget())
-            delete item->widget();
-
-        delete item;
-    });
-
-    update();
 }
