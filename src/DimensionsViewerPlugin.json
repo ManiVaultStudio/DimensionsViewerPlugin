@@ -1,5 +1,5 @@
 {
     "name" : "Dimensions Viewer",
-    "version" : "0.4",
+    "version" : "0.5",
     "dependencies": ["Points"]
 }
