@@ -112,6 +112,10 @@ class DimensionsViewerPluginConan(ConanFile):
         # Give the installation directory to CMake
         tc.variables["MV_INSTALL_DIR"] = self.install_dir
         
+        # Find ManiVault with find_package
+        self.manivault_dir = self.install_dir + '/cmake/mv/'
+        tc.variables["ManiVault_DIR"] = self.manivault_dir
+        
         tc.generate()
 
     def _configure_cmake(self):
