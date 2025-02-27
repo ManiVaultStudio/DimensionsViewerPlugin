@@ -91,6 +91,11 @@ LayersModel& DimensionsViewerPlugin::getLayersModel()
     return _layersModel;
 }
 
+DimensionsViewerPluginFactory::DimensionsViewerPluginFactory()
+{
+    setIconByName("chart-area");
+}
+
 DimensionsViewerPlugin* DimensionsViewerPluginFactory::produce()
 {
     return new DimensionsViewerPlugin(this);
