@@ -91,11 +91,6 @@ LayersModel& DimensionsViewerPlugin::getLayersModel()
     return _layersModel;
 }
 
-QIcon DimensionsViewerPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const
-{
-    return Application::getIconFont("FontAwesome").getIcon("chart-area", color);
-}
-
 DimensionsViewerPlugin* DimensionsViewerPluginFactory::produce()
 {
     return new DimensionsViewerPlugin(this);
