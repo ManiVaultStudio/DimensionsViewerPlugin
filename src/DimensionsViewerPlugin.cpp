@@ -115,7 +115,7 @@ mv::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerAct
 
     if (PluginFactory::areAllDatasetsOfTheSameType(datasets, PointType)) {
         if (numberOfDatasets == 1) {
-            auto pluginTriggerAction = new PluginTriggerAction(const_cast<DimensionsViewerPluginFactory*>(this), this, "Dimensions", "View dimensions", getIcon(), [this, getPluginInstance, datasets](PluginTriggerAction& pluginTriggerAction) -> void {
+            auto pluginTriggerAction = new PluginTriggerAction(const_cast<DimensionsViewerPluginFactory*>(this), this, "Dimensions", "View dimensions", icon(), [this, getPluginInstance, datasets](PluginTriggerAction& pluginTriggerAction) -> void {
                 for (auto dataset : datasets)
                     getPluginInstance()->loadData({ dataset });
             });
@@ -124,7 +124,7 @@ mv::gui::PluginTriggerActions DimensionsViewerPluginFactory::getPluginTriggerAct
         }
 
         if (numberOfDatasets >= 2) {
-            auto pluginTriggerAction = new PluginTriggerAction(const_cast<DimensionsViewerPluginFactory*>(this), this, "Compare dimensions", "View selected datasets together in a single dimensions viewer", getIcon(), [this, getPluginInstance, datasets](PluginTriggerAction& pluginTriggerAction) -> void {
+            auto pluginTriggerAction = new PluginTriggerAction(const_cast<DimensionsViewerPluginFactory*>(this), this, "Compare dimensions", "View selected datasets together in a single dimensions viewer", icon(), [this, getPluginInstance, datasets](PluginTriggerAction& pluginTriggerAction) -> void {
                 getPluginInstance()->loadData(datasets);
             });
 
