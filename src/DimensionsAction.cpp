@@ -16,11 +16,10 @@ DimensionsAction::DimensionsAction(SettingsAction& settingsAction) :
     _selectionCenterIndexAction(this, "Selection center dimension index"),
     _selectionCenterNameAction(this, "Selection center dimension name"),
     _selectionRadiusAction(this, "Selection radius", 1, 250, 100),
-    _showNamesAction(this, "Show names"),
-    _dimensionNames()
+    _showNamesAction(this, "Show names")
 {
     setText("Dimensions");
-    setIcon(Application::getIconFont("FontAwesome").getIcon("ruler-horizontal"));
+    setIconByName("ruler-horizontal");
 
     _selectionCenterIndexAction.setUpdateDuringDrag(false);
 

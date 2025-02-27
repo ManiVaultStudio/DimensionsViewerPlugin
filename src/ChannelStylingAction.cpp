@@ -87,7 +87,7 @@ ChannelStylingAction::ChannelStylingAction(Layer& layer, ChannelAction* channelC
     _secondaryLineThicknessAction(this, "Thickness")
 {
     setText("Styling");
-    setIcon(Application::getIconFont("FontAwesome").getIcon("paint-brush"));
+    setIconByName("paint-brush");
 
     _showRangeAction.setCheckable(true);
     _showRangeAction.setChecked(true);
