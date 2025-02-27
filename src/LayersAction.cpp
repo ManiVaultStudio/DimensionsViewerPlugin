@@ -11,7 +11,7 @@ LayersAction::LayersAction(SettingsAction& settingsAction) :
     _settingsAction(settingsAction)
 {
     setText("Channels");
-    setIcon(Application::getIconFont("FontAwesome").getIcon("layer-group"));
+    setIconByName("layer-group");
     setEnabled(false);
 
     addAction(&_settingsAction);

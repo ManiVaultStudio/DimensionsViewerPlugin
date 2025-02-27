@@ -75,7 +75,7 @@ ChannelAction::ChannelAction(Layer& layer, const QString& displayName, const Pro
     setText("Settings");
 
     _removeAction.setDefaultWidgetFlags(TriggerAction::Icon);
-    _removeAction.setIcon(Application::getIconFont("FontAwesome").getIcon("trash-alt"));
+    _removeAction.setIconByName("trash-alt");
 
     _dataset1Action.setDatasets({ _layer.getDatasetReference() });
     _dataset2Action.setDatasets({ _layer.getDifferentialDatasetCandidates() });
