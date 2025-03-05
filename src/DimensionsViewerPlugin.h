@@ -58,7 +58,7 @@ class DimensionsViewerPluginFactory : public ViewPluginFactory
                       FILE  "DimensionsViewerPlugin.json")
     
 public:
-    DimensionsViewerPluginFactory() {}
+    DimensionsViewerPluginFactory();
     ~DimensionsViewerPluginFactory() {}
 
     /**
