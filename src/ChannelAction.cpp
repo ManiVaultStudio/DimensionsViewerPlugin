@@ -345,7 +345,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
                     values.reserve(indices1.size());
 
                     for (const auto& index : indices1)
-                        values.push_back(begin[index * noDimensions + dimensionIndex]);
+                        values.push_back(begin[static_cast<std::uint64_t>(index) * noDimensions + dimensionIndex]);
 
                     return values;
                 });
@@ -444,7 +444,7 @@ void ChannelAction::updateSpec(const bool& ignoreDimensions /*= false*/)
                             values.reserve(indices2.size());
 
                             for (const auto& index : indices2)
-                                values.push_back(begin[index * noDimensions + dimensionIndex]);
+                                values.push_back(begin[static_cast<std::uint64_t>(index) * noDimensions + dimensionIndex]);
 
                             return values;
                         });
