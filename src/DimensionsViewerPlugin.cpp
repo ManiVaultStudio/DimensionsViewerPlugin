@@ -16,7 +16,7 @@ Q_PLUGIN_METADATA(IID "nl.BioVault.DimensionsViewerPlugin")
 using namespace mv;
 using namespace mv::gui;
 
-DimensionsViewerPlugin::DimensionsViewerPlugin(const PluginFactory* factory) :
+DimensionsViewerPlugin::DimensionsViewerPlugin(const mv::plugin::PluginFactory* factory) :
     ViewPlugin(factory),
     _dimensionsViewerWidget(nullptr),
     _layersModel(this),
