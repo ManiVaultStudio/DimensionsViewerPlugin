@@ -23,7 +23,7 @@ class DimensionsViewerPlugin : public ViewPlugin
     Q_OBJECT
 
 public:
-    DimensionsViewerPlugin(const PluginFactory* factory);
+    DimensionsViewerPlugin(const mv::plugin::PluginFactory* factory);
 
     void init() override;
 
